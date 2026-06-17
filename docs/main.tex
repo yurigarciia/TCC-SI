@@ -14,7 +14,20 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{mdframed}
+\usepackage{xcolor}
 \newcommand{\fonte}[1]{\par\vspace{2pt}\footnotesize{Fonte: #1}}
+\newmdenv[
+  backgroundcolor=yellow!30,
+  linecolor=yellow!60!orange,
+  linewidth=1pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=4pt,
+  skipbelow=4pt
+]{novo}
 
 \geometry{margin=3cm}
 \onehalfspacing
@@ -86,6 +99,7 @@ Dessa forma, a pesquisa se justifica ao propor o desenvolvimento de um ecossiste
 
 O objetivo geral desta pesquisa é desenvolver e avaliar um ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
 
+\begin{novo}
 Para alcançar esse objetivo, definem-se os seguintes objetivos específicos:
 
 \begin{enumerate}[label=\alph*)]
@@ -94,6 +108,7 @@ Para alcançar esse objetivo, definem-se os seguintes objetivos específicos:
     \item implementar as funcionalidades básicas do sistema, incluindo o controle de associados, o gerenciamento de mensalidades e os processos de reserva e compra de ingressos e mesas;
     \item avaliar o funcionamento do ecossistema a partir de cenários de uso reais, quando possível, ou simulados, considerando aspectos organizacionais e de usabilidade.
 \end{enumerate}
+\end{novo}
 
 \section{REFERENCIAL TEÓRICO}
 
@@ -158,7 +173,9 @@ Considera-se que o público atendido pelas entidades tradicionalistas é heterog
 
 \subsection{METODOLOGIA DE DESENVOLVIMENTO DE SOFTWARE}
 
+\begin{novo}
 O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), método ágil originalmente concebido para projetos nos quais o prazo de entrega é fixo e o escopo é variável \citep{stapleton1997,dsm2014}. Diferentemente do Scrum, que organiza o desenvolvimento em sprints de duração fixa com escopo negociável a cada ciclo, o DSDM parte do pressuposto de que há uma data de entrega não negociável — o que se alinha diretamente à estrutura do TCC, com defesa prevista para o final do semestre. O método orienta a priorização de requisitos por meio da técnica MoSCoW (\textit{Must have}, \textit{Should have}, \textit{Could have}, \textit{Won't have}), garantindo que as funcionalidades essenciais sejam entregues dentro do prazo, sem comprometer a qualidade do núcleo do sistema \citep{dsm2014}.
+\end{novo}
 
 Nesse sentido, o MVP (Produto Mínimo Viável) do ecossistema digital entidade--associado contemplará, prioritariamente, as funcionalidades classificadas como \textit{Must have} na seção de requisitos deste documento, como:
 
@@ -202,6 +219,7 @@ A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de
 
 \subsubsection{Stack Tecnológica}
 
+\begin{novo}
 A implementação do ecossistema utilizará TypeScript como linguagem unificada em todas as camadas da aplicação. A adoção de uma linguagem comum entre \textit{backend}, \textit{frontend} e \textit{mobile} reduz o custo de troca de contexto no desenvolvimento, permite o compartilhamento de tipos e contratos entre camadas e favorece a consistência das interfaces da API \citep{bierman2014}.
 
 O \textit{backend} será desenvolvido com \textbf{NestJS}, \textit{framework} Node.js que adota por padrão uma arquitetura modular baseada em injeção de dependências, alinhando-se diretamente à proposta de Arquitetura Hexagonal e \textit{Clean Architecture} descrita neste trabalho \citep{nestjs2023}. O NestJS organiza a aplicação em módulos coesos com separação clara entre controladores, serviços e provedores, o que favorece a testabilidade e a manutenção incremental previstas no DSDM.
@@ -214,9 +232,8 @@ O aplicativo \textit{mobile} será desenvolvido com \textbf{React Native} e \tex
 
 A Tabela~\ref{tab:stack} resume as tecnologias adotadas por camada.
 
-\begin{table}[h]
-\centering
-\caption{Stack tecnológica do ecossistema digital}
+\begin{center}
+\captionof{table}{Stack tecnológica do ecossistema digital}
 \label{tab:stack}
 \begin{tabular}{lll}
 \hline
@@ -233,34 +250,36 @@ Autenticação & JWT + RBAC & Controle de acesso por perfil \\
 \hline
 \end{tabular}
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
+\end{novo}
 
 \subsubsection{Diagrama de Arquitetura}
 
+\begin{novo}
 A Figura~\ref{fig:arquitetura} apresenta o diagrama de componentes do ecossistema digital, ilustrando o fluxo de comunicação entre os clientes (\textit{web} e \textit{mobile}), a API central e as camadas internas do \textit{backend}.
 
-\begin{figure}[h]
-\centering
+\begin{center}
 % \includegraphics[width=0.95\textwidth]{figuras/diagrama_arquitetura.png}
 \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}[Diagrama de arquitetura — a inserir]\vspace{2cm}}}
-\caption{Diagrama de componentes do ecossistema digital}
+\captionof{figure}{Diagrama de componentes do ecossistema digital}
 \label{fig:arquitetura}
 \fonte{elaborado pelo autor}
-\end{figure}
+\end{center}
 
 O fluxo geral de comunicação segue o padrão: os clientes (\textit{frontend} Next.js e aplicativo React Native) realizam requisições HTTP à API REST exposta pelo NestJS. Os \textit{controllers} da camada de interface recebem as requisições e delegam a execução aos casos de uso (\textit{Use Cases}) da camada de aplicação. Os casos de uso, por sua vez, interagem com o domínio e acionam os \textit{adapters} de saída necessários — como repositórios TypeORM para acesso ao PostgreSQL ou adaptadores para serviços externos. Esse isolamento garante que alterações em tecnologias de infraestrutura não impactem o núcleo de regras de negócio.
+\end{novo}
 
 \subsubsection{Requisitos Funcionais e Não-Funcionais}
 
+\begin{novo}
 Os requisitos a seguir representam o levantamento inicial realizado com base no conhecimento prévio do contexto das entidades tradicionalistas e na parceria estabelecida com o CPF Pia do Sul. O refinamento e a validação definitiva dos requisitos ocorrerão na etapa inicial do TCC, por meio das técnicas de coleta de dados descritas na Seção~3.2.
 
 A priorização segue a técnica MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (importante, mas negociável), \textbf{Could} (desejável se houver capacidade) e \textbf{Won't} (fora do escopo deste trabalho).
 
 \textbf{Módulo: Gestão de Associados}
 
-\begin{table}[h]
-\centering
-\caption{Requisitos funcionais — Gestão de Associados}
+\begin{center}
+\captionof{table}{Requisitos funcionais — Gestão de Associados}
 \label{tab:rf-associados}
 \begin{tabular}{clc}
 \hline
@@ -273,13 +292,12 @@ RF04 & Registrar dependentes vinculados ao titular & Should \\
 \hline
 \end{tabular}
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
 
 \textbf{Módulo: Controle de Mensalidades}
 
-\begin{table}[h]
-\centering
-\caption{Requisitos funcionais — Controle de Mensalidades}
+\begin{center}
+\captionof{table}{Requisitos funcionais — Controle de Mensalidades}
 \label{tab:rf-mensalidades}
 \begin{tabular}{clc}
 \hline
@@ -292,13 +310,12 @@ RF08 & Emitir comprovante de pagamento & Should \\
 \hline
 \end{tabular}
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
 
 \textbf{Módulo: Gestão de Eventos e Reservas}
 
-\begin{table}[h]
-\centering
-\caption{Requisitos funcionais — Gestão de Eventos e Reservas}
+\begin{center}
+\captionof{table}{Requisitos funcionais — Gestão de Eventos e Reservas}
 \label{tab:rf-eventos}
 \begin{tabular}{clc}
 \hline
@@ -314,13 +331,12 @@ RF15 & Cancelar ou transferir reserva existente & Could \\
 \hline
 \end{tabular}
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
 
 \textbf{Requisitos Não-Funcionais}
 
-\begin{table}[h]
-\centering
-\caption{Requisitos não-funcionais}
+\begin{center}
+\captionof{table}{Requisitos não-funcionais}
 \label{tab:rnf}
 \begin{tabular}{clc}
 \hline
@@ -334,12 +350,14 @@ RNF05 & Tempo de resposta das operações principais inferior a 2 segundos & Sho
 \hline
 \end{tabular}
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
 
 Ressalta-se que os requisitos classificados como \textit{Won't} neste trabalho incluem a integração com sistemas institucionais do MTG (como o CIT), o processamento direto de dados financeiros sensíveis e funcionalidades voltadas a rodeios artísticos ou outros tipos de evento fora do escopo dos bailes e fandangos.
+\end{novo}
 
 \section{RESULTADOS PARCIAIS E ESPERADOS}
 
+\begin{novo}
 \subsection{RESULTADOS PARCIAIS}
 
 Como resultados parciais deste projeto, foram concluídas as seguintes etapas: levantamento bibliográfico sobre gestão de entidades tradicionalistas, organizações do terceiro setor, sistemas de informação e transformação digital; definição do escopo funcional do ecossistema digital entidade--associado; elaboração do conjunto inicial de requisitos funcionais e não-funcionais com priorização MoSCoW; definição da arquitetura do sistema (Hexagonal + \textit{Clean Architecture}) e da \textit{stack} tecnológica completa; e estabelecimento de parceria com o CPF Pia do Sul, em Santa Maria/RS, como campo de aplicação do estudo de caso.
@@ -376,14 +394,15 @@ O MVP do ecossistema digital entidade--associado contemplará as seguintes entre
 Espera-se que a aplicação do MVP no CPF Pia do Sul permita validar a adequação do sistema às rotinas administrativas da entidade, com avaliação conduzida por meio dos instrumentos descritos na Seção~3.4: SUS, entrevistas semiestruturadas, observação de cenários de uso e questionário. Os resultados da avaliação serão analisados de forma qualitativa, com triangulação entre os instrumentos, e reportados na monografia final do TCC.
 
 Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicação de um ecossistema digital em contextos culturais tradicionais, evidenciando que modernização administrativa e preservação das dinâmicas culturais podem coexistir de forma complementar.
+\end{novo}
 
+\begin{novo}
 \section{CRONOGRAMA DE ATIVIDADES}
 
 O cronograma a seguir apresenta o planejamento macro do desenvolvimento do TCC ao longo do segundo semestre de 2026, organizado como um \textit{roadmap} de entregas incrementais alinhado aos princípios de \textit{timeboxing} do DSDM. As atividades foram estruturadas de forma que as dependências críticas (levantamento de requisitos → modelagem → desenvolvimento) sejam respeitadas, e que a escrita da monografia ocorra em paralelo ao desenvolvimento.
 
-\begin{table}[h]
-\centering
-\caption{Cronograma de atividades — TCC 2026/2}
+\begin{center}
+\captionof{table}{Cronograma de atividades — TCC 2026/2}
 \label{tab:cronograma}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
@@ -405,9 +424,10 @@ Revisão final e entrega da monografia & & & & & \textbullet \\
 \end{tabular}%
 }
 \fonte{elaborado pelo autor}
-\end{table}
+\end{center}
 
 Os \textit{milestones} principais são: (1) conclusão do levantamento de requisitos e modelagem do banco de dados até o final de julho; (2) MVP funcional com os módulos de associados, mensalidades e eventos até o final de setembro; (3) avaliação com usuários concluída até o final de outubro; e (4) entrega da monografia em novembro de 2026, conforme calendário acadêmico da instituição.
+\end{novo}
 
 \section{REFERÊNCIAS BIBLIOGRÁFICAS}
 \bibliographystyle{plainnat}
