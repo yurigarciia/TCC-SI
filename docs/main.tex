@@ -1,0 +1,208 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[brazilian]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage[authoryear]{natbib}
+\setcitestyle{authoryear,open={(},close={)}}
+
+\geometry{margin=3cm}
+\onehalfspacing
+\setlength{\emergencystretch}{2em}
+
+\begin{document}
+
+% CAPA
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+    \begin{center}
+        \textbf{FACULDADE ANTÔNIO MENEGHETTI}\\
+        \textbf{SISTEMAS DE INFORMAÇÃO}\\
+        \textbf{PROJETO DO TRABALHO DE CONCLUSÃO DE CURSO}
+
+        \vfill
+
+        \textbf{DESENVOLVIMENTO E AVALIAÇÃO DE UM ECOSSISTEMA DIGITAL PARA GESTÃO DE ASSOCIADOS E EVENTOS EM ENTIDADES TRADICIONALISTAS GAÚCHAS}
+
+        \vfill
+
+        Yuri Garcia Baptista
+
+        \vfill
+
+        RESTINGA SECA -- RS\\
+        DEZEMBRO / 2025
+    \end{center}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+\section{INTRODUÇÃO}
+
+O Movimento Tradicionalista Gaúcho (MTG) configura-se como uma das mais expressivas manifestações culturais organizadas do Brasil, reunindo entidades tradicionalistas responsáveis pela preservação, transmissão e vivência cotidiana da identidade gaúcha \citep{mtg2023,uliana2019}. Essas entidades, distribuídas por praticamente todos os municípios do Rio Grande do Sul, atuam como espaços de convivência social, formação cultural e pertencimento, sustentadas por práticas que vão desde eventos sociais até atividades artísticas e educativas desenvolvidas por seus associados.
+
+No Rio Grande do Sul, o tradicionalismo apresenta uma expressiva dimensão organizacional e social. Estima-se que o Movimento Tradicionalista Gaúcho reúna aproximadamente 1.732 entidades tradicionalistas oficialmente filiadas no estado, além de mais de 1.200 entidades distribuídas fora do Rio Grande do Sul, evidenciando a amplitude territorial do movimento. Essas entidades são responsáveis pela realização de mais de 100 mil eventos ao ano, entre atividades sociais, artísticas e culturais, mobilizando milhões de participantes ao longo do calendário anual e contribuindo para uma movimentação econômica estimada em cerca de R\$ 1,5 bilhão por ano, considerando arrecadação direta das entidades, contratação de serviços e consumo de produtos ligados à cultura tradicionalista \citep{savaris2022}.
+
+No interior dessas organizações, os departamentos artísticos e grupos de dança assumem papel central, concentrando grande parte dos associados ativos, especialmente crianças, jovens e adultos envolvidos em invernadas artísticas, ensaios semanais, apresentações culturais e eventos internos e externos \citep{uliana2019,fabricio2019}. Paralelamente às atividades artísticas, as entidades mantêm uma intensa agenda social, com destaque para bailes e fandangos, que funcionam como espaços de integração entre associados, comunidade e tradição, além de representarem uma das principais fontes de sustentação financeira das entidades \citep{silvaalbarello2024}.
+
+A realização contínua dessas atividades exige uma estrutura administrativa capaz de gerenciar associados, mensalidades, eventos sociais, reservas de mesas, ingressos e a comunicação entre diretoria, departamentos e associados. No entanto, estudos recentes apontam que a gestão das entidades tradicionalistas ainda ocorre, em grande parte, de forma manual, descentralizada e pouco digitalizada, com forte dependência de planilhas, documentos físicos e comunicação informal \citep{jardim2022,silvaalbarello2024}. Esse modelo dificulta a organização das rotinas administrativas, gera retrabalho e limita o acesso dos associados às informações relacionadas à sua participação na entidade.
+
+A produção acadêmica existente tem abordado a gestão de Centros de Tradições Gaúchas sob diferentes perspectivas, discutindo temas como profissionalização administrativa, sustentabilidade organizacional, comprometimento dos membros e práticas de gestão no terceiro setor cultural \citep{uliana2019,martini2019,fabricio2019,silvaalbarello2024}. Também existem iniciativas pontuais de informatização aplicadas a contextos tradicionalistas específicos, evidenciando a necessidade de organização e centralização de informações \citep{jardim2022}. Contudo, esses estudos concentram-se predominantemente em análises organizacionais e administrativas, sem avançar para a implementação de soluções tecnológicas integradas que contemplem, de forma prática, o relacionamento entidade--associado e a gestão cotidiana de eventos sociais tradicionais.
+
+Observa-se, portanto, uma lacuna no estado da arte no que se refere ao desenvolvimento de um ecossistema digital próprio voltado às entidades tradicionalistas, capaz de integrar a gestão de associados, incluindo membros de departamentos artísticos, e a organização de eventos como bailes e fandangos, com funcionalidades adequadas à realidade cultural dessas organizações. Ressalta-se que este estudo não contempla integração técnica com estruturas institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT), cuja estrutura atual não disponibiliza interfaces públicas de integração, concentrando-se na autonomia administrativa das entidades e em soluções viáveis no âmbito organizacional.
+
+Dessa forma, o objeto de análise deste trabalho consiste no desenvolvimento e avaliação de um ecossistema digital entidade-associado, composto por uma plataforma \textit{web} destinada à gestão administrativa da entidade e um aplicativo \textit{mobile} voltado aos associados, considerando sua aplicação no contexto das entidades tradicionalistas gaúchas.
+
+O trabalho está estruturado da seguinte forma: após esta introdução, apresenta-se a justificativa da pesquisa, seguida da definição dos objetivos geral e específicos. Na sequência, é apresentado o referencial teórico que fundamenta os conceitos abordados, seguido da metodologia adotada e da apresentação dos resultados parciais e esperados. Por fim, são apresentados os resultados, as discussões e as considerações finais.
+
+\subsection{PROBLEMA DE PESQUISA}
+
+Diante do contexto apresentado, esta pesquisa busca responder à seguinte questão: Como um ecossistema digital integrado pode facilitar e qualificar a gestão de associados e eventos sociais em entidades tradicionalistas gaúchas, respeitando suas especificidades culturais e organizacionais?
+
+A formulação dessa questão orienta o desenvolvimento da solução proposta e delimita o escopo investigativo do trabalho, direcionando a análise para a viabilidade prática e os impactos organizacionais da aplicação do sistema no contexto estudado.
+
+\subsection{JUSTIFICATIVA}
+
+A presente pesquisa justifica-se pela relevância social, cultural e organizacional das entidades tradicionalistas gaúchas, que atuam como espaços de preservação da cultura regional e de convivência comunitária, envolvendo associados, departamentos artísticos e eventos sociais tradicionais, como bailes e fandangos \citep{uliana2019,savaris2022}. A continuidade dessas atividades depende diretamente da capacidade das entidades em organizar seus processos administrativos e financeiros, especialmente em contextos de gestão baseada em trabalho voluntário \citep{fabricio2019,silvaalbarello2024}.
+
+Além das motivações de ordem acadêmica e social, a pesquisa também possui uma motivação pessoal. Participo do movimento tradicionalista desde o nascimento, inserido em um contexto familiar diretamente envolvido com o tradicionalismo. Meu avô já exerceu o cargo de patrão de um Centro de Tradições Gaúchas e atualmente atua como Conselheiro do Movimento Tradicionalista Gaúcho pela 13ª Região Tradicionalista (13ª RT). Ao longo dessa trajetória, também participei do quadro de peões da 13ª RT e integrei invernadas artísticas em diferentes entidades tradicionalistas. Essa vivência contínua proporcionou contato direto com a realidade organizacional das entidades, seus desafios administrativos e suas dinâmicas internas, fortalecendo a motivação para desenvolver uma pesquisa aplicada que possa contribuir para o aprimoramento e a continuidade do movimento tradicionalista gaúcho.
+
+Estudos indicam que a gestão dessas entidades ainda ocorre, em grande parte, de forma manual e fragmentada, especialmente no que se refere ao cadastro de associados, controle de mensalidades e organização de eventos, com uso recorrente de planilhas, documentos físicos e comunicação informal \citep{jardim2022,silvaalbarello2024}. Além disso, a literatura aponta que boa parte dessas funções é desempenhada por gestores voluntários, o que tende a gerar sobrecarga administrativa e dificuldades na padronização e continuidade dos processos \citep{uliana2019,fabricio2019}.
+
+A aplicação desta pesquisa possui potencial para gerar impactos positivos na organização administrativa das entidades tradicionalistas, ao contribuir para a melhoria do controle de associados, mensalidades e eventos sociais. Em termos práticos, o estudo busca enfrentar pontos críticos recorrentes na literatura, como retrabalho administrativo, baixa rastreabilidade das informações e dependência de controles informais \citep{jardim2022,silvaalbarello2024}. A adoção de um ecossistema digital pode ampliar a transparência dos processos, facilitar o acesso dos associados às informações e reduzir a sobrecarga operacional dos gestores voluntários \citep{uliana2019,fabricio2019}. Espera-se, assim, que a solução proposta auxilie na qualificação das rotinas administrativas e no fortalecimento da relação entre entidade e associado, respeitando as dinâmicas culturais próprias dessas organizações.
+
+Dessa forma, a pesquisa se justifica ao propor o desenvolvimento de um ecossistema digital entidade-associado, contribuindo de maneira aplicada para a organização administrativa das entidades tradicionalistas e, ao mesmo tempo, ampliando a discussão acadêmica sobre o uso de sistemas digitais em organizações culturais tradicionais. A contribuição acadêmica esperada está na articulação entre transformação digital e especificidades de organizações culturais de base comunitária, com ênfase em um contexto ainda pouco explorado na literatura nacional \citep{vial2019,verhoef2021}.
+
+\subsection{Objetivos}
+
+O objetivo geral desta pesquisa é desenvolver e avaliar um ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
+
+Para alcançar esse objetivo, busca-se, de forma específica, identificar os requisitos essenciais relacionados à gestão de associados, mensalidades e eventos sociais nas entidades tradicionalistas; descrever a arquitetura e os principais componentes do ecossistema digital proposto, contemplando uma plataforma web destinada à administração da entidade e um aplicativo mobile voltado aos associados; implementar as funcionalidades básicas do sistema, incluindo o controle de associados, o gerenciamento de mensalidades e os processos de reserva e compra de ingressos e mesas; e, por fim, avaliar o funcionamento do ecossistema a partir de cenários de uso reais, quando possível, ou simulados, considerando aspectos organizacionais e de usabilidade.
+
+\section{REFERENCIAL TEÓRICO}
+
+\subsection{Entidades tradicionalistas e organizações do terceiro setor}
+
+As entidades tradicionalistas gaúchas, como Centros de Tradições Gaúchas (CTGs) e demais organizações vinculadas ao Movimento Tradicionalista Gaúcho, podem ser compreendidas como organizações associativas de natureza cultural e sem fins lucrativos. Embora possuam identidade regional própria, compartilham características típicas do terceiro setor, especialmente quanto à finalidade social, à gestão baseada em participação voluntária e à dependência de contribuições associativas e eventos para sua sustentabilidade \citep{uliana2019}.
+
+Estudos indicam que essas organizações enfrentam desafios relacionados à profissionalização da gestão, à sistematização de informações e ao controle administrativo, especialmente em contextos nos quais grande parte das atividades é desempenhada por dirigentes voluntários \citep{fabricio2019,silvaalbarello2024}. Compreender as entidades tradicionalistas sob essa perspectiva permite situar o problema investigado dentro de um campo mais amplo de estudos sobre organizações culturais e do terceiro setor, no qual questões de gestão e sustentabilidade são recorrentes.
+
+\subsection{GESTÃO ADMINISTRATIVA EM ENTIDADES CULTURAIS E ASSOCIATIVAS}
+
+A gestão administrativa em entidades culturais e associativas apresenta particularidades decorrentes de sua estrutura organizacional e de sua finalidade social. Diferentemente de organizações empresariais com fins lucrativos, essas entidades dependem majoritariamente de contribuições associativas, realização de eventos e trabalho voluntário para sua manutenção. Nesse contexto, a organização de informações relacionadas a associados, mensalidades e eventos torna-se elemento central para a sustentabilidade institucional \citep{martini2019}.
+
+Estudos voltados aos Centros de Tradições Gaúchas indicam que processos como cadastro de associados, controle financeiro e organização de eventos ainda são frequentemente realizados por meio de planilhas, documentos físicos e comunicação informal, o que pode gerar retrabalho, inconsistências e dificuldades na continuidade administrativa \citep{jardim2022,silvaalbarello2024}. Esses achados evidenciam que a qualificação da gestão administrativa constitui um desafio recorrente nesse tipo de organização, reforçando a necessidade de instrumentos que auxiliem na sistematização e integração dos processos internos.
+
+\subsection{SISTEMAS DE INFORMAÇÃO COMO SUPORTE À GESTÃO ORGANIZACIONAL}
+
+Sistemas de Informação podem ser compreendidos como conjuntos integrados de componentes responsáveis por coletar, processar, armazenar e disponibilizar informações com o objetivo de apoiar a tomada de decisão e a gestão organizacional. Em diferentes contextos institucionais, esses sistemas contribuem para a automação de processos, a redução de retrabalho e a melhoria na confiabilidade das informações utilizadas pela administração \citep{laudon2014,delone2003}.
+
+Além do suporte à tomada de decisão, sistemas de informação desempenham papel estratégico na padronização de processos e na redução da dependência de conhecimento tácito concentrado em indivíduos específicos. Em organizações com alta rotatividade de dirigentes voluntários, como é comum em entidades tradicionalistas, a formalização digital de procedimentos administrativos contribui para preservar a memória organizacional e garantir maior continuidade institucional. Assim, a adoção de um sistema estruturado não apenas automatiza rotinas, mas também consolida práticas administrativas, favorecendo estabilidade e previsibilidade na gestão \citep{delone2003,vial2019}.
+
+No âmbito das organizações do terceiro setor, a adoção de sistemas de informação apresenta potencial para estruturar rotinas administrativas, integrar dados dispersos e ampliar a transparência interna. A sistematização de informações relacionadas a associados, contribuições financeiras e eventos pode fortalecer a organização administrativa e oferecer maior previsibilidade e controle às entidades. Dessa forma, a aplicação de soluções digitais voltadas à gestão representa não apenas uma modernização tecnológica, mas um instrumento de suporte à sustentabilidade e à continuidade organizacional \citep{vial2019,verhoef2021}.
+
+\subsection{ECOSSISTEMAS DIGITAIS E PLATAFORMAS INTEGRADAS}
+
+O avanço das tecnologias digitais tem favorecido o desenvolvimento de plataformas integradas capazes de centralizar informações, automatizar processos e facilitar a interação entre organizações e seus públicos. Diferentemente de sistemas isolados, os ecossistemas digitais são estruturados para integrar múltiplas funcionalidades em um único ambiente, promovendo maior fluidez no fluxo de dados e melhor experiência para os usuários \citep{gawercusumano2014,jacobides2018}.
+
+No contexto de organizações associativas e culturais, a adoção de plataformas digitais integradas pode contribuir para fortalecer a relação entre entidade e associado, oferecendo acesso simplificado a informações, serviços e eventos. A integração entre gestão administrativa e interface do usuário, por meio de soluções web e mobile, possibilita maior autonomia aos associados e melhor controle organizacional, alinhando práticas tradicionais a recursos tecnológicos contemporâneos \citep{jacobides2018,verhoef2021}.
+
+\subsection{TRANSFORMAÇÃO DIGITAL EM ORGANIZAÇÕES CULTURAIS TRADICIONAIS}
+
+A transformação digital pode ser compreendida como o processo de incorporação estratégica de tecnologias digitais aos modelos organizacionais, com o objetivo de aprimorar processos, ampliar a eficiência administrativa e fortalecer a interação com seus públicos. Diferentemente da simples informatização de tarefas isoladas, a transformação digital implica reconfiguração de fluxos de trabalho, redefinição de rotinas e adaptação cultural das organizações às novas dinâmicas tecnológicas \citep{vial2019,verhoef2021}.
+
+Em organizações culturais tradicionais, como as entidades tradicionalistas gaúchas, esse processo apresenta desafios específicos. Tais entidades possuem forte identidade histórica e simbólica, sendo estruturadas a partir de práticas consolidadas ao longo do tempo. Nesse contexto, a introdução de soluções tecnológicas exige equilíbrio entre modernização administrativa e preservação das dinâmicas culturais que caracterizam o movimento \citep{hinings2018,warnerwager2019}.
+
+A literatura sobre transformação digital em organizações do terceiro setor aponta que a adoção de tecnologias pode contribuir para ampliar a transparência, melhorar a comunicação interna, reduzir custos operacionais e fortalecer o engajamento dos participantes. No entanto, destaca-se que a implementação deve considerar o grau de maturidade digital da organização, a familiaridade dos usuários com ferramentas tecnológicas e a adequação da solução à realidade institucional \citep{vial2019,hinings2018,verhoef2021}.
+
+Assim, ao propor um ecossistema digital entidade--associado, esta pesquisa insere-se na perspectiva de transformação digital aplicada a contextos culturais tradicionais, buscando demonstrar que inovação tecnológica e preservação identitária não são elementos excludentes, mas podem coexistir de forma complementar \citep{hinings2018,warnerwager2019}.
+
+\section{METODOLOGIA}
+
+Esta pesquisa caracteriza-se como aplicada, pois busca propor e implementar uma solução tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas, e como qualitativa, por envolver levantamento de requisitos e avaliação do uso do sistema a partir da percepção de usuários e gestores \citep{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adota-se uma combinação de pesquisa bibliográfica (para fundamentação teórica e identificação de trabalhos correlatos) e estudo de caso, considerando a aplicação do ecossistema digital em um CTG parceiro, utilizado como ambiente real de validação e coleta de informações \citep{yin2015}.
+
+\subsection{Delimitação do estudo e campo de aplicação}
+
+O estudo de caso será realizado no CPF Pia do Sul, localizado em Santa Maria/RS, vinculado à 13ª Região Tradicionalista (13ª RT). A pesquisa delimita-se ao contexto administrativo da entidade, com foco nos processos de cadastro de associados, controle de mensalidades e gestão de eventos sociais tradicionais (com ênfase em bailes e fandangos, incluindo reservas de mesas e ingressos), não contemplando integrações técnicas com sistemas institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
+
+No momento de elaboração deste pré-projeto, o CPF Pia do Sul encontra-se com elevada demanda operacional em razão do planejamento e da execução de um evento de grande porte, o que impossibilitou a realização, em tempo hábil, de uma reunião específica para aprofundamento do contexto administrativo da entidade antes da entrega deste documento. Ainda assim, a parceria institucional para realização do estudo de caso foi estabelecida, mantendo a viabilidade do campo de aplicação. Dessa forma, o detalhamento do fluxo administrativo atual, das dificuldades operacionais e das especificidades dos processos de gestão de associados, mensalidades e eventos será realizado na etapa inicial de execução do TCC, por meio das técnicas de coleta de dados previstas nesta metodologia. Tal encaminhamento é compatível com a natureza do pré-projeto, em que a delimitação do campo e do recorte metodológico antecede o aprofundamento empírico do estudo de caso \citep{gil2017,yin2015}.
+
+\subsection{Coleta de dados e instrumentos}
+
+A coleta de dados para levantamento de requisitos será realizada por meio de:
+\begin{itemize}[leftmargin=*]
+    \item entrevistas semiestruturadas com membros da diretoria e responsáveis administrativos;
+    \item análise documental de materiais utilizados na gestão atual (ex.: planilhas, fichas cadastrais, registros de mensalidades, modelos de reserva e controle de eventos);
+    \item observação do fluxo operacional de processos-chave (cadastro de associado, controle de mensalidade, reserva/compra de ingressos e mesas).
+\end{itemize}
+
+Esses instrumentos serão utilizados para identificar funcionalidades necessárias, regras de negócio e pontos de dor (retrabalho, inconsistência, falta de rastreabilidade e baixa transparência para o associado).
+
+Considera-se que o público atendido pelas entidades tradicionalistas é heterogêneo, incluindo associados com distintos níveis de familiaridade com tecnologias digitais, especialmente pessoas idosas. Assim, o levantamento de requisitos contemplará rotinas operacionais mediadas por atendentes ou membros da entidade (por exemplo, registro administrativo de reservas e pagamentos realizados presencialmente, com posterior validação e liberação no sistema). Essa diretriz visa assegurar acessibilidade, continuidade das práticas organizacionais e adoção gradual da solução, sem exclusão de perfis com menor maturidade digital.
+
+\subsection{Metodologia de desenvolvimento de software}
+
+O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), com foco em entregas frequentes, validação contínua com usuários e priorização de requisitos de maior valor para o contexto estudado \citep{dsm2014}. Nesse sentido, o MVP (Produto Mínimo Viável) do ecossistema digital entidade--associado contemplará, prioritariamente, as funcionalidades essenciais definidas nos objetivos do trabalho, como:
+
+\begin{itemize}[leftmargin=*]
+    \item cadastro e gestão de associados;
+    \item controle e acompanhamento de mensalidades;
+    \item reserva e compra de ingressos e mesas para bailes e fandangos;
+    \item acesso do associado às suas informações por meio de aplicativo \textit{mobile}.
+\end{itemize}
+
+As entregas serão organizadas em ciclos curtos, com validação periódica junto ao CTG parceiro, permitindo ajustes progressivos conforme feedback de uso e necessidades identificadas ao longo do desenvolvimento. Essa dinâmica busca assegurar aderência ao contexto organizacional da entidade, reduzir retrabalho e sustentar a evolução incremental da solução.
+
+\subsection{Procedimentos de avaliação e testes}
+
+A avaliação do ecossistema digital ocorrerá por meio de testes funcionais (para verificar se as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes do CTG parceiro. A avaliação de uso será conduzida com múltiplos instrumentos, incluindo: aplicação da escala \textit{System Usability Scale} (SUS), entrevistas semiestruturadas com gestores e usuários, observação de cenários de uso e registro de percepções em questionário breve \citep{brooke1996,gil2017}.
+
+Os cenários de uso contemplarão tarefas como cadastrar associado, registrar pagamento, reservar mesa e emitir ingresso, considerando critérios de facilidade de uso, clareza das informações, tempo percebido de execução e adequação às rotinas administrativas da entidade. Os resultados obtidos serão analisados de forma qualitativa, com triangulação entre os diferentes instrumentos, para verificar a viabilidade prática do sistema e seu potencial de contribuição para a organização administrativa e para a experiência do associado \citep{creswell2014,yin2015}.
+
+A avaliação também considerará a adequação do sistema a perfis com menor familiaridade digital, verificando a efetividade dos fluxos mediados pela entidade e a clareza das interfaces em situações de uso assistido e autônomo.
+
+\subsection{Arquitetura proposta do ecossistema digital}
+
+A arquitetura do ecossistema digital será organizada em dois clientes principais: uma plataforma \textit{web} voltada à administração da entidade e um aplicativo \textit{mobile} voltado aos associados, integrados por um \textit{backend} central responsável por expor uma API \textit{RESTful} e concentrar as regras de negócio. Essa organização visa separar claramente as responsabilidades entre interface, domínio e infraestrutura, favorecendo manutenção, evolução do sistema e padronização do desenvolvimento \citep{fielding2000,martin2017}.
+
+No \textit{backend}, será adotada uma abordagem baseada em Arquitetura Hexagonal (\textit{Ports and Adapters}), combinada com princípios da \textit{Clean Architecture}, de modo que o núcleo de regras de negócio permaneça independente de \textit{frameworks}, banco de dados e tecnologias de interface. Assim, a aplicação será estruturada com foco no domínio e nos casos de uso (\textit{Use Cases}), priorizando coesão, testabilidade e baixo acoplamento \citep{cockburn2005,martin2017}.
+
+De forma geral, a estrutura lógica do backend será composta por:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Camada de Aplicação (Use Cases):} responsável por orquestrar os fluxos do sistema, implementando casos de uso como cadastrar associado, registrar mensalidade, criar evento, reservar mesa e emitir ingresso. Nessa camada, as regras são aplicadas de forma controlada, garantindo consistência e rastreabilidade dos processos administrativos \citep{martin2017}.
+
+    \item \textbf{Camada de Domínio:} responsável por representar as entidades e regras centrais do negócio (por exemplo: Associado, Mensalidade, Evento, Reserva, Ingresso), bem como invariantes e validações que garantam integridade. Essa camada deve ser a mais estável do sistema, refletindo conceitos do contexto tradicionalista sem depender de detalhes tecnológicos \citep{martin2017}.
+
+    \item \textbf{Ports (Interfaces):} definição de contratos de entrada e saída do sistema. As portas de entrada representam como a aplicação é acionada (ex.: \textit{controllers} REST chamando \textit{Use Cases}), enquanto as portas de saída representam dependências externas necessárias aos casos de uso (ex.: repositórios de persistência, serviços de autenticação, geração de comprovantes) \citep{cockburn2005,martin2017}.
+
+    \item \textbf{Adapters (Implementações):} responsáveis por integrar tecnologias específicas ao sistema, implementando as portas definidas. Exemplos incluem adaptadores de persistência (banco de dados), controladores HTTP (\textit{endpoints} REST), autenticação/autorização e eventuais serviços auxiliares \citep{cockburn2005}.
+
+    \item \textbf{Serviços Externos:} considerando que o sistema poderá contemplar funcionalidades relacionadas à reserva e eventual comercialização de ingressos para eventos, prevê-se a possibilidade de integração com serviços externos de processamento de pagamentos. Nessa hipótese, a arquitetura proposta favorece a utilização de \textit{gateways} de pagamento terceirizados, de modo a garantir segurança transacional, conformidade com padrões de mercado e redução da complexidade técnica relacionada ao tratamento direto de dados financeiros sensíveis \citep{martin2017}.
+\end{itemize}
+
+Ressalta-se que a integração com provedores de pagamento, caso implementada no escopo do MVP, será realizada por meio de adaptadores específicos na camada de infraestrutura, mantendo o núcleo de regras de negócio independente da tecnologia escolhida \citep{cockburn2005,martin2017}.
+
+A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de \textit{endpoints} seguindo padrões REST (recursos e operações), possibilitando compatibilidade com múltiplos clientes (\textit{web} e \textit{mobile}) e facilitando testes e evoluções futuras \citep{fielding2000}. Também será adotado controle de acesso para diferenciar perfis de uso, como diretoria/administrador (rotinas administrativas) e associado (consulta e ações relacionadas a participação e eventos).
+
+Essa proposta arquitetural contribui para que o MVP seja desenvolvido de forma incremental e validado no CTG parceiro, mantendo uma base técnica sólida para expansão futura, sem comprometer a clareza do escopo do pré-projeto.
+
+\section{RESULTADOS PARCIAIS E ESPERADOS}
+
+Até o momento, como resultados parciais do pré-projeto, foram realizados o levantamento bibliográfico sobre gestão de entidades tradicionalistas e organizações do terceiro setor, bem como a definição do escopo funcional do ecossistema digital entidade--associado. Também foi estabelecida parceria com o CPF Pia do Sul, localizado em Santa Maria/RS e vinculado à 13ª Região Tradicionalista, que atuará como campo de aplicação do estudo de caso, possibilitando acesso às rotinas administrativas e aos processos relacionados à gestão de associados e eventos sociais.
+
+Como resultados esperados, pretende-se desenvolver um MVP (Produto Mínimo Viável) do ecossistema digital, contemplando as funcionalidades essenciais de cadastro e gestão de associados, controle de mensalidades, reserva e compra de ingressos e mesas para bailes e fandangos, bem como interface mobile para consulta de informações pelo associado.
+
+Espera-se que a aplicação do sistema no CPF Pia do Sul permita validar sua adequação às rotinas administrativas da entidade, identificar eventuais ajustes necessários e analisar sua contribuição para a organização interna e para a melhoria da experiência do associado.
+
+Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicação de sistemas de informação em contextos culturais tradicionais, evidenciando que a digitalização de processos administrativos pode coexistir com a preservação das dinâmicas culturais próprias das entidades tradicionalistas.
+
+\section{REFERÊNCIAS BIBLIOGRÁFICAS}
+\bibliographystyle{plainnat}
+\bibliography{referencias}
+
+\end{document}
