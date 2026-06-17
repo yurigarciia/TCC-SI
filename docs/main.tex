@@ -11,6 +11,10 @@
 \usepackage{microtype}
 \usepackage[authoryear]{natbib}
 \setcitestyle{authoryear,open={(},close={)}}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\newcommand{\fonte}[1]{\par\vspace{2pt}\footnotesize{Fonte: #1}}
 
 \geometry{margin=3cm}
 \onehalfspacing
@@ -78,15 +82,22 @@ A aplicação desta pesquisa possui potencial para gerar impactos positivos na o
 
 Dessa forma, a pesquisa se justifica ao propor o desenvolvimento de um ecossistema digital entidade-associado, contribuindo de maneira aplicada para a organização administrativa das entidades tradicionalistas e, ao mesmo tempo, ampliando a discussão acadêmica sobre o uso de sistemas digitais em organizações culturais tradicionais. A contribuição acadêmica esperada está na articulação entre transformação digital e especificidades de organizações culturais de base comunitária, com ênfase em um contexto ainda pouco explorado na literatura nacional \citep{vial2019,verhoef2021}.
 
-\subsection{Objetivos}
+\subsection{OBJETIVOS}
 
 O objetivo geral desta pesquisa é desenvolver e avaliar um ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
 
-Para alcançar esse objetivo, busca-se, de forma específica, identificar os requisitos essenciais relacionados à gestão de associados, mensalidades e eventos sociais nas entidades tradicionalistas; descrever a arquitetura e os principais componentes do ecossistema digital proposto, contemplando uma plataforma web destinada à administração da entidade e um aplicativo mobile voltado aos associados; implementar as funcionalidades básicas do sistema, incluindo o controle de associados, o gerenciamento de mensalidades e os processos de reserva e compra de ingressos e mesas; e, por fim, avaliar o funcionamento do ecossistema a partir de cenários de uso reais, quando possível, ou simulados, considerando aspectos organizacionais e de usabilidade.
+Para alcançar esse objetivo, definem-se os seguintes objetivos específicos:
+
+\begin{enumerate}[label=\alph*)]
+    \item identificar os requisitos essenciais relacionados à gestão de associados, mensalidades e eventos sociais nas entidades tradicionalistas;
+    \item descrever a arquitetura e os principais componentes do ecossistema digital proposto, contemplando uma plataforma \textit{web} destinada à administração da entidade e um aplicativo \textit{mobile} voltado aos associados;
+    \item implementar as funcionalidades básicas do sistema, incluindo o controle de associados, o gerenciamento de mensalidades e os processos de reserva e compra de ingressos e mesas;
+    \item avaliar o funcionamento do ecossistema a partir de cenários de uso reais, quando possível, ou simulados, considerando aspectos organizacionais e de usabilidade.
+\end{enumerate}
 
 \section{REFERENCIAL TEÓRICO}
 
-\subsection{Entidades tradicionalistas e organizações do terceiro setor}
+\subsection{ENTIDADES TRADICIONALISTAS E ORGANIZAÇÕES DO TERCEIRO SETOR}
 
 As entidades tradicionalistas gaúchas, como Centros de Tradições Gaúchas (CTGs) e demais organizações vinculadas ao Movimento Tradicionalista Gaúcho, podem ser compreendidas como organizações associativas de natureza cultural e sem fins lucrativos. Embora possuam identidade regional própria, compartilham características típicas do terceiro setor, especialmente quanto à finalidade social, à gestão baseada em participação voluntária e à dependência de contribuições associativas e eventos para sua sustentabilidade \citep{uliana2019}.
 
@@ -126,13 +137,13 @@ Assim, ao propor um ecossistema digital entidade--associado, esta pesquisa inser
 
 Esta pesquisa caracteriza-se como aplicada, pois busca propor e implementar uma solução tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas, e como qualitativa, por envolver levantamento de requisitos e avaliação do uso do sistema a partir da percepção de usuários e gestores \citep{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adota-se uma combinação de pesquisa bibliográfica (para fundamentação teórica e identificação de trabalhos correlatos) e estudo de caso, considerando a aplicação do ecossistema digital em um CTG parceiro, utilizado como ambiente real de validação e coleta de informações \citep{yin2015}.
 
-\subsection{Delimitação do estudo e campo de aplicação}
+\subsection{DELIMITAÇÃO DO ESTUDO E CAMPO DE APLICAÇÃO}
 
 O estudo de caso será realizado no CPF Pia do Sul, localizado em Santa Maria/RS, vinculado à 13ª Região Tradicionalista (13ª RT). A pesquisa delimita-se ao contexto administrativo da entidade, com foco nos processos de cadastro de associados, controle de mensalidades e gestão de eventos sociais tradicionais (com ênfase em bailes e fandangos, incluindo reservas de mesas e ingressos), não contemplando integrações técnicas com sistemas institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
 
 No momento de elaboração deste pré-projeto, o CPF Pia do Sul encontra-se com elevada demanda operacional em razão do planejamento e da execução de um evento de grande porte, o que impossibilitou a realização, em tempo hábil, de uma reunião específica para aprofundamento do contexto administrativo da entidade antes da entrega deste documento. Ainda assim, a parceria institucional para realização do estudo de caso foi estabelecida, mantendo a viabilidade do campo de aplicação. Dessa forma, o detalhamento do fluxo administrativo atual, das dificuldades operacionais e das especificidades dos processos de gestão de associados, mensalidades e eventos será realizado na etapa inicial de execução do TCC, por meio das técnicas de coleta de dados previstas nesta metodologia. Tal encaminhamento é compatível com a natureza do pré-projeto, em que a delimitação do campo e do recorte metodológico antecede o aprofundamento empírico do estudo de caso \citep{gil2017,yin2015}.
 
-\subsection{Coleta de dados e instrumentos}
+\subsection{COLETA DE DADOS E INSTRUMENTOS}
 
 A coleta de dados para levantamento de requisitos será realizada por meio de:
 \begin{itemize}[leftmargin=*]
@@ -145,9 +156,11 @@ Esses instrumentos serão utilizados para identificar funcionalidades necessári
 
 Considera-se que o público atendido pelas entidades tradicionalistas é heterogêneo, incluindo associados com distintos níveis de familiaridade com tecnologias digitais, especialmente pessoas idosas. Assim, o levantamento de requisitos contemplará rotinas operacionais mediadas por atendentes ou membros da entidade (por exemplo, registro administrativo de reservas e pagamentos realizados presencialmente, com posterior validação e liberação no sistema). Essa diretriz visa assegurar acessibilidade, continuidade das práticas organizacionais e adoção gradual da solução, sem exclusão de perfis com menor maturidade digital.
 
-\subsection{Metodologia de desenvolvimento de software}
+\subsection{METODOLOGIA DE DESENVOLVIMENTO DE SOFTWARE}
 
-O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), com foco em entregas frequentes, validação contínua com usuários e priorização de requisitos de maior valor para o contexto estudado \citep{dsm2014}. Nesse sentido, o MVP (Produto Mínimo Viável) do ecossistema digital entidade--associado contemplará, prioritariamente, as funcionalidades essenciais definidas nos objetivos do trabalho, como:
+O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), método ágil originalmente concebido para projetos nos quais o prazo de entrega é fixo e o escopo é variável \citep{stapleton1997,dsm2014}. Diferentemente do Scrum, que organiza o desenvolvimento em sprints de duração fixa com escopo negociável a cada ciclo, o DSDM parte do pressuposto de que há uma data de entrega não negociável — o que se alinha diretamente à estrutura do TCC, com defesa prevista para o final do semestre. O método orienta a priorização de requisitos por meio da técnica MoSCoW (\textit{Must have}, \textit{Should have}, \textit{Could have}, \textit{Won't have}), garantindo que as funcionalidades essenciais sejam entregues dentro do prazo, sem comprometer a qualidade do núcleo do sistema \citep{dsm2014}.
+
+Nesse sentido, o MVP (Produto Mínimo Viável) do ecossistema digital entidade--associado contemplará, prioritariamente, as funcionalidades classificadas como \textit{Must have} na seção de requisitos deste documento, como:
 
 \begin{itemize}[leftmargin=*]
     \item cadastro e gestão de associados;
@@ -158,7 +171,7 @@ O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelo
 
 As entregas serão organizadas em ciclos curtos, com validação periódica junto ao CTG parceiro, permitindo ajustes progressivos conforme feedback de uso e necessidades identificadas ao longo do desenvolvimento. Essa dinâmica busca assegurar aderência ao contexto organizacional da entidade, reduzir retrabalho e sustentar a evolução incremental da solução.
 
-\subsection{Procedimentos de avaliação e testes}
+\subsection{PROCEDIMENTOS DE AVALIAÇÃO E TESTES}
 
 A avaliação do ecossistema digital ocorrerá por meio de testes funcionais (para verificar se as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes do CTG parceiro. A avaliação de uso será conduzida com múltiplos instrumentos, incluindo: aplicação da escala \textit{System Usability Scale} (SUS), entrevistas semiestruturadas com gestores e usuários, observação de cenários de uso e registro de percepções em questionário breve \citep{brooke1996,gil2017}.
 
@@ -166,40 +179,235 @@ Os cenários de uso contemplarão tarefas como cadastrar associado, registrar pa
 
 A avaliação também considerará a adequação do sistema a perfis com menor familiaridade digital, verificando a efetividade dos fluxos mediados pela entidade e a clareza das interfaces em situações de uso assistido e autônomo.
 
-\subsection{Arquitetura proposta do ecossistema digital}
+\subsection{ARQUITETURA PROPOSTA DO ECOSSISTEMA DIGITAL}
 
 A arquitetura do ecossistema digital será organizada em dois clientes principais: uma plataforma \textit{web} voltada à administração da entidade e um aplicativo \textit{mobile} voltado aos associados, integrados por um \textit{backend} central responsável por expor uma API \textit{RESTful} e concentrar as regras de negócio. Essa organização visa separar claramente as responsabilidades entre interface, domínio e infraestrutura, favorecendo manutenção, evolução do sistema e padronização do desenvolvimento \citep{fielding2000,martin2017}.
 
 No \textit{backend}, será adotada uma abordagem baseada em Arquitetura Hexagonal (\textit{Ports and Adapters}), combinada com princípios da \textit{Clean Architecture}, de modo que o núcleo de regras de negócio permaneça independente de \textit{frameworks}, banco de dados e tecnologias de interface. Assim, a aplicação será estruturada com foco no domínio e nos casos de uso (\textit{Use Cases}), priorizando coesão, testabilidade e baixo acoplamento \citep{cockburn2005,martin2017}.
 
-De forma geral, a estrutura lógica do backend será composta por:
+De forma geral, a estrutura lógica do \textit{backend} será composta por:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Camada de Aplicação (Use Cases):} responsável por orquestrar os fluxos do sistema, implementando casos de uso como cadastrar associado, registrar mensalidade, criar evento, reservar mesa e emitir ingresso. Nessa camada, as regras são aplicadas de forma controlada, garantindo consistência e rastreabilidade dos processos administrativos \citep{martin2017}.
+    \item \textbf{Camada de Aplicação (Use Cases):} responsável por orquestrar os fluxos do sistema, implementando casos de uso como cadastrar associado, registrar mensalidade, criar evento, reservar mesa e emitir ingresso \citep{martin2017}.
 
-    \item \textbf{Camada de Domínio:} responsável por representar as entidades e regras centrais do negócio (por exemplo: Associado, Mensalidade, Evento, Reserva, Ingresso), bem como invariantes e validações que garantam integridade. Essa camada deve ser a mais estável do sistema, refletindo conceitos do contexto tradicionalista sem depender de detalhes tecnológicos \citep{martin2017}.
+    \item \textbf{Camada de Domínio:} responsável por representar as entidades e regras centrais do negócio (por exemplo: Associado, Mensalidade, Evento, Reserva, Ingresso), bem como invariantes e validações que garantam integridade, sem depender de detalhes tecnológicos \citep{martin2017}.
 
-    \item \textbf{Ports (Interfaces):} definição de contratos de entrada e saída do sistema. As portas de entrada representam como a aplicação é acionada (ex.: \textit{controllers} REST chamando \textit{Use Cases}), enquanto as portas de saída representam dependências externas necessárias aos casos de uso (ex.: repositórios de persistência, serviços de autenticação, geração de comprovantes) \citep{cockburn2005,martin2017}.
+    \item \textbf{Ports (Interfaces):} contratos de entrada e saída do sistema. As portas de entrada representam como a aplicação é acionada (ex.: \textit{controllers} REST chamando \textit{Use Cases}), enquanto as portas de saída representam dependências externas (ex.: repositórios, serviços de autenticação) \citep{cockburn2005,martin2017}.
 
-    \item \textbf{Adapters (Implementações):} responsáveis por integrar tecnologias específicas ao sistema, implementando as portas definidas. Exemplos incluem adaptadores de persistência (banco de dados), controladores HTTP (\textit{endpoints} REST), autenticação/autorização e eventuais serviços auxiliares \citep{cockburn2005}.
+    \item \textbf{Adapters (Implementações):} responsáveis por integrar tecnologias específicas ao sistema, como adaptadores de persistência, controladores HTTP e serviços de autenticação \citep{cockburn2005}.
 
-    \item \textbf{Serviços Externos:} considerando que o sistema poderá contemplar funcionalidades relacionadas à reserva e eventual comercialização de ingressos para eventos, prevê-se a possibilidade de integração com serviços externos de processamento de pagamentos. Nessa hipótese, a arquitetura proposta favorece a utilização de \textit{gateways} de pagamento terceirizados, de modo a garantir segurança transacional, conformidade com padrões de mercado e redução da complexidade técnica relacionada ao tratamento direto de dados financeiros sensíveis \citep{martin2017}.
+    \item \textbf{Serviços Externos:} a arquitetura prevê integração com \textit{gateways} de pagamento terceirizados para funcionalidades de comercialização de ingressos, mantendo o núcleo de domínio independente do provedor escolhido \citep{martin2017}.
 \end{itemize}
 
-Ressalta-se que a integração com provedores de pagamento, caso implementada no escopo do MVP, será realizada por meio de adaptadores específicos na camada de infraestrutura, mantendo o núcleo de regras de negócio independente da tecnologia escolhida \citep{cockburn2005,martin2017}.
+A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de \textit{endpoints} REST, possibilitando compatibilidade com múltiplos clientes e facilitando testes e evoluções futuras \citep{fielding2000}. Será adotado controle de acesso baseado em perfis: administrador (rotinas administrativas) e associado (consulta e reservas).
 
-A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de \textit{endpoints} seguindo padrões REST (recursos e operações), possibilitando compatibilidade com múltiplos clientes (\textit{web} e \textit{mobile}) e facilitando testes e evoluções futuras \citep{fielding2000}. Também será adotado controle de acesso para diferenciar perfis de uso, como diretoria/administrador (rotinas administrativas) e associado (consulta e ações relacionadas a participação e eventos).
+\subsubsection{Stack Tecnológica}
 
-Essa proposta arquitetural contribui para que o MVP seja desenvolvido de forma incremental e validado no CTG parceiro, mantendo uma base técnica sólida para expansão futura, sem comprometer a clareza do escopo do pré-projeto.
+A implementação do ecossistema utilizará TypeScript como linguagem unificada em todas as camadas da aplicação. A adoção de uma linguagem comum entre \textit{backend}, \textit{frontend} e \textit{mobile} reduz o custo de troca de contexto no desenvolvimento, permite o compartilhamento de tipos e contratos entre camadas e favorece a consistência das interfaces da API \citep{bierman2014}.
+
+O \textit{backend} será desenvolvido com \textbf{NestJS}, \textit{framework} Node.js que adota por padrão uma arquitetura modular baseada em injeção de dependências, alinhando-se diretamente à proposta de Arquitetura Hexagonal e \textit{Clean Architecture} descrita neste trabalho \citep{nestjs2023}. O NestJS organiza a aplicação em módulos coesos com separação clara entre controladores, serviços e provedores, o que favorece a testabilidade e a manutenção incremental previstas no DSDM.
+
+Para a persistência de dados, será utilizado \textbf{PostgreSQL} como sistema gerenciador de banco de dados relacional, em razão de sua maturidade, conformidade com padrões SQL, suporte a transações ACID e adequação ao domínio associativo com relacionamentos complexos entre entidades. O acesso ao banco será intermediado pelo \textbf{TypeORM}, ORM com integração nativa ao NestJS que oferece suporte a \textit{migrations} versionadas, mapeamento de entidades via decoradores TypeScript e controle explícito de relacionamentos \citep{typeorm2023}.
+
+O \textit{frontend} administrativo será desenvolvido com \textbf{Next.js}, \textit{framework} React que oferece renderização híbrida (SSR/SSG), roteamento baseado em sistema de arquivos e otimizações de desempenho nativas \citep{nextjs2023}. Para o gerenciamento de estado e cache de dados remotos, será utilizado \textbf{React Query} (\textit{TanStack Query}), que abstrai o ciclo de vida de requisições assíncronas e reduz a necessidade de gerenciamento manual de estado global. A estilização seguirá \textbf{Tailwind CSS} combinado com \textbf{shadcn/ui}, biblioteca de componentes acessíveis e customizáveis construída sobre Radix UI.
+
+O aplicativo \textit{mobile} será desenvolvido com \textbf{React Native} e \textbf{Expo}, solução multiplataforma que possibilita a entrega simultânea para Android e iOS a partir de uma única base de código TypeScript \citep{expo2023}. A escolha do React Native, em conjunto com Next.js no \textit{frontend} web, permite o reuso de lógica de negócio e de tipos definidos no \textit{backend}, mantendo coerência entre as interfaces do ecossistema.
+
+A Tabela~\ref{tab:stack} resume as tecnologias adotadas por camada.
+
+\begin{table}[h]
+\centering
+\caption{Stack tecnológica do ecossistema digital}
+\label{tab:stack}
+\begin{tabular}{lll}
+\hline
+\textbf{Camada} & \textbf{Tecnologia} & \textbf{Função} \\
+\hline
+Backend & NestJS (Node.js + TypeScript) & API REST, regras de negócio \\
+Frontend Web & Next.js (TypeScript) & Painel administrativo \\
+Estilização & Tailwind CSS + shadcn/ui & Interface e componentes \\
+Cache/Estado & React Query & Gerenciamento de dados remotos \\
+Mobile & React Native + Expo (TypeScript) & Aplicativo do associado \\
+Banco de Dados & PostgreSQL & Persistência relacional \\
+ORM & TypeORM & Mapeamento objeto-relacional \\
+Autenticação & JWT + RBAC & Controle de acesso por perfil \\
+\hline
+\end{tabular}
+\fonte{elaborado pelo autor}
+\end{table}
+
+\subsubsection{Diagrama de Arquitetura}
+
+A Figura~\ref{fig:arquitetura} apresenta o diagrama de componentes do ecossistema digital, ilustrando o fluxo de comunicação entre os clientes (\textit{web} e \textit{mobile}), a API central e as camadas internas do \textit{backend}.
+
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.95\textwidth]{figuras/diagrama_arquitetura.png}
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}[Diagrama de arquitetura — a inserir]\vspace{2cm}}}
+\caption{Diagrama de componentes do ecossistema digital}
+\label{fig:arquitetura}
+\fonte{elaborado pelo autor}
+\end{figure}
+
+O fluxo geral de comunicação segue o padrão: os clientes (\textit{frontend} Next.js e aplicativo React Native) realizam requisições HTTP à API REST exposta pelo NestJS. Os \textit{controllers} da camada de interface recebem as requisições e delegam a execução aos casos de uso (\textit{Use Cases}) da camada de aplicação. Os casos de uso, por sua vez, interagem com o domínio e acionam os \textit{adapters} de saída necessários — como repositórios TypeORM para acesso ao PostgreSQL ou adaptadores para serviços externos. Esse isolamento garante que alterações em tecnologias de infraestrutura não impactem o núcleo de regras de negócio.
+
+\subsubsection{Requisitos Funcionais e Não-Funcionais}
+
+Os requisitos a seguir representam o levantamento inicial realizado com base no conhecimento prévio do contexto das entidades tradicionalistas e na parceria estabelecida com o CPF Pia do Sul. O refinamento e a validação definitiva dos requisitos ocorrerão na etapa inicial do TCC, por meio das técnicas de coleta de dados descritas na Seção~3.2.
+
+A priorização segue a técnica MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (importante, mas negociável), \textbf{Could} (desejável se houver capacidade) e \textbf{Won't} (fora do escopo deste trabalho).
+
+\textbf{Módulo: Gestão de Associados}
+
+\begin{table}[h]
+\centering
+\caption{Requisitos funcionais — Gestão de Associados}
+\label{tab:rf-associados}
+\begin{tabular}{clc}
+\hline
+\textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+\hline
+RF01 & Cadastrar associado com dados pessoais e vínculo à entidade & Must \\
+RF02 & Consultar e editar dados de associado & Must \\
+RF03 & Controlar status do associado (ativo, inativo, suspenso) & Must \\
+RF04 & Registrar dependentes vinculados ao titular & Should \\
+\hline
+\end{tabular}
+\fonte{elaborado pelo autor}
+\end{table}
+
+\textbf{Módulo: Controle de Mensalidades}
+
+\begin{table}[h]
+\centering
+\caption{Requisitos funcionais — Controle de Mensalidades}
+\label{tab:rf-mensalidades}
+\begin{tabular}{clc}
+\hline
+\textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+\hline
+RF05 & Registrar pagamento de mensalidade por associado & Must \\
+RF06 & Visualizar histórico de pagamentos por associado & Must \\
+RF07 & Gerar relatório de inadimplência & Should \\
+RF08 & Emitir comprovante de pagamento & Should \\
+\hline
+\end{tabular}
+\fonte{elaborado pelo autor}
+\end{table}
+
+\textbf{Módulo: Gestão de Eventos e Reservas}
+
+\begin{table}[h]
+\centering
+\caption{Requisitos funcionais — Gestão de Eventos e Reservas}
+\label{tab:rf-eventos}
+\begin{tabular}{clc}
+\hline
+\textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+\hline
+RF09 & Cadastrar evento (baile/fandango) com data, local e capacidade & Must \\
+RF10 & Definir configuração de mesas e ingressos por evento & Must \\
+RF11 & Registrar reserva de mesa (fluxo administrativo mediado) & Must \\
+RF12 & Registrar compra/retirada de ingresso & Must \\
+RF13 & Associado consultar suas reservas pelo aplicativo \textit{mobile} & Must \\
+RF14 & Consultar disponibilidade de mesas em tempo real & Should \\
+RF15 & Cancelar ou transferir reserva existente & Could \\
+\hline
+\end{tabular}
+\fonte{elaborado pelo autor}
+\end{table}
+
+\textbf{Requisitos Não-Funcionais}
+
+\begin{table}[h]
+\centering
+\caption{Requisitos não-funcionais}
+\label{tab:rnf}
+\begin{tabular}{clc}
+\hline
+\textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+\hline
+RNF01 & Suporte a fluxos mediados pela entidade (registro em nome do associado) & Must \\
+RNF02 & Autenticação com controle de perfis (administrador / associado) & Must \\
+RNF03 & Aplicativo \textit{mobile} compatível com Android e iOS via Expo & Must \\
+RNF04 & API documentada via Swagger (integrado ao NestJS) & Should \\
+RNF05 & Tempo de resposta das operações principais inferior a 2 segundos & Should \\
+\hline
+\end{tabular}
+\fonte{elaborado pelo autor}
+\end{table}
+
+Ressalta-se que os requisitos classificados como \textit{Won't} neste trabalho incluem a integração com sistemas institucionais do MTG (como o CIT), o processamento direto de dados financeiros sensíveis e funcionalidades voltadas a rodeios artísticos ou outros tipos de evento fora do escopo dos bailes e fandangos.
 
 \section{RESULTADOS PARCIAIS E ESPERADOS}
 
-Até o momento, como resultados parciais do pré-projeto, foram realizados o levantamento bibliográfico sobre gestão de entidades tradicionalistas e organizações do terceiro setor, bem como a definição do escopo funcional do ecossistema digital entidade--associado. Também foi estabelecida parceria com o CPF Pia do Sul, localizado em Santa Maria/RS e vinculado à 13ª Região Tradicionalista, que atuará como campo de aplicação do estudo de caso, possibilitando acesso às rotinas administrativas e aos processos relacionados à gestão de associados e eventos sociais.
+\subsection{RESULTADOS PARCIAIS}
 
-Como resultados esperados, pretende-se desenvolver um MVP (Produto Mínimo Viável) do ecossistema digital, contemplando as funcionalidades essenciais de cadastro e gestão de associados, controle de mensalidades, reserva e compra de ingressos e mesas para bailes e fandangos, bem como interface mobile para consulta de informações pelo associado.
+Como resultados parciais deste projeto, foram concluídas as seguintes etapas: levantamento bibliográfico sobre gestão de entidades tradicionalistas, organizações do terceiro setor, sistemas de informação e transformação digital; definição do escopo funcional do ecossistema digital entidade--associado; elaboração do conjunto inicial de requisitos funcionais e não-funcionais com priorização MoSCoW; definição da arquitetura do sistema (Hexagonal + \textit{Clean Architecture}) e da \textit{stack} tecnológica completa; e estabelecimento de parceria com o CPF Pia do Sul, em Santa Maria/RS, como campo de aplicação do estudo de caso.
 
-Espera-se que a aplicação do sistema no CPF Pia do Sul permita validar sua adequação às rotinas administrativas da entidade, identificar eventuais ajustes necessários e analisar sua contribuição para a organização interna e para a melhoria da experiência do associado.
+Em termos concretos, a entrega parcial deste projeto compreende a arquitetura definida, a \textit{stack} tecnológica especificada, os requisitos levantados e o planejamento estruturado do desenvolvimento. Não há código em execução nesta etapa, o que é compatível com a natureza de um projeto de TCC — fase anterior ao desenvolvimento propriamente dito.
 
-Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicação de sistemas de informação em contextos culturais tradicionais, evidenciando que a digitalização de processos administrativos pode coexistir com a preservação das dinâmicas culturais próprias das entidades tradicionalistas.
+\subsection{RESULTADOS ESPERADOS}
+
+O MVP do ecossistema digital entidade--associado contemplará as seguintes entregas funcionais:
+
+\textbf{Painel web administrativo (Next.js):}
+\begin{itemize}[leftmargin=*]
+    \item tela de autenticação com controle de perfis (administrador / associado);
+    \item módulo de associados: listagem, cadastro, edição e controle de status;
+    \item módulo de mensalidades: lançamento de pagamentos, histórico por associado e relatório de inadimplência;
+    \item módulo de eventos: cadastro de bailes e fandangos, configuração de mesas e ingressos;
+    \item módulo de reservas: registro e acompanhamento de reservas de mesas (fluxo administrativo mediado).
+\end{itemize}
+
+\textbf{Aplicativo mobile do associado (React Native + Expo):}
+\begin{itemize}[leftmargin=*]
+    \item tela de autenticação;
+    \item visualização de dados cadastrais e situação de mensalidades;
+    \item consulta de eventos disponíveis e reservas realizadas.
+\end{itemize}
+
+\textbf{Backend (NestJS + PostgreSQL + TypeORM):}
+\begin{itemize}[leftmargin=*]
+    \item API REST documentada via Swagger, com autenticação JWT e controle de acesso por perfil;
+    \item implementação dos casos de uso correspondentes aos módulos listados acima;
+    \item banco de dados relacional PostgreSQL com \textit{migrations} versionadas via TypeORM.
+\end{itemize}
+
+Espera-se que a aplicação do MVP no CPF Pia do Sul permita validar a adequação do sistema às rotinas administrativas da entidade, com avaliação conduzida por meio dos instrumentos descritos na Seção~3.4: SUS, entrevistas semiestruturadas, observação de cenários de uso e questionário. Os resultados da avaliação serão analisados de forma qualitativa, com triangulação entre os instrumentos, e reportados na monografia final do TCC.
+
+Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicação de um ecossistema digital em contextos culturais tradicionais, evidenciando que modernização administrativa e preservação das dinâmicas culturais podem coexistir de forma complementar.
+
+\section{CRONOGRAMA DE ATIVIDADES}
+
+O cronograma a seguir apresenta o planejamento macro do desenvolvimento do TCC ao longo do segundo semestre de 2026, organizado como um \textit{roadmap} de entregas incrementais alinhado aos princípios de \textit{timeboxing} do DSDM. As atividades foram estruturadas de forma que as dependências críticas (levantamento de requisitos → modelagem → desenvolvimento) sejam respeitadas, e que a escrita da monografia ocorra em paralelo ao desenvolvimento.
+
+\begin{table}[h]
+\centering
+\caption{Cronograma de atividades — TCC 2026/2}
+\label{tab:cronograma}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Atividade} & \textbf{Jul} & \textbf{Ago} & \textbf{Set} & \textbf{Out} & \textbf{Nov} \\
+\hline
+Reunião de levantamento de requisitos (CPF Pia do Sul) & \textbullet & & & & \\
+Modelagem definitiva do banco de dados & \textbullet & & & & \\
+Setup do ambiente (repositório, infra, CI) & \textbullet & & & & \\
+Desenvolvimento: módulo Associados + Mensalidades & \textbullet & \textbullet & & & \\
+Desenvolvimento: módulo Eventos + Reservas + Ingressos & & \textbullet & \textbullet & & \\
+Desenvolvimento: aplicativo \textit{mobile} do associado & & & \textbullet & & \\
+Integração e testes funcionais internos & & & \textbullet & \textbullet & \\
+Avaliação com usuários no CPF Pia do Sul (SUS + entrevistas) & & & & \textbullet & \\
+Análise dos resultados e ajustes finais & & & & \textbullet & \\
+Escrita da monografia (paralela ao desenvolvimento) & \textbullet & \textbullet & \textbullet & \textbullet & \textbullet \\
+Revisão final e entrega da monografia & & & & & \textbullet \\
+\hline
+\end{tabular}%
+}
+\fonte{elaborado pelo autor}
+\end{table}
+
+Os \textit{milestones} principais são: (1) conclusão do levantamento de requisitos e modelagem do banco de dados até o final de julho; (2) MVP funcional com os módulos de associados, mensalidades e eventos até o final de setembro; (3) avaliação com usuários concluída até o final de outubro; e (4) entrega da monografia em novembro de 2026, conforme calendário acadêmico da instituição.
 
 \section{REFERÊNCIAS BIBLIOGRÁFICAS}
 \bibliographystyle{plainnat}
