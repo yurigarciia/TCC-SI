@@ -14,6 +14,8 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
 \usepackage{mdframed}
 \usepackage{xcolor}
 \newcommand{\fonte}[1]{\par\vspace{2pt}\footnotesize{Fonte: #1}}
@@ -174,7 +176,7 @@ Considera-se que o público atendido pelas entidades tradicionalistas é heterog
 \subsection{METODOLOGIA DE DESENVOLVIMENTO DE SOFTWARE}
 
 \begin{novo}
-O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), método ágil originalmente concebido para projetos nos quais o prazo de entrega é fixo e o escopo é variável \citep{stapleton1997,dsm2014}. Diferentemente do Scrum, que organiza o desenvolvimento em sprints de duração fixa com escopo negociável a cada ciclo, o DSDM parte do pressuposto de que há uma data de entrega não negociável — o que se alinha diretamente à estrutura do TCC, com defesa prevista para o final do semestre. O método orienta a priorização de requisitos por meio da técnica MoSCoW (\textit{Must have}, \textit{Should have}, \textit{Could have}, \textit{Won't have}), garantindo que as funcionalidades essenciais sejam entregues dentro do prazo, sem comprometer a qualidade do núcleo do sistema \citep{dsm2014}.
+O desenvolvimento seguirá uma abordagem iterativa e incremental, orientada pelos princípios do DSDM (\textit{Dynamic Systems Development Method}), método ágil originalmente concebido para projetos nos quais o prazo de entrega é fixo e o escopo é variável \citep{stapleton1997,dsm2014}. Diferentemente do Scrum, que organiza o desenvolvimento em sprints de duração fixa com escopo negociável a cada ciclo, o DSDM parte do pressuposto de que há uma data de entrega não negociável: o que se alinha diretamente à estrutura do TCC, com defesa prevista para o final do semestre. O método orienta a priorização de requisitos por meio da técnica MoSCoW (\textit{Must have}, \textit{Should have}, \textit{Could have}, \textit{Won't have}), garantindo que as funcionalidades essenciais sejam entregues dentro do prazo, sem comprometer a qualidade do núcleo do sistema \citep{dsm2014}.
 \end{novo}
 
 Nesse sentido, o MVP (Produto Mínimo Viável) do ecossistema digital entidade--associado contemplará, prioritariamente, as funcionalidades classificadas como \textit{Must have} na seção de requisitos deste documento, como:
@@ -257,16 +259,60 @@ Autenticação & JWT + RBAC & Controle de acesso por perfil \\
 
 \begin{novo}
 A Figura~\ref{fig:arquitetura} apresenta o diagrama de componentes do ecossistema digital, ilustrando o fluxo de comunicação entre os clientes (\textit{web} e \textit{mobile}), a API central e as camadas internas do \textit{backend}.
+\end{novo}
 
-\begin{center}
-% \includegraphics[width=0.95\textwidth]{figuras/diagrama_arquitetura.png}
-\fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}[Diagrama de arquitetura — a inserir]\vspace{2cm}}}
-\captionof{figure}{Diagrama de componentes do ecossistema digital}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.2cm,
+  every node/.style={font=\small},
+  client/.style={rectangle, rounded corners=4pt, minimum width=3.2cm, minimum height=1cm,
+    align=center, draw, thick, fill=blue!15, draw=blue!50!black},
+  api/.style={rectangle, rounded corners=4pt, minimum width=7.2cm, minimum height=1cm,
+    align=center, draw, thick, fill=orange!20, draw=orange!70!black},
+  layer/.style={rectangle, rounded corners=4pt, minimum width=7.2cm, minimum height=1cm,
+    align=center, draw, thick, fill=green!15, draw=green!50!black},
+  infra/.style={rectangle, rounded corners=4pt, minimum width=3.2cm, minimum height=1cm,
+    align=center, draw, thick, fill=gray!18, draw=gray!60},
+  arrow/.style={-{Stealth[length=6pt]}, thick},
+  lbl/.style={font=\footnotesize\itshape, text=gray!60!black}
+]
+
+\node[client] (web) {Next.js\\{\footnotesize Painel Web (Admin)}};
+\node[client, right=1.5cm of web] (mobile) {React Native + Expo\\{\footnotesize App Mobile (Associado)}};
+
+\node[api, below=1.8cm of web, xshift=2.1cm] (nestjs)
+  {\textbf{NestJS -- API REST}\\{\footnotesize Controllers / Guards / DTOs}};
+\node[lbl, above=0.1cm of nestjs] {HTTP / REST};
+
+\node[layer, below=0.6cm of nestjs] (usecases)
+  {\textbf{Camada de Aplica\c{c}\~{a}o}\\{\footnotesize Use Cases / Ports}};
+
+\node[layer, below=0.6cm of usecases, fill=green!25] (domain)
+  {\textbf{Camada de Dom\'{i}nio}\\{\footnotesize Entidades $\cdot$ Regras $\cdot$ Invariantes}};
+
+\node[infra, below=1.2cm of domain, xshift=-2.1cm] (db)
+  {\textbf{PostgreSQL}\\{\footnotesize via TypeORM}};
+\node[infra, below=1.2cm of domain, xshift=2.1cm] (ext)
+  {\textbf{Servi\c{c}os Externos}\\{\footnotesize Gateways de Pagamento}};
+
+\draw[arrow] (web.south) -- ++(0,-0.55) -| (nestjs.north west);
+\draw[arrow] (mobile.south) -- ++(0,-0.55) -| (nestjs.north east);
+\draw[arrow] (nestjs) -- (usecases);
+\draw[arrow] (usecases) -- (domain);
+\draw[arrow] (domain.south) -- ++(0,-0.4) -| (db.north);
+\draw[arrow] (domain.south) -- ++(0,-0.4) -| (ext.north);
+\node[lbl, below=0.1cm of db] {Adapter};
+\node[lbl, below=0.1cm of ext] {Adapter};
+
+\end{tikzpicture}
+\caption{Diagrama de componentes do ecossistema digital}
 \label{fig:arquitetura}
 \fonte{elaborado pelo autor}
-\end{center}
+\end{figure}
 
-O fluxo geral de comunicação segue o padrão: os clientes (\textit{frontend} Next.js e aplicativo React Native) realizam requisições HTTP à API REST exposta pelo NestJS. Os \textit{controllers} da camada de interface recebem as requisições e delegam a execução aos casos de uso (\textit{Use Cases}) da camada de aplicação. Os casos de uso, por sua vez, interagem com o domínio e acionam os \textit{adapters} de saída necessários — como repositórios TypeORM para acesso ao PostgreSQL ou adaptadores para serviços externos. Esse isolamento garante que alterações em tecnologias de infraestrutura não impactem o núcleo de regras de negócio.
+\begin{novo}
+O fluxo geral de comunicação segue o padrão: os clientes (\textit{frontend} Next.js e aplicativo React Native) realizam requisições HTTP à API REST exposta pelo NestJS. Os \textit{controllers} da camada de interface recebem as requisições e delegam a execução aos casos de uso (\textit{Use Cases}) da camada de aplicação. Os casos de uso, por sua vez, interagem com o domínio e acionam os \textit{adapters} de saída necessários, como repositórios TypeORM para acesso ao PostgreSQL ou adaptadores para serviços externos. Esse isolamento garante que alterações em tecnologias de infraestrutura não impactem o núcleo de regras de negócio.
 \end{novo}
 
 \subsubsection{Requisitos Funcionais e Não-Funcionais}
@@ -279,7 +325,7 @@ A priorização segue a técnica MoSCoW do DSDM: \textbf{Must} (essencial para o
 \textbf{Módulo: Gestão de Associados}
 
 \begin{center}
-\captionof{table}{Requisitos funcionais — Gestão de Associados}
+\captionof{table}{Requisitos funcionais - Gestão de Associados}
 \label{tab:rf-associados}
 \begin{tabular}{clc}
 \hline
@@ -297,7 +343,7 @@ RF04 & Registrar dependentes vinculados ao titular & Should \\
 \textbf{Módulo: Controle de Mensalidades}
 
 \begin{center}
-\captionof{table}{Requisitos funcionais — Controle de Mensalidades}
+\captionof{table}{Requisitos funcionais - Controle de Mensalidades}
 \label{tab:rf-mensalidades}
 \begin{tabular}{clc}
 \hline
@@ -315,7 +361,7 @@ RF08 & Emitir comprovante de pagamento & Should \\
 \textbf{Módulo: Gestão de Eventos e Reservas}
 
 \begin{center}
-\captionof{table}{Requisitos funcionais — Gestão de Eventos e Reservas}
+\captionof{table}{Requisitos funcionais - Gestão de Eventos e Reservas}
 \label{tab:rf-eventos}
 \begin{tabular}{clc}
 \hline
@@ -362,7 +408,7 @@ Ressalta-se que os requisitos classificados como \textit{Won't} neste trabalho i
 
 Como resultados parciais deste projeto, foram concluídas as seguintes etapas: levantamento bibliográfico sobre gestão de entidades tradicionalistas, organizações do terceiro setor, sistemas de informação e transformação digital; definição do escopo funcional do ecossistema digital entidade--associado; elaboração do conjunto inicial de requisitos funcionais e não-funcionais com priorização MoSCoW; definição da arquitetura do sistema (Hexagonal + \textit{Clean Architecture}) e da \textit{stack} tecnológica completa; e estabelecimento de parceria com o CPF Pia do Sul, em Santa Maria/RS, como campo de aplicação do estudo de caso.
 
-Em termos concretos, a entrega parcial deste projeto compreende a arquitetura definida, a \textit{stack} tecnológica especificada, os requisitos levantados e o planejamento estruturado do desenvolvimento. Não há código em execução nesta etapa, o que é compatível com a natureza de um projeto de TCC — fase anterior ao desenvolvimento propriamente dito.
+Em termos concretos, a entrega parcial deste projeto compreende a arquitetura definida, a \textit{stack} tecnológica especificada, os requisitos levantados e o planejamento estruturado do desenvolvimento. Não há código em execução nesta etapa, o que é compatível com a natureza de um projeto de TCC, fase anterior ao desenvolvimento propriamente dito.
 
 \subsection{RESULTADOS ESPERADOS}
 
@@ -402,7 +448,7 @@ Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicaçã
 O cronograma a seguir apresenta o planejamento macro do desenvolvimento do TCC ao longo do segundo semestre de 2026, organizado como um \textit{roadmap} de entregas incrementais alinhado aos princípios de \textit{timeboxing} do DSDM. As atividades foram estruturadas de forma que as dependências críticas (levantamento de requisitos → modelagem → desenvolvimento) sejam respeitadas, e que a escrita da monografia ocorra em paralelo ao desenvolvimento.
 
 \begin{center}
-\captionof{table}{Cronograma de atividades — TCC 2026/2}
+\captionof{table}{Cronograma de atividades - TCC 2026/2}
 \label{tab:cronograma}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
