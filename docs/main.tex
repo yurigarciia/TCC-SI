@@ -154,6 +154,8 @@ Assim, ao propor um ecossistema digital entidade--associado, esta pesquisa inser
 
 Esta pesquisa caracteriza-se como aplicada, pois busca propor e implementar uma solução tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas, e como qualitativa, por envolver levantamento de requisitos e avaliação do uso do sistema a partir da percepção de usuários e gestores \citep{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adota-se uma combinação de pesquisa bibliográfica (para fundamentação teórica e identificação de trabalhos correlatos) e estudo de caso, considerando a aplicação do ecossistema digital em um CTG parceiro, utilizado como ambiente real de validação e coleta de informações \citep{yin2015}.
 
+O desenvolvimento do trabalho será organizado em três etapas principais e sequenciais: (1) levantamento e validação de requisitos junto ao CPF Pia do Sul, por meio de entrevistas, análise documental e observação dos processos atuais; (2) implementação iterativa do MVP do ecossistema digital, priorizando as funcionalidades essenciais conforme a técnica MoSCoW do DSDM; e (3) avaliação do sistema com usuários reais da entidade parceira, combinando instrumentos qualitativos e a escala SUS para verificar usabilidade e adequação ao contexto organizacional.
+
 \subsection{DELIMITAÇÃO DO ESTUDO E CAMPO DE APLICAÇÃO}
 
 O estudo de caso será realizado no CPF Pia do Sul, localizado em Santa Maria/RS, vinculado à 13ª Região Tradicionalista (13ª RT). A pesquisa delimita-se ao contexto administrativo da entidade, com foco nos processos de cadastro de associados, controle de mensalidades e gestão de eventos sociais tradicionais (com ênfase em bailes e fandangos, incluindo reservas de mesas e ingressos), não contemplando integrações técnicas com sistemas institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
@@ -192,7 +194,7 @@ As entregas serão organizadas em ciclos curtos, com validação periódica junt
 
 \subsection{PROCEDIMENTOS DE AVALIAÇÃO E TESTES}
 
-A avaliação do ecossistema digital ocorrerá por meio de testes funcionais (para verificar se as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes do CTG parceiro. A avaliação de uso será conduzida com múltiplos instrumentos, incluindo: aplicação da escala \textit{System Usability Scale} (SUS), entrevistas semiestruturadas com gestores e usuários, observação de cenários de uso e registro de percepções em questionário breve \citep{brooke1996,gil2017}.
+A avaliação do ecossistema digital ocorrerá por meio de testes funcionais (para verificar se as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes do CTG parceiro. Estima-se a participação de 6 a 10 pessoas, incluindo membros da diretoria, responsáveis pela organização de eventos e associados com diferentes perfis de uso — contemplando, quando possível, usuários com menor familiaridade digital. A avaliação de uso será conduzida com múltiplos instrumentos, incluindo: aplicação da escala \textit{System Usability Scale} (SUS), entrevistas semiestruturadas com gestores e usuários, observação de cenários de uso e registro de percepções em questionário breve \citep{brooke1996,gil2017}.
 
 Os cenários de uso contemplarão tarefas como cadastrar associado, registrar pagamento, reservar mesa e emitir ingresso, considerando critérios de facilidade de uso, clareza das informações, tempo percebido de execução e adequação às rotinas administrativas da entidade. Os resultados obtidos serão analisados de forma qualitativa, com triangulação entre os diferentes instrumentos, para verificar a viabilidade prática do sistema e seu potencial de contribuição para a organização administrativa e para a experiência do associado \citep{creswell2014,yin2015}.
 
@@ -217,7 +219,7 @@ De forma geral, a estrutura lógica do \textit{backend} será composta por:
     \item \textbf{Serviços Externos:} a arquitetura prevê integração com \textit{gateways} de pagamento terceirizados para funcionalidades de comercialização de ingressos, mantendo o núcleo de domínio independente do provedor escolhido \citep{martin2017}.
 \end{itemize}
 
-A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de \textit{endpoints} REST, possibilitando compatibilidade com múltiplos clientes e facilitando testes e evoluções futuras \citep{fielding2000}. Será adotado controle de acesso baseado em perfis: administrador (rotinas administrativas) e associado (consulta e reservas).
+A comunicação entre \textit{frontend} e \textit{backend} ocorrerá por meio de \textit{endpoints} REST, possibilitando compatibilidade com múltiplos clientes e facilitando testes e evoluções futuras \citep{fielding2000}. Será adotado controle de acesso baseado em perfis: administrador (rotinas administrativas) e associado (consulta e reservas). Os requisitos funcionais e não-funcionais que orientam esta arquitetura estão detalhados na Seção~3.5.3 (Tabelas~\ref{tab:rf-associados} a~\ref{tab:rnf}).
 
 \subsubsection{Stack Tecnológica}
 
@@ -446,7 +448,7 @@ Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicaçã
 \section{CRONOGRAMA DE ATIVIDADES}
 
 O cronograma a seguir apresenta o planejamento macro do desenvolvimento do TCC ao longo do segundo semestre de 2026, organizado como um \textit{roadmap} de entregas incrementais alinhado aos princípios de \textit{timeboxing} do DSDM. As atividades foram estruturadas de forma que as dependências críticas (levantamento de requisitos → modelagem → desenvolvimento) sejam respeitadas, e que a escrita da monografia ocorra em paralelo ao desenvolvimento.
-
+\nopagebreak[4]
 \begin{center}
 \captionof{table}{Cronograma de atividades - TCC 2026/2}
 \label{tab:cronograma}
@@ -475,7 +477,7 @@ Revisão final e entrega da monografia & & & & & \textbullet \\
 Os \textit{milestones} principais são: (1) conclusão do levantamento de requisitos e modelagem do banco de dados até o final de julho; (2) MVP funcional com os módulos de associados, mensalidades e eventos até o final de setembro; (3) avaliação com usuários concluída até o final de outubro; e (4) entrega da monografia em novembro de 2026, conforme calendário acadêmico da instituição.
 \end{novo}
 
-\section{REFERÊNCIAS BIBLIOGRÁFICAS}
+\section{REFERÊNCIAS}
 \bibliographystyle{plainnat}
 \bibliography{referencias}
 
