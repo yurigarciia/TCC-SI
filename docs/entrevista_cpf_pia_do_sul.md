@@ -11,6 +11,8 @@
 1. Quantos associados a entidade possui atualmente? Há distinção entre categorias (sócio pleno, dependente, invernada)?
 2. Quantas pessoas integram a diretoria/administração? Quem lida com a parte administrativa no dia a dia?
 3. Qual o volume médio de eventos por ano? (bailes, fandangos, festividades internas)
+4. Quantas pessoas comparecem em média a um evento? Há variação entre tipos de evento?
+5. A entidade utiliza algum sistema ou aplicativo atualmente para qualquer parte da gestão? (financeiro, cadastro, comunicação)
 
 ---
 
@@ -39,8 +41,10 @@
 2. Como é feita a reserva de mesas? (presencial, WhatsApp, lista física?)
 3. Como são vendidos/controlados os ingressos? Há ingresso antecipado?
 4. Como a entidade sabe quantas mesas/ingressos ainda estão disponíveis em tempo real?
-5. Já houve situações de conflito de reserva, mesa dupla vendida ou ingresso sem controle?
-6. Como é feita a prestação de contas financeira após um evento?
+5. Como é feito o controle de quem pagou o ingresso na entrada do evento? (lista impressa, carimbo, outro?)
+6. Os pagamentos são feitos presencialmente, via PIX, transferência? Como é registrado que o pagamento foi recebido?
+7. Já houve situações de conflito de reserva, mesa dupla vendida ou ingresso sem controle?
+8. Como é feita a prestação de contas financeira após um evento?
 
 ---
 
