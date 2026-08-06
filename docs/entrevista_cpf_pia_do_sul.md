@@ -1,5 +1,5 @@
 # Roteiro de Entrevista Semiestruturada
-**Entidade:** CPF Pia do Sul — Santa Maria/RS (13ª RT)  
+**Entidade:** CPF Pia do Sul - Santa Maria/RS (13ª RT)  
 **Objetivo:** Levantamento de requisitos e validação do MVP do ecossistema digital  
 **Duração estimada:** 40–50 minutos  
 **Formato:** Semiestruturada — as perguntas são um guia, não um questionário rígido
