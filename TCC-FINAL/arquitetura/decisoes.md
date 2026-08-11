@@ -121,6 +121,67 @@ croqui existente).
 
 ---
 
+## Emissão de Ingresso — 2026-08-11
+
+**Contexto:** este fluxo incorpora diretamente três achados da primeira rodada de entrevista escrita
+com o CPF Pia do Sul (ver seção "Resultado da entrevista escrita" abaixo): preço diferenciado por
+perfil do comprador, os dois formatos de validação de entrada convivendo, e a existência de
+compradores não-associados.
+
+**Decisões:**
+- O preço do ingresso varia por perfil do comprador — sócio, não-sócio ou criança — com um valor
+  **padrão da entidade** que pode ser sobrescrito por evento, reaproveitando o mesmo padrão de
+  override já usado no preço de mesa (Cadastro de Evento).
+- Associado que compra pelo app **sempre paga online** (via gateway); a diretoria continua vendendo
+  presencialmente (secretaria), tanto para associados quanto para visitantes.
+- Não-associados (visitantes) também compram ingresso — confirmado na entrevista.
+- A validação na entrada substitui a pulseira e a lista impressa atuais, mas mantendo os **dois
+  formatos coexistindo**: QR code no app para quem tem, busca manual por nome no painel para quem não
+  tem.
+- Há uma checagem de reuso ("ingresso já foi usado?") antes de validar a entrada, prevenindo duplicidade
+  — mesmo princípio de proteção usado na Reserva de Mesa contra conflito de reserva.
+
+**Em aberto (validar com o CPF Pia do Sul):**
+- O visitante consegue comprar ingresso online (app ou link público), ou compra é sempre presencial
+  com a diretoria?
+- Um ingresso já comprado pode ser cancelado ou estornado?
+
+---
+
+## Resultado da entrevista escrita — 2026-08-11
+
+Primeira rodada de respostas do CPF Pia do Sul (roteiro semiestruturado, respondido por escrito).
+Achados relevantes, já incorporados nos fluxos acima onde aplicável:
+
+- **Escala real é maior que a assumida**: 1.343 associados (448 efetivos), diretoria com 11 membros.
+  Bailes chegam a 600 pessoas, festivais a 5-6 mil — relevante para dimensionar RNF05 (tempo de
+  resposta) e capacidade de mesas/ingressos por evento.
+- **Já existe um "sistema em teste"** cobrindo parte do cadastro e do controle financeiro — contradiz
+  parcialmente a premissa de gestão "pouco digitalizada" do pré-projeto. A operação do evento em si
+  (disponibilidade de mesa/ingresso, controle de entrada) continua 100% manual/papel. Gerou uma
+  segunda rodada de perguntas (ver `respostas_formulario_inicial/contraperguntas_sistemas.docx`) para
+  entender se é uma ou mais ferramentas, se são pagas, e se há interesse em substituição.
+- **Validações fortes do que já havia sido desenhado**: confirmaram ocorrência de conflito de reserva
+  de mesa (valida a checagem de concorrência do fluxo de Reserva de Mesa) e de divergência de
+  informação sobre pagamentos (valida a justificativa central do artigo). "Sistema de cobrança" foi
+  citado como maior dificuldade atual e "controle de regularidade financeira e cadastral" como o
+  problema prioritário — confirma Cadastro de Associado e Mensalidade como a sequência correta de
+  prioridade.
+- **Preço diferenciado e validação de entrada** (sócio/não-sócio/criança; pulseira e lista impressa) —
+  incorporados no fluxo de Emissão de Ingresso.
+- **Achado fora do escopo do MVP**: pedido espontâneo de um totem físico no salão para consulta de
+  eventos, compra de ingresso, reserva de mesa e pagamento de mensalidade. Não contemplado no MVP
+  (web + mobile), mas vale registrar como sugestão para trabalhos futuros no artigo.
+- **Organização de evento tem dois papéis**, não só "a diretoria" genericamente: um "diretor social"
+  para eventos da entidade e um "coordenador de departamento" para eventos de departamentos — o
+  Cadastro de Evento modelou só "diretoria" como ator; pode precisar de refinamento depois de uma
+  próxima rodada de perguntas sobre isso.
+- **Dificuldade digital não é só dos associados**: a resposta sobre quem usaria o painel administrativo
+  indica que a própria diretoria "possui dificuldades com a modernidade" — amplia o argumento de
+  acessibilidade do RNF, que no pré-projeto era focado principalmente nos associados.
+
+---
+
 ## Pendências consolidadas para a entrevista/observação de campo
 
 Perguntas que se acumularam mapeando os fluxos e que devem entrar no roteiro de entrevista
@@ -134,6 +195,8 @@ semiestruturada com o CPF Pia do Sul:
 5. Evento já publicado (com reservas/ingressos vendidos): pode ter preço ou disponibilidade editados
    depois?
 6. Solicitação de mesa pendente (paga presencial, aguardando confirmação): tem prazo de expiração?
+7. Visitante (não-associado) compra ingresso online, ou sempre presencial com a diretoria?
+8. Ingresso já comprado pode ser cancelado ou estornado?
 
 ## Pendências de revisão do texto do artigo
 

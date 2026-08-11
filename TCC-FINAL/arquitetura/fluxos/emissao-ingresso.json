@@ -1,0 +1,55 @@
+{
+  "_readme": "Fonte de dados do fluxo 'Emissão de Ingresso' (ver artifact/site 'Fluxos do Sistema'). Decisões confirmadas em conversa de 2026-08-11, incorporando achados da entrevista escrita com o CPF Pia do Sul: preço diferenciado por perfil do comprador (sócio, não-sócio, criança), configurado como padrão da entidade com possibilidade de override por evento (mesmo padrão do preço de mesa em evento.json); validação de entrada substitui a pulseira/lista impressa atual, com QR code no app e busca manual coexistindo (os dois formatos, não um só); associado compra pelo app (sempre paga online) ou a diretoria vende presencial (associado ou visitante); não-associados (visitantes) também compram ingresso. Pontos em aberto (openQuestion:true): (1) se o visitante consegue comprar pelo app/link público ou só presencial pela diretoria; (2) se o ingresso comprado pode ser cancelado/estornado.",
+  "lanes": [
+    { "id": "associado", "label": "Associado — App Mobile", "color": "#2f6fed", "x": 30, "w": 280 },
+    { "id": "gateway", "label": "Gateway de Pagamento", "color": "#7e22ce", "x": 340, "w": 220 },
+    { "id": "sistema", "label": "Sistema (automático)", "color": "#64748b", "x": 590, "w": 280 },
+    { "id": "diretoria", "label": "Diretoria — Painel Web", "color": "#b45309", "x": 900, "w": 320 }
+  ],
+  "nodes": [
+    { "id": "start-a", "lane": "associado", "shape": "pill", "kind": "start", "x": 90, "y": 40, "w": 200, "h": 56, "label": "Início — Associado compra ingresso no app" },
+    { "id": "a1", "lane": "associado", "shape": "rect", "x": 45, "y": 130, "w": 250, "h": 64, "label": "Escolhe evento" },
+    { "id": "a2", "lane": "associado", "shape": "note", "x": 45, "y": 220, "w": 250, "h": 110, "label": "Preço de sócio aplicado automaticamente", "detail": "Valor padrão da entidade para associados, com possibilidade de valor específico definido no evento — mesmo padrão de override usado no preço de mesa (evento.json)." },
+    { "id": "a3", "lane": "associado", "shape": "rect", "x": 45, "y": 360, "w": 250, "h": 64, "label": "Paga online" },
+    { "id": "open-visitante", "lane": "associado", "shape": "note", "openQuestion": true, "x": 45, "y": 460, "w": 250, "h": 130, "label": "Visitante compra pelo app ou só presencial?", "detail": "EM ABERTO — a entrevista confirmou que não-associados também compram ingresso, mas não ficou claro se existe um canal de compra online para quem não tem cadastro de associado (sem acesso ao app), ou se visitante sempre compra presencial com a diretoria. Validar com o CPF Pia do Sul." },
+
+    { "id": "gw-process", "lane": "gateway", "shape": "rect", "x": 355, "y": 360, "w": 190, "h": 80, "label": "Gateway processa pagamento" },
+    { "id": "gw-confirm", "lane": "gateway", "shape": "rect", "x": 355, "y": 480, "w": 190, "h": 64, "label": "Confirma pagamento ao sistema" },
+
+    { "id": "s1", "lane": "sistema", "shape": "rect", "x": 605, "y": 610, "w": 250, "h": 64, "label": "Emite ingresso" },
+    { "id": "end-good", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 615, "y": 700, "w": 220, "h": 64, "label": "Status: Ingresso emitido" },
+    { "id": "s-check", "lane": "sistema", "shape": "diamond", "x": 615, "y": 800, "w": 220, "h": 140, "label": "Ingresso já foi usado?" },
+    { "id": "end-reused", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 370, "y": 980, "w": 250, "h": 64, "label": "Ingresso já utilizado — entrada recusada" },
+    { "id": "s-validate", "lane": "sistema", "shape": "rect", "x": 605, "y": 980, "w": 250, "h": 64, "label": "Marca ingresso como usado" },
+    { "id": "end-checkedin", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 615, "y": 1070, "w": 220, "h": 64, "label": "Status: Entrada validada" },
+
+    { "id": "start-d", "lane": "diretoria", "shape": "pill", "kind": "start", "x": 990, "y": 40, "w": 220, "h": 56, "label": "Início — Diretoria vende ingresso presencial" },
+    { "id": "d1", "lane": "diretoria", "shape": "diamond", "x": 1010, "y": 130, "w": 220, "h": 140, "label": "Comprador é associado, visitante ou criança?" },
+    { "id": "d2", "lane": "diretoria", "shape": "rect", "x": 905, "y": 310, "w": 250, "h": 90, "label": "Aplica preço conforme perfil do comprador", "detail": "Sócio, não-sócio ou criança — cada perfil tem seu próprio valor, achado confirmado na entrevista escrita." },
+    { "id": "d3", "lane": "diretoria", "shape": "rect", "x": 905, "y": 430, "w": 250, "h": 64, "label": "Registra pagamento" },
+    { "id": "open-cancel", "lane": "diretoria", "shape": "note", "openQuestion": true, "x": 905, "y": 560, "w": 250, "h": 120, "label": "Ingresso pode ser cancelado/estornado?", "detail": "EM ABERTO — não há definição sobre cancelamento ou estorno de um ingresso já comprado. Validar com o CPF Pia do Sul." },
+    { "id": "d-checkin", "lane": "diretoria", "shape": "rect", "x": 905, "y": 720, "w": 250, "h": 90, "label": "Recebe na portaria e verifica ingresso", "detail": "QR code no app para quem tem, busca manual por nome no painel para quem não tem — os dois formatos coexistem, substituindo a pulseira e a lista impressa usadas hoje." }
+  ],
+  "edges": [
+    { "from": "start-a", "to": "a1" },
+    { "from": "a1", "to": "a2" },
+    { "from": "a2", "to": "a3" },
+    { "from": "a3", "to": "gw-process" },
+    { "from": "gw-process", "to": "gw-confirm" },
+    { "from": "gw-confirm", "to": "s1" },
+
+    { "from": "start-d", "to": "d1" },
+    { "from": "d1", "to": "open-visitante", "label": "" },
+    { "from": "d1", "to": "d2", "label": "associado / visitante / criança" },
+    { "from": "d2", "to": "d3" },
+    { "from": "d3", "to": "s1" },
+
+    { "from": "s1", "to": "end-good" },
+    { "from": "end-good", "to": "open-cancel" },
+    { "from": "end-good", "to": "d-checkin" },
+    { "from": "d-checkin", "to": "s-check" },
+    { "from": "s-check", "to": "end-reused", "label": "sim" },
+    { "from": "s-check", "to": "s-validate", "label": "não" },
+    { "from": "s-validate", "to": "end-checkedin" }
+  ]
+}
