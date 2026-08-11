@@ -525,7 +525,7 @@
       </div>
 
       <div class="provenance">
-        FONTE · grafo-arquitetura.json — edite o JSON e recarregue a página
+        FONTE · ../grafo-arquitetura.json — edite o JSON e recarregue a página
       </div>
     </aside>
 
@@ -648,7 +648,7 @@
         downTarget = null;
       var CLICK_THRESHOLD = 6;
 
-      fetch("grafo-arquitetura.json")
+      fetch("../grafo-arquitetura.json")
         .then(function (r) {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
