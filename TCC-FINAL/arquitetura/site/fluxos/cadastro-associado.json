@@ -1,0 +1,54 @@
+{
+  "_readme": "Fonte de dados do fluxo 'Cadastro de Associado' (ver artifact 'Fluxos do Sistema'). Decisões confirmadas em conversa de 2026-08-11: auto-cadastro existe via app mobile (tela 'Criar conta'); categoria de sócio é uma lista cadastrável mantida pela diretoria, não um enum fixo; campos capturados incluem vínculo institucional e dependentes. Pontos ainda em aberto (marcados como openQuestion:true nos nós): (1) cadastro mediado pela diretoria ativa na hora ou também fica pendente de aprovação; (2) o que acontece quando um cadastro pendente é rejeitado. Layout (x/y/w/h) em unidades do viewBox SVG (0 0 1040 1760) — coluna associado x~60-310, coluna sistema x~370-630, coluna diretoria x~725-975.",
+  "lanes": [
+    { "id": "associado", "label": "Associado — App Mobile", "color": "#2f6fed", "x": 30, "w": 310 },
+    { "id": "sistema", "label": "Sistema (automático)", "color": "#64748b", "x": 360, "w": 310 },
+    { "id": "diretoria", "label": "Diretoria — Painel Web", "color": "#b45309", "x": 690, "w": 310 }
+  ],
+  "nodes": [
+    { "id": "start-a", "lane": "associado", "shape": "pill", "kind": "start", "x": 90, "y": 40, "w": 190, "h": 56, "label": "Início — Auto-cadastro (app)" },
+    { "id": "a1", "lane": "associado", "shape": "rect", "x": 60, "y": 130, "w": 250, "h": 90, "label": "Preenche dados pessoais", "detail": "Nome, CPF, contato. Confirmado: o associado pode se auto-cadastrar direto na tela \"Criar conta\" do app, sem precisar de login prévio." },
+    { "id": "a2", "lane": "associado", "shape": "rect", "x": 60, "y": 260, "w": 250, "h": 80, "label": "Indica vínculo institucional (se souber)", "detail": "Departamento/invernada ao qual pretende se vincular. Campo opcional nesse caminho — associado pode não saber ainda." },
+    { "id": "a3", "lane": "associado", "shape": "rect", "x": 60, "y": 380, "w": 250, "h": 64, "label": "Envia cadastro", "detail": "Segue para validação automática do sistema." },
+
+    { "id": "start-d", "lane": "diretoria", "shape": "pill", "kind": "start", "x": 755, "y": 40, "w": 190, "h": 56, "label": "Início — Cadastro pela diretoria" },
+    { "id": "d1", "lane": "diretoria", "shape": "rect", "x": 725, "y": 130, "w": 250, "h": 100, "label": "Preenche dados pessoais + vínculo institucional", "detail": "Fluxo mediado: atendente/diretoria cadastra em nome do associado, incluindo o vínculo institucional (departamento/invernada)." },
+    { "id": "d2", "lane": "diretoria", "shape": "diamond", "x": 740, "y": 270, "w": 220, "h": 140, "label": "Cadastra dependentes agora?", "detail": "RF04 — dependentes vinculados ao titular. Decisão feita pela diretoria no momento do cadastro." },
+    { "id": "d2b", "lane": "diretoria", "shape": "rect", "x": 725, "y": 440, "w": 250, "h": 80, "label": "Adiciona dependente(s)", "detail": "Dados básicos de cada dependente (nome, data de nascimento)." },
+    { "id": "d3", "lane": "diretoria", "shape": "note", "x": 725, "y": 560, "w": 250, "h": 110, "label": "Seleciona categoria de sócio", "detail": "Confirmado: a categoria de sócio não é um enum fixo no sistema — é uma lista cadastrável, mantida pela própria diretoria (CRUD de categorias, fluxo à parte deste)." },
+    { "id": "d4", "lane": "diretoria", "shape": "rect", "x": 725, "y": 710, "w": 250, "h": 64, "label": "Salva cadastro", "detail": "Segue para validação automática do sistema." },
+
+    { "id": "s1", "lane": "sistema", "shape": "diamond", "x": 410, "y": 800, "w": 220, "h": 140, "label": "CPF já cadastrado?", "detail": "Checagem de duplicidade antes de criar o registro, para qualquer uma das duas origens." },
+    { "id": "s-err", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 60, "y": 980, "w": 250, "h": 64, "label": "Bloqueado — CPF já existe" },
+    { "id": "s2", "lane": "sistema", "shape": "diamond", "x": 410, "y": 980, "w": 220, "h": 140, "label": "Origem = auto-cadastro (app)?", "detail": "Determina se o cadastro segue para aprovação obrigatória ou para o caminho mediado." },
+    { "id": "s-pending", "lane": "sistema", "shape": "pill", "kind": "end-pending", "x": 410, "y": 1160, "w": 220, "h": 64, "label": "Status: Pendente de validação" },
+
+    { "id": "open-ativacao", "lane": "diretoria", "shape": "note", "openQuestion": true, "x": 725, "y": 1160, "w": 250, "h": 110, "label": "Ativa na hora ou também fica pendente?", "detail": "EM ABERTO — cadastro feito diretamente pela diretoria: ainda não definido se entra ativo imediatamente ou passa pela mesma aprovação do auto-cadastro. Validar com o CPF Pia do Sul." },
+
+    { "id": "d5", "lane": "diretoria", "shape": "rect", "x": 725, "y": 1320, "w": 250, "h": 80, "label": "Diretoria revisa cadastro pendente", "detail": "Etapa de aprovação para cadastros que entraram como \"Pendente de validação\" (originados do auto-cadastro no app)." },
+    { "id": "d6", "lane": "diretoria", "shape": "diamond", "x": 740, "y": 1440, "w": 220, "h": 140, "label": "Aprova?", "detail": "Decisão da diretoria sobre o cadastro pendente." },
+    { "id": "end-active", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 410, "y": 1620, "w": 220, "h": 64, "label": "Status: Ativo" },
+    { "id": "open-rejeicao", "lane": "diretoria", "shape": "note", "openQuestion": true, "x": 725, "y": 1620, "w": 250, "h": 110, "label": "Cadastro rejeitado — e depois?", "detail": "EM ABERTO — o associado é notificado da rejeição? Os dados ficam salvos para nova tentativa ou são descartados? Validar com o CPF Pia do Sul." }
+  ],
+  "edges": [
+    { "from": "start-a", "to": "a1" },
+    { "from": "a1", "to": "a2" },
+    { "from": "a2", "to": "a3" },
+    { "from": "start-d", "to": "d1" },
+    { "from": "d1", "to": "d2" },
+    { "from": "d2", "to": "d2b", "label": "sim" },
+    { "from": "d2", "to": "d3", "label": "não" },
+    { "from": "d2b", "to": "d3" },
+    { "from": "d3", "to": "d4" },
+    { "from": "a3", "to": "s1" },
+    { "from": "d4", "to": "s1" },
+    { "from": "s1", "to": "s-err", "label": "sim" },
+    { "from": "s1", "to": "s2", "label": "não" },
+    { "from": "s2", "to": "s-pending", "label": "sim (app)" },
+    { "from": "s2", "to": "open-ativacao", "label": "não (diretoria)" },
+    { "from": "s-pending", "to": "d5" },
+    { "from": "d5", "to": "d6" },
+    { "from": "d6", "to": "end-active", "label": "sim" },
+    { "from": "d6", "to": "open-rejeicao", "label": "não" }
+  ]
+}

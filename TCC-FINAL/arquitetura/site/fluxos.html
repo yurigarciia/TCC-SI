@@ -779,7 +779,7 @@
         return { w: maxX + 30, h: maxY + 40 };
       }
 
-      fetch("../fluxos/index.json")
+      fetch("fluxos/index.json")
         .then(function (r) {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
@@ -920,7 +920,7 @@
           return f.id === flowId;
         })[0];
         if (!meta || !meta.file) return;
-        fetch("../fluxos/" + meta.file)
+        fetch("fluxos/" + meta.file)
           .then(function (r) {
             if (!r.ok) throw new Error("HTTP " + r.status);
             return r.json();
