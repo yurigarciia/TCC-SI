@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arquitetura do Ecossistema Digital — CPF Pia do Sul</title>
+    <style>
+      @font-face {
+        font-family: "Schematic Mono";
+        src:
+          local("Cascadia Mono"), local("Cascadia Code"), local("SF Mono"),
+          local("Consolas");
+      }
+
+      :root {
+        --bg: #eef1f6;
+        --grid-line: rgba(23, 27, 36, 0.06);
+        --grid-line-strong: rgba(23, 27, 36, 0.1);
+        --surface: #ffffff;
+        --surface-2: #f5f7fb;
+        --ink: #171b24;
+        --ink-soft: #545d6e;
+        --ink-faint: #838da0;
+        --border: #d7dce6;
+        --border-strong: #b9c2d1;
+        --accent: #3454d1;
+        --accent-soft: rgba(52, 84, 209, 0.12);
+        --edge: #9aa3b8;
+        --shadow: 0 12px 28px -14px rgba(23, 27, 36, 0.28);
+
+        --font-mono:
+          "Schematic Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular",
+          Consolas, "Liberation Mono", Menlo, monospace;
+        --font-serif:
+          Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141f;
+          --grid-line: rgba(255, 255, 255, 0.05);
+          --grid-line-strong: rgba(255, 255, 255, 0.09);
+          --surface: #161c2b;
+          --surface-2: #1a2131;
+          --ink: #e8eaf2;
+          --ink-soft: #a5adc0;
+          --ink-faint: #737e93;
+          --border: #2a3245;
+          --border-strong: #3a4358;
+          --accent: #7c9cff;
+          --accent-soft: rgba(124, 156, 255, 0.16);
+          --edge: #4b5568;
+          --shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.55);
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141f;
+        --grid-line: rgba(255, 255, 255, 0.05);
+        --grid-line-strong: rgba(255, 255, 255, 0.09);
+        --surface: #161c2b;
+        --surface-2: #1a2131;
+        --ink: #e8eaf2;
+        --ink-soft: #a5adc0;
+        --ink-faint: #737e93;
+        --border: #2a3245;
+        --border-strong: #3a4358;
+        --accent: #7c9cff;
+        --accent-soft: rgba(124, 156, 255, 0.16);
+        --edge: #4b5568;
+        --shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.55);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-serif);
+      }
+      body {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        height: 100vh;
+        overflow: hidden;
+      }
+      @media (max-width: 860px) {
+        body {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto 1fr;
+        }
+        #sidebar {
+          max-height: 40vh;
+        }
+      }
+
+      #sidebar {
+        border-right: 1px solid var(--border);
+        background: var(--surface);
+        overflow-y: auto;
+        padding: 22px 20px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      h1 {
+        font-family: var(--font-serif);
+        font-size: 21px;
+        line-height: 1.25;
+        margin: 6px 0 4px;
+        text-wrap: balance;
+        font-weight: 700;
+      }
+      .lede {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+      .sidebar-section {
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+      }
+      .sidebar-section h2 {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .legend {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .node-index {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .node-btn {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        padding: 7px 8px;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .node-btn:hover {
+        background: var(--surface-2);
+      }
+      .node-btn[aria-current="true"] {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      .node-btn .stripe {
+        width: 3px;
+        align-self: stretch;
+        border-radius: 2px;
+        flex: none;
+      }
+      .node-btn .tech {
+        color: var(--ink-faint);
+        font-size: 11px;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .flow-empty {
+        border: 1px dashed var(--border-strong);
+        border-radius: 8px;
+        padding: 12px 13px;
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+      .flow-empty strong {
+        color: var(--ink-soft);
+      }
+      .provenance {
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--ink-faint);
+        line-height: 1.6;
+      }
+      .cross-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--accent);
+        text-decoration: none;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        padding: 4px 10px;
+        width: fit-content;
+      }
+      .cross-nav:hover {
+        background: var(--accent-soft);
+      }
+
+      #canvas-wrap {
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 /
+            28px 28px,
+          linear-gradient(var(--grid-line-strong) 1px, transparent 1px) 0 0 /
+            140px 140px,
+          linear-gradient(90deg, var(--grid-line-strong) 1px, transparent 1px) 0
+            0 / 140px 140px,
+          var(--bg);
+        touch-action: none;
+        cursor: grab;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      #canvas-wrap.grabbing {
+        cursor: grabbing;
+      }
+      svg#graph {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .node-rect {
+        fill: var(--surface);
+        stroke: var(--border-strong);
+        stroke-width: 1.3;
+        transition:
+          stroke 120ms ease,
+          filter 120ms ease;
+      }
+      .node.selected .node-rect {
+        stroke-width: 2.2;
+        filter: drop-shadow(0 0 0 1px var(--accent-soft));
+      }
+      .node-stripe {
+        rx: 2;
+      }
+      .node-title {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        fill: var(--ink);
+        font-size: 15.5px;
+      }
+      .node-tech {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        fill: var(--ink-faint);
+      }
+      .node {
+        cursor: pointer;
+      }
+      .node:hover .node-rect {
+        stroke: var(--accent);
+      }
+      .edge-path {
+        fill: none;
+        stroke: var(--edge);
+        stroke-width: 1.6;
+        marker-end: url(#arrow);
+      }
+      .edge-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        fill: var(--ink-faint);
+      }
+      .edge-label-bg {
+        fill: var(--bg);
+      }
+
+      #toolbar {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 5px;
+        box-shadow: var(--shadow);
+        z-index: 5;
+      }
+      #toolbar button {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #toolbar button:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+      #toolbar button:focus-visible,
+      .node-btn:focus-visible,
+      .panel-close:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      #zoom-readout {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+        width: 42px;
+        text-align: center;
+      }
+
+      #panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 340px;
+        max-width: 88vw;
+        background: var(--surface);
+        border-left: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transform: translateX(100%);
+        transition: transform 200ms ease;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        padding: 22px 22px 26px;
+        overflow-y: auto;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #panel {
+          transition: none;
+        }
+      }
+      #panel.open {
+        transform: translateX(0);
+      }
+      .panel-close {
+        align-self: flex-end;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        width: 28px;
+        height: 28px;
+        color: var(--ink-soft);
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .panel-close:hover {
+        background: var(--surface-2);
+      }
+      .panel-cat {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin-top: 14px;
+      }
+      #panel h3 {
+        font-family: var(--font-serif);
+        font-size: 22px;
+        margin: 6px 0 2px;
+        text-wrap: balance;
+      }
+      #panel .tech-line {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        color: var(--accent);
+        margin: 0 0 16px;
+      }
+      #panel .summary {
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        margin: 0 0 18px;
+      }
+      #panel h4 {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin: 0 0 8px;
+      }
+      #panel ul {
+        margin: 0 0 18px;
+        padding-left: 18px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+      #panel ul li {
+        margin-bottom: 4px;
+      }
+      .flows-panel-empty {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        line-height: 1.55;
+      }
+
+      #load-error {
+        display: none;
+        position: absolute;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+      }
+      #load-error.show {
+        display: flex;
+      }
+      #load-error .box {
+        max-width: 420px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 24px;
+        box-shadow: var(--shadow);
+      }
+      #load-error h2 {
+        font-size: 16px;
+        margin: 0 0 8px;
+      }
+      #load-error p {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        margin: 0 0 6px;
+      }
+      #load-error code {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        background: var(--surface-2);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <aside id="sidebar">
+      <div>
+        <div class="eyebrow">TCC · Ecossistema Digital</div>
+        <h1>Arquitetura do sistema</h1>
+        <p class="lede">
+          Mapa navegável dos componentes propostos para o CPF Pia do Sul —
+          arraste para mover, role para dar zoom, clique num bloco para ver os
+          detalhes.
+        </p>
+        <a class="cross-nav" href="fluxos.html">↗ Ver fluxos do sistema</a>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Categorias</h2>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Componentes</h2>
+        <div class="node-index" id="node-index"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Fluxos</h2>
+        <div class="flow-empty">
+          <strong>Fluxos mapeados separadamente.</strong> Veja o grafo de fluxos
+          para cadastro de associado, mensalidade, reserva de mesa e emissão de
+          ingresso.
+        </div>
+      </div>
+
+      <div class="provenance">
+        FONTE · ../grafo-arquitetura.json — edite o JSON e recarregue a página
+      </div>
+    </aside>
+
+    <div id="canvas-wrap">
+      <svg id="graph" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--edge)"></path>
+          </marker>
+        </defs>
+        <g id="viewport">
+          <g id="edges"></g>
+          <g id="nodes"></g>
+        </g>
+      </svg>
+
+      <div id="toolbar">
+        <button id="zoom-out" aria-label="Diminuir zoom" title="Diminuir zoom">
+          −
+        </button>
+        <span id="zoom-readout">100%</span>
+        <button id="zoom-in" aria-label="Aumentar zoom" title="Aumentar zoom">
+          +
+        </button>
+        <button
+          id="zoom-fit"
+          aria-label="Ajustar à tela"
+          title="Ajustar à tela"
+        >
+          ⤢
+        </button>
+      </div>
+
+      <aside id="panel" aria-hidden="true">
+        <button
+          class="panel-close"
+          id="panel-close"
+          aria-label="Fechar detalhes"
+        >
+          ✕
+        </button>
+        <div class="panel-cat" id="panel-cat"></div>
+        <h3 id="panel-title"></h3>
+        <p class="tech-line" id="panel-tech"></p>
+        <p class="summary" id="panel-summary"></p>
+        <h4>Responsabilidades</h4>
+        <ul id="panel-responsibilities"></ul>
+      </aside>
+
+      <div id="load-error">
+        <div class="box">
+          <h2>Não consegui carregar grafo-arquitetura.json</h2>
+          <p>
+            Provavelmente esta página foi aberta direto como arquivo
+            (<code>file://</code>), e o navegador bloqueia esse tipo de leitura
+            por segurança.
+          </p>
+          <p>Sirva a pasta com um servidor local, por exemplo:</p>
+          <p><code>npx serve TCC-FINAL/arquitetura/site</code></p>
+          <p>
+            ou, dentro de <code>TCC-FINAL/arquitetura/site</code>:
+            <code>python -m http.server</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var NS = "http://www.w3.org/2000/svg";
+      function el(tag, attrs) {
+        var e = document.createElementNS(NS, tag);
+        for (var k in attrs) e.setAttribute(k, attrs[k]);
+        return e;
+      }
+      function wrapText(text, maxChars) {
+        var words = text.split(" "),
+          lines = [],
+          cur = "";
+        words.forEach(function (w) {
+          var next = cur ? cur + " " + w : w;
+          if (next.length > maxChars && cur) {
+            lines.push(cur);
+            cur = w;
+          } else {
+            cur = next;
+          }
+        });
+        if (cur) lines.push(cur);
+        return lines;
+      }
+
+      var svg = document.getElementById("graph");
+      var edgesG = document.getElementById("edges");
+      var nodesG = document.getElementById("nodes");
+      var wrap = document.getElementById("canvas-wrap");
+      var viewport = document.getElementById("viewport");
+      var panel = document.getElementById("panel");
+      var panelCat = document.getElementById("panel-cat");
+      var panelTitle = document.getElementById("panel-title");
+      var panelTech = document.getElementById("panel-tech");
+      var panelSummary = document.getElementById("panel-summary");
+      var panelResp = document.getElementById("panel-responsibilities");
+
+      var DATA = null;
+      var nodesById = {};
+      var view = { x: 0, y: 0, scale: 1 };
+      var VBOX = { w: 950, h: 780 };
+      var isPanning = false,
+        lastX = 0,
+        lastY = 0,
+        dragDistance = 0,
+        downTarget = null;
+      var CLICK_THRESHOLD = 6;
+
+      fetch("../grafo-arquitetura.json")
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (json) {
+          DATA = json;
+          init();
+        })
+        .catch(function () {
+          document.getElementById("load-error").classList.add("show");
+        });
+
+      function init() {
+        DATA.nodes.forEach(function (n) {
+          nodesById[n.id] = n;
+        });
+
+        DATA.edges.forEach(function (e) {
+          var a = nodesById[e.from],
+            b = nodesById[e.to];
+          var x1 = a.x + a.w / 2,
+            y1 = a.y + a.h;
+          var x2 = b.x + b.w / 2,
+            y2 = b.y;
+          var dy = Math.max(24, (y2 - y1) / 2);
+          var d =
+            "M " +
+            x1 +
+            " " +
+            y1 +
+            " C " +
+            x1 +
+            " " +
+            (y1 + dy) +
+            ", " +
+            x2 +
+            " " +
+            (y2 - dy) +
+            ", " +
+            x2 +
+            " " +
+            y2;
+          edgesG.appendChild(el("path", { class: "edge-path", d: d }));
+          if (e.label) {
+            var mx = (x1 + x2) / 2,
+              my = (y1 + y2) / 2;
+            edgesG.appendChild(
+              el("rect", {
+                class: "edge-label-bg",
+                x: mx - 30,
+                y: my - 9,
+                width: 60,
+                height: 14,
+                rx: 3,
+              }),
+            );
+            var lbl = el("text", {
+              class: "edge-label",
+              x: mx,
+              y: my + 1,
+              "text-anchor": "middle",
+            });
+            lbl.textContent = e.label;
+            edgesG.appendChild(lbl);
+          }
+        });
+
+        DATA.nodes.forEach(function (n) {
+          var cat = DATA.categories[n.category];
+          var g = el("g", {
+            class: "node",
+            "data-id": n.id,
+            tabindex: "0",
+            role: "button",
+            "aria-label": n.title,
+          });
+          g.appendChild(
+            el("rect", {
+              class: "node-rect",
+              x: n.x,
+              y: n.y,
+              width: n.w,
+              height: n.h,
+              rx: 10,
+            }),
+          );
+          g.appendChild(
+            el("rect", {
+              class: "node-stripe",
+              x: n.x,
+              y: n.y,
+              width: 5,
+              height: n.h,
+              rx: 2,
+              fill: cat.color,
+            }),
+          );
+          var title = el("text", {
+            class: "node-title",
+            x: n.x + 20,
+            y: n.y + 30,
+          });
+          title.textContent = n.title;
+          g.appendChild(title);
+          var tech = el("text", {
+            class: "node-tech",
+            x: n.x + 20,
+            y: n.y + 50,
+          });
+          tech.textContent = n.tech;
+          g.appendChild(tech);
+          g.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter" || ev.key === " ") {
+              ev.preventDefault();
+              selectNode(n.id);
+            }
+          });
+          nodesG.appendChild(g);
+        });
+
+        var legend = document.getElementById("legend");
+        Object.keys(DATA.categories).forEach(function (key) {
+          var c = DATA.categories[key];
+          var row = document.createElement("div");
+          row.className = "legend-row";
+          row.innerHTML =
+            '<span class="dot" style="background:' +
+            c.color +
+            '"></span>' +
+            c.label;
+          legend.appendChild(row);
+        });
+
+        var nodeIndex = document.getElementById("node-index");
+        DATA.nodes.forEach(function (n) {
+          var cat = DATA.categories[n.category];
+          var btn = document.createElement("button");
+          btn.className = "node-btn";
+          btn.type = "button";
+          btn.dataset.id = n.id;
+          btn.innerHTML =
+            '<span class="stripe" style="background:' +
+            cat.color +
+            '"></span>' +
+            "<span>" +
+            n.title +
+            '</span><span class="tech">' +
+            n.tech +
+            "</span>";
+          btn.addEventListener("click", function () {
+            selectNode(n.id);
+          });
+          nodeIndex.appendChild(btn);
+        });
+
+        fitToView();
+      }
+
+      function selectNode(id) {
+        var n = nodesById[id];
+        var cat = DATA.categories[n.category];
+
+        document.querySelectorAll(".node").forEach(function (g) {
+          g.classList.toggle("selected", g.dataset.id === id);
+        });
+        document.querySelectorAll(".node-btn").forEach(function (b) {
+          b.setAttribute(
+            "aria-current",
+            b.dataset.id === id ? "true" : "false",
+          );
+        });
+
+        panelCat.innerHTML =
+          '<span class="dot" style="background:' +
+          cat.color +
+          '"></span>' +
+          cat.label;
+        panelTitle.textContent = n.title;
+        panelTech.textContent = n.tech;
+        panelSummary.textContent = n.summary;
+        panelResp.innerHTML = "";
+        n.responsibilities.forEach(function (r) {
+          var li = document.createElement("li");
+          li.textContent = r;
+          panelResp.appendChild(li);
+        });
+
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+      }
+
+      function closePanel() {
+        panel.classList.remove("open");
+        panel.setAttribute("aria-hidden", "true");
+        document.querySelectorAll(".node").forEach(function (g) {
+          g.classList.remove("selected");
+        });
+        document.querySelectorAll(".node-btn").forEach(function (b) {
+          b.setAttribute("aria-current", "false");
+        });
+      }
+
+      document
+        .getElementById("panel-close")
+        .addEventListener("click", closePanel);
+      document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape") closePanel();
+      });
+
+      function applyView() {
+        viewport.setAttribute(
+          "transform",
+          "translate(" + view.x + "," + view.y + ") scale(" + view.scale + ")",
+        );
+        document.getElementById("zoom-readout").textContent =
+          Math.round(view.scale * 100) + "%";
+      }
+
+      function fitToView() {
+        var rect = wrap.getBoundingClientRect();
+        // Keep the SVG's own coordinate space locked 1:1 to its rendered pixel
+        // box. Without this, the browser's own viewBox-to-box auto-scaling
+        // (preserveAspectRatio) stacks on top of our manual transform below,
+        // compounding into a squished/garbled render.
+        svg.setAttribute("viewBox", "0 0 " + rect.width + " " + rect.height);
+        var scale = Math.min(rect.width / VBOX.w, rect.height / VBOX.h) * 0.92;
+        scale = Math.max(0.3, Math.min(scale, 1.4));
+        view.scale = scale;
+        view.x = (rect.width - VBOX.w * scale) / 2;
+        view.y = (rect.height - VBOX.h * scale) / 2;
+        applyView();
+      }
+
+      wrap.addEventListener("pointerdown", function (ev) {
+        isPanning = true;
+        dragDistance = 0;
+        downTarget = ev.target;
+        lastX = ev.clientX;
+        lastY = ev.clientY;
+        wrap.classList.add("grabbing");
+        wrap.setPointerCapture(ev.pointerId);
+      });
+      wrap.addEventListener("pointermove", function (ev) {
+        if (!isPanning) return;
+        var dx = ev.clientX - lastX,
+          dy = ev.clientY - lastY;
+        view.x += dx;
+        view.y += dy;
+        dragDistance += Math.abs(dx) + Math.abs(dy);
+        lastX = ev.clientX;
+        lastY = ev.clientY;
+        applyView();
+      });
+      wrap.addEventListener("pointerup", function () {
+        isPanning = false;
+        wrap.classList.remove("grabbing");
+        if (dragDistance < CLICK_THRESHOLD) {
+          var nodeEl =
+            downTarget && downTarget.closest
+              ? downTarget.closest(".node")
+              : null;
+          if (nodeEl) selectNode(nodeEl.dataset.id);
+          else closePanel();
+        }
+      });
+      ["pointercancel", "pointerleave"].forEach(function (evt) {
+        wrap.addEventListener(evt, function () {
+          isPanning = false;
+          wrap.classList.remove("grabbing");
+        });
+      });
+
+      wrap.addEventListener(
+        "wheel",
+        function (ev) {
+          ev.preventDefault();
+          var rect = wrap.getBoundingClientRect();
+          var mx = ev.clientX - rect.left,
+            my = ev.clientY - rect.top;
+          var prevScale = view.scale;
+          var delta = ev.deltaY < 0 ? 1.08 : 0.93;
+          var newScale = Math.max(0.25, Math.min(2.2, prevScale * delta));
+          view.x = mx - ((mx - view.x) / prevScale) * newScale;
+          view.y = my - ((my - view.y) / prevScale) * newScale;
+          view.scale = newScale;
+          applyView();
+        },
+        { passive: false },
+      );
+
+      function zoomBy(factor) {
+        var rect = wrap.getBoundingClientRect();
+        var cx = rect.width / 2,
+          cy = rect.height / 2;
+        var prevScale = view.scale;
+        var newScale = Math.max(0.25, Math.min(2.2, prevScale * factor));
+        view.x = cx - ((cx - view.x) / prevScale) * newScale;
+        view.y = cy - ((cy - view.y) / prevScale) * newScale;
+        view.scale = newScale;
+        applyView();
+      }
+
+      document.getElementById("zoom-in").addEventListener("click", function () {
+        zoomBy(1.15);
+      });
+      document
+        .getElementById("zoom-out")
+        .addEventListener("click", function () {
+          zoomBy(0.87);
+        });
+      document.getElementById("zoom-fit").addEventListener("click", fitToView);
+      window.addEventListener("resize", fitToView);
+    </script>
+  </body>
+</html>

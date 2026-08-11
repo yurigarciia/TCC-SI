@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fluxos do Sistema — CPF Pia do Sul</title>
+    <style>
+      @font-face {
+        font-family: "Schematic Mono";
+        src:
+          local("Cascadia Mono"), local("Cascadia Code"), local("SF Mono"),
+          local("Consolas");
+      }
+
+      :root {
+        --bg: #eef1f6;
+        --grid-line: rgba(23, 27, 36, 0.06);
+        --grid-line-strong: rgba(23, 27, 36, 0.1);
+        --surface: #ffffff;
+        --surface-2: #f5f7fb;
+        --ink: #171b24;
+        --ink-soft: #545d6e;
+        --ink-faint: #838da0;
+        --border: #d7dce6;
+        --border-strong: #b9c2d1;
+        --accent: #3454d1;
+        --accent-soft: rgba(52, 84, 209, 0.12);
+        --edge: #9aa3b8;
+        --shadow: 0 12px 28px -14px rgba(23, 27, 36, 0.28);
+
+        --good: #15803d;
+        --good-bg: rgba(21, 128, 61, 0.1);
+        --bad: #b42318;
+        --bad-bg: rgba(180, 35, 24, 0.09);
+        --pending: #b45309;
+        --pending-bg: rgba(180, 83, 9, 0.1);
+        --open: #b45309;
+        --open-bg: rgba(180, 83, 9, 0.08);
+
+        --font-mono:
+          "Schematic Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular",
+          Consolas, "Liberation Mono", Menlo, monospace;
+        --font-serif:
+          Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141f;
+          --grid-line: rgba(255, 255, 255, 0.05);
+          --grid-line-strong: rgba(255, 255, 255, 0.09);
+          --surface: #161c2b;
+          --surface-2: #1a2131;
+          --ink: #e8eaf2;
+          --ink-soft: #a5adc0;
+          --ink-faint: #737e93;
+          --border: #2a3245;
+          --border-strong: #3a4358;
+          --accent: #7c9cff;
+          --accent-soft: rgba(124, 156, 255, 0.16);
+          --edge: #4b5568;
+          --shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.55);
+
+          --good: #4ade80;
+          --good-bg: rgba(74, 222, 128, 0.12);
+          --bad: #f87171;
+          --bad-bg: rgba(248, 113, 113, 0.12);
+          --pending: #f0a941;
+          --pending-bg: rgba(240, 169, 65, 0.14);
+          --open: #f0a941;
+          --open-bg: rgba(240, 169, 65, 0.1);
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141f;
+        --grid-line: rgba(255, 255, 255, 0.05);
+        --grid-line-strong: rgba(255, 255, 255, 0.09);
+        --surface: #161c2b;
+        --surface-2: #1a2131;
+        --ink: #e8eaf2;
+        --ink-soft: #a5adc0;
+        --ink-faint: #737e93;
+        --border: #2a3245;
+        --border-strong: #3a4358;
+        --accent: #7c9cff;
+        --accent-soft: rgba(124, 156, 255, 0.16);
+        --edge: #4b5568;
+        --shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.55);
+
+        --good: #4ade80;
+        --good-bg: rgba(74, 222, 128, 0.12);
+        --bad: #f87171;
+        --bad-bg: rgba(248, 113, 113, 0.12);
+        --pending: #f0a941;
+        --pending-bg: rgba(240, 169, 65, 0.14);
+        --open: #f0a941;
+        --open-bg: rgba(240, 169, 65, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-serif);
+      }
+      body {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        overflow: hidden;
+      }
+      /* flex (not grid) so #canvas-wrap gets a definite height via stretch —
+         a grid row with no explicit grid-template-rows sizes itself from
+         content, and an <svg height:100%> child can't resolve against that
+         indefinite track, collapsing to the SVG's tiny intrinsic size. */
+      #sidebar { flex: 0 0 320px; }
+      #canvas-wrap { flex: 1 1 auto; min-width: 0; }
+      @media (max-width: 860px) {
+        body {
+          flex-direction: column;
+        }
+        #sidebar {
+          flex: 0 0 auto;
+          max-height: 44vh;
+        }
+        #canvas-wrap { min-height: 0; }
+      }
+
+      #sidebar {
+        border-right: 1px solid var(--border);
+        background: var(--surface);
+        overflow-y: auto;
+        padding: 22px 20px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      h1 {
+        font-family: var(--font-serif);
+        font-size: 21px;
+        line-height: 1.25;
+        margin: 6px 0 4px;
+        text-wrap: balance;
+        font-weight: 700;
+      }
+      .lede {
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+      .sidebar-section {
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+      }
+      .sidebar-section h2 {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+
+      .flow-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .flow-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 10px;
+        font-family: var(--font-serif);
+        font-size: 13.5px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .flow-item:hover:not(:disabled) {
+        background: var(--surface-2);
+        border-color: var(--border-strong);
+      }
+      .flow-item[aria-current="true"] {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      .flow-item:disabled {
+        color: var(--ink-faint);
+        cursor: default;
+        border-style: dashed;
+      }
+      .flow-status {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 999px;
+      }
+      .flow-status.mapeado {
+        background: var(--good-bg);
+        color: var(--good);
+      }
+      .flow-status.soon {
+        background: var(--surface-2);
+        color: var(--ink-faint);
+      }
+
+      .legend {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .swatch-diamond {
+        width: 10px;
+        height: 10px;
+        flex: none;
+        background: var(--surface-2);
+        border: 1.4px solid var(--ink-faint);
+        transform: rotate(45deg);
+      }
+      .swatch-note {
+        width: 14px;
+        height: 9px;
+        flex: none;
+        border-radius: 2px;
+        border: 1.4px dashed var(--ink-faint);
+      }
+      .swatch-pill {
+        width: 16px;
+        height: 9px;
+        flex: none;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1.4px solid var(--ink-faint);
+      }
+
+      .open-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .open-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: var(--open-bg);
+        border: 1px solid var(--open);
+        border-radius: 7px;
+        padding: 8px 10px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .open-item:hover {
+        filter: brightness(0.98);
+      }
+      .empty-note {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        line-height: 1.5;
+      }
+
+      .provenance {
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--ink-faint);
+        line-height: 1.6;
+      }
+      .cross-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--accent);
+        text-decoration: none;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        padding: 4px 10px;
+        width: fit-content;
+      }
+      .cross-nav:hover {
+        background: var(--accent-soft);
+      }
+
+      #canvas-wrap {
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 /
+            28px 28px,
+          linear-gradient(var(--grid-line-strong) 1px, transparent 1px) 0 0 /
+            140px 140px,
+          linear-gradient(90deg, var(--grid-line-strong) 1px, transparent 1px) 0
+            0 / 140px 140px,
+          var(--bg);
+        touch-action: none;
+        cursor: grab;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      #canvas-wrap.grabbing {
+        cursor: grabbing;
+      }
+      svg#graph {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* Lane bands: a faint tint of the lane's own accent colour — kept deliberately
+     subtle (see fill-opacity set at creation) so it doesn't compete with the nodes. */
+      .lane-label {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      .node-shape {
+        fill: var(--surface);
+        stroke: var(--border-strong);
+        stroke-width: 1.3;
+      }
+      .node.selected .node-shape {
+        stroke-width: 2.4;
+      }
+      .node:hover .node-shape {
+        stroke: var(--accent);
+      }
+      .node {
+        cursor: pointer;
+      }
+
+      .node-shape.kind-note {
+        stroke-dasharray: 4 3;
+      }
+      .node-shape.kind-open {
+        stroke-dasharray: 4 3;
+        stroke: var(--open);
+        fill: var(--open-bg);
+      }
+      .node.selected .node-shape.kind-open {
+        stroke-width: 2;
+      }
+
+      .node-shape.kind-end-good {
+        fill: var(--good-bg);
+        stroke: var(--good);
+      }
+      .node-shape.kind-end-bad {
+        fill: var(--bad-bg);
+        stroke: var(--bad);
+      }
+      .node-shape.kind-end-pending {
+        fill: var(--pending-bg);
+        stroke: var(--pending);
+      }
+      .node-shape.kind-start {
+        fill: var(--surface-2);
+        stroke: var(--ink-faint);
+      }
+
+      .node-stripe {
+        rx: 2;
+      }
+      .node-title {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        fill: var(--ink);
+        font-size: 13.5px;
+      }
+      .node-title.center {
+        text-anchor: middle;
+        font-weight: 700;
+      }
+      .node-title.small {
+        font-size: 12px;
+      }
+      .badge-q {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 11px;
+        fill: var(--open);
+      }
+
+      .edge-path {
+        fill: none;
+        stroke: var(--edge);
+        stroke-width: 1.5;
+        marker-end: url(#arrow2);
+      }
+      .edge-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        fill: var(--ink-soft);
+      }
+      .edge-label-bg {
+        fill: var(--bg);
+      }
+
+      #toolbar {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 5px;
+        box-shadow: var(--shadow);
+        z-index: 5;
+      }
+      #toolbar button {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #toolbar button:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+      #toolbar button:focus-visible,
+      .flow-item:focus-visible,
+      .open-item:focus-visible,
+      .panel-close:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      #zoom-readout {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+        width: 42px;
+        text-align: center;
+      }
+
+      #panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 350px;
+        max-width: 88vw;
+        background: var(--surface);
+        border-left: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transform: translateX(100%);
+        transition: transform 200ms ease;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        padding: 22px 22px 26px;
+        overflow-y: auto;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #panel {
+          transition: none;
+        }
+      }
+      #panel.open {
+        transform: translateX(0);
+      }
+      .panel-close {
+        align-self: flex-end;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        width: 28px;
+        height: 28px;
+        color: var(--ink-soft);
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .panel-close:hover {
+        background: var(--surface-2);
+      }
+      .panel-lane {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin-top: 14px;
+      }
+      .panel-open-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--open);
+        background: var(--open-bg);
+        border: 1px solid var(--open);
+        border-radius: 999px;
+        padding: 3px 9px;
+        margin-top: 10px;
+        width: fit-content;
+      }
+      #panel h3 {
+        font-family: var(--font-serif);
+        font-size: 20px;
+        margin: 8px 0 12px;
+        text-wrap: balance;
+      }
+      #panel .detail {
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+
+      #load-error {
+        display: none;
+        position: absolute;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+      }
+      #load-error.show {
+        display: flex;
+      }
+      #load-error .box {
+        max-width: 420px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 24px;
+        box-shadow: var(--shadow);
+      }
+      #load-error h2 {
+        font-size: 16px;
+        margin: 0 0 8px;
+      }
+      #load-error p {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        margin: 0 0 6px;
+      }
+      #load-error code {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        background: var(--surface-2);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <aside id="sidebar">
+      <div>
+        <div class="eyebrow">TCC · Ecossistema Digital</div>
+        <h1>Fluxos do sistema</h1>
+        <p class="lede">
+          Cada fluxo é um grafo próprio, separado da arquitetura de componentes
+          — escolha um na lista abaixo.
+        </p>
+        <a class="cross-nav" href="arquitetura.html"
+          >↗ Ver arquitetura de componentes</a
+        >
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Fluxos</h2>
+        <div class="flow-list" id="flow-list"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Legenda</h2>
+        <div class="legend" id="legend"></div>
+        <div class="legend" style="margin-top: 10px">
+          <div class="legend-row">
+            <span class="swatch-pill"></span>início / status final
+          </div>
+          <div class="legend-row">
+            <span class="swatch-diamond"></span>decisão
+          </div>
+          <div class="legend-row">
+            <span class="swatch-note"></span>referência / configuração à parte
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Pontos em aberto</h2>
+        <div class="open-list" id="open-list"></div>
+      </div>
+
+      <div class="provenance">
+        FONTE · ../fluxos/*.json — edite o JSON e recarregue a página
+      </div>
+    </aside>
+
+    <div id="canvas-wrap">
+      <svg
+        id="graph"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <marker
+            id="arrow2"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--edge)"></path>
+          </marker>
+        </defs>
+        <g id="viewport">
+          <g id="lanes"></g>
+          <g id="edges"></g>
+          <g id="nodes"></g>
+        </g>
+      </svg>
+
+      <div id="toolbar">
+        <button id="zoom-out" aria-label="Diminuir zoom" title="Diminuir zoom">
+          −
+        </button>
+        <span id="zoom-readout">100%</span>
+        <button id="zoom-in" aria-label="Aumentar zoom" title="Aumentar zoom">
+          +
+        </button>
+        <button
+          id="zoom-fit"
+          aria-label="Ajustar à tela"
+          title="Ajustar à tela"
+        >
+          ⤢
+        </button>
+      </div>
+
+      <aside id="panel" aria-hidden="true">
+        <button
+          class="panel-close"
+          id="panel-close"
+          aria-label="Fechar detalhes"
+        >
+          ✕
+        </button>
+        <div class="panel-lane" id="panel-lane"></div>
+        <div id="panel-open-tag-slot"></div>
+        <h3 id="panel-title"></h3>
+        <p class="detail" id="panel-detail"></p>
+      </aside>
+
+      <div id="load-error">
+        <div class="box">
+          <h2>Não consegui carregar os dados dos fluxos</h2>
+          <p>
+            Provavelmente esta página foi aberta direto como arquivo
+            (<code>file://</code>), e o navegador bloqueia esse tipo de leitura
+            por segurança.
+          </p>
+          <p>Sirva a pasta com um servidor local, por exemplo:</p>
+          <p><code>npx serve TCC-FINAL/arquitetura/site</code></p>
+          <p>
+            ou, dentro de <code>TCC-FINAL/arquitetura/site</code>:
+            <code>python -m http.server</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var NS = "http://www.w3.org/2000/svg";
+      function el(tag, attrs) {
+        var e = document.createElementNS(NS, tag);
+        for (var k in attrs) e.setAttribute(k, attrs[k]);
+        return e;
+      }
+      function wrapText(text, maxChars) {
+        var words = text.split(" "),
+          lines = [],
+          cur = "";
+        words.forEach(function (w) {
+          var next = cur ? cur + " " + w : w;
+          if (next.length > maxChars && cur) {
+            lines.push(cur);
+            cur = w;
+          } else {
+            cur = next;
+          }
+        });
+        if (cur) lines.push(cur);
+        return lines;
+      }
+
+      var svg = document.getElementById("graph");
+      var wrap = document.getElementById("canvas-wrap");
+      var viewport = document.getElementById("viewport");
+      var lanesG = document.getElementById("lanes");
+      var edgesG = document.getElementById("edges");
+      var nodesG = document.getElementById("nodes");
+      var panel = document.getElementById("panel");
+
+      var FLOWS_META = [];
+      var FLOW_CACHE = {};
+      var currentFlowId = null;
+      var nodesById = {};
+      var VBOX = { w: 1040, h: 1760 };
+
+      function computeVBox(flow) {
+        var maxX = 0,
+          maxY = 0;
+        flow.lanes.forEach(function (l) {
+          maxX = Math.max(maxX, l.x + l.w);
+        });
+        flow.nodes.forEach(function (n) {
+          maxX = Math.max(maxX, n.x + n.w);
+          maxY = Math.max(maxY, n.y + n.h);
+        });
+        return { w: maxX + 30, h: maxY + 40 };
+      }
+
+      fetch("../fluxos/index.json")
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (json) {
+          FLOWS_META = json.flows;
+          buildFlowList();
+          var requested = new URLSearchParams(location.search).get("flow");
+          var mapeados = FLOWS_META.filter(function (f) {
+            return f.status === "mapeado" && f.file;
+          });
+          var initial =
+            mapeados.filter(function (f) {
+              return f.id === requested;
+            })[0] || mapeados[0];
+          if (initial) loadFlow(initial.id);
+        })
+        .catch(function () {
+          document.getElementById("load-error").classList.add("show");
+        });
+
+      function anchor(a, b) {
+        var ac = { x: a.x + a.w / 2, y: a.y + a.h / 2 };
+        var bc = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+        var dx = bc.x - ac.x,
+          dy = bc.y - ac.y;
+        if (Math.abs(dy) >= Math.abs(dx)) {
+          if (dy >= 0)
+            return { x1: ac.x, y1: a.y + a.h, x2: bc.x, y2: b.y, axis: "v" };
+          return { x1: ac.x, y1: a.y, x2: bc.x, y2: b.y + b.h, axis: "v" };
+        }
+        if (dx >= 0)
+          return { x1: a.x + a.w, y1: ac.y, x2: b.x, y2: bc.y, axis: "h" };
+        return { x1: a.x, y1: ac.y, x2: b.x + b.w, y2: bc.y, axis: "h" };
+      }
+
+      function renderShape(n, cat) {
+        var frag = document.createDocumentFragment();
+        var strokeClass = "node-shape kind-" + (n.kind || n.shape);
+
+        if (n.shape === "pill") {
+          var r = n.h / 2;
+          frag.appendChild(
+            el("rect", {
+              class: strokeClass,
+              x: n.x,
+              y: n.y,
+              width: n.w,
+              height: n.h,
+              rx: r,
+            }),
+          );
+          var cxPill = n.x + n.w / 2,
+            cyPill = n.y + n.h / 2;
+          var pillLines = wrapText(n.label, Math.round(n.w / 7.5));
+          var pillStartY = cyPill - ((pillLines.length - 1) * 7) + 4;
+          pillLines.forEach(function (line, i) {
+            var lt = el("text", {
+              class: "node-title center small",
+              x: cxPill,
+              y: pillStartY + i * 14,
+            });
+            lt.textContent = line;
+            frag.appendChild(lt);
+          });
+        } else if (n.shape === "diamond") {
+          var cx = n.x + n.w / 2,
+            cy = n.y + n.h / 2;
+          var pts = [
+            cx + "," + n.y,
+            n.x + n.w + "," + cy,
+            cx + "," + (n.y + n.h),
+            n.x + "," + cy,
+          ].join(" ");
+          frag.appendChild(el("polygon", { class: strokeClass, points: pts }));
+          var lines = wrapText(n.label, 18);
+          var startY = cy - (lines.length - 1) * 7;
+          lines.forEach(function (line, i) {
+            var lt = el("text", {
+              class: "node-title center small",
+              x: cx,
+              y: startY + i * 15,
+            });
+            lt.textContent = line;
+            frag.appendChild(lt);
+          });
+        } else {
+          var rectAttrs = {
+            class: strokeClass,
+            x: n.x,
+            y: n.y,
+            width: n.w,
+            height: n.h,
+            rx: 10,
+          };
+          frag.appendChild(el("rect", rectAttrs));
+          if (cat)
+            frag.appendChild(
+              el("rect", {
+                class: "node-stripe",
+                x: n.x,
+                y: n.y,
+                width: 5,
+                height: n.h,
+                rx: 2,
+                fill: cat,
+              }),
+            );
+          var lines2 = wrapText(n.label, 28);
+          lines2.forEach(function (line, i) {
+            var lt2 = el("text", {
+              class: "node-title",
+              x: n.x + (cat ? 18 : 14),
+              y: n.y + 26 + i * 18,
+            });
+            lt2.textContent = line;
+            frag.appendChild(lt2);
+          });
+          if (n.openQuestion) {
+            var q = el("text", {
+              class: "badge-q",
+              x: n.x + n.w - 20,
+              y: n.y + 22,
+            });
+            q.textContent = "?";
+            frag.appendChild(q);
+          }
+        }
+        return frag;
+      }
+
+      function loadFlow(flowId) {
+        if (FLOW_CACHE[flowId]) {
+          renderFlow(flowId);
+          return;
+        }
+        var meta = FLOWS_META.filter(function (f) {
+          return f.id === flowId;
+        })[0];
+        if (!meta || !meta.file) return;
+        fetch("../fluxos/" + meta.file)
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (json) {
+            FLOW_CACHE[flowId] = json;
+            renderFlow(flowId);
+          })
+          .catch(function () {
+            document.getElementById("load-error").classList.add("show");
+          });
+      }
+
+      function renderFlow(flowId) {
+        var flow = FLOW_CACHE[flowId];
+        currentFlowId = flowId;
+        VBOX = computeVBox(flow);
+        nodesById = {};
+        flow.nodes.forEach(function (n) {
+          nodesById[n.id] = n;
+        });
+
+        lanesG.innerHTML = "";
+        edgesG.innerHTML = "";
+        nodesG.innerHTML = "";
+        closePanel();
+
+        var laneById = {};
+        flow.lanes.forEach(function (l) {
+          laneById[l.id] = l;
+        });
+
+        flow.lanes.forEach(function (l) {
+          // Faint tint of the lane's own colour — fill-opacity kept low on purpose so
+          // the bands read as background structure, not competing visual weight.
+          lanesG.appendChild(
+            el("rect", {
+              x: l.x,
+              y: 0,
+              width: l.w,
+              height: VBOX.h,
+              fill: l.color,
+              "fill-opacity": "0.06",
+            }),
+          );
+          var lbl = el("text", {
+            class: "lane-label",
+            x: l.x + 14,
+            y: 20,
+            fill: l.color,
+          });
+          lbl.textContent = l.label;
+          lanesG.appendChild(lbl);
+        });
+
+        flow.edges.forEach(function (e) {
+          var a = nodesById[e.from],
+            b = nodesById[e.to];
+          var pt = anchor(a, b);
+          var d;
+          if (pt.axis === "v") {
+            var dy = Math.max(20, (pt.y2 - pt.y1) / 2);
+            d =
+              "M " +
+              pt.x1 +
+              " " +
+              pt.y1 +
+              " C " +
+              pt.x1 +
+              " " +
+              (pt.y1 + dy) +
+              ", " +
+              pt.x2 +
+              " " +
+              (pt.y2 - dy) +
+              ", " +
+              pt.x2 +
+              " " +
+              pt.y2;
+          } else {
+            var dx = Math.max(20, (pt.x2 - pt.x1) / 2);
+            d =
+              "M " +
+              pt.x1 +
+              " " +
+              pt.y1 +
+              " C " +
+              (pt.x1 + dx) +
+              " " +
+              pt.y1 +
+              ", " +
+              (pt.x2 - dx) +
+              " " +
+              pt.y2 +
+              ", " +
+              pt.x2 +
+              " " +
+              pt.y2;
+          }
+          edgesG.appendChild(el("path", { class: "edge-path", d: d }));
+          if (e.label) {
+            var mx = (pt.x1 + pt.x2) / 2,
+              my = (pt.y1 + pt.y2) / 2;
+            var w = 14 + e.label.length * 6;
+            edgesG.appendChild(
+              el("rect", {
+                class: "edge-label-bg",
+                x: mx - w / 2,
+                y: my - 9,
+                width: w,
+                height: 15,
+                rx: 3,
+              }),
+            );
+            var lbl2 = el("text", {
+              class: "edge-label",
+              x: mx,
+              y: my + 2,
+              "text-anchor": "middle",
+            });
+            lbl2.textContent = e.label;
+            edgesG.appendChild(lbl2);
+          }
+        });
+
+        flow.nodes.forEach(function (n) {
+          var lane = laneById[n.lane];
+          var g = el("g", {
+            class: "node",
+            "data-id": n.id,
+            tabindex: "0",
+            role: "button",
+            "aria-label": n.label,
+          });
+          var frag = renderShape(n, n.shape === "rect" ? lane.color : null);
+          g.appendChild(frag);
+          g.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter" || ev.key === " ") {
+              ev.preventDefault();
+              selectNode(n.id);
+            }
+          });
+          nodesG.appendChild(g);
+        });
+
+        renderLegend(flow);
+        renderOpenList(flow);
+        updateFlowListUI();
+        fitToView();
+      }
+
+      function renderLegend(flow) {
+        var legend = document.getElementById("legend");
+        legend.innerHTML = "";
+        flow.lanes.forEach(function (l) {
+          var row = document.createElement("div");
+          row.className = "legend-row";
+          row.innerHTML =
+            '<span class="dot" style="background:' +
+            l.color +
+            '"></span>' +
+            l.label;
+          legend.appendChild(row);
+        });
+      }
+
+      function renderOpenList(flow) {
+        var list = document.getElementById("open-list");
+        list.innerHTML = "";
+        var open = flow.nodes.filter(function (n) {
+          return n.openQuestion;
+        });
+        if (!open.length) {
+          var p = document.createElement("div");
+          p.className = "empty-note";
+          p.textContent = "Nenhum ponto em aberto neste fluxo.";
+          list.appendChild(p);
+          return;
+        }
+        open.forEach(function (n) {
+          var btn = document.createElement("button");
+          btn.className = "open-item";
+          btn.type = "button";
+          btn.textContent = n.label;
+          btn.addEventListener("click", function () {
+            selectNode(n.id);
+          });
+          list.appendChild(btn);
+        });
+      }
+
+      var panelLane = document.getElementById("panel-lane");
+      var panelTitle = document.getElementById("panel-title");
+      var panelDetail = document.getElementById("panel-detail");
+      var panelOpenSlot = document.getElementById("panel-open-tag-slot");
+
+      function selectNode(id) {
+        var n = nodesById[id];
+        if (!n) return;
+        var flow = FLOW_CACHE[currentFlowId];
+        var lane = flow.lanes.filter(function (l) {
+          return l.id === n.lane;
+        })[0];
+
+        document.querySelectorAll(".node").forEach(function (g) {
+          g.classList.toggle("selected", g.dataset.id === id);
+        });
+
+        panelLane.innerHTML =
+          '<span class="dot" style="background:' +
+          lane.color +
+          '"></span>' +
+          lane.label;
+        panelTitle.textContent = n.label;
+        panelDetail.textContent =
+          n.detail || "Sem detalhe adicional registrado ainda.";
+        panelOpenSlot.innerHTML = n.openQuestion
+          ? '<div class="panel-open-tag">⚠ em aberto</div>'
+          : "";
+
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+      }
+
+      function closePanel() {
+        panel.classList.remove("open");
+        panel.setAttribute("aria-hidden", "true");
+        document.querySelectorAll(".node").forEach(function (g) {
+          g.classList.remove("selected");
+        });
+      }
+
+      document
+        .getElementById("panel-close")
+        .addEventListener("click", closePanel);
+      document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape") closePanel();
+      });
+
+      // ---- flow switcher ----
+      var flowList = document.getElementById("flow-list");
+      function buildFlowList() {
+        flowList.innerHTML = "";
+        FLOWS_META.forEach(function (f) {
+          var btn = document.createElement("button");
+          btn.className = "flow-item";
+          btn.type = "button";
+          btn.dataset.id = f.id;
+          var hasData = f.status === "mapeado" && !!f.file;
+          btn.disabled = !hasData;
+          btn.innerHTML =
+            "<span>" +
+            f.title +
+            "</span><span class='flow-status " +
+            (hasData ? "mapeado" : "soon") +
+            "'>" +
+            (hasData ? "mapeado" : "em breve") +
+            "</span>";
+          if (hasData)
+            btn.addEventListener("click", function () {
+              loadFlow(f.id);
+            });
+          flowList.appendChild(btn);
+        });
+      }
+      function updateFlowListUI() {
+        document.querySelectorAll(".flow-item").forEach(function (b) {
+          b.setAttribute(
+            "aria-current",
+            b.dataset.id === currentFlowId ? "true" : "false",
+          );
+        });
+      }
+
+      // ---- pan & zoom (click vs. drag decided by distance travelled, not native click,
+      // so a click on a node still opens the panel even if the mouse jitters a pixel) ----
+      var view = { x: 0, y: 0, scale: 1 };
+      var isPanning = false,
+        lastX = 0,
+        lastY = 0,
+        dragDistance = 0,
+        downTarget = null;
+      var CLICK_THRESHOLD = 6;
+
+      function applyView() {
+        viewport.setAttribute(
+          "transform",
+          "translate(" + view.x + "," + view.y + ") scale(" + view.scale + ")",
+        );
+        document.getElementById("zoom-readout").textContent =
+          Math.round(view.scale * 100) + "%";
+      }
+
+      function fitToView() {
+        var rect = wrap.getBoundingClientRect();
+        // Keep the SVG's own coordinate space locked 1:1 to its rendered pixel
+        // box. Without this, the browser's own viewBox-to-box auto-scaling
+        // (preserveAspectRatio) stacks on top of our manual transform below,
+        // compounding into a squished/garbled render.
+        svg.setAttribute("viewBox", "0 0 " + rect.width + " " + rect.height);
+        var scale = Math.min(rect.width / VBOX.w, rect.height / VBOX.h) * 0.94;
+        scale = Math.max(0.18, Math.min(scale, 1.4));
+        view.scale = scale;
+        view.x = (rect.width - VBOX.w * scale) / 2;
+        view.y = 20;
+        applyView();
+      }
+
+      wrap.addEventListener("pointerdown", function (ev) {
+        isPanning = true;
+        dragDistance = 0;
+        downTarget = ev.target;
+        lastX = ev.clientX;
+        lastY = ev.clientY;
+        wrap.classList.add("grabbing");
+        wrap.setPointerCapture(ev.pointerId);
+      });
+      wrap.addEventListener("pointermove", function (ev) {
+        if (!isPanning) return;
+        var dx = ev.clientX - lastX,
+          dy = ev.clientY - lastY;
+        view.x += dx;
+        view.y += dy;
+        dragDistance += Math.abs(dx) + Math.abs(dy);
+        lastX = ev.clientX;
+        lastY = ev.clientY;
+        applyView();
+      });
+      wrap.addEventListener("pointerup", function () {
+        isPanning = false;
+        wrap.classList.remove("grabbing");
+        if (dragDistance < CLICK_THRESHOLD) {
+          var nodeEl =
+            downTarget && downTarget.closest
+              ? downTarget.closest(".node")
+              : null;
+          if (nodeEl) selectNode(nodeEl.dataset.id);
+          else closePanel();
+        }
+      });
+      ["pointercancel", "pointerleave"].forEach(function (evt) {
+        wrap.addEventListener(evt, function () {
+          isPanning = false;
+          wrap.classList.remove("grabbing");
+        });
+      });
+
+      wrap.addEventListener(
+        "wheel",
+        function (ev) {
+          ev.preventDefault();
+          var rect = wrap.getBoundingClientRect();
+          var mx = ev.clientX - rect.left,
+            my = ev.clientY - rect.top;
+          var prevScale = view.scale;
+          var delta = ev.deltaY < 0 ? 1.08 : 0.93;
+          var newScale = Math.max(0.15, Math.min(2.2, prevScale * delta));
+          view.x = mx - ((mx - view.x) / prevScale) * newScale;
+          view.y = my - ((my - view.y) / prevScale) * newScale;
+          view.scale = newScale;
+          applyView();
+        },
+        { passive: false },
+      );
+
+      function zoomBy(factor) {
+        var rect = wrap.getBoundingClientRect();
+        var cx = rect.width / 2,
+          cy = rect.height / 2;
+        var prevScale = view.scale;
+        var newScale = Math.max(0.15, Math.min(2.2, prevScale * factor));
+        view.x = cx - ((cx - view.x) / prevScale) * newScale;
+        view.y = cy - ((cy - view.y) / prevScale) * newScale;
+        view.scale = newScale;
+        applyView();
+      }
+
+      document.getElementById("zoom-in").addEventListener("click", function () {
+        zoomBy(1.15);
+      });
+      document
+        .getElementById("zoom-out")
+        .addEventListener("click", function () {
+          zoomBy(0.87);
+        });
+      document.getElementById("zoom-fit").addEventListener("click", fitToView);
+      window.addEventListener("resize", fitToView);
+    </script>
+  </body>
+</html>

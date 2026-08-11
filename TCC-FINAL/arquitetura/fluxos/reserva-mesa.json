@@ -1,0 +1,61 @@
+{
+  "_readme": "Fonte de dados do fluxo 'Reserva de Mesa' (ver artifact/site 'Fluxos do Sistema'). Decisões confirmadas em conversa de 2026-08-11: dois canais de entrada convivem — diretoria lança reserva direto (pedido recebido por fora) OU associado solicita pelo app; reserva e pagamento acontecem juntos, com os dois canais de pagamento já usados em Mensalidade (mediado presencial / online via gateway); reserva é sempre da mesa INTEIRA (não há reserva de lugar avulso); mesas sem reserva ficam livres para ocupação orgânica no evento, sem controle formal do sistema; inclui um caminho básico de cancelamento (RF15, prioridade Could), que libera a mesa. Depende do Croqui de Salão (mapa de mesas) e do Cadastro de Evento (preço/disponibilidade por mesa daquele evento). Ponto em aberto (openQuestion:true): prazo de expiração de uma solicitação pendente de confirmação.",
+  "lanes": [
+    { "id": "associado", "label": "Associado — App Mobile", "color": "#2f6fed", "x": 30, "w": 280 },
+    { "id": "gateway", "label": "Gateway de Pagamento", "color": "#7e22ce", "x": 340, "w": 220 },
+    { "id": "sistema", "label": "Sistema (automático)", "color": "#64748b", "x": 590, "w": 280 },
+    { "id": "diretoria", "label": "Diretoria — Painel Web", "color": "#b45309", "x": 900, "w": 280 }
+  ],
+  "nodes": [
+    { "id": "start-a", "lane": "associado", "shape": "pill", "kind": "start", "x": 90, "y": 40, "w": 200, "h": 56, "label": "Início — Associado solicita mesa no app" },
+    { "id": "a1", "lane": "associado", "shape": "rect", "x": 45, "y": 130, "w": 250, "h": 90, "label": "Escolhe evento e visualiza mapa de mesas", "detail": "O mapa vem da posição espacial (x/y) cadastrada no Croqui de Salão vinculado ao evento, mostrando quais mesas já estão reservadas." },
+    { "id": "a2", "lane": "associado", "shape": "rect", "x": 45, "y": 250, "w": 250, "h": 64, "label": "Seleciona mesa livre no mapa" },
+    { "id": "a3", "lane": "associado", "shape": "diamond", "x": 70, "y": 350, "w": 250, "h": 140, "label": "Como vai pagar a mesa?" },
+    { "id": "a-pending", "lane": "associado", "shape": "pill", "kind": "end-pending", "x": 45, "y": 530, "w": 250, "h": 64, "label": "Solicitação pendente (paga presencial)" },
+    { "id": "open-prazo", "lane": "associado", "shape": "note", "openQuestion": true, "x": 45, "y": 630, "w": 250, "h": 130, "label": "Solicitação pendente expira?", "detail": "EM ABERTO — se a diretoria não confirmar uma solicitação com pagamento presencial dentro de um prazo, ela expira automaticamente e libera a mesa, ou fica pendente indefinidamente? Validar com o CPF Pia do Sul." },
+
+    { "id": "gw-process", "lane": "gateway", "shape": "rect", "x": 355, "y": 350, "w": 190, "h": 80, "label": "Gateway processa pagamento" },
+    { "id": "gw-confirm", "lane": "gateway", "shape": "rect", "x": 355, "y": 470, "w": 190, "h": 64, "label": "Confirma pagamento ao sistema" },
+
+    { "id": "s1", "lane": "sistema", "shape": "diamond", "x": 615, "y": 740, "w": 220, "h": 140, "label": "Mesa ainda disponível?", "detail": "Checagem de concorrência — evita que duas pessoas reservem a mesma mesa quase ao mesmo tempo, ponto citado como risco no roteiro de entrevista (conflito de reserva)." },
+    { "id": "end-bad", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 370, "y": 920, "w": 230, "h": 64, "label": "Mesa já reservada — solicitação recusada" },
+    { "id": "s2", "lane": "sistema", "shape": "rect", "x": 605, "y": 920, "w": 250, "h": 64, "label": "Marca mesa como reservada (mesa inteira)" },
+    { "id": "end-good", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 615, "y": 1010, "w": 220, "h": 64, "label": "Status: Mesa reservada" },
+    { "id": "note-livre", "lane": "sistema", "shape": "note", "x": 605, "y": 1110, "w": 250, "h": 120, "label": "Mesas não reservadas ficam livres", "detail": "O sistema só controla mesas COM reserva. Mesas sem reserva ficam disponíveis para ocupação livre no evento, preenchidas organicamente por diferentes pessoas, sem registro formal de quem senta ali." },
+    { "id": "s-release", "lane": "sistema", "shape": "rect", "x": 605, "y": 1300, "w": 250, "h": 64, "label": "Libera mesa (remove reserva)" },
+    { "id": "end-cancelled", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 615, "y": 1390, "w": 220, "h": 64, "label": "Status: Reserva cancelada" },
+
+    { "id": "start-d", "lane": "diretoria", "shape": "pill", "kind": "start", "x": 940, "y": 40, "w": 220, "h": 56, "label": "Início — Diretoria lança reserva (pedido por fora)" },
+    { "id": "d1", "lane": "diretoria", "shape": "rect", "x": 915, "y": 130, "w": 250, "h": 90, "label": "Seleciona evento e mesa no mapa do croqui" },
+    { "id": "d2", "lane": "diretoria", "shape": "rect", "x": 915, "y": 250, "w": 250, "h": 90, "label": "Registra pagamento", "detail": "Pagamento recebido presencialmente (dinheiro/Pix/transferência) ou repassa link de pagamento online ao associado — mesmo padrão de dois canais do fluxo de Mensalidade." },
+    { "id": "d-confirm", "lane": "diretoria", "shape": "rect", "x": 915, "y": 620, "w": 250, "h": 80, "label": "Confirma recebimento e efetiva reserva", "detail": "Etapa que fecha uma solicitação feita pelo app com pagamento presencial pendente." },
+    { "id": "d-cancel-req", "lane": "diretoria", "shape": "rect", "x": 915, "y": 1010, "w": 250, "h": 90, "label": "Recebe pedido de cancelamento", "detail": "RF15 (Could) — pedido de cancelamento chega por fora (associado avisa a diretoria); não há autoatendimento de cancelamento pelo associado neste fluxo." },
+    { "id": "d-cancel-dec", "lane": "diretoria", "shape": "diamond", "x": 930, "y": 1130, "w": 220, "h": 140, "label": "Confirma cancelamento?" }
+  ],
+  "edges": [
+    { "from": "start-a", "to": "a1" },
+    { "from": "a1", "to": "a2" },
+    { "from": "a2", "to": "a3" },
+    { "from": "a3", "to": "gw-process", "label": "online" },
+    { "from": "a3", "to": "a-pending", "label": "presencial" },
+    { "from": "a-pending", "to": "open-prazo" },
+    { "from": "a-pending", "to": "d-confirm" },
+    { "from": "gw-process", "to": "gw-confirm" },
+    { "from": "gw-confirm", "to": "s1" },
+
+    { "from": "start-d", "to": "d1" },
+    { "from": "d1", "to": "d2" },
+    { "from": "d2", "to": "s1" },
+    { "from": "d-confirm", "to": "s1" },
+
+    { "from": "s1", "to": "s2", "label": "sim" },
+    { "from": "s1", "to": "end-bad", "label": "não" },
+    { "from": "s2", "to": "end-good" },
+    { "from": "end-good", "to": "note-livre" },
+    { "from": "end-good", "to": "d-cancel-req" },
+    { "from": "d-cancel-req", "to": "d-cancel-dec" },
+    { "from": "d-cancel-dec", "to": "s-release", "label": "sim" },
+    { "from": "d-cancel-dec", "to": "end-good", "label": "não, mantém" },
+    { "from": "s-release", "to": "end-cancelled" }
+  ]
+}
