@@ -1,0 +1,31 @@
+{
+  "_readme": "Fonte de dados do fluxo 'Relatório de Inadimplência' (RF07, ver artifact/site 'Fluxos do Sistema'). Decisões confirmadas em conversa de 2026-08-11: o relatório fica sempre disponível para consulta da diretoria/tesoureiro (não é gerado sob agendamento); em paralelo, o sistema dispara um lembrete automático ao associado quando ele entra em Status: Inadimplente (evolução em relação ao processo atual, descrito na entrevista escrita como 'cobrança pessoal via WhatsApp'). Depende do fluxo de Mensalidade (parte do Status: Inadimplente gerado lá). Ponto em aberto (openQuestion:true): quantos dias após o vencimento sem pagamento o lembrete automático é disparado.",
+  "lanes": [
+    { "id": "diretoria", "label": "Diretoria — Painel Web", "color": "#b45309", "x": 30, "w": 300 },
+    { "id": "sistema", "label": "Sistema (automático)", "color": "#64748b", "x": 360, "w": 280 },
+    { "id": "associado", "label": "Associado — App Mobile", "color": "#2f6fed", "x": 670, "w": 260 }
+  ],
+  "nodes": [
+    { "id": "start-d", "lane": "diretoria", "shape": "pill", "kind": "start", "x": 110, "y": 40, "w": 220, "h": 56, "label": "Início — Diretoria consulta relatório de inadimplência" },
+    { "id": "d1", "lane": "diretoria", "shape": "rect", "x": 45, "y": 130, "w": 290, "h": 90, "label": "Abre relatório de inadimplência", "detail": "Lista sempre disponível para consulta, sem necessidade de geração manual — mostra todo associado em Status: Inadimplente (fluxo de Mensalidade)." },
+    { "id": "d2", "lane": "diretoria", "shape": "rect", "x": 45, "y": 250, "w": 290, "h": 80, "label": "Consulta detalhes por associado", "detail": "Tempo de atraso, valor devido e histórico de pagamentos." },
+    { "id": "end-consulted", "lane": "diretoria", "shape": "pill", "x": 90, "y": 360, "w": 200, "h": 56, "label": "Relatório consultado" },
+
+    { "id": "start-sys", "lane": "sistema", "shape": "pill", "kind": "start", "x": 400, "y": 40, "w": 220, "h": 56, "label": "Início — Associado entra em Status: Inadimplente" },
+    { "id": "open-prazo", "lane": "sistema", "shape": "note", "openQuestion": true, "x": 375, "y": 130, "w": 270, "h": 120, "label": "Lembrete automático dispara quando?", "detail": "EM ABERTO — quantos dias após o vencimento sem pagamento o sistema dispara o lembrete automaticamente? Validar com o CPF Pia do Sul." },
+    { "id": "s1", "lane": "sistema", "shape": "rect", "x": 375, "y": 280, "w": 270, "h": 64, "label": "Dispara lembrete automático" },
+    { "id": "end-sent", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 385, "y": 460, "w": 250, "h": 64, "label": "Status: Lembrete enviado" },
+
+    { "id": "a1", "lane": "associado", "shape": "rect", "x": 705, "y": 280, "w": 190, "h": 90, "label": "Recebe notificação de mensalidade em atraso no app" }
+  ],
+  "edges": [
+    { "from": "start-d", "to": "d1" },
+    { "from": "d1", "to": "d2" },
+    { "from": "d2", "to": "end-consulted" },
+
+    { "from": "start-sys", "to": "open-prazo" },
+    { "from": "open-prazo", "to": "s1" },
+    { "from": "s1", "to": "a1" },
+    { "from": "a1", "to": "end-sent" }
+  ]
+}

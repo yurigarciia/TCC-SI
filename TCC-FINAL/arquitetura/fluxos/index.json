@@ -6,6 +6,8 @@
     { "id": "croqui-salao", "title": "Cadastro de Croqui de Salão", "status": "mapeado", "file": "croqui-salao.json" },
     { "id": "evento", "title": "Cadastro de Evento", "status": "mapeado", "file": "evento.json" },
     { "id": "reserva-mesa", "title": "Reserva de Mesa", "status": "mapeado", "file": "reserva-mesa.json" },
-    { "id": "emissao-ingresso", "title": "Emissão de Ingresso", "status": "mapeado", "file": "emissao-ingresso.json" }
+    { "id": "emissao-ingresso", "title": "Emissão de Ingresso", "status": "mapeado", "file": "emissao-ingresso.json" },
+    { "id": "relatorio-inadimplencia", "title": "Relatório de Inadimplência", "status": "mapeado", "file": "relatorio-inadimplencia.json" },
+    { "id": "cancelamento-transferencia-reserva", "title": "Cancelamento/Transferência de Reserva", "status": "mapeado", "file": "cancelamento-transferencia-reserva.json" }
   ]
 }

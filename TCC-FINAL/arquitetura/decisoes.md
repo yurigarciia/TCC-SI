@@ -182,6 +182,75 @@ Achados relevantes, já incorporados nos fluxos acima onde aplicável:
 
 ---
 
+## Relatório de Inadimplência — 2026-08-11
+
+**Decisões:**
+- O relatório fica **sempre disponível** para consulta da diretoria/tesoureiro no painel — não é
+  gerado por agendamento, é uma lista viva de quem está em Status: Inadimplente.
+- Em paralelo, o sistema **dispara um lembrete automático** ao associado quando ele entra em
+  inadimplência — uma evolução em relação ao processo atual, que a entrevista descreveu como
+  "cobrança pessoal via WhatsApp" (manual, feita um a um pela diretoria).
+
+**Em aberto (validar com o CPF Pia do Sul):**
+- Quantos dias após o vencimento sem pagamento o lembrete automático deve ser disparado?
+
+---
+
+## Cancelamento e Transferência de Reserva — 2026-08-11
+
+**Contexto:** RF15 do artigo ("cancelar ou transferir reserva existente") já tinha um subfluxo simples
+de cancelamento embutido no fluxo de Reserva de Mesa; este fluxo detalha melhor os dois casos previstos
+no requisito, especialmente a transferência, que não tinha sido desenhada ainda.
+
+**Decisões:**
+- "Transferir" cobre **dois casos**: trocar a mesa mantendo o mesmo titular, e trocar o titular
+  mantendo a mesma mesa.
+- **Não há prazo limite** antes do evento para cancelar ou transferir uma reserva — pode ser feito a
+  qualquer momento até o evento acontecer.
+- Trocar de mesa passa pela mesma checagem de disponibilidade usada na reserva original (evita mover
+  uma reserva para uma mesa que já está ocupada).
+
+**Em aberto (validar com o CPF Pia do Sul):**
+- O novo titular de uma reserva transferida precisa ser um associado já cadastrado, ou pode ser
+  qualquer pessoa? (mesma dúvida já levantada sobre visitantes no fluxo de Emissão de Ingresso)
+
+---
+
+## Cobertura de requisitos (RF/RNF) nos fluxos mapeados
+
+Tabela de rastreamento para não perder de vista o que ficou fora do mapeamento de fluxos — atualizar
+sempre que um fluxo novo for mapeado ou um RF for revisado no artigo.
+
+| RF/RNF | Descrição | Situação |
+|---|---|---|
+| RF01 | Cadastrar associado | ✅ mapeado — `cadastro-associado.json` |
+| RF02 | Consultar e editar dados de associado | ❌ não mapeado — tela de consulta/edição simples, sem ramificação; não deve precisar de fluxo próprio, só protótipo de tela |
+| RF03 | Controlar status do associado (ativo/inativo/suspenso) | ❌ não mapeado — tem lógica de decisão real (quem pode suspender, efeito em mensalidades pendentes); candidato a fluxo futuro |
+| RF04 | Registrar dependentes | ✅ mapeado — `cadastro-associado.json` |
+| RF05 | Registrar pagamento de mensalidade | ✅ mapeado — `mensalidade.json` |
+| RF06 | Visualizar histórico de pagamentos | ❌ não mapeado — tela de consulta simples, sem ramificação |
+| RF07 | Gerar relatório de inadimplência | ✅ mapeado — `relatorio-inadimplencia.json` |
+| RF08 | Emitir comprovante de pagamento | ✅ mapeado — `mensalidade.json` |
+| RF09 | Cadastrar evento | ✅ mapeado — `evento.json` |
+| RF10 | Configuração de mesas/ingressos por evento | ✅ mapeado — `evento.json` + `croqui-salao.json` (desdobrado do RF10 original, ver decisão do Croqui de Salão) |
+| RF11 | Reserva de mesa (mediada) | ✅ mapeado — `reserva-mesa.json` |
+| RF12 | Compra/retirada de ingresso | ✅ mapeado — `emissao-ingresso.json` |
+| RF13 | Associado consultar suas reservas pelo app | ❌ não mapeado — tela de consulta simples ("minhas reservas"), sem ramificação |
+| RF14 | Disponibilidade de mesas em tempo real | ✅ mapeado — dentro de `reserva-mesa.json` (mapa de mesas) |
+| RF15 | Cancelar ou transferir reserva | ✅ mapeado — `cancelamento-transferencia-reserva.json` (versão detalhada) + subfluxo simples já em `reserva-mesa.json` |
+| RNF01 | Fluxos mediados pela entidade | ✅ presente em todos os fluxos |
+| RNF02 | Autenticação com controle de perfis | ❌ não mapeado como fluxo — requisito técnico/infraestrutural, não um fluxo de negócio com decisões próprias |
+| RNF03–05 | App mobile, Swagger, tempo de resposta | N/A — requisitos técnicos, não fluxos de negócio |
+
+**Não mapeados por escolha consciente** (RF02, RF06, RF13, RNF02): são telas de leitura/edição simples,
+sem lógica de decisão que justifique um fluxograma. Ficam pendentes como protótipo de tela, não como
+fluxo.
+
+**Não mapeado, mas candidato a fluxo futuro** (RF03): tem lógica de decisão real — vale mapear se
+sobrar tempo antes da escrita final do artigo.
+
+---
+
 ## Pendências consolidadas para a entrevista/observação de campo
 
 Perguntas que se acumularam mapeando os fluxos e que devem entrar no roteiro de entrevista
@@ -197,6 +266,8 @@ semiestruturada com o CPF Pia do Sul:
 6. Solicitação de mesa pendente (paga presencial, aguardando confirmação): tem prazo de expiração?
 7. Visitante (não-associado) compra ingresso online, ou sempre presencial com a diretoria?
 8. Ingresso já comprado pode ser cancelado ou estornado?
+9. Lembrete automático de inadimplência: quantos dias após o vencimento é disparado?
+10. Titular de uma reserva transferida precisa ser associado cadastrado, ou pode ser qualquer pessoa?
 
 ## Pendências de revisão do texto do artigo
 
