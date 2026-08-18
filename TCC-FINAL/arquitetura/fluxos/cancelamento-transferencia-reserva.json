@@ -1,0 +1,49 @@
+{
+  "_readme": "Fonte de dados do fluxo 'Cancelamento e Transferência de Reserva' (RF15, Could, ver artifact/site 'Fluxos do Sistema'). Decisões confirmadas em conversa de 2026-08-11: transferência cobre os dois casos — trocar de mesa (mesmo titular) e trocar de titular (mesma mesa); não há prazo limite antes do evento para cancelar/transferir. Parte de onde o fluxo de Reserva de Mesa termina (Status: Mesa reservada) e detalha melhor o subfluxo simples de cancelamento que já existia lá. Ponto em aberto (openQuestion:true): se o novo titular de uma transferência precisa ser um associado cadastrado ou pode ser qualquer pessoa.",
+  "lanes": [
+    { "id": "diretoria", "label": "Diretoria — Painel Web", "color": "#b45309", "x": 30, "w": 320 },
+    { "id": "sistema", "label": "Sistema (automático)", "color": "#64748b", "x": 380, "w": 300 }
+  ],
+  "nodes": [
+    { "id": "start-d", "lane": "diretoria", "shape": "pill", "kind": "start", "x": 110, "y": 40, "w": 220, "h": 56, "label": "Início — Diretoria recebe pedido (cancelamento ou transferência)", "detail": "Pedido chega por fora — associado avisa a diretoria, mesmo padrão mediado já usado no restante do sistema. Sem prazo limite antes do evento para cancelar ou transferir." },
+    { "id": "d1", "lane": "diretoria", "shape": "diamond", "x": 90, "y": 130, "w": 220, "h": 140, "label": "Cancelar ou transferir?" },
+
+    { "id": "d-cancel", "lane": "diretoria", "shape": "rect", "x": 45, "y": 310, "w": 290, "h": 64, "label": "Confirma cancelamento" },
+
+    { "id": "d2", "lane": "diretoria", "shape": "diamond", "x": 90, "y": 420, "w": 220, "h": 140, "label": "Trocar mesa ou trocar titular?" },
+    { "id": "d3a", "lane": "diretoria", "shape": "rect", "x": 45, "y": 600, "w": 290, "h": 64, "label": "Seleciona nova mesa no mapa" },
+    { "id": "d3b", "lane": "diretoria", "shape": "rect", "x": 45, "y": 760, "w": 290, "h": 64, "label": "Informa novo associado titular" },
+    { "id": "open-titular", "lane": "diretoria", "shape": "note", "openQuestion": true, "x": 45, "y": 850, "w": 290, "h": 130, "label": "Titular precisa ser associado cadastrado?", "detail": "EM ABERTO — o novo titular de uma reserva transferida precisa ser um associado já cadastrado, ou pode ser qualquer pessoa (mesma dúvida levantada no fluxo de Emissão de Ingresso sobre visitantes)? Validar com o CPF Pia do Sul." },
+
+    { "id": "s-release", "lane": "sistema", "shape": "rect", "x": 395, "y": 310, "w": 270, "h": 64, "label": "Libera mesa (remove reserva)" },
+    { "id": "end-cancelled", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 405, "y": 400, "w": 250, "h": 64, "label": "Status: Reserva cancelada" },
+
+    { "id": "s-check-mesa", "lane": "sistema", "shape": "diamond", "x": 410, "y": 600, "w": 240, "h": 140, "label": "Nova mesa disponível?" },
+    { "id": "s-move", "lane": "sistema", "shape": "rect", "x": 405, "y": 780, "w": 260, "h": 64, "label": "Move reserva para a nova mesa" },
+    { "id": "end-transf-mesa", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 415, "y": 870, "w": 240, "h": 64, "label": "Status: Mesa transferida" },
+    { "id": "end-bad-mesa", "lane": "sistema", "shape": "pill", "kind": "end-bad", "x": 660, "y": 780, "w": 280, "h": 64, "label": "Nova mesa indisponível — recusada" },
+
+    { "id": "s-retitle", "lane": "sistema", "shape": "rect", "x": 405, "y": 960, "w": 260, "h": 64, "label": "Atualiza titular da reserva" },
+    { "id": "end-transf-titular", "lane": "sistema", "shape": "pill", "kind": "end-good", "x": 415, "y": 1050, "w": 240, "h": 64, "label": "Status: Titular transferido" }
+  ],
+  "edges": [
+    { "from": "start-d", "to": "d1" },
+    { "from": "d1", "to": "d-cancel", "label": "cancelar" },
+    { "from": "d1", "to": "d2", "label": "transferir" },
+
+    { "from": "d-cancel", "to": "s-release" },
+    { "from": "s-release", "to": "end-cancelled" },
+
+    { "from": "d2", "to": "d3a", "label": "trocar mesa" },
+    { "from": "d2", "to": "d3b", "label": "trocar titular" },
+
+    { "from": "d3a", "to": "s-check-mesa" },
+    { "from": "s-check-mesa", "to": "s-move", "label": "sim" },
+    { "from": "s-check-mesa", "to": "end-bad-mesa", "label": "não" },
+    { "from": "s-move", "to": "end-transf-mesa" },
+
+    { "from": "d3b", "to": "open-titular" },
+    { "from": "d3b", "to": "s-retitle" },
+    { "from": "s-retitle", "to": "end-transf-titular" }
+  ]
+}
