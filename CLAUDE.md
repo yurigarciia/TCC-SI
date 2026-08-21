@@ -53,6 +53,25 @@ The repo now holds two separate deliverables in their own folders — do not con
 There is no `docs/` folder — if you see references to `docs/main.tex` or `docs/instrucoes_base.md`
 elsewhere (e.g. old notes), they are stale; the real paths are under `PROJETO-TCC/` and `TCC-FINAL/`.
 
+- **`TCC-FINAL/aplicacoes/`** — planning docs for the actual software system (not LaTeX). Source of
+  truth for scope/backlog before touching implementation code:
+  - [PLANEJAMENTO-GERAL.md](TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md) — overall plan, architecture
+    sketch, Definition of Done, and the single cross-app backlog (`T-BE-*`/`T-FE-*`/`T-MOB-*`/`T-OPS-*`
+    tickets)
+  - [frontend-web/DESIGN-SYSTEM.md](TCC-FINAL/aplicacoes/frontend-web/DESIGN-SYSTEM.md) — color
+    tokens (Gaúcho traditionalist palette, light-toned), typography, shadcn/ui conventions,
+    accessibility rules
+  - `frontend-web/PLANEJAMENTO.md`, `backend/PLANEJAMENTO.md`, `mobile/PLANEJAMENTO.md` — per-app
+    detail referencing the shared backlog
+  - `arquitetura/fluxos/*.json` (sibling folder, not under `aplicacoes/`) — the mapped business
+    flows that are the functional spec behind the backlog; `arquitetura/decisoes.md` tracks
+    RF/RNF coverage and open questions
+
+- **`backend/`, `frontend-web/`, `mobile/`** — implementation code for the system described in
+  `TCC-FINAL/main.tex` and planned in `TCC-FINAL/aplicacoes/`. Kept in this same repository
+  (deliberate choice — keeps thesis and implementation history together for a single-author TCC).
+  Each has its own README with setup/run instructions once scaffolded.
+
 ## Build Commands
 
 **TCC-FINAL (active document):**
@@ -110,8 +129,9 @@ The system is TypeScript end-to-end:
 | Auth | JWT + RBAC (perfis: administrador / associado) |
 | API | REST, documented via Swagger |
 
-This describes the *software system the TCC is about* — this repository itself contains no
-implementation code, only the LaTeX write-up (and, in `TCC-FINAL/`, a TikZ diagram of the architecture).
+This describes the *software system the TCC is about*. Implementation code lives in this same repo
+under `backend/`, `frontend-web/`, `mobile/` (see Repository Structure above), scaffolded and built
+incrementally against the backlog in `TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md`.
 
 ## Document Status
 

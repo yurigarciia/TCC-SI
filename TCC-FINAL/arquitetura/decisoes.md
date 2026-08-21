@@ -235,7 +235,7 @@ sempre que um fluxo novo for mapeado ou um RF for revisado no artigo.
 | RF10 | Configuração de mesas/ingressos por evento | ✅ mapeado — `evento.json` + `croqui-salao.json` (desdobrado do RF10 original, ver decisão do Croqui de Salão) |
 | RF11 | Reserva de mesa (mediada) | ✅ mapeado — `reserva-mesa.json` |
 | RF12 | Compra/retirada de ingresso | ✅ mapeado — `emissao-ingresso.json` |
-| RF13 | Associado consultar suas reservas pelo app | ❌ não mapeado — tela de consulta simples ("minhas reservas"), sem ramificação |
+| RF13 | Associado consultar suas reservas pelo app | ❌ não mapeado como fluxo (tela de consulta simples), mas backend já implementado — `GET /reservas/minhas` (T-BE-012, 2026-08-19); tela mobile ainda pendente (T-MOB-003) |
 | RF14 | Disponibilidade de mesas em tempo real | ✅ mapeado — dentro de `reserva-mesa.json` (mapa de mesas) |
 | RF15 | Cancelar ou transferir reserva | ✅ mapeado — `cancelamento-transferencia-reserva.json` (versão detalhada) + subfluxo simples já em `reserva-mesa.json` |
 | RNF01 | Fluxos mediados pela entidade | ✅ presente em todos os fluxos |

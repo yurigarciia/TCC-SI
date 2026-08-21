@@ -1,0 +1,33 @@
+import { Associado } from '../../domain/associado.entity';
+
+export interface NovoAssociado {
+  nome: string;
+  cpf: string;
+  contato: string;
+  vinculoInstitucional: string | null;
+  categoriaSocioId: string | null;
+  origem: Associado['origem'];
+  status: Associado['status'];
+  usuarioId: string | null;
+}
+
+export interface AtualizacaoAssociado {
+  nome?: string;
+  contato?: string;
+  vinculoInstitucional?: string | null;
+  categoriaSocioId?: string | null;
+  status?: Associado['status'];
+  usuarioId?: string | null;
+}
+
+export abstract class AssociadoRepositoryPort {
+  abstract salvar(dados: NovoAssociado): Promise<Associado>;
+  abstract buscarPorId(id: string): Promise<Associado | null>;
+  abstract buscarPorCpf(cpf: string): Promise<Associado | null>;
+  abstract buscarPorUsuarioId(usuarioId: string): Promise<Associado | null>;
+  abstract listarTodos(): Promise<Associado[]>;
+  abstract atualizar(
+    id: string,
+    dados: AtualizacaoAssociado,
+  ): Promise<Associado>;
+}
