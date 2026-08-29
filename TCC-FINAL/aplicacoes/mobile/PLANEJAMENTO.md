@@ -73,6 +73,6 @@ implementação recomendada:
 - Distribuição para a avaliação com o Pia do Sul: Expo Go (mais simples, exige o app Expo Go
   instalado) ou build interno via EAS (mais próximo do produto final, mas exige processo de
   instalação)? Decidir perto da fase de avaliação, não bloqueia o desenvolvimento inicial.
-- Biblioteca de componentes (`react-native-paper` vs `tamagui` vs construir sobre primitives do
-  React Native puro): decisão técnica a fechar no início de `T-MOB-001`, sem impacto no escopo do
-  TCC.
+- ~~Biblioteca de componentes~~ — resolvido em 2026-08-29: `react-native-paper`, tema customizado
+  em `src/theme/paper-theme.ts` com os tokens de cor do `DESIGN-SYSTEM.md`. Ícones via
+  `@expo/vector-icons` (fluxo gerenciado do Expo, sem linking nativo manual).

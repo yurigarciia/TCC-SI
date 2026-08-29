@@ -672,14 +672,36 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-MOB-001 Autenticação e onboarding
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Login, auto-cadastro (RF01 canal associado), tela inicial com status do associado.
 - **Acceptance Criteria:** Associado com CPF já cadastrado pela diretoria consegue vincular sua
   conta; novo associado consegue se auto-cadastrar.
 - **Validation Steps:** Teste manual dos dois canais de entrada descritos em
   `cadastro-associado.json`.
-- **Notes:**
+- **Notes:** Bloqueava nessa Acceptance Criteria por uma lacuna real de backend (associado mediado
+  não tinha como "reivindicar" a própria conta) — fechada primeiro como T-BE-014
+  (`POST /associados/vincular-conta`) antes de implementar esta tela. Biblioteca de componentes:
+  `react-native-paper`, tema em `src/theme/paper-theme.ts` reaproveitando os tokens de cor do
+  `DESIGN-SYSTEM.md` (decisão que estava em aberto no `mobile/PLANEJAMENTO.md` §7, agora fechada).
+  Estrutura: `Stack.Protected` (API nova do Expo Router v57) no layout raiz alterna entre o grupo
+  `(auth)` (login=index, `cadastro`=auto-cadastro, `vincular-conta`) e `(app)` (index=início/
+  status) conforme `AuthProvider.isAuthenticated` — sem middleware nativo no Expo Router, é tudo
+  client-side lendo o token do `expo-secure-store` uma vez no mount. Cadastro e vincular-conta
+  logam automaticamente após o sucesso (chamam `/auth/login` em seguida), então o associado cai
+  direto na tela de início já autenticado. Início mostra nome/CPF/`StatusAssociadoBadge` + card de
+  aviso para "Pendente de validação"/"Rejeitado"; mensalidade fica pra T-MOB-002 (endpoint de
+  mensalidades hoje é 100% `@Roles(ADMINISTRADOR)`, sem rota pro associado ainda — gap documentado,
+  não implementado aqui de propósito, fora do escopo desta ticket). Achado no caminho:
+  `expo-secure-store` não tem implementação no target web (`ExpoSecureStore.web.ts` é só `{}`) —
+  como o app não mira web (só Android/iOS), `src/lib/auth-token.ts` cai pra `localStorage` só
+  quando `Platform.OS === "web"`, usado apenas para preview via `expo start --web` durante o
+  desenvolvimento, nunca em build nativo. Validado com `npx tsc --noEmit` e `npm run lint`
+  (limpos) e teste manual ponta a ponta contra o backend real via `expo start --web` (headless):
+  auto-cadastro→login automático→token persistido→`GET /associados/me` refletindo
+  "Pendente de validação"; vincular-conta com CPF de um cadastro mediado real→login
+  automático→"me" refletindo "Ativo"/origem "mediado"; login inválido e vincular-conta com CPF
+  inexistente corretamente recusados (401/404) com mensagem do backend exibida na tela.
 
 #### Ticket: T-MOB-002 Mensalidade — pagamento e histórico
 - **Priority:** Must
