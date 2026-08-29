@@ -136,7 +136,12 @@ export default function NovoAssociadoPage() {
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger id="categoriaSocioId" className="w-full">
-                        <SelectValue placeholder="Selecionar categoria" />
+                        <SelectValue placeholder="Selecionar categoria">
+                          {(valor: string | null) =>
+                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                            "Selecionar categoria"
+                          }
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {categorias?.map((categoria) => (

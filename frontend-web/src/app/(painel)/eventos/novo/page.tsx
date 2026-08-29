@@ -121,7 +121,12 @@ export default function NovoEventoPage() {
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger id="salaoId" className="w-full">
-                      <SelectValue placeholder="Sem croqui — só ingresso avulso" />
+                      <SelectValue placeholder="Sem croqui — só ingresso avulso">
+                        {(valor: string | null) =>
+                          saloes?.find((salao) => salao.id === valor)?.nome ??
+                          "Sem croqui — só ingresso avulso"
+                        }
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {saloes?.map((salao) => (

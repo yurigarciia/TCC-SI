@@ -235,7 +235,11 @@ function FormReservarMesa({
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger id="formaPagamento" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(valor: ReservaFormValues["formaPagamento"]) =>
+                    valor === "online" ? "Online" : "Presencial"
+                  }
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="presencial">Presencial</SelectItem>
@@ -374,7 +378,12 @@ function AcoesReservaExistente({
           <div className="flex gap-2">
             <Select value={novaMesaId} onValueChange={(valor) => setNovaMesaId(valor ?? undefined)}>
               <SelectTrigger id="nova-mesa" className="w-full">
-                <SelectValue placeholder="Escolha a mesa de destino" />
+                <SelectValue placeholder="Escolha a mesa de destino">
+                  {(valor: string | null) => {
+                    const mesa = mesasLivres.find((m) => m.mesaId === valor);
+                    return mesa ? `Mesa ${mesa.numero}` : "Escolha a mesa de destino";
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {mesasLivres.map((m) => (

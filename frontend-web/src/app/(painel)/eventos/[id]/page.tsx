@@ -110,6 +110,9 @@ function EventoDetalheConteudo({
         </div>
         <div className="flex items-center gap-3">
           <StatusEventoBadge status={evento.status} />
+          <Button variant="outline" render={<Link href={`/eventos/${eventoId}/ingressos`} />}>
+            Ingressos
+          </Button>
           {evento.salaoId && (
             <Button variant="outline" render={<Link href={`/eventos/${eventoId}/mapa`} />}>
               Mapa de mesas

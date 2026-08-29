@@ -614,12 +614,31 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-FE-008 Emissão e Check-in de Ingresso
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Venda presencial de ingresso (sócio/visitante), leitura de QR + check-in manual.
 - **Acceptance Criteria:** Ingresso já usado é sinalizado claramente na tentativa de reuso.
 - **Validation Steps:** Teste manual contra `emissao-ingresso.json`.
-- **Notes:**
+- **Notes:** Nova rota `/eventos/[id]/ingressos` (link "Ingressos" na página do evento, sempre
+  visível — venda avulsa não depende de croqui). Três blocos: form "Vender ingresso presencial"
+  (nome, perfil sócio/não-sócio/criança, forma de pagamento — canal sempre "mediado" per RNF01,
+  preço resolvido pelo backend conforme perfil+override do evento); "Check-in por código (QR)" —
+  campo de texto único que aceita o id do ingresso colado ou lido por um leitor USB/câmera que
+  funciona como teclado (emissao-ingresso.json: "QR code no app para quem tem, busca manual por
+  nome no painel para quem não tem" — não há câmera/scanner nativo no painel web, decisão
+  consciente de escopo, documentada aqui); tabela "Ingressos emitidos" com busca por nome
+  (`GET /eventos/:id/ingressos?nome=`) e botão "Check-in" por linha, badge "Usado"/"Emitido" +
+  horário da entrada. Achado no caminho, corrigido não só aqui mas retroativamente: `SelectValue`
+  do base-ui não resolve o label do item selecionado sozinho — sem passar uma função `children`
+  mapeando valor→label, ele mostra o valor bruto (ex.: um UUID de mesa/salão, ou o enum
+  "nao_socio" em vez de "Não-sócio"). Bug pré-existente desde T-FE-003 (categoria de sócio) e
+  T-FE-006 (croqui do evento); corrigido nos 4 `Select`s afetados (`associados/novo`,
+  `eventos/novo`, `eventos/[id]/mapa` — forma de pagamento e transferir mesa — e aqui). Validado
+  com `npm run build`, `npm run lint` e teste manual ponta a ponta contra o backend real: emiti
+  dois ingressos (sócio e não-sócio) pelo form, conferi a tabela com preços/labels corretos,
+  fiz check-in de um deles via API (mesmo payload que o campo "check-in por código" envia),
+  confirmei a tentativa de reuso recusada (409) e recarreguei a página vendo o badge "Usado" +
+  horário aparecerem sem o botão de check-in; conferi a busca por nome contra o endpoint real.
 
 ### Mobile (App do Associado)
 

@@ -67,6 +67,11 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
   cancelar, transferir titularidade ou transferir mesa. Sem polling — o estado só atualiza quando
   uma mutation local invalida a query ou a página é recarregada (ver Open Questions do
   PLANEJAMENTO-GERAL.md se polling/websocket entrar em escopo depois).
+- `/eventos/[id]/ingressos` — venda presencial de ingresso avulso (sócio/não-sócio/criança) e
+  check-in (RF11/RF12). Sem câmera/scanner nativo no painel web — "leitura de QR" é um campo de
+  texto que aceita o id do ingresso colado ou digitado por um leitor USB/câmera que funciona como
+  teclado (keyboard wedge), coexistindo com a busca manual por nome e o botão de check-in por
+  linha da tabela.
 
 ## Convenções deste projeto
 
@@ -86,3 +91,10 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
 - `Checkbox` do shadcn (`base-ui`) é controlado (`checked`/`onCheckedChange`), não aceita
   `register()` do react-hook-form — usar `Controller`, mesmo padrão já usado para o `Select`. Ver
   `eventos/[id]` como referência.
+- `SelectValue` do base-ui **não** resolve sozinho o label do item selecionado — sem passar uma
+  função `children` mapeando valor→label, ele mostra o valor bruto assim que algo é selecionado
+  (um id/UUID cru, ou o enum em vez do rótulo em português). Sempre passar
+  `<SelectValue>{(valor) => /* mapeia valor para o label certo, com fallback pro placeholder */}</SelectValue>`
+  quando os `value`s dos `SelectItem` não forem, eles mesmos, o texto a exibir — o que cobre
+  praticamente todo Select do projeto (ids de croqui/mesa/categoria, enums de perfil/forma de
+  pagamento). Ver `eventos/[id]/ingressos` ou `eventos/[id]/mapa` como referência.
