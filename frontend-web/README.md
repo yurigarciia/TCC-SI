@@ -61,6 +61,12 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
   opcional a um croqui de salão, configuração de preço/bloqueio por mesa e de ingresso avulso,
   publicação (RF09–RF11). O card de mesas só aparece quando o evento tem `salaoId`; a
   configuração de mesas é sempre um replace-all da lista inteira, igual ao contrato do backend.
+- `/eventos/[id]/mapa` — mapa de mesas do evento (RF14/RF15), reaproveitando o plano cartesiano do
+  `MesaCanvas` agora colorido por status (livre/pendente/reservada/bloqueada). Clicar numa mesa
+  abre um `Dialog` com o painel de ação certo pro status: registrar reserva mediada, confirmar,
+  cancelar, transferir titularidade ou transferir mesa. Sem polling — o estado só atualiza quando
+  uma mutation local invalida a query ou a página é recarregada (ver Open Questions do
+  PLANEJAMENTO-GERAL.md se polling/websocket entrar em escopo depois).
 
 ## Convenções deste projeto
 

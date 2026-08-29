@@ -3,7 +3,7 @@ import { ReservaRepositoryPort } from '../ports/reserva-repository.port';
 import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-repository.port';
 import { MesaRepositoryPort } from '../../../eventos/application/ports/mesa-repository.port';
 import { ConfiguracaoMesaEventoRepositoryPort } from '../../../eventos/application/ports/configuracao-mesa-evento-repository.port';
-import { StatusReserva } from '../../domain/reserva.entity';
+import { CanalReserva, StatusReserva } from '../../domain/reserva.entity';
 
 export type StatusMesaNoMapa = 'bloqueada' | 'pendente' | 'reservada' | 'livre';
 
@@ -15,6 +15,11 @@ export interface MesaNoMapa {
   posicaoY: number;
   preco: number;
   status: StatusMesaNoMapa;
+  // Presentes só quando status é "pendente"/"reservada" — a diretoria precisa do id da reserva
+  // para acionar confirmar/cancelar/transferir direto a partir do mapa (T-FE-007).
+  reservaId: string | null;
+  nomeTitular: string | null;
+  canal: CanalReserva | null;
 }
 
 // RF14 — disponibilidade em tempo real: reflete direto o estado atual do banco (sem cache), já
@@ -74,6 +79,9 @@ export class ConsultarMapaMesasUseCase {
           posicaoY: mesa.posicaoY,
           preco: configuracao.preco,
           status,
+          reservaId: reserva?.id ?? null,
+          nomeTitular: reserva?.nomeTitular ?? null,
+          canal: reserva?.canal ?? null,
         };
       });
   }

@@ -582,7 +582,7 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Visualização do croqui do evento com status de cada mesa (livre/reservada/pendente),
   registro de reserva mediada, cancelamento/transferência.
@@ -590,7 +590,27 @@ frentes de frontend-web e mobile.
   como "livres" ao mesmo tempo (reflete a checagem de concorrência do backend).
 - **Validation Steps:** Teste manual contra `reserva-mesa.json` e
   `cancelamento-transferencia-reserva.json`.
-- **Notes:**
+- **Notes:** Nova rota `/eventos/[id]/mapa` (link "Mapa de mesas" na página do evento, só quando
+  `salaoId` está setado) — reaproveita o mesmo plano cartesiano do `MesaCanvas` (T-FE-005) num
+  novo `MapaMesasCanvas` (`src/features/reservas/`), agora colorindo cada mesa pelo status vindo
+  de `GET /eventos/:id/mapa-mesas` (livre/pendente/reservada/bloqueada, com legenda). Clicar numa
+  mesa abre um `Dialog` com o painel de ação certo pro status: livre → form de reserva mediada
+  (nome do titular + forma de pagamento, canal sempre "mediado" per RNF01); pendente → titular/
+  canal + Confirmar/Cancelar; reservada → titular/canal + Cancelar, transferir titularidade
+  (input) e transferir mesa (`Select` só com mesas livres). Erros de concorrência (409 do backend
+  quando a mesa some enquanto o dialog estava aberto) viram toast, sem crash — o
+  `invalidateQueries` de cada mutation resolve o "nunca aparecem duas livres ao mesmo tempo" do
+  critério de aceite, porque a próxima leitura do mapa vem sempre fresca do banco (RF14, sem
+  cache). Achado no caminho, resolvido no próprio ticket: `GET /eventos/:id/mapa-mesas`
+  (`ConsultarMapaMesasUseCase`) não devolvia o id da reserva nem titular/canal — sem isso o
+  front não tinha como acionar confirmar/cancelar/transferir a partir do mapa. Estendido o
+  usecase com `reservaId`/`nomeTitular`/`canal` (null quando a mesa está livre/bloqueada);
+  aditivo, não quebrou os testes e2e existentes (37/37 continuam passando). Validado com `npm
+  run build`, `npm run lint`, `npm run test:e2e` (backend) e teste manual ponta a ponta contra o
+  backend real: criei um salão com 4 mesas e um evento configurado com uma mesa livre, uma
+  reservada (mediada), uma pendente (canal app) e uma bloqueada; conferi as 4 cores no mapa e o
+  conteúdo do dialog para cada status; confirmei a reserva pendente via API e recarreguei o mapa
+  para ver a mesa virar "reservada" ao vivo; conferi o botão "Mapa de mesas" na página do evento.
 
 #### Ticket: T-FE-008 Emissão e Check-in de Ingresso
 - **Priority:** Must

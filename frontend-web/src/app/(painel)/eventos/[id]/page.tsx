@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -109,6 +110,11 @@ function EventoDetalheConteudo({
         </div>
         <div className="flex items-center gap-3">
           <StatusEventoBadge status={evento.status} />
+          {evento.salaoId && (
+            <Button variant="outline" render={<Link href={`/eventos/${eventoId}/mapa`} />}>
+              Mapa de mesas
+            </Button>
+          )}
           {evento.status === "rascunho" && (
             <Button
               onClick={() =>
