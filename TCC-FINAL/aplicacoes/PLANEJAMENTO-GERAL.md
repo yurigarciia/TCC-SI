@@ -121,8 +121,10 @@ O projeto é considerado no ponto de MVP avaliável quando, simultaneamente:
 - [ ] Backend com migrations versionadas rodando localmente a partir de zero (`docker compose up` ou
       equivalente) sem passos manuais não documentados.
 - [ ] API documentada via Swagger, cobrindo todos os endpoints usados pelo web e pelo mobile.
-- [ ] Painel web navegável de ponta a ponta pelos fluxos Must, aplicando o Design System
-      (`frontend-web/DESIGN-SYSTEM.md`).
+- [x] Painel web navegável de ponta a ponta pelos fluxos Must, aplicando o Design System
+      (`frontend-web/DESIGN-SYSTEM.md`) — T-FE-001 a T-FE-008 concluídos e verificados ponta a
+      ponta contra o backend real; checkup visual de responsividade/consistência feito em
+      2026-08-29 (ver nota em T-FE-008 e commit correspondente).
 - [ ] App mobile instalável (build Expo Go ou APK/TestFlight interno) cobrindo os fluxos do
       associado (consulta de reservas, pagamento de mensalidade, compra de ingresso).
 - [ ] Sessão de avaliação com a diretoria e associados do Pia do Sul realizada, com SUS aplicado e
