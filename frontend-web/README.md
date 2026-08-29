@@ -46,6 +46,10 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
 
 ## Telas implementadas
 
+- `/` — dashboard inicial com cartões de resumo (associados ativos, pendentes de validação,
+  inadimplentes, eventos publicados) e lista dos próximos eventos publicados; cada cartão linka
+  para a tela correspondente. Reaproveita os hooks já existentes de cada domínio, sem endpoint
+  próprio.
 - `/associados`, `/associados/novo`, `/associados/[id]` — cadastro mediado, aprovação/rejeição de
   cadastro pendente, dependentes (RF01–RF04). Usar como referência de padrão para as próximas
   telas: hooks em `src/features/<dominio>/`, formulário com react-hook-form + zod, badge de
@@ -98,3 +102,20 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
   quando os `value`s dos `SelectItem` não forem, eles mesmos, o texto a exibir — o que cobre
   praticamente todo Select do projeto (ids de croqui/mesa/categoria, enums de perfil/forma de
   pagamento). Ver `eventos/[id]/ingressos` ou `eventos/[id]/mapa` como referência.
+- **Flexbox e overflow horizontal:** `body` (`layout.tsx`) e o wrapper do `AppShell` são
+  `flex flex-col`, então qualquer filho direto que precise encolher abaixo do seu conteúdo
+  intrínseco (parágrafos longos, tabelas largas) precisa de `min-w-0` explícito — sem isso, um
+  item flex se recusa a encolher (o famoso bug de `min-width: auto` do flexbox) e empurra a
+  página inteira para rolagem horizontal. `main`, a linha `nav`+`main` e o wrapper raiz do
+  `AppShell` já têm `min-w-0`; `body` também tem `overflow-x-hidden` como rede de segurança.
+  Manter esse padrão em qualquer novo container flex de nível de página.
+- Canvas de mapa (`MesaCanvas`, `MapaMesasCanvas`) tem tamanho sempre fixo (640×420) — as mesas
+  usam `posicaoX`/`posicaoY` em pixels reais, não proporcionais, então encolher o canvas (ex.:
+  `maxWidth: "100%"`) cortaria mesas fora da borda em telas estreitas. Em vez disso, o wrapper
+  externo rola horizontalmente (`overflow-x-auto rounded-lg border`, mesmo padrão das tabelas) —
+  nunca tente fazer esses canvas "responsivos" via CSS puro sem reescalar as coordenadas.
+- Navegação mobile: `AppShell` mostra a sidebar normal a partir do breakpoint `sm` (640px); abaixo
+  disso, um botão de hambúrguer no header abre um `Sheet` (drawer) com os mesmos links, que fecha
+  sozinho ao navegar (`onNavigate` em `LinksDeNavegacao`). Qualquer novo item de navegação deve ir
+  em `itensDeNavegacao` (`src/components/layout/app-shell.tsx`) — os dois menus leem da mesma
+  lista, não duplicar.

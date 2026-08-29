@@ -21,33 +21,35 @@ interface MapaMesasCanvasProps {
 // Mesmo plano cartesiano de croqui-salao.json/MesaCanvas (T-FE-005), agora colorido pelo status
 // vindo de GET /eventos/:id/mapa-mesas (RF14 — sem cache, reflete o estado atual do banco). Clicar
 // numa mesa abre o painel de ações (reservar/confirmar/cancelar/transferir) na página.
+//
+// Tamanho sempre fixo (640×420, ver MesaCanvas) — rolagem horizontal no wrapper em vez de encolher
+// o canvas, senão mesas com posicaoX maior cortariam fora da borda em telas estreitas.
 export function MapaMesasCanvas({ mesas, onMesaClick }: MapaMesasCanvasProps) {
   return (
-    <div
-      className="relative overflow-hidden rounded-lg border bg-muted/20"
-      style={{ width: LARGURA, maxWidth: "100%", height: ALTURA }}
-    >
-      {mesas.length === 0 && (
-        <p className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-          Este croqui ainda não tem mesas configuradas para o evento.
-        </p>
-      )}
-      {mesas.map((mesa) => (
-        <button
-          key={mesa.mesaId}
-          type="button"
-          onClick={() => onMesaClick(mesa)}
-          disabled={mesa.status === "bloqueada"}
-          className={cn(
-            "absolute flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors",
-            ESTILO_POR_STATUS[mesa.status],
-          )}
-          style={{ left: mesa.posicaoX, top: mesa.posicaoY }}
-          title={`Mesa ${mesa.numero} — ${mesa.status}${mesa.nomeTitular ? ` — ${mesa.nomeTitular}` : ""}`}
-        >
-          {mesa.numero}
-        </button>
-      ))}
+    <div className="overflow-x-auto rounded-lg border">
+      <div className="relative bg-muted/20" style={{ width: LARGURA, height: ALTURA }}>
+        {mesas.length === 0 && (
+          <p className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+            Este croqui ainda não tem mesas configuradas para o evento.
+          </p>
+        )}
+        {mesas.map((mesa) => (
+          <button
+            key={mesa.mesaId}
+            type="button"
+            onClick={() => onMesaClick(mesa)}
+            disabled={mesa.status === "bloqueada"}
+            className={cn(
+              "absolute flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors",
+              ESTILO_POR_STATUS[mesa.status],
+            )}
+            style={{ left: mesa.posicaoX, top: mesa.posicaoY }}
+            title={`Mesa ${mesa.numero} — ${mesa.status}${mesa.nomeTitular ? ` — ${mesa.nomeTitular}` : ""}`}
+          >
+            {mesa.numero}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

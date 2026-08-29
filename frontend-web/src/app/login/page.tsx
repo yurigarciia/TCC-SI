@@ -38,7 +38,7 @@ export default function LoginPage() {
   });
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-12">
+    <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-heading text-2xl">Pia do Sul</CardTitle>
