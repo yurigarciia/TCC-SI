@@ -9,6 +9,11 @@ import { ListarHistoricoAssociadoUseCase } from './application/use-cases/listar-
 import { ObterComprovanteUseCase } from './application/use-cases/obter-comprovante.use-case';
 import { ProcessarInadimplenciaUseCase } from './application/use-cases/processar-inadimplencia.use-case';
 import { ListarInadimplentesUseCase } from './application/use-cases/listar-inadimplentes.use-case';
+import { ListarMinhasMensalidadesUseCase } from './application/use-cases/listar-minhas-mensalidades.use-case';
+import { ResolverMinhaMensalidadeUseCase } from './application/use-cases/resolver-minha-mensalidade.use-case';
+import { IniciarMeuPagamentoOnlineUseCase } from './application/use-cases/iniciar-meu-pagamento-online.use-case';
+import { ConfirmarMeuPagamentoOnlineUseCase } from './application/use-cases/confirmar-meu-pagamento-online.use-case';
+import { ObterMeuComprovanteUseCase } from './application/use-cases/obter-meu-comprovante.use-case';
 import { MensalidadeOrmEntity } from './infrastructure/persistence/mensalidade.orm-entity';
 import { TypeOrmMensalidadeRepositoryAdapter } from './infrastructure/persistence/typeorm-mensalidade-repository.adapter';
 import { MensalidadesController } from './infrastructure/controllers/mensalidades.controller';
@@ -36,6 +41,11 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
     ObterComprovanteUseCase,
     ProcessarInadimplenciaUseCase,
     ListarInadimplentesUseCase,
+    ListarMinhasMensalidadesUseCase,
+    ResolverMinhaMensalidadeUseCase,
+    IniciarMeuPagamentoOnlineUseCase,
+    ConfirmarMeuPagamentoOnlineUseCase,
+    ObterMeuComprovanteUseCase,
     MensalidadesCron,
     {
       provide: MensalidadeRepositoryPort,

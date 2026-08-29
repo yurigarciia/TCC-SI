@@ -2,9 +2,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
 import { paperTheme } from "@/theme/paper-theme";
 
-// Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer. Ainda só
-// tem 2 abas (T-MOB-001/T-MOB-003); T-MOB-002 (mensalidade) e T-MOB-004 (eventos/ingressos) vão
-// virar novas abas aqui quando entrarem em escopo.
+// Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer. T-MOB-004
+// (eventos/ingressos) vai virar mais uma aba aqui quando entrar em escopo.
 export default function AppLayout() {
   return (
     <Tabs
@@ -38,6 +37,15 @@ export default function AppLayout() {
           title: "Início",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home-variant-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mensalidade"
+        options={{
+          title: "Mensalidade",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="credit-card-outline" color={color} size={size} />
           ),
         }}
       />

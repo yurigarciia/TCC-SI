@@ -712,13 +712,43 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-MOB-002 Mensalidade — pagamento e histórico
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Ver mensalidade atual, pagar via app (gateway), ver histórico e comprovantes.
 - **Acceptance Criteria:** Pagamento aprovado no gateway reflete no status em até alguns segundos
   (RNF05).
 - **Validation Steps:** Teste manual com gateway em modo sandbox.
-- **Notes:**
+- **Notes:** Backend era 100% `@Roles(ADMINISTRADOR)` — nada disso existia pro associado antes
+  desta ticket. Em vez de só relaxar o guard pras rotas existentes (o que deixaria um associado
+  agir sobre a mensalidade de qualquer outro só sabendo o id — IDOR), criei rotas paralelas
+  `/mensalidades/minhas` (`GET`, lista), `/mensalidades/minhas/:id/pagamento-online/iniciar`
+  (`POST`), `/mensalidades/minhas/:id/pagamento-online/confirmar` (`POST`) e
+  `/mensalidades/minhas/:id/comprovante` (`GET`), todas `@Roles(ASSOCIADO)` sobrescrevendo a
+  classe (mesmo padrão de `/reservas/minhas`). `ResolverMinhaMensalidadeUseCase` centraliza a
+  checagem de propriedade (resolve o Associado do JWT, recusa com 403 se a mensalidade não for
+  dele) e é reaproveitado pelos 3 use cases "meu-*", que só delegam pros use cases de admin já
+  existentes (`IniciarPagamentoOnlineUseCase` etc.) depois de confirmar a posse — nenhuma lógica
+  de pagamento duplicada. `IniciarMeuPagamentoOnlineUseCase`/`ConfirmarMeuPagamentoOnlineUseCase`
+  usam construtor por classe (não `@Inject`) porque injetam outro use case, não uma porta.
+
+  No app: nova aba "Mensalidade" (3ª aba da navbar) — card de "situação atual" em destaque (a
+  mensalidade mais antiga ainda não paga, não só a mais recente — importante pra não esconder um
+  atraso antigo atrás de uma pendência nova) com botão "Pagar online", card "Você está em dia!"
+  quando não há pendência, e histórico completo abaixo com `StatusMensalidadeBadge`
+  (pendente/paga/em atraso). O adapter de pagamento em uso (`FakePaymentGatewayAdapter`) aprova a
+  cobrança na hora — sem checkout/redirecionamento real ainda (provedor real é decisão em aberto,
+  ver Open Questions) — então "pagar" no app encadeia iniciar+confirmar como uma ação só; quando
+  um provedor real entrar, só `usePagarMinhaMensalidadeOnline` muda. Comprovante dedicado
+  (`GET .../comprovante`) existe no backend mas a tela usa os dados que a própria mensalidade já
+  tem (`pagoEm`/`formaPagamento`) pra exibir o histórico — evita uma chamada extra por item;
+  fica disponível pra quando a tela precisar gerar/compartilhar um recibo formal.
+
+  Validado com `npm run build`/`lint`/`test:e2e` (backend, 42 testes — 2 novos: ciclo completo
+  minha-mensalidade autenticado + 403 pra mensalidade de outro associado) e `npx tsc --noEmit`/
+  `npm run lint` (mobile, limpos) e teste manual ponta a ponta contra o backend real via
+  `expo start --web` (headless): associado com 3 mensalidades (pendente/paga/inadimplente) vendo
+  a mais antiga em aberto correta, pagando as duas pendentes uma de cada vez e conferindo o card
+  virar "Você está em dia!" com o histórico atualizado (`pagoEm`/`formaPagamento` corretos).
 
 #### Ticket: T-MOB-003 Minhas Reservas (RF13)
 - **Priority:** Must

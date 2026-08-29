@@ -61,7 +61,10 @@ para o padrão a seguir nos próximos módulos).
   404 se o CPF não existir, 409 se já tiver conta vinculada).
 - `mensalidades` — geração mensal automática (cron), pagamento presencial e online (via
   `PaymentGatewayPort`), histórico, comprovante, relatório de inadimplência e lembrete automático
-  (RF05, RF06, RF07, RF08).
+  (RF05, RF06, RF07, RF08). Endpoints `/mensalidades/*` são `@Roles(ADMINISTRADOR)`; o associado
+  tem seu próprio conjunto sob `/mensalidades/minhas` (`GET` lista, `.../pagamento-online/{iniciar,
+  confirmar}`, `.../comprovante`) — cada um verifica posse da mensalidade antes de agir
+  (`ResolverMinhaMensalidadeUseCase`, 403 se não for do associado autenticado).
 - `eventos` — croqui de salão reutilizável (mesas numeradas com posição x/y), cadastro de evento
   com vínculo opcional a croqui, preço/bloqueio por mesa no evento, ingresso avulso, publicação
   (RF09, RF10). `GET /eventos/publicados` é público (vitrine para o app do associado).

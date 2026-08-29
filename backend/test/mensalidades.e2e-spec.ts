@@ -31,6 +31,11 @@ describe('Mensalidades (e2e)', () => {
   const nomeCategoria = 'Contribuinte — mensalidades e2e';
   let associadoId: string;
 
+  const cpfAssociadoLogado = '66666666666';
+  const emailAssociadoLogado = 'associado.mensalidade@e2e.local';
+  let associadoLogadoId: string;
+  let mensalidadeDoLogadoId: string;
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -74,6 +79,24 @@ describe('Mensalidades (e2e)', () => {
     await dataSource.query('DELETE FROM categorias_socio WHERE nome = $1', [
       nomeCategoria,
     ]);
+    if (associadoLogadoId) {
+      await dataSource.query(
+        'DELETE FROM mensalidades WHERE associado_id = $1',
+        [associadoLogadoId],
+      );
+      const usuarioLogado = await dataSource.query<
+        Array<{ usuario_id: string | null }>
+      >('SELECT usuario_id FROM associados WHERE id = $1', [associadoLogadoId]);
+      await dataSource.query('DELETE FROM associados WHERE id = $1', [
+        associadoLogadoId,
+      ]);
+      const usuarioId = usuarioLogado[0]?.usuario_id;
+      if (usuarioId) {
+        await dataSource.query('DELETE FROM usuarios WHERE id = $1', [
+          usuarioId,
+        ]);
+      }
+    }
     await app.close();
   });
 
@@ -165,5 +188,98 @@ describe('Mensalidades (e2e)', () => {
     const item = itens.find((i) => i.mensalidade.id === mensalidadeId);
     expect(item).toBeDefined();
     expect(item!.diasEmAtraso).toBeGreaterThan(0);
+  });
+
+  it('T-MOB-002 — associado autenticado vê e paga a própria mensalidade em /mensalidades/minhas', async () => {
+    const autoCadastro = await request(app.getHttpServer())
+      .post('/associados/auto-cadastro')
+      .send({
+        nome: 'Associado Mensalidade Logado',
+        cpf: cpfAssociadoLogado,
+        contato: '55999990006',
+        email: emailAssociadoLogado,
+        senha: 'senha123',
+      })
+      .expect(201);
+    associadoLogadoId = (autoCadastro.body as { id: string }).id;
+
+    await request(app.getHttpServer())
+      .post(`/associados/${associadoLogadoId}/aprovar`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(201);
+
+    const mensalidade = await dataSource.query<Array<{ id: string }>>(
+      `INSERT INTO mensalidades (associado_id, competencia, valor, vencimento, status)
+       VALUES ($1, '2026-08', 60, '2026-08-10', 'pendente') RETURNING id`,
+      [associadoLogadoId],
+    );
+    mensalidadeDoLogadoId = mensalidade[0].id;
+
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: emailAssociadoLogado, senha: 'senha123' })
+      .expect(200);
+    const associadoToken = (login.body as { accessToken: string }).accessToken;
+
+    const minhas = await request(app.getHttpServer())
+      .get('/mensalidades/minhas')
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    expect(
+      (minhas.body as MensalidadeResponseBody[]).some(
+        (m) => m.id === mensalidadeDoLogadoId,
+      ),
+    ).toBe(true);
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .get('/mensalidades/minhas')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
+
+    const iniciar = await request(app.getHttpServer())
+      .post(
+        `/mensalidades/minhas/${mensalidadeDoLogadoId}/pagamento-online/iniciar`,
+      )
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(201);
+    expect((iniciar.body as { linkPagamento: string }).linkPagamento).toContain(
+      'http',
+    );
+
+    await request(app.getHttpServer())
+      .post(
+        `/mensalidades/minhas/${mensalidadeDoLogadoId}/pagamento-online/confirmar`,
+      )
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(201);
+
+    const comprovante = await request(app.getHttpServer())
+      .get(`/mensalidades/minhas/${mensalidadeDoLogadoId}/comprovante`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    expect(
+      (comprovante.body as { formaPagamento: string }).formaPagamento,
+    ).toBe('online');
+  });
+
+  it('recusa acesso de um associado à mensalidade de outro (403)', async () => {
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: emailAssociadoLogado, senha: 'senha123' })
+      .expect(200);
+    const associadoToken = (login.body as { accessToken: string }).accessToken;
+
+    // mensalidade criada pra `associadoId` (o associado mediado, sem login) no início do arquivo
+    const historico = await request(app.getHttpServer())
+      .get(`/mensalidades/associado/${associadoId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    const mensalidadeDeOutro = (historico.body as MensalidadeResponseBody[])[0]
+      .id;
+
+    await request(app.getHttpServer())
+      .get(`/mensalidades/minhas/${mensalidadeDeOutro}/comprovante`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(403);
   });
 });

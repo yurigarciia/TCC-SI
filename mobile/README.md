@@ -27,21 +27,24 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
 
 ## Telas implementadas
 
-- `/(auth)` (index=login, `cadastro`, `vincular-conta`) e `/(app)` (índex=início/status,
-  `reservas`=Minhas Reservas) — RF01 (canal associado), status do associado (RF03) e RF13.
-  `Stack.Protected` no layout raiz (`src/app/_layout.tsx`) troca automaticamente entre os dois
-  grupos conforme `AuthProvider.isAuthenticated` (`src/features/auth/auth-context.tsx`) — sem
-  middleware, é tudo client-side (`getAuthToken()` lido do `expo-secure-store` uma vez no mount).
-  Cadastro (`/(auth)/cadastro`, auto-cadastro RF01) e vincular-conta (`/(auth)/vincular-conta`,
-  T-BE-014 — associado com cadastro mediado pela diretoria cria a própria senha) logam
-  automaticamente após o sucesso (chamam `/auth/login` na sequência), então o associado já cai
-  direto na tela de início. Tela de início mostra nome/CPF/status (`StatusAssociadoBadge`) + card
-  de aviso quando "Pendente de validação" ou "Rejeitado"; mensalidade/histórico fica pra T-MOB-002
-  (mensalidades hoje é 100% `@Roles(ADMINISTRADOR)` no backend, sem endpoint pro associado ainda).
-  Minhas Reservas (`(app)/reservas.tsx`) lista as reservas de mesa do associado
-  (`GET /reservas/minhas`, já enriquecido com nome do evento e número da mesa — ver T-BE-012 no
-  `PLANEJAMENTO-GERAL.md`), com estado vazio e retry em erro; ingressos do associado ainda não
-  têm endpoint equivalente, fora de escopo por ora.
+- `/(auth)` (index=login, `cadastro`, `vincular-conta`) e `/(app)` (index=início/status,
+  `mensalidade`, `reservas`=Minhas Reservas) — RF01 (canal associado), status do associado (RF03),
+  RF05/RF06/RF08 e RF13. `Stack.Protected` no layout raiz (`src/app/_layout.tsx`) troca
+  automaticamente entre os dois grupos conforme `AuthProvider.isAuthenticated`
+  (`src/features/auth/auth-context.tsx`) — sem middleware, é tudo client-side (`getAuthToken()`
+  lido do `expo-secure-store` uma vez no mount). Cadastro (`/(auth)/cadastro`, auto-cadastro RF01)
+  e vincular-conta (`/(auth)/vincular-conta`, T-BE-014 — associado com cadastro mediado pela
+  diretoria cria a própria senha) logam automaticamente após o sucesso (chamam `/auth/login` na
+  sequência), então o associado já cai direto na tela de início. Tela de início mostra
+  nome/CPF/status (`StatusAssociadoBadge`) + card de aviso quando "Pendente de validação" ou
+  "Rejeitado". Mensalidade (`(app)/mensalidade.tsx`, T-MOB-002) mostra a mensalidade mais antiga
+  ainda não paga em destaque (não a mais recente — evita esconder um atraso antigo) com botão
+  "Pagar online" (`GET/POST /mensalidades/minhas/*`, endpoints novos com checagem de posse — ver
+  T-MOB-002 no `PLANEJAMENTO-GERAL.md`), card "Você está em dia!" quando não há pendência, e
+  histórico completo com `StatusMensalidadeBadge`. Minhas Reservas (`(app)/reservas.tsx`) lista as
+  reservas de mesa do associado (`GET /reservas/minhas`, já enriquecido com nome do evento e
+  número da mesa — ver T-BE-012 no `PLANEJAMENTO-GERAL.md`), com estado vazio e retry em erro;
+  ingressos do associado ainda não têm endpoint equivalente, fora de escopo por ora.
 
 ## Convenções deste projeto
 
@@ -65,9 +68,12 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
   a troca de grupo sozinho quando o estado de auth muda. Dentro de `(app)`, navegação é por
   **navbar inferior flutuante** (`Tabs` do Expo Router, `(app)/_layout.tsx` — `tabBarStyle` com
   `position: "absolute"`, cantos arredondados, sombra), não drawer/hambúrguer — decisão explícita
-  do usuário. Toda nova aba (T-MOB-002/T-MOB-004) entra como `Tabs.Screen` aqui; telas dentro de
+  do usuário. Toda nova aba (ex.: T-MOB-004) entra como `Tabs.Screen` aqui; telas dentro de
   `(app)` que usam `ScrollView` precisam de `paddingBottom` generoso (~110) no
   `contentContainerStyle` pra conteúdo não ficar embaixo da navbar flutuante.
+- Formatação de moeda/data/competência sempre via `src/lib/format.ts`
+  (`formatarMoeda`/`formatarData`/`formatarCompetencia`, espelhando `format.ts` do painel web) —
+  não reimplementar `Intl.NumberFormat`/`toLocaleDateString` em cada tela.
 - `AppTopBar` (`src/components/app-top-bar.tsx`) é compartilhado por toda tela de `(app)` — nome
   do app + título da tela + botão "Sair" sempre no mesmo lugar. Não recriar esse cabeçalho por
   tela.
