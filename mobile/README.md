@@ -59,3 +59,21 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
 - Navegação: **Expo Router** file-based, com `Stack.Protected` (`guard={boolean}`) pra rotas
   autenticadas — não usar `router.replace()` manual em `useEffect` pra isso, o `Protected` já faz
   a troca de grupo sozinho quando o estado de auth muda.
+- Ícones do `PaperProvider` precisam ser conectados explicitamente (`settings={{ icon: ... }}` no
+  `src/app/_layout.tsx`, usando `@expo/vector-icons/MaterialCommunityIcons`) — sem isso, todo
+  `icon="..."` de `Button`/`TextInput.Icon`/`Chip`/`Avatar.Icon` falha silenciosamente.
+- Padrão visual das telas de auth (`(auth)/index.tsx`, `cadastro.tsx`, `vincular-conta.tsx`):
+  `AuthHeader` (`src/components/auth-header.tsx`) — banner em gradiente vinho
+  (`gradienteCabecalho` do tema) com ícone, título e subtítulo, cantos inferiores arredondados —
+  seguido de um `Surface` branco arredondado (raio 20) com os campos, sobrepondo o banner
+  (`marginTop: -20`) pra dar profundidade. Cabeçalho nativo do Stack sempre desligado
+  (`headerShown: false` no `(auth)/_layout.tsx`) — a navegação de volta mora dentro do próprio
+  `AuthHeader` (`mostrarVoltar`), não no header do sistema.
+- Erro de mutation em formulário: sempre `ErrorSnackbar` (`src/components/error-snackbar.tsx`),
+  nunca texto solto vermelho na tela — mensagem vem de `erro.message` quando `erro instanceof
+  ApiError` (mensagem real do backend), com fallback genérico pra erro de rede/conexão. Erros de
+  validação de campo (zod) continuam inline, abaixo do campo — só erro de *submissão* (API) usa
+  Snackbar.
+- Todo campo de formulário tem `placeholder` além do `label` (o label flutua quando preenchido; o
+  placeholder aparece dentro do campo enquanto ele está focado e vazio) e um ícone à esquerda
+  (`left={<TextInput.Icon icon="..." />}`) — nunca um `TextInput` "pelado" sem nenhum dos dois.

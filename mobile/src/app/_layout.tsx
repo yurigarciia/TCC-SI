@@ -1,3 +1,4 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, View } from "react-native";
@@ -11,7 +12,10 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryProvider>
-        <PaperProvider theme={paperTheme}>
+        <PaperProvider
+          theme={paperTheme}
+          settings={{ icon: (props) => <MaterialCommunityIcons {...props} /> }}
+        >
           <StatusBar style="dark" />
           <AuthProvider>
             <RootNavigator />
