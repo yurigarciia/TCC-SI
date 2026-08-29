@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEvento } from "@/features/eventos/use-eventos";
+import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
 import { useEmitirIngresso, useIngressosEvento, useRegistrarCheckin } from "@/features/ingressos/use-ingressos";
 import { formatarDataHora, formatarMoeda } from "@/lib/format";
@@ -100,10 +101,8 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     });
   };
 
-  const onSubmitCheckinPorCodigo = (evento: FormEvent) => {
-    evento.preventDefault();
-    if (!codigoCheckin.trim()) return;
-    checkin.mutate(codigoCheckin.trim(), {
+  const processarCheckinPorCodigo = (codigo: string) => {
+    checkin.mutate(codigo, {
       onSuccess: () => {
         toast.success("Entrada validada.");
         setCodigoCheckin("");
@@ -111,6 +110,12 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
       onError: (erro) =>
         toast.error(erro.message || "Código não encontrado, ou o ingresso já foi utilizado."),
     });
+  };
+
+  const onSubmitCheckinPorCodigo = (evento: FormEvent) => {
+    evento.preventDefault();
+    if (!codigoCheckin.trim()) return;
+    processarCheckinPorCodigo(codigoCheckin.trim());
   };
 
   return (
@@ -197,10 +202,11 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
         <CardHeader>
           <CardTitle>Check-in por código (QR)</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <QrCodeScanner onScan={processarCheckinPorCodigo} />
           <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
             <Input
-              placeholder="Cole ou leia o código do ingresso"
+              placeholder="Ou cole/digite o código do ingresso"
               value={codigoCheckin}
               onChange={(e) => setCodigoCheckin(e.target.value)}
             />

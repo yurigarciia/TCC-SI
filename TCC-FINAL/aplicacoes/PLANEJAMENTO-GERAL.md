@@ -625,10 +625,12 @@ frentes de frontend-web e mobile.
   visível — venda avulsa não depende de croqui). Três blocos: form "Vender ingresso presencial"
   (nome, perfil sócio/não-sócio/criança, forma de pagamento — canal sempre "mediado" per RNF01,
   preço resolvido pelo backend conforme perfil+override do evento); "Check-in por código (QR)" —
-  campo de texto único que aceita o id do ingresso colado ou lido por um leitor USB/câmera que
-  funciona como teclado (emissao-ingresso.json: "QR code no app para quem tem, busca manual por
-  nome no painel para quem não tem" — não há câmera/scanner nativo no painel web, decisão
-  consciente de escopo, documentada aqui); tabela "Ingressos emitidos" com busca por nome
+  campo de texto que aceita o id do ingresso colado ou lido por um leitor USB/câmera que funciona
+  como teclado, **mais** um leitor de QR pela câmera do navegador (`QrCodeScanner`, biblioteca
+  `qr-scanner`, adicionado em 2026-08-29 — ver nota em `frontend-web/PLANEJAMENTO.md` §6) que só
+  liga sob clique explícito da diretoria; os dois formatos coexistem (emissao-ingresso.json: "QR
+  code no app para quem tem, busca manual por nome no painel para quem não tem"); tabela
+  "Ingressos emitidos" com busca por nome
   (`GET /eventos/:id/ingressos?nome=`) e botão "Check-in" por linha, badge "Usado"/"Emitido" +
   horário da entrada. Achado no caminho, corrigido não só aqui mas retroativamente: `SelectValue`
   do base-ui não resolve o label do item selecionado sozinho — sem passar uma função `children`

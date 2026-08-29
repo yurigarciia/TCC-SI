@@ -72,10 +72,11 @@ cookie redireciona para `/login`; com cookie, `/login` redireciona para `/`. `sr
   uma mutation local invalida a query ou a página é recarregada (ver Open Questions do
   PLANEJAMENTO-GERAL.md se polling/websocket entrar em escopo depois).
 - `/eventos/[id]/ingressos` — venda presencial de ingresso avulso (sócio/não-sócio/criança) e
-  check-in (RF11/RF12). Sem câmera/scanner nativo no painel web — "leitura de QR" é um campo de
-  texto que aceita o id do ingresso colado ou digitado por um leitor USB/câmera que funciona como
-  teclado (keyboard wedge), coexistindo com a busca manual por nome e o botão de check-in por
-  linha da tabela.
+  check-in (RF11/RF12). "Leitura de QR" tem duas formas, coexistindo com a busca manual por nome e
+  o botão de check-in por linha da tabela: câmera do navegador (`QrCodeScanner`, biblioteca
+  `qr-scanner`, só liga sob clique explícito) e um campo de texto que também aceita um leitor
+  USB/câmera externo que funciona como teclado (keyboard wedge) — útil se o hardware da sede não
+  tiver câmera compatível ou a permissão for negada.
 
 ## Convenções deste projeto
 

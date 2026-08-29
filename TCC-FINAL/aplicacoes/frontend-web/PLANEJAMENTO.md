@@ -68,6 +68,14 @@ um único ponto de rastreamento entre as três frentes. Ordem de implementação
 - O editor de croqui de salão (`T-FE-005`) precisa suportar upload de planta baixa como fundo
   (imagem de referência) ou o posicionamento livre de mesas em uma grade é suficiente para o MVP?
   Não decidido — impacta bastante o esforço da tela.
-- O check-in de ingresso por QR code exige suporte a câmera do tablet/notebook da diretoria — validar
-  se o hardware disponível na sede do Pia do Sul suporta isso antes de comprometer com QR como canal
-  único (manter fallback manual, já previsto em `emissao-ingresso.json`).
+- ~~O check-in de ingresso por QR code exige suporte a câmera~~ — resolvido em 2026-08-29: leitor
+  de QR via câmera do navegador implementado em `/eventos/[id]/ingressos`
+  (`src/features/ingressos/qr-code-scanner.tsx`, biblioteca `qr-scanner`). A câmera só liga sob
+  clique explícito da diretoria ("Ativar câmera") — nunca pede permissão sozinha ao abrir a tela —
+  e o campo de texto (colar/digitar o código) continua funcionando em paralelo como fallback
+  sempre disponível, para quando o dispositivo não tiver câmera, a permissão for negada, ou o
+  hardware da sede não suportar (mesma decisão de "os dois formatos coexistem" de
+  `emissao-ingresso.json`). Verificado sem erros com câmera falsa do Chromium (headless); teste
+  ponta a ponta com um QR real só é possível quando o app mobile (T-MOB) existir para gerar o
+  código — o scanner decodifica qualquer texto, incluindo o id do ingresso que o backend espera
+  em `POST /ingressos/:id/checkin`.
