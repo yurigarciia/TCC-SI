@@ -380,8 +380,13 @@ describe('Reservas de Mesa (e2e)', () => {
       .get('/reservas/minhas')
       .set('Authorization', `Bearer ${associadoToken}`)
       .expect(200);
-    const reservas = minhas.body as Array<{ mesaId: string }>;
-    expect(reservas.some((r) => r.mesaId === mesaAssociadoId)).toBe(true);
+    const reservas = minhas.body as Array<{
+      mesa: { id: string; numero: number } | null;
+      evento: { id: string; nome: string } | null;
+    }>;
+    const minha = reservas.find((r) => r.mesa?.id === mesaAssociadoId);
+    expect(minha).toBeDefined();
+    expect(minha!.evento?.id).toBe(eventoId);
 
     // administrador não deve conseguir usar a rota exclusiva do associado
     await request(app.getHttpServer())

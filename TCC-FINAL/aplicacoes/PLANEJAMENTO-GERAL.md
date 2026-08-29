@@ -414,6 +414,13 @@ frentes de frontend-web e mobile.
   padrão pode ser replicado ali quando/se for priorizado. Validado com `npm run build`, `npm run
   lint` e `npm run test:e2e` (37 testes no total; 2 novos: "me" autenticado, "minhas reservas" +
   bloqueio de acesso para administrador).
+  **Adendo 2026-08-29 (T-MOB-003):** `GET /reservas/minhas` devolvia `Reserva` crua
+  (`eventoId`/`mesaId` como UUID solto) — inútil pra exibir numa lista pro associado no app.
+  `ListarMinhasReservasUseCase` passou a enriquecer cada reserva com `evento` (id/nome/data/local)
+  e `mesa` (id/numero) via `EventoRepositoryPort`/`MesaRepositoryPort` (já exportados por
+  `EventosModule`, nenhuma mudança de módulo necessária). Teste e2e existente atualizado pra
+  conferir a nova forma; validado de novo com `npm run test:e2e` (ainda 40 testes, nenhum novo,
+  só a asserção mudou de forma).
 
 #### Ticket: T-BE-011 Integração com gateway de pagamento
 - **Priority:** Must
@@ -715,17 +722,30 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-MOB-003 Minhas Reservas (RF13)
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Lista de reservas de mesa e ingressos do associado logado.
 - **Acceptance Criteria:** Lista reflete status atualizado (reservada/cancelada/transferida).
 - **Validation Steps:** Teste manual após operações feitas pelo painel web.
-- **Notes:** Tela de consulta simples (sem fluxograma dedicado, ver `decisoes.md`). Backend pronto
-  via T-BE-012: `GET /reservas/minhas` (associado autenticado). Cobre reservas de mesa; ingressos
-  do associado ainda não têm endpoint equivalente (fora do escopo de T-BE-012) — se este ticket
-  for pego, avaliar se cria esse endpoint junto ou se a tela cobre só reservas por enquanto. Só
-  funciona para associados que se auto-cadastraram (têm `usuarioId` vinculado) — associados
-  cadastrados pela diretoria ainda não têm login próprio, ver nota em T-BE-012.
+- **Notes:** Tela de consulta simples (sem fluxograma dedicado, ver `decisoes.md`). Só cobre
+  reservas de mesa — ingressos do associado ainda não têm endpoint equivalente (fora de escopo,
+  mesmo padrão pode ser replicado ali quando/se for priorizado). Antes de implementar a tela,
+  enriqueci `GET /reservas/minhas` no backend (ver adendo em T-BE-012) porque a resposta crua só
+  tinha `eventoId`/`mesaId` — inútil pra exibir. Já não é mais verdade que "só funciona para
+  associados que se auto-cadastraram": T-BE-014 (vincular-conta) resolveu isso antes desta ticket
+  ser pega.
+
+  Nova aba "Minhas Reservas" em `src/app/(app)/reservas.tsx` — cards com nome/data/local do
+  evento, número da mesa, titular e canal (`StatusReservaBadge` por status), estado vazio
+  ("Nenhuma reserva ainda") e estado de erro com retry, pull-to-refresh. Também trocada a
+  navegação de `Stack` pra `Tabs` do Expo Router em `(app)/_layout.tsx` — navbar inferior
+  flutuante (posição absoluta, cantos arredondados, sombra), pedido explícito do usuário por
+  cima do padrão anterior de tela única; `AppTopBar` (`src/components/app-top-bar.tsx`) virou
+  componente compartilhado entre as abas pra manter "Sair" sempre acessível, não só na aba
+  Início. Validado com `npx tsc --noEmit`/`npm run lint` (limpos) e teste manual ponta a ponta
+  contra o backend real via `expo start --web` (headless): reserva real com evento/mesa/titular
+  aparecendo corretamente enriquecida, estado vazio para associado sem reservas, troca de aba
+  preservando o "Sair" em ambas.
 
 #### Ticket: T-MOB-004 Reserva de Mesa e Compra de Ingresso pelo app
 - **Priority:** Must

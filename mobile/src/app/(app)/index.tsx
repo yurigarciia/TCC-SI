@@ -1,6 +1,7 @@
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar, Button, Card, IconButton, Surface, Text } from "react-native-paper";
+import { Avatar, Button, Card, Surface, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppTopBar } from "@/components/app-top-bar";
 import { StatusAssociadoBadge } from "@/components/status-associado-badge";
 import { useAuth } from "@/features/auth/auth-context";
 import { useCurrentAssociado } from "@/features/associado/use-current-associado";
@@ -51,12 +52,7 @@ export default function InicioScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <View style={styles.topBar}>
-        <Text variant="titleMedium" style={styles.marca}>
-          Pia do Sul
-        </Text>
-        <IconButton icon="logout" onPress={sair} accessibilityLabel="Sair" />
-      </View>
+      <AppTopBar titulo="Início" />
 
       <ScrollView
         contentContainerStyle={styles.container}
@@ -157,18 +153,7 @@ const styles = StyleSheet.create({
   avatarErro: { backgroundColor: "#FBEAE9", marginBottom: 8 },
   erroTitulo: { textAlign: "center" },
   erroTexto: { color: "#5B5147", textAlign: "center", marginTop: 4 },
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    backgroundColor: "#FFFFFF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#DDD0BC",
-  },
-  marca: { color: "#7A2331", fontWeight: "700" },
-  container: { padding: 20, gap: 16, paddingBottom: 40 },
+  container: { padding: 20, gap: 16, paddingBottom: 110 },
   heroCard: {
     flexDirection: "row",
     alignItems: "center",
