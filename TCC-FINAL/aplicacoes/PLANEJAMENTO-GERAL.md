@@ -431,7 +431,7 @@ frentes de frontend-web e mobile.
   um adapter real (Stripe/Mercado Pago/PagSeguro etc., a decidir) é só reimplementar a porta.
   Reaproveitável por T-BE-009 (Ingressos) quando for implementado.
 
-#### Ticket: T-BE-012 Documentação Swagger completa (RNF04)
+#### Ticket: T-BE-013 Documentação Swagger completa (RNF04)
 - **Priority:** Should
 - **Status:** Todo
 - **Owner:** Unassigned
@@ -439,6 +439,30 @@ frentes de frontend-web e mobile.
 - **Acceptance Criteria:** `/api/docs` lista 100% dos endpoints usados pelo web e mobile.
 - **Validation Steps:** Checklist manual comparando endpoints implementados x documentados.
 - **Notes:**
+
+#### Ticket: T-BE-014 Vincular conta de associado mediado (RF01, canal associado)
+- **Priority:** Must
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Fecha a lacuna registrada em T-BE-012: associado com cadastro mediado pela diretoria
+  (sem `usuarioId`) precisa conseguir criar login e se vincular ao próprio cadastro pelo app —
+  bloqueava a Acceptance Criteria de T-MOB-001 ("associado com CPF já cadastrado pela diretoria
+  consegue vincular sua conta").
+- **Acceptance Criteria:** Associado mediado consegue criar conta (e-mail+senha) informando o CPF
+  já cadastrado e depois se autenticar normalmente; CPF não encontrado dá 404; cadastro que já tem
+  conta vinculada dá 409 (não permite hijack/duplicidade).
+- **Validation Steps:** Teste de integração cobrindo cadastro mediado→vincular-conta→login→"me".
+- **Notes:** `POST /associados/vincular-conta` (rota pública, mesmo motivo do auto-cadastro: quem
+  ainda não tem conta não tem token) — `VincularContaAssociadoUseCase` busca o Associado por CPF,
+  recusa se não existir (404) ou se já tiver `usuarioId` (409), cria o `Usuario` via
+  `UsuarioRepositoryPort`/`PasswordHasherPort` (mesmo caminho do auto-cadastro) e atualiza
+  `associados.usuario_id` — nenhuma migration nova, `AtualizacaoAssociado.usuarioId` já existia.
+  Cadastro mediado nasce sempre Ativo, então não há fila de aprovação a repetir aqui (diferente do
+  auto-cadastro). Também corrigida uma colisão de numeração pré-existente: havia dois tickets
+  "T-BE-012" no backlog (o de vínculo Usuario↔Associado e o de Swagger) — o de Swagger foi
+  renumerado para T-BE-013 e este ficou como T-BE-014. Validado com `npm run build`, `npm run
+  lint` e `npm run test:e2e` (40 testes no total; 3 novos: vincular-conta com sucesso+login+"me",
+  404 para CPF inexistente, 409 para cadastro já vinculado).
 
 ### Frontend Web (Painel Administrativo)
 

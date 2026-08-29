@@ -12,6 +12,7 @@ import { AtualizarAssociadoUseCase } from './application/use-cases/atualizar-ass
 import { AdicionarDependenteUseCase } from './application/use-cases/adicionar-dependente.use-case';
 import { AprovarCadastroPendenteUseCase } from './application/use-cases/aprovar-cadastro-pendente.use-case';
 import { RejeitarCadastroPendenteUseCase } from './application/use-cases/rejeitar-cadastro-pendente.use-case';
+import { VincularContaAssociadoUseCase } from './application/use-cases/vincular-conta-associado.use-case';
 import { CriarCategoriaSocioUseCase } from './application/use-cases/criar-categoria-socio.use-case';
 import { ListarCategoriasSocioUseCase } from './application/use-cases/listar-categorias-socio.use-case';
 import { AssociadoOrmEntity } from './infrastructure/persistence/associado.orm-entity';
@@ -44,6 +45,7 @@ import { IdentidadeModule } from '../identidade/identidade.module';
     AdicionarDependenteUseCase,
     AprovarCadastroPendenteUseCase,
     RejeitarCadastroPendenteUseCase,
+    VincularContaAssociadoUseCase,
     CriarCategoriaSocioUseCase,
     ListarCategoriasSocioUseCase,
     {

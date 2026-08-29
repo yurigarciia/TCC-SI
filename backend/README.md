@@ -56,8 +56,9 @@ para o padrão a seguir nos próximos módulos).
 - `identidade` — login (`POST /auth/login`), JWT + RBAC (`administrador`/`associado`).
 - `associados` — cadastro (auto-cadastro público + mediado pela diretoria), dependentes,
   categorias de sócio, aprovação/rejeição de cadastro pendente (RF01, RF02, RF04). Auto-cadastro
-  cria `Usuario`+`Associado` já vinculados (`GET /associados/me`); cadastro mediado ainda não tem
-  esse vínculo.
+  cria `Usuario`+`Associado` já vinculados (`GET /associados/me`); cadastro mediado vincula depois,
+  sob demanda do próprio associado, via `POST /associados/vincular-conta` (CPF+e-mail+senha —
+  404 se o CPF não existir, 409 se já tiver conta vinculada).
 - `mensalidades` — geração mensal automática (cron), pagamento presencial e online (via
   `PaymentGatewayPort`), histórico, comprovante, relatório de inadimplência e lembrete automático
   (RF05, RF06, RF07, RF08).

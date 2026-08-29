@@ -26,10 +26,12 @@ import { AtualizarAssociadoUseCase } from '../../application/use-cases/atualizar
 import { AdicionarDependenteUseCase } from '../../application/use-cases/adicionar-dependente.use-case';
 import { AprovarCadastroPendenteUseCase } from '../../application/use-cases/aprovar-cadastro-pendente.use-case';
 import { RejeitarCadastroPendenteUseCase } from '../../application/use-cases/rejeitar-cadastro-pendente.use-case';
+import { VincularContaAssociadoUseCase } from '../../application/use-cases/vincular-conta-associado.use-case';
 import { AutoCadastroAssociadoDto } from './dto/auto-cadastro-associado.dto';
 import { CadastrarAssociadoMediadoDto } from './dto/cadastrar-associado-mediado.dto';
 import { AtualizarAssociadoDto } from './dto/atualizar-associado.dto';
 import { DependenteDto } from './dto/dependente.dto';
+import { VincularContaAssociadoDto } from './dto/vincular-conta-associado.dto';
 
 @ApiTags('associados')
 @Controller('associados')
@@ -44,6 +46,7 @@ export class AssociadosController {
     private readonly adicionarDependente: AdicionarDependenteUseCase,
     private readonly aprovar: AprovarCadastroPendenteUseCase,
     private readonly rejeitar: RejeitarCadastroPendenteUseCase,
+    private readonly vincularConta: VincularContaAssociadoUseCase,
   ) {}
 
   @Post('auto-cadastro')
@@ -57,6 +60,15 @@ export class AssociadosController {
       email: dto.email,
       senha: dto.senha,
     });
+  }
+
+  // RF01 (canal associado) — "reivindicar" a conta de um cadastro já feito pela diretoria
+  // (cadastro mediado nunca tem usuarioId). Rota pública, como auto-cadastro: quem ainda não tem
+  // conta não tem token para autenticar a chamada.
+  @Post('vincular-conta')
+  @HttpCode(HttpStatus.CREATED)
+  vincularContaExistente(@Body() dto: VincularContaAssociadoDto) {
+    return this.vincularConta.execute(dto);
   }
 
   @Post()

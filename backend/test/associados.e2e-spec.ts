@@ -151,6 +151,51 @@ describe('Associados (e2e)', () => {
     expect(body.dependentes).toHaveLength(1);
   });
 
+  it('permite a um associado mediado vincular a própria conta e depois se autenticar', async () => {
+    await request(app.getHttpServer())
+      .post('/associados/vincular-conta')
+      .send({
+        cpf: cpfMediado,
+        email: 'joao.mediado@e2e.local',
+        senha: 'senha123',
+      })
+      .expect(201);
+
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'joao.mediado@e2e.local', senha: 'senha123' })
+      .expect(200);
+    const token = (login.body as { accessToken: string }).accessToken;
+
+    const meu = await request(app.getHttpServer())
+      .get('/associados/me')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+    expect((meu.body as AssociadoResponseBody).cpf).toBe(cpfMediado);
+  });
+
+  it('recusa vincular-conta com CPF não encontrado (404)', () => {
+    return request(app.getHttpServer())
+      .post('/associados/vincular-conta')
+      .send({
+        cpf: '00000000000',
+        email: 'ninguem@e2e.local',
+        senha: 'senha123',
+      })
+      .expect(404);
+  });
+
+  it('recusa vincular-conta num cadastro que já tem conta vinculada (409)', () => {
+    return request(app.getHttpServer())
+      .post('/associados/vincular-conta')
+      .send({
+        cpf: cpfMediado,
+        email: 'outro.email@e2e.local',
+        senha: 'senha123',
+      })
+      .expect(409);
+  });
+
   it('aprova um cadastro pendente e reflete o novo status na consulta', async () => {
     const listagem = await request(app.getHttpServer())
       .get('/associados')
