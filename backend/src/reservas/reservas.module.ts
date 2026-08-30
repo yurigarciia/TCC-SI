@@ -8,6 +8,7 @@ import { ConsultarMapaMesasUseCase } from './application/use-cases/consultar-map
 import { TransferirMesaReservaUseCase } from './application/use-cases/transferir-mesa-reserva.use-case';
 import { TransferirTitularReservaUseCase } from './application/use-cases/transferir-titular-reserva.use-case';
 import { ListarMinhasReservasUseCase } from './application/use-cases/listar-minhas-reservas.use-case';
+import { SolicitarMinhaReservaUseCase } from './application/use-cases/solicitar-minha-reserva.use-case';
 import { ReservaOrmEntity } from './infrastructure/persistence/reserva.orm-entity';
 import { TypeOrmReservaRepositoryAdapter } from './infrastructure/persistence/typeorm-reserva-repository.adapter';
 import { ReservasController } from './infrastructure/controllers/reservas.controller';
@@ -33,6 +34,7 @@ import { PaymentsModule } from '../shared/payments/payments.module';
     TransferirMesaReservaUseCase,
     TransferirTitularReservaUseCase,
     ListarMinhasReservasUseCase,
+    SolicitarMinhaReservaUseCase,
     {
       provide: ReservaRepositoryPort,
       useClass: TypeOrmReservaRepositoryAdapter,

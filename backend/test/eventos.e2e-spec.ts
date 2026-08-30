@@ -162,4 +162,21 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     expect(publicados.some((e) => e.id === eventoComCroquiId)).toBe(true);
     expect(publicados.some((e) => e.id === eventoSemCroquiId)).toBe(false);
   });
+
+  it('T-MOB-004 — detalha um evento publicado sem exigir autenticação, mas esconde rascunho', async () => {
+    const publicado = await request(app.getHttpServer())
+      .get(`/eventos/publicados/${eventoComCroquiId}`)
+      .expect(200);
+    const body = publicado.body as {
+      evento: { id: string; status: string };
+      mesas: unknown[];
+    };
+    expect(body.evento.id).toBe(eventoComCroquiId);
+    expect(body.evento.status).toBe('publicado');
+    expect(body.mesas).toHaveLength(1);
+
+    await request(app.getHttpServer())
+      .get(`/eventos/publicados/${eventoSemCroquiId}`)
+      .expect(404);
+  });
 });

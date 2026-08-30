@@ -2,8 +2,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
 import { paperTheme } from "@/theme/paper-theme";
 
-// Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer. T-MOB-004
-// (eventos/ingressos) vai virar mais uma aba aqui quando entrar em escopo.
+// Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer.
 export default function AppLayout() {
   return (
     <Tabs
@@ -55,6 +54,15 @@ export default function AppLayout() {
           title: "Minhas Reservas",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="ticket-confirmation-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="eventos"
+        options={{
+          title: "Eventos",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="calendar-star" color={color} size={size} />
           ),
         }}
       />

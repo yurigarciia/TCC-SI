@@ -18,6 +18,7 @@ import {
   ListarEventosUseCase,
 } from './application/use-cases/listar-eventos.use-case';
 import { ConsultarEventoUseCase } from './application/use-cases/consultar-evento.use-case';
+import { ConsultarEventoPublicadoUseCase } from './application/use-cases/consultar-evento-publicado.use-case';
 import { SalaoOrmEntity } from './infrastructure/persistence/salao.orm-entity';
 import { MesaOrmEntity } from './infrastructure/persistence/mesa.orm-entity';
 import { EventoOrmEntity } from './infrastructure/persistence/evento.orm-entity';
@@ -56,6 +57,7 @@ import { IdentidadeModule } from '../identidade/identidade.module';
     ListarEventosUseCase,
     ListarEventosPublicadosUseCase,
     ConsultarEventoUseCase,
+    ConsultarEventoPublicadoUseCase,
     { provide: SalaoRepositoryPort, useClass: TypeOrmSalaoRepositoryAdapter },
     { provide: MesaRepositoryPort, useClass: TypeOrmMesaRepositoryAdapter },
     { provide: EventoRepositoryPort, useClass: TypeOrmEventoRepositoryAdapter },

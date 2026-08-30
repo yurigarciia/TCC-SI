@@ -24,6 +24,7 @@ import {
   ListarEventosUseCase,
 } from '../../application/use-cases/listar-eventos.use-case';
 import { ConsultarEventoUseCase } from '../../application/use-cases/consultar-evento.use-case';
+import { ConsultarEventoPublicadoUseCase } from '../../application/use-cases/consultar-evento-publicado.use-case';
 import { CriarEventoDto } from './dto/criar-evento.dto';
 import { ConfigurarMesasEventoDto } from './dto/configurar-mesas-evento.dto';
 import { ConfigurarIngressoEventoDto } from './dto/configurar-ingresso-evento.dto';
@@ -39,12 +40,22 @@ export class EventosController {
     private readonly listar: ListarEventosUseCase,
     private readonly listarPublicados: ListarEventosPublicadosUseCase,
     private readonly consultar: ConsultarEventoUseCase,
+    private readonly consultarPublicado: ConsultarEventoPublicadoUseCase,
   ) {}
 
   // RF13 — vitrine pública de eventos publicados, consumida pelo app do associado.
   @Get('publicados')
   listarEventosPublicados() {
     return this.listarPublicados.execute();
+  }
+
+  // RF11/RF12/RF14 (T-MOB-004) — detalhe público (preço/mesas/ingresso) de um evento já
+  // publicado, pra decidir reservar mesa ou comprar ingresso antes de precisar logar. Precisa vir
+  // antes de ':id' (mesmo motivo de /associados/me) — 'publicados' como segmento literal já evita
+  // colisão, mas mantém o padrão de declarar o mais específico primeiro.
+  @Get('publicados/:id')
+  consultarEventoPublicado(@Param('id', ParseUUIDPipe) id: string) {
+    return this.consultarPublicado.execute(id);
   }
 
   @Post()

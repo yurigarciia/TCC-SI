@@ -172,4 +172,91 @@ describe('Ingressos (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(409);
   });
+
+  it('T-MOB-004 — associado compra o próprio ingresso pelo app (RF12)', async () => {
+    const cpf = '99988877766';
+    const email = 'associado.ingresso@e2e.local';
+
+    const autoCadastro = await request(app.getHttpServer())
+      .post('/associados/auto-cadastro')
+      .send({
+        nome: 'Associado Compra Ingresso',
+        cpf,
+        contato: '55999990011',
+        email,
+        senha: 'senha123',
+      })
+      .expect(201);
+    const associadoId = (autoCadastro.body as { id: string }).id;
+
+    await request(app.getHttpServer())
+      .post(`/associados/${associadoId}/aprovar`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(201);
+
+    const eventoAssociado = await request(app.getHttpServer())
+      .post('/eventos')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nome: 'Fandango Compra Ingresso — e2e',
+        data: new Date(Date.now() + 86400000).toISOString(),
+        local: 'Galpão',
+      })
+      .expect(201);
+    const eventoAssociadoId = (eventoAssociado.body as { id: string }).id;
+
+    await request(app.getHttpServer())
+      .put(`/eventos/${eventoAssociadoId}/ingresso`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ quantidadeDisponivel: 5, preco: 20 })
+      .expect(200);
+
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, senha: 'senha123' })
+      .expect(200);
+    const associadoToken = (login.body as { accessToken: string }).accessToken;
+
+    const compra = await request(app.getHttpServer())
+      .post(`/eventos/${eventoAssociadoId}/meu-ingresso`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(201);
+    const ingresso = compra.body as {
+      nomeComprador: string;
+      perfilComprador: string;
+      canal: string;
+      formaPagamento: string;
+      pagamentoExternoId: string | null;
+    };
+    expect(ingresso.nomeComprador).toBe('Associado Compra Ingresso');
+    expect(ingresso.perfilComprador).toBe('socio');
+    expect(ingresso.canal).toBe('app');
+    expect(ingresso.formaPagamento).toBe('online');
+    expect(ingresso.pagamentoExternoId).toMatch(/^fake_/);
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .post(`/eventos/${eventoAssociadoId}/meu-ingresso`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
+
+    await dataSource.query('DELETE FROM ingressos WHERE evento_id = $1', [
+      eventoAssociadoId,
+    ]);
+    await dataSource.query(
+      'DELETE FROM configuracoes_ingresso_evento WHERE evento_id = $1',
+      [eventoAssociadoId],
+    );
+    await dataSource.query('DELETE FROM eventos WHERE id = $1', [
+      eventoAssociadoId,
+    ]);
+    const usuarioIds = await dataSource.query<
+      Array<{ usuario_id: string | null }>
+    >('SELECT usuario_id FROM associados WHERE cpf = $1', [cpf]);
+    await dataSource.query('DELETE FROM associados WHERE cpf = $1', [cpf]);
+    const usuarioId = usuarioIds[0]?.usuario_id;
+    if (usuarioId) {
+      await dataSource.query('DELETE FROM usuarios WHERE id = $1', [usuarioId]);
+    }
+  });
 });

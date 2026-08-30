@@ -779,13 +779,54 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-MOB-004 Reserva de Mesa e Compra de Ingresso pelo app
 - **Priority:** Must
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Ver eventos publicados, solicitar reserva de mesa, comprar ingresso avulso, pagar
   online.
 - **Acceptance Criteria:** Mapa de mesas no app reflete disponibilidade em tempo real (RF14).
 - **Validation Steps:** Teste manual contra `reserva-mesa.json` e `emissao-ingresso.json`.
-- **Notes:**
+- **Notes:** `reserva-mesa.json`/`emissao-ingresso.json` já modelavam dois canais convivendo
+  ("diretoria lança reserva por fora" OU "associado solicita pelo app"; ingresso "associado compra
+  pelo app, sempre paga online"), mas nenhum dos dois tinha rota no backend — só o canal mediado
+  existia. Backend ganhou 3 endpoints novos, todos reaproveitando os use cases admin existentes por
+  composição (nunca duplicando regra de negócio):
+  - `GET /eventos/publicados/:id` (público, sem guard) — detalhe de um evento publicado
+    (`ConsultarEventoPublicadoUseCase`) já enriquecido com `mesas` e `ingresso` configurados, pro
+    app não precisar de N chamadas.
+  - `POST /eventos/:eventoId/mesas/:mesaId/reservar-minha` (`@Roles(ASSOCIADO)`) —
+    `SolicitarMinhaReservaUseCase` resolve o associado pelo JWT e força `canal=app`/
+    `nomeTitular`/`associadoId` no servidor; só `formaPagamento` vem do corpo. `GET
+    /eventos/:eventoId/mapa-mesas`, que já existia só pra admin, ganhou
+    `@Roles(ADMINISTRADOR, ASSOCIADO)` pro app conseguir mostrar disponibilidade em tempo real
+    (RF14) antes de reservar.
+  - `POST /eventos/:eventoId/meu-ingresso` (`@Roles(ASSOCIADO)`, sem corpo) —
+    `ComprarMeuIngressoUseCase` força `perfilComprador=socio`, `canal=app`,
+    `formaPagamento=online`, `nomeComprador` do JWT.
+
+  Mesmo padrão "meu/minha" das tickets anteriores (T-MOB-002/003): nunca relaxar o guard
+  admin-only pra deixar o associado bater no mesmo endpoint com campos de posse vindos do cliente
+  (risco de IDOR) — sempre uma rota dedicada que resolve a posse a partir do JWT antes de delegar.
+  10 casos novos/alterados em `eventos.e2e-spec.ts`/`reservas.e2e-spec.ts`/`ingressos.e2e-spec.ts`,
+  suíte completa em 45/45.
+
+  Mobile: aba "Eventos" nova na navbar inferior (`(app)/_layout.tsx`), com sub-navegação em
+  `Stack` (`(app)/eventos/_layout.tsx`, header nativo vinho) — lista (`eventos/index.tsx`) →
+  detalhe (`eventos/[id].tsx`). Detalhe reaproveita o padrão de canvas de posição fixa com rolagem
+  horizontal já usado no painel web (`MapaMesasCanvas`, mesmo motivo: coordenadas de mesa são
+  pixels reais, não proporcionais). Toque numa mesa livre abre um `Dialog` (react-native-paper)
+  pra escolher forma de pagamento e confirmar a reserva; mesa ocupada mostra só titular/status,
+  sem opção de reservar. Cartão de "Ingresso avulso" com preço + botão de compra, feedback via
+  `Snackbar` de sucesso e `ErrorSnackbar` de erro (mesmo padrão de toda mutation do app). Reserva
+  e compra invalidam `["eventos", eventoId, "mapa-mesas"]` e `["reservas", "minhas"]` via React
+  Query, então o mapa e a aba Minhas Reservas refletem o resultado sem precisar de refresh manual.
+
+  Validado com `npx tsc --noEmit`/`npm run lint` (limpos) e teste manual ponta a ponta contra o
+  backend real via `expo start --web` (headless Edge + CDP, cliques reais via
+  `Input.dispatchMouseEvent` — sintético `.click()` do DOM não aciona o `Pressable` do React
+  Native Web): login como associado, listagem de eventos publicados, mapa de mesas com status ao
+  vivo, reserva de mesa concluída com sucesso (mapa e aba Minhas Reservas atualizados sem
+  refresh), compra de ingresso avulso concluída com sucesso. Dados de teste (associado/salão/
+  mesas/eventos) removidos do banco de dev ao final.
 
 #### Ticket: T-MOB-005 Notificações (lembrete de inadimplência, confirmações)
 - **Priority:** Should

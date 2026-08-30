@@ -28,8 +28,9 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
 ## Telas implementadas
 
 - `/(auth)` (index=login, `cadastro`, `vincular-conta`) e `/(app)` (index=início/status,
-  `mensalidade`, `reservas`=Minhas Reservas) — RF01 (canal associado), status do associado (RF03),
-  RF05/RF06/RF08 e RF13. `Stack.Protected` no layout raiz (`src/app/_layout.tsx`) troca
+  `mensalidade`, `reservas`=Minhas Reservas, `eventos`=lista+detalhe) — RF01 (canal associado),
+  status do associado (RF03), RF05/RF06/RF08, RF11/RF12/RF13/RF14. `Stack.Protected` no layout raiz
+  (`src/app/_layout.tsx`) troca
   automaticamente entre os dois grupos conforme `AuthProvider.isAuthenticated`
   (`src/features/auth/auth-context.tsx`) — sem middleware, é tudo client-side (`getAuthToken()`
   lido do `expo-secure-store` uma vez no mount). Cadastro (`/(auth)/cadastro`, auto-cadastro RF01)
@@ -43,8 +44,14 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
   T-MOB-002 no `PLANEJAMENTO-GERAL.md`), card "Você está em dia!" quando não há pendência, e
   histórico completo com `StatusMensalidadeBadge`. Minhas Reservas (`(app)/reservas.tsx`) lista as
   reservas de mesa do associado (`GET /reservas/minhas`, já enriquecido com nome do evento e
-  número da mesa — ver T-BE-012 no `PLANEJAMENTO-GERAL.md`), com estado vazio e retry em erro;
-  ingressos do associado ainda não têm endpoint equivalente, fora de escopo por ora.
+  número da mesa — ver T-BE-012 no `PLANEJAMENTO-GERAL.md`), com estado vazio e retry em erro.
+  Eventos (`(app)/eventos/`, T-MOB-004) lista os eventos publicados (`index.tsx`, público) e abre
+  um detalhe (`[id].tsx`, sub-`Stack` em `eventos/_layout.tsx`) com mapa de mesas ao vivo
+  (`MapaMesasCanvas`, RF14) — toque numa mesa livre abre um `Dialog` pra escolher forma de
+  pagamento e reservar (`POST .../reservar-minha`, RF11); mesa ocupada só mostra titular/status.
+  Cartão de ingresso avulso com botão de compra (`POST .../meu-ingresso`, RF12, sempre sócio/app/
+  online). Reserva e compra invalidam o mapa de mesas e Minhas Reservas via React Query, sem
+  precisar de refresh manual.
 
 ## Convenções deste projeto
 

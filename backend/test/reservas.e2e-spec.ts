@@ -28,6 +28,7 @@ describe('Reservas de Mesa (e2e)', () => {
   let mesaDestinoTransferenciaId: string;
   let mesaOcupadaId: string;
   let mesaAssociadoId: string;
+  let mesaMinhaReservaId: string;
   let eventoId: string;
   const cpfAssociadoMinhasReservas = '55555555555';
   const emailAssociadoMinhasReservas = 'associado.minhasreservas@e2e.local';
@@ -94,6 +95,12 @@ describe('Reservas de Mesa (e2e)', () => {
       .send({ numero: 7, capacidade: 8, posicaoX: 70, posicaoY: 0 });
     mesaAssociadoId = (mesa7.body as { id: string }).id;
 
+    const mesa9 = await request(app.getHttpServer())
+      .post(`/saloes/${salaoId}/mesas`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ numero: 9, capacidade: 8, posicaoX: 90, posicaoY: 0 });
+    mesaMinhaReservaId = (mesa9.body as { id: string }).id;
+
     const evento = await request(app.getHttpServer())
       .post('/eventos')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -117,6 +124,7 @@ describe('Reservas de Mesa (e2e)', () => {
           { mesaId: mesaDestinoTransferenciaId, preco: 90, bloqueada: false },
           { mesaId: mesaOcupadaId, preco: 90, bloqueada: false },
           { mesaId: mesaAssociadoId, preco: 90, bloqueada: false },
+          { mesaId: mesaMinhaReservaId, preco: 90, bloqueada: false },
         ],
       });
   });
@@ -323,6 +331,7 @@ describe('Reservas de Mesa (e2e)', () => {
           { mesaId: mesaOcupadaId, preco: 90, bloqueada: false },
           { mesaId: mesaOutraOrigemId, preco: 90, bloqueada: false },
           { mesaId: mesaAssociadoId, preco: 90, bloqueada: false },
+          { mesaId: mesaMinhaReservaId, preco: 90, bloqueada: false },
         ],
       });
 
@@ -392,6 +401,43 @@ describe('Reservas de Mesa (e2e)', () => {
     await request(app.getHttpServer())
       .get('/reservas/minhas')
       .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
+  });
+
+  it('T-MOB-004 — associado solicita a própria reserva pelo app (reservar-minha)', async () => {
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: emailAssociadoMinhasReservas, senha: 'senha123' })
+      .expect(200);
+    const associadoToken = (login.body as { accessToken: string }).accessToken;
+
+    // GET mapa-mesas também é acessível pelo associado (RF14), pra escolher mesa livre
+    await request(app.getHttpServer())
+      .get(`/eventos/${eventoId}/mapa-mesas`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+
+    const reserva = await request(app.getHttpServer())
+      .post(`/eventos/${eventoId}/mesas/${mesaMinhaReservaId}/reservar-minha`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .send({ formaPagamento: 'online' })
+      .expect(201);
+
+    const body = reserva.body as {
+      status: string;
+      canal: string;
+      associadoId: string;
+      nomeTitular: string;
+    };
+    expect(body.status).toBe('confirmada');
+    expect(body.canal).toBe('app');
+    expect(body.nomeTitular).toBe('Associado Minhas Reservas');
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .post(`/eventos/${eventoId}/mesas/${mesaMinhaReservaId}/reservar-minha`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ formaPagamento: 'online' })
       .expect(403);
   });
 });

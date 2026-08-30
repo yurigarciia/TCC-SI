@@ -67,17 +67,23 @@ para o padrão a seguir nos próximos módulos).
   (`ResolverMinhaMensalidadeUseCase`, 403 se não for do associado autenticado).
 - `eventos` — croqui de salão reutilizável (mesas numeradas com posição x/y), cadastro de evento
   com vínculo opcional a croqui, preço/bloqueio por mesa no evento, ingresso avulso, publicação
-  (RF09, RF10). `GET /eventos/publicados` é público (vitrine para o app do associado).
-- `reservas` — reserva mediada de mesa (canal `app`/`mediado`, pagamento online/presencial),
-  checagem de concorrência via índice único parcial no Postgres, mapa de mesas em tempo real,
-  cancelamento e transferência (mesa ou titular) (RF11, RF14, RF15). `GET /reservas/minhas`
-  (perfil associado) cobre RF13 — reserva pode ser opcionalmente vinculada a um associado
-  cadastrado no momento da criação.
+  (RF09, RF10). `GET /eventos/publicados` é público (vitrine para o app do associado); `GET
+  /eventos/publicados/:id` (também público) devolve o detalhe já enriquecido com mesas/ingresso
+  configurados, pro app não precisar de N chamadas.
+- `reservas` — reserva de mesa pelos dois canais que convivem: mediado pela diretoria (`POST
+  /eventos/:eventoId/mesas/:mesaId/reservar`, admin) e direto pelo app (`.../reservar-minha`,
+  associado — canal/titular/posse sempre resolvidos a partir do JWT, nunca do corpo da requisição),
+  pagamento online/presencial, checagem de concorrência via índice único parcial no Postgres, mapa
+  de mesas em tempo real (`GET /eventos/:eventoId/mapa-mesas`, acessível a admin e associado),
+  cancelamento e transferência (mesa ou titular) (RF11, RF14, RF15). `GET /reservas/minhas` (perfil
+  associado) cobre RF13.
 - `ingressos` — emissão avulsa com preço por perfil (sócio/não-sócio/criança, padrão da entidade
   + override por evento), controle de quantidade disponível, check-in único (serve QR e busca
-  manual por nome) com prevenção de reuso (RF12).
+  manual por nome) com prevenção de reuso (RF12). Compra pelo associado via `POST
+  /eventos/:eventoId/meu-ingresso` (sem corpo — perfil sócio, canal app e pagamento online sempre
+  forçados no servidor a partir do JWT).
 
-Com isso, todos os módulos Must e o único Could do backend do MVP (T-BE-001 a T-BE-012) estão
+Com isso, todos os módulos Must e o único Could do backend do MVP (T-BE-001 a T-BE-014) estão
 implementados — ver `TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md` para o backlog completo e o que
 segue conscientemente fora do escopo de fluxo (RF02, RF06, RNF02).
 

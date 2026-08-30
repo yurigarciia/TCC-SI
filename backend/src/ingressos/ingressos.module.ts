@@ -7,6 +7,7 @@ import { DefinirPrecoPorEventoUseCase } from './application/use-cases/definir-pr
 import { EmitirIngressoUseCase } from './application/use-cases/emitir-ingresso.use-case';
 import { RegistrarCheckinUseCase } from './application/use-cases/registrar-checkin.use-case';
 import { ListarIngressosEventoUseCase } from './application/use-cases/listar-ingressos-evento.use-case';
+import { ComprarMeuIngressoUseCase } from './application/use-cases/comprar-meu-ingresso.use-case';
 import { IngressoOrmEntity } from './infrastructure/persistence/ingresso.orm-entity';
 import { PrecoIngressoOrmEntity } from './infrastructure/persistence/preco-ingresso.orm-entity';
 import { TypeOrmIngressoRepositoryAdapter } from './infrastructure/persistence/typeorm-ingresso-repository.adapter';
@@ -14,6 +15,7 @@ import { TypeOrmPrecoIngressoRepositoryAdapter } from './infrastructure/persiste
 import { IngressosController } from './infrastructure/controllers/ingressos.controller';
 import { IdentidadeModule } from '../identidade/identidade.module';
 import { EventosModule } from '../eventos/eventos.module';
+import { AssociadosModule } from '../associados/associados.module';
 import { PaymentsModule } from '../shared/payments/payments.module';
 
 @Module({
@@ -21,6 +23,7 @@ import { PaymentsModule } from '../shared/payments/payments.module';
     TypeOrmModule.forFeature([IngressoOrmEntity, PrecoIngressoOrmEntity]),
     IdentidadeModule,
     EventosModule,
+    AssociadosModule,
     PaymentsModule,
   ],
   controllers: [IngressosController],
@@ -30,6 +33,7 @@ import { PaymentsModule } from '../shared/payments/payments.module';
     EmitirIngressoUseCase,
     RegistrarCheckinUseCase,
     ListarIngressosEventoUseCase,
+    ComprarMeuIngressoUseCase,
     {
       provide: IngressoRepositoryPort,
       useClass: TypeOrmIngressoRepositoryAdapter,
