@@ -109,24 +109,34 @@ push/e-mail para lembretes (inadimplência, confirmações).
 
 O projeto é considerado no ponto de MVP avaliável quando, simultaneamente:
 
-- [ ] Todos os requisitos **Must** do artigo (RF01, RF03, RF04\*, RF05, RF06, RF09, RF10, RF11,
+- [x] Todos os requisitos **Must** do artigo (RF01, RF03, RF04\*, RF05, RF06, RF09, RF10, RF11,
       RF12, RF13, RNF01, RNF02, RNF03) estão implementados e testados manualmente contra o fluxo
-      correspondente em `TCC-FINAL/arquitetura/fluxos/`.
+      correspondente em `TCC-FINAL/arquitetura/fluxos/`. Concluído em 2026-08-29 com T-MOB-004
+      (RF11/RF12/RF14 pelo app) — todos os T-BE-*/T-FE-*/T-MOB-* Must do backlog estão Done.
       \* RF04 é Should no artigo, mas depende do mesmo fluxo de RF01 — tratado junto.
 - [ ] Requisitos **Should** priorizados (RF02, RF07, RF08, RF14, RNF04, RNF05) implementados na
       medida em que o tempo do cronograma permitir; os que ficarem de fora devem ser documentados
-      como limitação no TCC, não silenciados.
-- [ ] RF15 (Could) implementado se houver tempo — já mapeado em
-      `cancelamento-transferencia-reserva.json`.
-- [ ] Backend com migrations versionadas rodando localmente a partir de zero (`docker compose up` ou
-      equivalente) sem passos manuais não documentados.
-- [ ] API documentada via Swagger, cobrindo todos os endpoints usados pelo web e pelo mobile.
+      como limitação no TCC, não silenciados. RF02/RF08/RF14 Done; RF07 implementado mas
+      pendente de teste em device real (T-MOB-005); RNF04 pendente de auditoria completa
+      (T-BE-013 — os endpoints já têm anotação Swagger básica via `@ApiTags`/`@ApiProperty`, falta
+      revisar exemplos/códigos de erro em 100% deles); RNF05 (resposta <2s) nunca medido
+      formalmente.
+- [x] RF15 (Could) implementado — `cancelamento-transferencia-reserva.json`, T-BE-010 Done.
+- [x] Backend com migrations versionadas rodando localmente a partir de zero (`docker compose up` +
+      `npm run migration:run`) sem passos manuais não documentados — 11 migrations, todas testadas
+      nesta sessão.
+- [ ] API documentada via Swagger, cobrindo todos os endpoints usados pelo web e pelo mobile —
+      Swagger já está montado e cada endpoint tem anotações básicas, mas falta a auditoria
+      completa de T-BE-013 (exemplos, códigos de erro por rota).
 - [x] Painel web navegável de ponta a ponta pelos fluxos Must, aplicando o Design System
       (`frontend-web/DESIGN-SYSTEM.md`) — T-FE-001 a T-FE-008 concluídos e verificados ponta a
       ponta contra o backend real; checkup visual de responsividade/consistência feito em
       2026-08-29 (ver nota em T-FE-008 e commit correspondente).
 - [ ] App mobile instalável (build Expo Go ou APK/TestFlight interno) cobrindo os fluxos do
-      associado (consulta de reservas, pagamento de mensalidade, compra de ingresso).
+      associado (consulta de reservas, pagamento de mensalidade, compra de ingresso). Todas as
+      telas (T-MOB-001 a T-MOB-004) estão implementadas e verificadas via `expo start --web` +
+      headless contra o backend real, mas **nunca rodaram num device/emulador físico** — nenhuma
+      build Expo Go/EAS foi gerada ainda. Bloqueia também o fechamento de T-MOB-005.
 - [ ] Sessão de avaliação com a diretoria e associados do Pia do Sul realizada, com SUS aplicado e
       notas de observação/entrevista coletadas.
 - [ ] Resultados da avaliação registrados em `TCC-FINAL/arquitetura/decisoes.md` (ou anexo
