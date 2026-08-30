@@ -16,6 +16,7 @@ import { IdentidadeModule } from '../identidade/identidade.module';
 import { EventosModule } from '../eventos/eventos.module';
 import { AssociadosModule } from '../associados/associados.module';
 import { PaymentsModule } from '../shared/payments/payments.module';
+import { NotificationsModule } from '../shared/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PaymentsModule } from '../shared/payments/payments.module';
     EventosModule,
     AssociadosModule,
     PaymentsModule,
+    NotificationsModule,
   ],
   controllers: [ReservasController],
   providers: [

@@ -53,6 +53,14 @@ versionada do Expo) antes de usar APIs de navegação/notificações.
   online). Reserva e compra invalidam o mapa de mesas e Minhas Reservas via React Query, sem
   precisar de refresh manual.
 
+  Notificações push (T-MOB-005, RF07 lado associado): `useRegistrarPushToken()`
+  (`src/features/notificacoes/`) dispara uma vez ao entrar em `(app)` — pede permissão e registra
+  o token do device (`POST /notificacoes/push-token`). 100% best-effort, nunca bloqueia nem mostra
+  erro pro associado: sem permissão concedida, sem device físico ou sem `projectId` de EAS
+  configurado (ainda não há, ver `app.json`), a função só retorna `null` e segue o app normalmente.
+  **Pendente de teste em device/EAS real antes de fechar a ticket** (ver Notes de T-MOB-005 no
+  `PLANEJAMENTO-GERAL.md`) — não dá pra confirmar entrega de push de dentro deste ambiente de dev.
+
 ## Convenções deste projeto
 
 - Reaproveita os tokens de cor e princípios de acessibilidade de

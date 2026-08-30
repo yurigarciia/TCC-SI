@@ -1,5 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../../../associados/application/ports/associado-repository.port';
+import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-repository.port';
+import { NotificationSenderPort } from '../../../shared/notifications/application/ports/notification-sender.port';
 import { EmitirIngressoUseCase } from './emitir-ingresso.use-case';
 import {
   CanalIngresso,
@@ -17,6 +19,10 @@ export class ComprarMeuIngressoUseCase {
   constructor(
     @Inject(AssociadoRepositoryPort)
     private readonly associados: AssociadoRepositoryPort,
+    @Inject(EventoRepositoryPort)
+    private readonly eventos: EventoRepositoryPort,
+    @Inject(NotificationSenderPort)
+    private readonly notificacoes: NotificationSenderPort,
     private readonly emitirIngresso: EmitirIngressoUseCase,
   ) {}
 
@@ -25,11 +31,20 @@ export class ComprarMeuIngressoUseCase {
     if (!associado) {
       throw new NotFoundException('Nenhum associado vinculado a este usuário');
     }
-    return this.emitirIngresso.execute(eventoId, {
+    const ingresso = await this.emitirIngresso.execute(eventoId, {
       nomeComprador: associado.nome,
       perfilComprador: PerfilComprador.SOCIO,
       canal: CanalIngresso.APP,
       formaPagamento: FormaPagamentoIngresso.ONLINE,
     });
+
+    const evento = await this.eventos.buscarPorId(eventoId);
+    await this.notificacoes.enviar({
+      destinatarioId: associado.id,
+      titulo: 'Ingresso comprado',
+      mensagem: `Seu ingresso para "${evento?.nome ?? 'o evento'}" foi emitido. Apresente seu cadastro na entrada.`,
+    });
+
+    return ingresso;
   }
 }

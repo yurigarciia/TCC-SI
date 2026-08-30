@@ -82,6 +82,11 @@ para o padrão a seguir nos próximos módulos).
   manual por nome) com prevenção de reuso (RF12). Compra pelo associado via `POST
   /eventos/:eventoId/meu-ingresso` (sem corpo — perfil sócio, canal app e pagamento online sempre
   forçados no servidor a partir do JWT).
+- `shared/notifications` — abstrai push/e-mail via `NotificationSenderPort`, hoje implementada por
+  `ExpoPushNotificationSenderAdapter` (Expo Push API, sempre também loga via `Logger` — falha ao
+  notificar nunca derruba a operação de negócio que disparou o aviso). Usada pelo lembrete
+  automático de inadimplência (RF07) e pelas confirmações de reserva/compra pelo app (T-MOB-005).
+  `POST /notificacoes/push-token` (`@Roles(ASSOCIADO)`) registra o token de push do device.
 
 Com isso, todos os módulos Must e o único Could do backend do MVP (T-BE-001 a T-BE-014) estão
 implementados — ver `TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md` para o backlog completo e o que

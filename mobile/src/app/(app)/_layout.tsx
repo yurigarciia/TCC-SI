@@ -1,9 +1,14 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
 import { paperTheme } from "@/theme/paper-theme";
+import { useRegistrarPushToken } from "@/features/notificacoes/use-notificacoes";
 
 // Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer.
 export default function AppLayout() {
+  // T-MOB-005 — pede permissão de notificação e registra o push token uma vez, assim que o
+  // associado entra na área autenticada (best-effort, nunca bloqueia a navegação).
+  useRegistrarPushToken();
+
   return (
     <Tabs
       screenOptions={{

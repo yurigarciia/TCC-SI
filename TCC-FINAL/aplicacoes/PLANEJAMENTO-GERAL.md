@@ -830,13 +830,46 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-MOB-005 Notificações (lembrete de inadimplência, confirmações)
 - **Priority:** Should
-- **Status:** Todo
+- **Status:** Implementado, pendente de teste em device real
 - **Owner:** Unassigned
 - **Scope:** Push notification para lembrete automático de mensalidade em atraso e confirmações de
   reserva/compra.
 - **Acceptance Criteria:** Associado recebe notificação ao entrar em `Status: Inadimplente`.
 - **Validation Steps:** Teste manual disparando o job de lembrete do backend.
-- **Notes:**
+- **Notes:** `mobile/PLANEJAMENTO.md` §5 exige "push notification testada de ponta a ponta (backend
+  dispara → device recebe)" antes de fechar esta ticket como Done — este ambiente de
+  desenvolvimento não tem device/emulador físico nem projeto EAS configurado (sem
+  `extra.eas.projectId`), então essa prova de ponta a ponta genuína não é possível aqui. Tudo que
+  dava pra construir e validar sem device foi feito; falta só a confirmação num aparelho real.
+
+  Backend reaproveita a porta `NotificationSenderPort` que já existia (usada desde o lembrete de
+  inadimplência, T-BE-006) — só trocou o adapter provisório
+  (`ConsoleNotificationSenderAdapter`, só logava) por um real:
+  - `ExpoPushNotificationSenderAdapter` — resolve `destinatarioId` (sempre um `associadoId`) até
+    os tokens de push do usuário vinculado e envia via Expo Push API (`exp.host/--/api/v2/push/
+    send`). Continua logando sempre (visibilidade em dev sem device), e nunca lança — falha ao
+    notificar não pode derrubar a operação de negócio que já aconteceu de verdade.
+  - `push_tokens` (migration nova) guarda o(s) token(s) de push por usuário (mais de um device por
+    conta é normal — troca de celular sem deslogar do antigo).
+  - `POST /notificacoes/push-token` (`@Roles(ASSOCIADO)`) registra o token do device, idempotente.
+  - Pontos de disparo novos: `SolicitarReservaUseCase`/`ConfirmarReservaPendenteUseCase` (reserva
+    confirmada, mediada ou pelo app) e `ComprarMeuIngressoUseCase` (ingresso emitido) — o lembrete
+    de inadimplência (`ProcessarInadimplenciaUseCase`) já chamava a porta antes, não precisou
+    mudar. 3 casos novos em `notificacoes.e2e-spec.ts`, suíte completa em 48/48, build/lint
+    limpos. Testado manualmente contra o backend real (registro de token + reserva + compra
+    disparando os dois pushes, sem bloquear a resposta — log confirmado, ver
+    `ExpoPushNotificationSenderAdapter`).
+
+  Mobile: `expo-notifications` + `expo-device`/`expo-constants` instalados, plugin configurado em
+  `app.json` (cor `#7A2331`). `registrarParaPushNotifications()`
+  (`src/features/notificacoes/register-push-token.ts`) segue o padrão oficial da doc do SDK 57
+  (canal Android dedicado, `requestPermissionsAsync`, `getExpoPushTokenAsync` com `projectId`) e é
+  100% best-effort — nunca lança, só retorna `null` quando não dá pra registrar (permissão negada,
+  sem `projectId` de EAS). `useRegistrarPushToken()` dispara isso uma vez ao entrar em `(app)`
+  (`(app)/_layout.tsx`) e registra o token no backend quando um é obtido. Validado com `npx tsc
+  --noEmit`/`npm run lint` (limpos) e smoke test via `expo start --web`: login normal, tela
+  renderiza sem erro/crash, nenhum token espúrio registrado no backend (esperado — web não tem
+  `projectId` de EAS nem suporte completo de push do `expo-notifications`).
 
 ## 8. Perguntas em Aberto
 

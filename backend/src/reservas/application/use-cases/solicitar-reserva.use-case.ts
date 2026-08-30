@@ -13,6 +13,7 @@ import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-
 import { MesaRepositoryPort } from '../../../eventos/application/ports/mesa-repository.port';
 import { ConfiguracaoMesaEventoRepositoryPort } from '../../../eventos/application/ports/configuracao-mesa-evento-repository.port';
 import { PaymentGatewayPort } from '../../../shared/payments/application/ports/payment-gateway.port';
+import { NotificationSenderPort } from '../../../shared/notifications/application/ports/notification-sender.port';
 import {
   CanalReserva,
   FormaPagamentoReserva,
@@ -44,6 +45,8 @@ export class SolicitarReservaUseCase {
     @Inject(ConfiguracaoMesaEventoRepositoryPort)
     private readonly configuracoesMesa: ConfiguracaoMesaEventoRepositoryPort,
     @Inject(PaymentGatewayPort) private readonly gateway: PaymentGatewayPort,
+    @Inject(NotificationSenderPort)
+    private readonly notificacoes: NotificationSenderPort,
   ) {}
 
   async execute(
@@ -88,8 +91,9 @@ export class SolicitarReservaUseCase {
       status = StatusReserva.CONFIRMADA;
     }
 
+    let reserva: Reserva;
     try {
-      return await this.reservas.salvar({
+      reserva = await this.reservas.salvar({
         eventoId,
         mesaId,
         canal: dados.canal,
@@ -105,5 +109,15 @@ export class SolicitarReservaUseCase {
       }
       throw erro;
     }
+
+    if (reserva.status === StatusReserva.CONFIRMADA && reserva.associadoId) {
+      await this.notificacoes.enviar({
+        destinatarioId: reserva.associadoId,
+        titulo: 'Reserva confirmada',
+        mensagem: `Sua reserva de mesa para "${evento.nome}" foi confirmada.`,
+      });
+    }
+
+    return reserva;
   }
 }

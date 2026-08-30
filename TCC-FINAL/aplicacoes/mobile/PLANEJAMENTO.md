@@ -50,7 +50,9 @@ da implementação de `T-MOB-001`.
 - [ ] Textos e alvos de toque seguem os mínimos de acessibilidade do design system (§6).
 - [ ] Estados de carregamento/erro/offline tratados (rede instável é esperada no público-alvo).
 - [ ] Push notification testada de ponta a ponta (backend dispara → device recebe) antes de marcar
-      `T-MOB-005` como concluído.
+      `T-MOB-005` como concluído. Implementação completa (backend + mobile) já feita — falta só
+      esta validação em device/EAS real, que este ambiente de dev não tem como fazer (ver Notes de
+      T-MOB-005 no `PLANEJAMENTO-GERAL.md`).
 - [ ] Build de avaliação (Expo Go link ou build interno EAS) instalável por um associado do Pia do
       Sul sem passos técnicos (ex.: sem precisar de linha de comando).
 
