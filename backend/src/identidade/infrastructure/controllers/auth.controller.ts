@@ -7,7 +7,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AutenticarUsuarioUseCase } from '../../application/use-cases/autenticar-usuario.use-case';
 import type { TokenDeAcesso } from '../../application/use-cases/autenticar-usuario.use-case';
 import { ListarUsuariosUseCase } from '../../application/use-cases/listar-usuarios.use-case';
@@ -29,6 +34,13 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Autentica um usuário (administrador ou associado) e retorna um JWT',
+  })
+  @ApiResponse({ status: 200, description: 'Token de acesso emitido' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
   login(@Body() dto: LoginDto): Promise<TokenDeAcesso> {
     return this.autenticarUsuario.execute(dto.email, dto.senha);
   }
@@ -36,6 +48,11 @@ export class AuthController {
   @Get('me')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Retorna os dados do usuário autenticado a partir do token',
+  })
+  @ApiResponse({ status: 200, description: 'Payload do usuário autenticado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
   me(@CurrentUser() usuario: JwtPayload): JwtPayload {
     return usuario;
   }
@@ -44,6 +61,15 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Lista todos os usuários (contas de login) cadastrados',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de usuários' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   async listar(): Promise<
     Array<{ id: string; email: string; perfil: Perfil }>
   > {

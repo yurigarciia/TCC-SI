@@ -6,7 +6,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -53,12 +58,48 @@ export class MensalidadesController {
   // colidam de fato — o segmento literal 'minhas' distingue os dois grupos.
   @Get('minhas')
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Lista as mensalidades (atual e histórico) do associado autenticado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de mensalidades do associado',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum associado vinculado a este usuário',
+  })
   minhasMensalidades(@CurrentUser() usuario: JwtPayload) {
     return this.listarMinhas.execute(usuario.sub);
   }
 
   @Post('minhas/:id/pagamento-online/iniciar')
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Inicia o pagamento online de uma mensalidade do próprio associado',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cobrança iniciada, link de pagamento retornado',
+  })
+  @ApiResponse({ status: 400, description: 'Mensalidade já está paga' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Mensalidade não pertence a este associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Mensalidade não encontrada, ou nenhum associado vinculado ao usuário',
+  })
   iniciarMeuPagamentoOnline(
     @CurrentUser() usuario: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -68,6 +109,29 @@ export class MensalidadesController {
 
   @Post('minhas/:id/pagamento-online/confirmar')
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Confirma junto ao gateway o pagamento online de uma mensalidade do próprio associado',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Pagamento confirmado, mensalidade marcada como paga',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Pagamento online não iniciado, ou ainda não aprovado no gateway',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Mensalidade não pertence a este associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Mensalidade não encontrada, ou nenhum associado vinculado ao usuário',
+  })
   confirmarMeuPagamentoOnline(
     @CurrentUser() usuario: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -77,6 +141,21 @@ export class MensalidadesController {
 
   @Get('minhas/:id/comprovante')
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Obtém o comprovante de uma mensalidade paga do próprio associado',
+  })
+  @ApiResponse({ status: 200, description: 'Comprovante de pagamento' })
+  @ApiResponse({ status: 400, description: 'Mensalidade ainda não foi paga' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Mensalidade não pertence a este associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Mensalidade não encontrada, ou nenhum associado vinculado ao usuário',
+  })
   meuComprovante(
     @CurrentUser() usuario: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -85,11 +164,33 @@ export class MensalidadesController {
   }
 
   @Post('gerar')
+  @ApiOperation({
+    summary:
+      'Gera as cobranças mensais do mês corrente para os associados ativos (idempotente)',
+  })
+  @ApiResponse({ status: 201, description: 'Mensalidades geradas' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   gerarCobrancasDoMes() {
     return this.gerarCobrancas.execute();
   }
 
   @Get('associado/:associadoId')
+  @ApiOperation({
+    summary: 'Lista o histórico de mensalidades de um associado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de mensalidades do associado',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   historicoDoAssociado(
     @Param('associadoId', ParseUUIDPipe) associadoId: string,
   ) {
@@ -97,31 +198,107 @@ export class MensalidadesController {
   }
 
   @Post(':id/pagamento-presencial')
+  @ApiOperation({
+    summary: 'Registra o pagamento presencial de uma mensalidade',
+  })
+  @ApiResponse({ status: 201, description: 'Mensalidade marcada como paga' })
+  @ApiResponse({ status: 400, description: 'Mensalidade já está paga' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Mensalidade não encontrada' })
   lancarPagamentoPresencial(@Param('id', ParseUUIDPipe) id: string) {
     return this.registrarPresencial.execute(id);
   }
 
   @Post(':id/pagamento-online/iniciar')
+  @ApiOperation({
+    summary:
+      'Inicia o pagamento online de uma mensalidade (uso administrativo)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cobrança iniciada, link de pagamento retornado',
+  })
+  @ApiResponse({ status: 400, description: 'Mensalidade já está paga' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Mensalidade não encontrada' })
   iniciarPagamentoOnline(@Param('id', ParseUUIDPipe) id: string) {
     return this.iniciarOnline.execute(id);
   }
 
   @Post(':id/pagamento-online/confirmar')
+  @ApiOperation({
+    summary:
+      'Confirma junto ao gateway o pagamento online de uma mensalidade (uso administrativo)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Pagamento confirmado, mensalidade marcada como paga',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Pagamento online não iniciado, ou ainda não aprovado no gateway',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Mensalidade não encontrada' })
   confirmarPagamentoOnline(@Param('id', ParseUUIDPipe) id: string) {
     return this.confirmarOnline.execute(id);
   }
 
   @Get(':id/comprovante')
+  @ApiOperation({
+    summary: 'Obtém o comprovante de uma mensalidade paga (uso administrativo)',
+  })
+  @ApiResponse({ status: 200, description: 'Comprovante de pagamento' })
+  @ApiResponse({ status: 400, description: 'Mensalidade ainda não foi paga' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Mensalidade não encontrada' })
   comprovante(@Param('id', ParseUUIDPipe) id: string) {
     return this.obterComprovante.execute(id);
   }
 
   @Post('processar-inadimplencia')
+  @ApiOperation({
+    summary:
+      'Marca como inadimplentes as mensalidades pendentes vencidas há N dias e envia lembrete',
+  })
+  @ApiResponse({ status: 201, description: 'Mensalidades processadas' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   processarInadimplenciaDoDia() {
     return this.processarInadimplencia.execute();
   }
 
   @Get('inadimplentes')
+  @ApiOperation({
+    summary:
+      'Lista o relatório de associados inadimplentes, com dias em atraso',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de itens de inadimplência' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   relatorioInadimplencia() {
     return this.listarInadimplentes.execute();
   }

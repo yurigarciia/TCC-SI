@@ -11,7 +11,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -49,6 +54,33 @@ export class IngressosController {
   @Post('eventos/:eventoId/meu-ingresso')
   @HttpCode(HttpStatus.CREATED)
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Associado compra o próprio ingresso para um evento publicado (sempre paga online pelo app)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Ingresso emitido e cobrança online iniciada',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Ingresso avulso não configurado para este evento, ou preço não configurado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Evento não encontrado, ou nenhum associado vinculado ao usuário',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Ingressos esgotados para este evento',
+  })
   comprarMeuIngresso(
     @CurrentUser() usuario: JwtPayload,
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
@@ -57,11 +89,34 @@ export class IngressosController {
   }
 
   @Put('precos-ingresso')
+  @ApiOperation({
+    summary:
+      'Define o preço padrão de ingresso da entidade para um perfil de comprador',
+  })
+  @ApiResponse({ status: 200, description: 'Preço padrão definido' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   definirPrecoPadraoDaEntidade(@Body() dto: DefinirPrecoDto) {
     return this.definirPrecoPadrao.execute(dto.perfil, dto.preco);
   }
 
   @Put('eventos/:eventoId/precos-ingresso')
+  @ApiOperation({
+    summary:
+      'Define o preço de ingresso de um perfil, sobrescrevendo o padrão para este evento',
+  })
+  @ApiResponse({ status: 200, description: 'Preço definido para o evento' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   definirPrecoParaEvento(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
     @Body() dto: DefinirPrecoDto,
@@ -71,6 +126,25 @@ export class IngressosController {
 
   @Post('eventos/:eventoId/ingressos')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Registra a venda presencial/mediada de um ingresso para qualquer perfil de comprador',
+  })
+  @ApiResponse({ status: 201, description: 'Ingresso emitido' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos, ou preço/ingresso não configurado',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ingressos esgotados para este evento',
+  })
   emitirIngresso(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
     @Body() dto: EmitirIngressoDto,
@@ -79,6 +153,16 @@ export class IngressosController {
   }
 
   @Get('eventos/:eventoId/ingressos')
+  @ApiOperation({
+    summary:
+      'Lista os ingressos de um evento, opcionalmente filtrando por nome do comprador (busca manual)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de ingressos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   listarOuBuscarIngressos(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
     @Query('nome') nome?: string,
@@ -87,6 +171,20 @@ export class IngressosController {
   }
 
   @Post('ingressos/:id/checkin')
+  @ApiOperation({
+    summary: 'Registra o check-in de um ingresso na entrada do evento',
+  })
+  @ApiResponse({ status: 201, description: 'Check-in registrado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Ingresso não encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ingresso já utilizado — entrada recusada',
+  })
   registrarCheckin(@Param('id', ParseUUIDPipe) id: string) {
     return this.checkin.execute(id);
   }

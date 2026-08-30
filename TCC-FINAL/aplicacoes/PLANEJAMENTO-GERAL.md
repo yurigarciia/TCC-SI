@@ -117,17 +117,17 @@ O projeto é considerado no ponto de MVP avaliável quando, simultaneamente:
 - [ ] Requisitos **Should** priorizados (RF02, RF07, RF08, RF14, RNF04, RNF05) implementados na
       medida em que o tempo do cronograma permitir; os que ficarem de fora devem ser documentados
       como limitação no TCC, não silenciados. RF02/RF08/RF14 Done; RF07 implementado mas
-      pendente de teste em device real (T-MOB-005); RNF04 pendente de auditoria completa
-      (T-BE-013 — os endpoints já têm anotação Swagger básica via `@ApiTags`/`@ApiProperty`, falta
-      revisar exemplos/códigos de erro em 100% deles); RNF05 (resposta <2s) nunca medido
-      formalmente.
+      pendente de teste em device real (T-MOB-005); RNF04 Done (T-BE-013 — auditoria completa dos
+      55 endpoints com `@ApiOperation`/`@ApiResponse` e exemplos em `@ApiProperty`, ver nota do
+      ticket); RNF05 (resposta <2s) nunca medido formalmente.
 - [x] RF15 (Could) implementado — `cancelamento-transferencia-reserva.json`, T-BE-010 Done.
 - [x] Backend com migrations versionadas rodando localmente a partir de zero (`docker compose up` +
       `npm run migration:run`) sem passos manuais não documentados — 11 migrations, todas testadas
       nesta sessão.
-- [ ] API documentada via Swagger, cobrindo todos os endpoints usados pelo web e pelo mobile —
-      Swagger já está montado e cada endpoint tem anotações básicas, mas falta a auditoria
-      completa de T-BE-013 (exemplos, códigos de erro por rota).
+- [x] API documentada via Swagger, cobrindo todos os endpoints usados pelo web e pelo mobile —
+      T-BE-013 concluído: 55 rotas nos 10 controllers com `@ApiOperation`/`@ApiResponse`
+      (sucesso + todos os erros observados nos use cases/e2e) e exemplos em `@ApiProperty`;
+      `/api/docs-json` conferido manualmente.
 - [x] Painel web navegável de ponta a ponta pelos fluxos Must, aplicando o Design System
       (`frontend-web/DESIGN-SYSTEM.md`) — T-FE-001 a T-FE-008 concluídos e verificados ponta a
       ponta contra o backend real; checkup visual de responsividade/consistência feito em
@@ -450,12 +450,32 @@ frentes de frontend-web e mobile.
 
 #### Ticket: T-BE-013 Documentação Swagger completa (RNF04)
 - **Priority:** Should
-- **Status:** Todo
+- **Status:** Done
 - **Owner:** Unassigned
 - **Scope:** Anotar todos os endpoints com DTOs, exemplos e códigos de erro no Swagger.
 - **Acceptance Criteria:** `/api/docs` lista 100% dos endpoints usados pelo web e mobile.
 - **Validation Steps:** Checklist manual comparando endpoints implementados x documentados.
-- **Notes:**
+- **Notes:** Auditados e anotados os 10 controllers (`associados`, `categorias-socio`, `eventos`,
+  `saloes`, `health`, `auth`, `ingressos`, `mensalidades`, `reservas`, `notificacoes`) — 55 rotas no
+  total, todas agora com `@ApiOperation({ summary })` em português descrevendo o que o endpoint
+  faz de fato (lido a partir do use case, não só do nome da rota) e `@ApiResponse` para o status de
+  sucesso (200/201/204) mais todo status de erro que o use case realmente lança: 401 nas rotas com
+  `JwtAuthGuard`, 403 nas restritas por `@Roles`/checagem de propriedade (`ForbiddenException`,
+  como em `ResolverMinhaMensalidadeUseCase`), 404 para `NotFoundException` (associado/evento/
+  mensalidade/reserva não encontrados), 409 para `ConflictException` (CPF duplicado, mesa já
+  reservada, ingressos esgotados, conta já vinculada) e 400 para `BadRequestException`/validação —
+  cada combinação foi cruzada com o e2e correspondente (`test/*.e2e-spec.ts`) para confirmar que o
+  comportamento é realmente observado, não só teórico. Também adicionado `example:` a todo
+  `@ApiProperty()` que ainda não tinha (DTOs de associados, eventos/salões, ingressos, reservas,
+  login) com valores realistas do domínio (CPF de 11 dígitos, datas ISO, enums com o valor exato
+  usado no banco, preços em formato decimal). Nenhuma lógica de negócio, guard, rota ou validação
+  foi alterada — mudança puramente aditiva de decoradores Swagger. Validado com `npm run build`
+  (limpo), `npm run lint` (limpo, `eslint --fix` reformatou alguns blocos multi-linha via
+  Prettier) e `npm run test:e2e` (48/48 passando, mesmo total de antes). Spot-check manual do
+  `/api/docs-json`: JSON parseia com 49 paths, `GET /associados` retorna summary + responses
+  `[200,401,403]`, `POST /eventos/{eventoId}/mesas/{mesaId}/reservar-minha` retorna summary +
+  responses `[201,400,401,403,404,409]`, `GET /mensalidades/minhas` retorna summary + responses
+  `[200,401,403,404]` — todas com mais do que o 200 default do Nest.
 
 #### Ticket: T-BE-014 Vincular conta de associado mediado (RF01, canal associado)
 - **Priority:** Must

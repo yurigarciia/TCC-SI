@@ -9,7 +9,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -36,22 +41,61 @@ export class SaloesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Cria um salão (croqui) com sua capacidade total' })
+  @ApiResponse({ status: 201, description: 'Salão criado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   criarSalao(@Body() dto: CriarSalaoDto) {
     return this.criar.execute(dto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Lista todos os salões cadastrados' })
+  @ApiResponse({ status: 200, description: 'Lista de salões' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   listarTodos() {
     return this.listar.execute();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Consulta um salão por id, com suas mesas' })
+  @ApiResponse({ status: 200, description: 'Salão e suas mesas' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão não encontrado' })
   consultarComMesas(@Param('id', ParseUUIDPipe) id: string) {
     return this.consultar.execute(id);
   }
 
   @Post(':id/mesas')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Adiciona uma mesa ao croqui do salão (número único dentro do salão)',
+  })
+  @ApiResponse({ status: 201, description: 'Mesa criada' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão não encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Já existe uma mesa com esse número neste salão',
+  })
   adicionarMesaAoSalao(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AdicionarMesaDto,

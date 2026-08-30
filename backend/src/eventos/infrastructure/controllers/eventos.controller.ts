@@ -10,7 +10,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -45,6 +50,10 @@ export class EventosController {
 
   // RF13 — vitrine pública de eventos publicados, consumida pelo app do associado.
   @Get('publicados')
+  @ApiOperation({
+    summary: 'Lista os eventos já publicados (vitrine pública, usada pelo app)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de eventos publicados' })
   listarEventosPublicados() {
     return this.listarPublicados.execute();
   }
@@ -54,6 +63,18 @@ export class EventosController {
   // antes de ':id' (mesmo motivo de /associados/me) — 'publicados' como segmento literal já evita
   // colisão, mas mantém o padrão de declarar o mais específico primeiro.
   @Get('publicados/:id')
+  @ApiOperation({
+    summary:
+      'Consulta o detalhe público de um evento publicado (mesas, ingresso, preços)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Evento publicado com mesas e configuração de ingresso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Evento não encontrado ou ainda não publicado',
+  })
   consultarEventoPublicado(@Param('id', ParseUUIDPipe) id: string) {
     return this.consultarPublicado.execute(id);
   }
@@ -63,6 +84,21 @@ export class EventosController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Cria um evento como rascunho (não visível ao associado até publicar)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Evento criado com status rascunho',
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão informado não encontrado' })
   criarEvento(@Body() dto: CriarEventoDto) {
     return this.criar.execute({
       nome: dto.nome,
@@ -77,6 +113,13 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Lista todos os eventos (rascunho e publicados)' })
+  @ApiResponse({ status: 200, description: 'Lista de eventos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   listarTodos() {
     return this.listar.execute();
   }
@@ -85,6 +128,16 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Consulta um evento por id, com mesas e configuração de ingresso',
+  })
+  @ApiResponse({ status: 200, description: 'Evento detalhado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   consultarDetalhado(@Param('id', ParseUUIDPipe) id: string) {
     return this.consultar.execute(id);
   }
@@ -93,6 +146,22 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary:
+      'Define preço e bloqueio de mesas do evento a partir do croqui do salão vinculado',
+  })
+  @ApiResponse({ status: 200, description: 'Configuração de mesas do evento' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Evento sem salão vinculado, ou mesa não pertence ao salão do evento',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   configurarMesasDoEvento(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: ConfigurarMesasEventoDto,
@@ -104,6 +173,21 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary:
+      'Define quantidade disponível e preço do ingresso avulso do evento',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Configuração de ingresso do evento',
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   configurarIngressoDoEvento(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: ConfigurarIngressoEventoDto,
@@ -115,6 +199,17 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Publica um evento, tornando-o visível na vitrine pública/app',
+  })
+  @ApiResponse({ status: 201, description: 'Evento publicado' })
+  @ApiResponse({ status: 400, description: 'Evento já está publicado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   publicarEvento(@Param('id', ParseUUIDPipe) id: string) {
     return this.publicar.execute(id);
   }

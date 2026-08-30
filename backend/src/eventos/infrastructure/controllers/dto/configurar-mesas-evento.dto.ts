@@ -11,16 +11,16 @@ import {
 } from 'class-validator';
 
 class ConfiguracaoMesaItemDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })
   @IsUUID()
   mesaId: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 150.0 })
   @IsNumber()
   @IsPositive()
   preco: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: false })
   @IsBoolean()
   bloqueada: boolean;
 }

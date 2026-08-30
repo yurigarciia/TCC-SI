@@ -1,5 +1,10 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../../identidade/infrastructure/security/roles.decorator';
@@ -21,6 +26,17 @@ export class NotificacoesController {
 
   @Post('push-token')
   @HttpCode(204)
+  @ApiOperation({
+    summary:
+      'Registra o token de push (Expo) do device do associado autenticado (idempotente)',
+  })
+  @ApiResponse({ status: 204, description: 'Token registrado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
   registrar(
     @CurrentUser() usuario: JwtPayload,
     @Body() dto: RegistrarPushTokenDto,

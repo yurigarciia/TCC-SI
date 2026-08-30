@@ -10,7 +10,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -51,6 +56,16 @@ export class AssociadosController {
 
   @Post('auto-cadastro')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Auto-cadastro público de associado (cria login e associado, entra Pendente de validação)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Associado criado, status pendente_validacao',
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 409, description: 'CPF ou e-mail já cadastrado' })
   autoCadastro(@Body() dto: AutoCadastroAssociadoDto) {
     return this.autoCadastrar.execute({
       nome: dto.nome,
@@ -67,6 +82,17 @@ export class AssociadosController {
   // conta não tem token para autenticar a chamada.
   @Post('vincular-conta')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Vincula login a um cadastro de associado feito pela diretoria (cadastro mediado, sem usuário ainda)',
+  })
+  @ApiResponse({ status: 201, description: 'Conta vinculada com sucesso' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 404, description: 'CPF não encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Cadastro já tem conta vinculada, ou e-mail já cadastrado',
+  })
   vincularContaExistente(@Body() dto: VincularContaAssociadoDto) {
     return this.vincularConta.execute(dto);
   }
@@ -76,6 +102,21 @@ export class AssociadosController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Cadastra um associado pela diretoria, com dependentes e categoria opcionais (entra Ativo)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Associado (e dependentes) criados',
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 409, description: 'CPF já cadastrado' })
   cadastrarPelaDireto(@Body() dto: CadastrarAssociadoMediadoDto) {
     return this.cadastrarMediado.execute({
       nome: dto.nome,
@@ -92,6 +133,22 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Consulta o cadastro de associado do usuário autenticado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados do associado vinculado ao usuário',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum associado vinculado a este usuário',
+  })
   consultarMeuCadastro(@CurrentUser() usuario: JwtPayload) {
     return this.consultarMeu.execute(usuario.sub);
   }
@@ -100,6 +157,13 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Lista todos os associados cadastrados' })
+  @ApiResponse({ status: 200, description: 'Lista de associados' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
   listarTodos() {
     return this.listar.execute();
   }
@@ -108,6 +172,16 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Consulta um associado por id, com seus dependentes',
+  })
+  @ApiResponse({ status: 200, description: 'Associado e dependentes' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Associado não encontrado' })
   consultarPorId(@Param('id', ParseUUIDPipe) id: string) {
     return this.consultar.execute(id);
   }
@@ -116,6 +190,15 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Atualiza dados cadastrais de um associado' })
+  @ApiResponse({ status: 200, description: 'Associado atualizado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Associado não encontrado' })
   atualizarDados(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AtualizarAssociadoDto,
@@ -128,6 +211,15 @@ export class AssociadosController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Adiciona um dependente a um associado existente' })
+  @ApiResponse({ status: 201, description: 'Dependente criado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Associado não encontrado' })
   adicionarDependenteAoAssociado(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: DependenteDto,
@@ -139,6 +231,21 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary:
+      'Aprova um cadastro de associado pendente de validação (passa a Ativo)',
+  })
+  @ApiResponse({ status: 201, description: 'Associado aprovado, status ativo' })
+  @ApiResponse({
+    status: 400,
+    description: 'Associado não está pendente de validação',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Associado não encontrado' })
   aprovarCadastro(@Param('id', ParseUUIDPipe) id: string) {
     return this.aprovar.execute(id);
   }
@@ -147,6 +254,23 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Rejeita um cadastro de associado pendente de validação',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Associado rejeitado, status rejeitado',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Associado não está pendente de validação',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Associado não encontrado' })
   rejeitarCadastro(@Param('id', ParseUUIDPipe) id: string) {
     return this.rejeitar.execute(id);
   }

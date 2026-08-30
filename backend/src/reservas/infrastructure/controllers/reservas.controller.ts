@@ -9,7 +9,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../identidade/infrastructure/security/jwt-auth.guard';
 import { RolesGuard } from '../../../identidade/infrastructure/security/roles.guard';
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
@@ -52,6 +57,26 @@ export class ReservasController {
   // convivem".
   @Post('eventos/:eventoId/mesas/:mesaId/reservar')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Registra uma reserva de mesa lançada diretamente pela diretoria (pedido recebido por fora)',
+  })
+  @ApiResponse({ status: 201, description: 'Reserva criada' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Mesa não pertence ao salão do evento, não configurada, ou bloqueada',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Mesa já reservada — solicitação recusada',
+  })
   solicitarReserva(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
     @Param('mesaId', ParseUUIDPipe) mesaId: string,
@@ -66,6 +91,30 @@ export class ReservasController {
   @Post('eventos/:eventoId/mesas/:mesaId/reservar-minha')
   @HttpCode(HttpStatus.CREATED)
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Associado solicita a própria reserva de mesa pelo app (titular resolvido pelo usuário autenticado)',
+  })
+  @ApiResponse({ status: 201, description: 'Reserva criada' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Mesa não pertence ao salão do evento, não configurada, ou bloqueada',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Evento não encontrado, ou nenhum associado vinculado ao usuário',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Mesa já reservada — solicitação recusada',
+  })
   solicitarMinhaReserva(
     @CurrentUser() usuario: JwtPayload,
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
@@ -81,16 +130,67 @@ export class ReservasController {
   }
 
   @Post('reservas/:id/confirmar')
+  @ApiOperation({
+    summary:
+      'Confirma o recebimento do pagamento presencial de uma reserva pendente',
+  })
+  @ApiResponse({ status: 201, description: 'Reserva confirmada' })
+  @ApiResponse({
+    status: 400,
+    description: 'Reserva não está pendente de confirmação',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Reserva não encontrada' })
   confirmarReservaPendente(@Param('id', ParseUUIDPipe) id: string) {
     return this.confirmar.execute(id);
   }
 
   @Post('reservas/:id/cancelar')
+  @ApiOperation({
+    summary: 'Cancela uma reserva, liberando a mesa para nova reserva',
+  })
+  @ApiResponse({ status: 201, description: 'Reserva cancelada' })
+  @ApiResponse({ status: 400, description: 'Reserva já está cancelada' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Reserva não encontrada' })
   cancelarReserva(@Param('id', ParseUUIDPipe) id: string) {
     return this.cancelar.execute(id);
   }
 
   @Post('reservas/:id/transferir-mesa')
+  @ApiOperation({
+    summary: 'Transfere a reserva para outra mesa, se estiver disponível',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Reserva transferida para a nova mesa',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Reserva cancelada, nova mesa igual à atual, ou nova mesa não configurada/bloqueada',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Reserva ou nova mesa não encontrada',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Nova mesa indisponível — recusada',
+  })
   transferirParaOutraMesa(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: TransferirMesaDto,
@@ -99,6 +199,20 @@ export class ReservasController {
   }
 
   @Post('reservas/:id/transferir-titular')
+  @ApiOperation({
+    summary: 'Transfere a reserva para outro titular, mantendo a mesma mesa',
+  })
+  @ApiResponse({ status: 201, description: 'Titular da reserva atualizado' })
+  @ApiResponse({
+    status: 400,
+    description: 'Reserva cancelada não pode ser transferida',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Reserva não encontrada' })
   transferirParaOutroTitular(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: TransferirTitularDto,
@@ -110,6 +224,14 @@ export class ReservasController {
   // (mapa de reservas) quanto pro associado (escolher mesa livre antes de reservar).
   @Get('eventos/:eventoId/mapa-mesas')
   @Roles(Perfil.ADMINISTRADOR, Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Consulta o mapa de mesas do evento em tempo real (livre/pendente/reservada/bloqueada)',
+  })
+  @ApiResponse({ status: 200, description: 'Mapa de mesas do evento' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 403, description: 'Perfil não autorizado' })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   mapaDeMesasDoEvento(@Param('eventoId', ParseUUIDPipe) eventoId: string) {
     return this.consultarMapa.execute(eventoId);
   }
@@ -117,6 +239,19 @@ export class ReservasController {
   // RF13 — "Minhas Reservas" no app do associado.
   @Get('reservas/minhas')
   @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Lista as reservas do associado autenticado ("Minhas Reservas")',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de reservas do associado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum associado vinculado a este usuário',
+  })
   minhasReservas(@CurrentUser() usuario: JwtPayload) {
     return this.listarMinhas.execute(usuario.sub);
   }

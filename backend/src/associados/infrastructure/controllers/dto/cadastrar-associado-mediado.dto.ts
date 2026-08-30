@@ -11,27 +11,27 @@ import {
 import { DependenteDto } from './dependente.dto';
 
 export class CadastrarAssociadoMediadoDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'João Mediado' })
   @IsString()
   @MinLength(3)
   nome: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '22222222222' })
   @IsString()
   @MinLength(11)
   cpf: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '55999990003' })
   @IsString()
   @MinLength(8)
   contato: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'Departamento de Danças' })
   @IsOptional()
   @IsString()
   vinculoInstitucional?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })
   @IsOptional()
   @IsUUID()
   categoriaSocioId?: string;
