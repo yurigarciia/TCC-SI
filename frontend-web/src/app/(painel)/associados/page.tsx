@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useAssociados } from "@/features/associados/use-associados";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 export default function AssociadosPage() {
   const { data: associados, isLoading, isError } = useAssociados();
@@ -43,11 +44,7 @@ export default function AssociadosPage() {
         </p>
       )}
 
-      {associados && associados.length === 0 && (
-        <p className="text-muted-foreground">Nenhum associado cadastrado ainda.</p>
-      )}
-
-      {associados && associados.length > 0 && (
+      {associados && (
         <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
@@ -59,25 +56,29 @@ export default function AssociadosPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {associados.map((associado, indice) => (
-                <TableRow
-                  key={associado.id}
-                  className={indice % 2 === 1 ? "bg-muted/50" : undefined}
-                >
-                  <TableCell className="font-medium">
-                    <Link href={`/associados/${associado.id}`} className="hover:underline">
-                      {associado.nome}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{associado.cpf}</TableCell>
-                  <TableCell className="capitalize">
-                    {associado.origem === "auto_cadastro" ? "Auto-cadastro" : "Mediado"}
-                  </TableCell>
-                  <TableCell>
-                    <StatusAssociadoBadge status={associado.status} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {associados.length === 0 ? (
+                <TableEmptyRow colSpan={4}>Nenhum associado cadastrado ainda.</TableEmptyRow>
+              ) : (
+                associados.map((associado, indice) => (
+                  <TableRow
+                    key={associado.id}
+                    className={indice % 2 === 1 ? "bg-muted/50" : undefined}
+                  >
+                    <TableCell className="font-medium">
+                      <Link href={`/associados/${associado.id}`} className="hover:underline">
+                        {associado.nome}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{associado.cpf}</TableCell>
+                    <TableCell className="capitalize">
+                      {associado.origem === "auto_cadastro" ? "Auto-cadastro" : "Mediado"}
+                    </TableCell>
+                    <TableCell>
+                      <StatusAssociadoBadge status={associado.status} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useUsuarios } from "@/features/usuarios/use-usuarios";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 // Até esta ticket, a única forma de existir uma conta administrador era o script
 // seed-admin.ts (rodado manualmente, direto no banco) — não havia nenhum jeito de conceder
@@ -49,7 +50,7 @@ export default function UsuariosPage() {
         </p>
       )}
 
-      {usuarios && usuarios.length > 0 && (
+      {usuarios && (
         <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
@@ -59,19 +60,23 @@ export default function UsuariosPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {usuarios.map((usuario, indice) => (
-                <TableRow
-                  key={usuario.id}
-                  className={indice % 2 === 1 ? "bg-muted/50" : undefined}
-                >
-                  <TableCell className="font-medium">{usuario.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={usuario.perfil === "administrador" ? "success" : "outline"}>
-                      {usuario.perfil === "administrador" ? "Administrador" : "Associado"}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {usuarios.length === 0 ? (
+                <TableEmptyRow colSpan={2}>Nenhum usuário cadastrado ainda.</TableEmptyRow>
+              ) : (
+                usuarios.map((usuario, indice) => (
+                  <TableRow
+                    key={usuario.id}
+                    className={indice % 2 === 1 ? "bg-muted/50" : undefined}
+                  >
+                    <TableCell className="font-medium">{usuario.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={usuario.perfil === "administrador" ? "success" : "outline"}>
+                        {usuario.perfil === "administrador" ? "Administrador" : "Associado"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

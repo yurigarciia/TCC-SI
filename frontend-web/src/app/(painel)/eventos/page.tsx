@@ -14,6 +14,7 @@ import {
 import { StatusEventoBadge } from "@/features/eventos/status-badge";
 import { useEventos } from "@/features/eventos/use-eventos";
 import { formatarDataHora } from "@/lib/format";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 export default function EventosPage() {
   const { data: eventos, isLoading, isError } = useEventos();
@@ -41,11 +42,7 @@ export default function EventosPage() {
         </p>
       )}
 
-      {eventos && eventos.length === 0 && (
-        <p className="text-muted-foreground">Nenhum evento cadastrado ainda.</p>
-      )}
-
-      {eventos && eventos.length > 0 && (
+      {eventos && (
         <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
@@ -57,23 +54,27 @@ export default function EventosPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {eventos.map((evento, indice) => (
-                <TableRow
-                  key={evento.id}
-                  className={indice % 2 === 1 ? "bg-muted/50" : undefined}
-                >
-                  <TableCell className="font-medium">
-                    <Link href={`/eventos/${evento.id}`} className="hover:underline">
-                      {evento.nome}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{formatarDataHora(evento.data)}</TableCell>
-                  <TableCell>{evento.local}</TableCell>
-                  <TableCell>
-                    <StatusEventoBadge status={evento.status} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {eventos.length === 0 ? (
+                <TableEmptyRow colSpan={4}>Nenhum evento cadastrado ainda.</TableEmptyRow>
+              ) : (
+                eventos.map((evento, indice) => (
+                  <TableRow
+                    key={evento.id}
+                    className={indice % 2 === 1 ? "bg-muted/50" : undefined}
+                  >
+                    <TableCell className="font-medium">
+                      <Link href={`/eventos/${evento.id}`} className="hover:underline">
+                        {evento.nome}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{formatarDataHora(evento.data)}</TableCell>
+                    <TableCell>{evento.local}</TableCell>
+                    <TableCell>
+                      <StatusEventoBadge status={evento.status} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

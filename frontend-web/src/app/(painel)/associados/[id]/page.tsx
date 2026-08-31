@@ -44,6 +44,7 @@ import {
   useRejeitarCadastro,
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 const dadosSchema = z.object({
   nome: z.string().min(3, "Informe o nome completo."),
@@ -281,28 +282,28 @@ function AssociadoDetalheConteudo({
             </form>
           )}
 
-          {dependentes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum dependente cadastrado.</p>
-          ) : (
-            <div className="overflow-x-auto rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Data de nascimento</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {dependentes.map((dependente) => (
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Data de nascimento</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {dependentes.length === 0 ? (
+                  <TableEmptyRow colSpan={2}>Nenhum dependente cadastrado.</TableEmptyRow>
+                ) : (
+                  dependentes.map((dependente) => (
                     <TableRow key={dependente.id}>
                       <TableCell>{dependente.nome}</TableCell>
                       <TableCell>{dependente.dataNascimento}</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

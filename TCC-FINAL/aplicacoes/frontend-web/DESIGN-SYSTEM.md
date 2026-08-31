@@ -154,6 +154,11 @@ Convenções específicas deste projeto:
   toque generoso).
 - **Tabelas** (associados, mensalidades, reservas): linha alternada com `--muted`, nunca cor pura;
   linha com foco de teclado usa `--ring`.
+- **Tabela vazia**: nunca substituir a tabela inteira por um texto solto quando não há itens —
+  sempre renderizar `<Table>`/`<TableHeader>` normalmente e usar `TableEmptyRow`
+  (`src/components/table-empty-row.tsx`) como única linha do `<TableBody>`, com `colSpan` igual ao
+  número de colunas. Mantém cabeçalho/largura/formatação visíveis mesmo sem dado nenhum — dá pra
+  conferir a tela sem precisar semear registros de teste.
 
 ## 6. Acessibilidade e Adoção Gradual
 

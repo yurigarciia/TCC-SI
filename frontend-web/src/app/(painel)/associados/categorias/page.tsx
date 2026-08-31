@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { formatarMoeda } from "@/lib/format";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 // T-FE-003 nunca teve tela pra isso — categorias só eram criadas via API direta em teste manual
 // (ver nota do ticket no PLANEJAMENTO-GERAL.md), por isso o Select de "categoria de sócio" em
@@ -57,11 +58,7 @@ export default function CategoriasSocioPage() {
         </p>
       )}
 
-      {categorias && categorias.length === 0 && (
-        <p className="text-muted-foreground">Nenhuma categoria cadastrada ainda.</p>
-      )}
-
-      {categorias && categorias.length > 0 && (
+      {categorias && (
         <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
@@ -72,26 +69,30 @@ export default function CategoriasSocioPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categorias.map((categoria, indice) => (
-                <TableRow
-                  key={categoria.id}
-                  className={indice % 2 === 1 ? "bg-muted/50" : undefined}
-                >
-                  <TableCell className="font-medium">{categoria.nome}</TableCell>
-                  <TableCell>
-                    {categoria.isenta ? (
-                      <Badge variant="secondary">Isenta</Badge>
-                    ) : (
-                      formatarMoeda(categoria.valorMensalidade)
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={categoria.ativa ? "success" : "outline"}>
-                      {categoria.ativa ? "Ativa" : "Inativa"}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {categorias.length === 0 ? (
+                <TableEmptyRow colSpan={3}>Nenhuma categoria cadastrada ainda.</TableEmptyRow>
+              ) : (
+                categorias.map((categoria, indice) => (
+                  <TableRow
+                    key={categoria.id}
+                    className={indice % 2 === 1 ? "bg-muted/50" : undefined}
+                  >
+                    <TableCell className="font-medium">{categoria.nome}</TableCell>
+                    <TableCell>
+                      {categoria.isenta ? (
+                        <Badge variant="secondary">Isenta</Badge>
+                      ) : (
+                        formatarMoeda(categoria.valorMensalidade)
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={categoria.ativa ? "success" : "outline"}>
+                        {categoria.ativa ? "Ativa" : "Inativa"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

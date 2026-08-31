@@ -32,6 +32,7 @@ import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
 import { useEmitirIngresso, useIngressosEvento, useRegistrarCheckin } from "@/features/ingressos/use-ingressos";
 import { formatarDataHora, formatarMoeda } from "@/lib/format";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 const emitirSchema = z.object({
   nomeComprador: z.string().min(2, "Informe o nome do comprador."),
@@ -232,11 +233,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           {isError && (
             <p className="text-sm text-destructive">Não foi possível carregar os ingressos.</p>
           )}
-          {ingressos && ingressos.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhum ingresso encontrado.</p>
-          )}
-
-          {ingressos && ingressos.length > 0 && (
+          {ingressos && (
             <div className="overflow-x-auto rounded-lg border">
               <Table>
                 <TableHeader>
@@ -250,7 +247,10 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ingressos.map((ingresso) => (
+                {ingressos.length === 0 ? (
+                  <TableEmptyRow colSpan={6}>Nenhum ingresso encontrado.</TableEmptyRow>
+                ) : (
+                  ingressos.map((ingresso) => (
                     <TableRow key={ingresso.id}>
                       <TableCell className="font-medium">{ingresso.nomeComprador}</TableCell>
                       <TableCell>{rotuloPerfilComprador(ingresso.perfilComprador)}</TableCell>
@@ -274,7 +274,8 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                         )}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))
+                )}
                 </TableBody>
               </Table>
             </div>

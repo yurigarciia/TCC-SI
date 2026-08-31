@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatarData, formatarMoeda } from "@/lib/format";
+import { TableEmptyRow } from "@/components/table-empty-row";
 import { StatusMensalidadeBadge } from "./status-badge";
 import { useHistoricoMensalidades, useLancarPagamentoPresencial } from "./use-mensalidades";
 
@@ -35,13 +36,7 @@ export function MensalidadesCard({ associadoId }: { associadoId: string }) {
           <p className="text-sm text-destructive">Não foi possível carregar as mensalidades.</p>
         )}
 
-        {mensalidades && mensalidades.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Nenhuma mensalidade gerada ainda para este associado.
-          </p>
-        )}
-
-        {mensalidades && mensalidades.length > 0 && (
+        {mensalidades && (
           <div className="overflow-x-auto rounded-lg border">
             <Table>
               <TableHeader>
@@ -54,34 +49,40 @@ export function MensalidadesCard({ associadoId }: { associadoId: string }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mensalidades.map((mensalidade) => (
-                  <TableRow key={mensalidade.id}>
-                    <TableCell>{mensalidade.competencia}</TableCell>
-                    <TableCell>{formatarMoeda(mensalidade.valor)}</TableCell>
-                    <TableCell>{formatarData(mensalidade.vencimento)}</TableCell>
-                    <TableCell>
-                      <StatusMensalidadeBadge status={mensalidade.status} />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {mensalidade.status !== "paga" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={lancarPagamento.isPending}
-                          onClick={() =>
-                            lancarPagamento.mutate(mensalidade.id, {
-                              onSuccess: () => toast.success("Pagamento lançado."),
-                              onError: () =>
-                                toast.error("Não foi possível lançar o pagamento."),
-                            })
-                          }
-                        >
-                          Lançar pagamento
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {mensalidades.length === 0 ? (
+                  <TableEmptyRow colSpan={5}>
+                    Nenhuma mensalidade gerada ainda para este associado.
+                  </TableEmptyRow>
+                ) : (
+                  mensalidades.map((mensalidade) => (
+                    <TableRow key={mensalidade.id}>
+                      <TableCell>{mensalidade.competencia}</TableCell>
+                      <TableCell>{formatarMoeda(mensalidade.valor)}</TableCell>
+                      <TableCell>{formatarData(mensalidade.vencimento)}</TableCell>
+                      <TableCell>
+                        <StatusMensalidadeBadge status={mensalidade.status} />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {mensalidade.status !== "paga" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={lancarPagamento.isPending}
+                            onClick={() =>
+                              lancarPagamento.mutate(mensalidade.id, {
+                                onSuccess: () => toast.success("Pagamento lançado."),
+                                onError: () =>
+                                  toast.error("Não foi possível lançar o pagamento."),
+                              })
+                            }
+                          >
+                            Lançar pagamento
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>

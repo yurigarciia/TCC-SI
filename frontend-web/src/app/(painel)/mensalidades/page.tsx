@@ -17,6 +17,7 @@ import {
   useProcessarInadimplencia,
 } from "@/features/mensalidades/use-mensalidades";
 import { formatarMoeda } from "@/lib/format";
+import { TableEmptyRow } from "@/components/table-empty-row";
 
 export default function MensalidadesPage() {
   const { data: inadimplentes, isLoading, isError } = useInadimplentes();
@@ -91,11 +92,7 @@ export default function MensalidadesPage() {
           </p>
         )}
 
-        {inadimplentes && inadimplentes.length === 0 && (
-          <p className="text-muted-foreground">Nenhum associado inadimplente no momento.</p>
-        )}
-
-        {inadimplentes && inadimplentes.length > 0 && (
+        {inadimplentes && (
           <div className="overflow-x-auto rounded-lg border">
             <Table>
               <TableHeader>
@@ -107,17 +104,23 @@ export default function MensalidadesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {inadimplentes.map((item, indice) => (
-                  <TableRow
-                    key={item.mensalidade.id}
-                    className={indice % 2 === 1 ? "bg-muted/50" : undefined}
-                  >
-                    <TableCell className="font-medium">{item.associadoNome}</TableCell>
-                    <TableCell>{item.mensalidade.competencia}</TableCell>
-                    <TableCell>{formatarMoeda(item.mensalidade.valor)}</TableCell>
-                    <TableCell>{item.diasEmAtraso} dia(s)</TableCell>
-                  </TableRow>
-                ))}
+                {inadimplentes.length === 0 ? (
+                  <TableEmptyRow colSpan={4}>
+                    Nenhum associado inadimplente no momento.
+                  </TableEmptyRow>
+                ) : (
+                  inadimplentes.map((item, indice) => (
+                    <TableRow
+                      key={item.mensalidade.id}
+                      className={indice % 2 === 1 ? "bg-muted/50" : undefined}
+                    >
+                      <TableCell className="font-medium">{item.associadoNome}</TableCell>
+                      <TableCell>{item.mensalidade.competencia}</TableCell>
+                      <TableCell>{formatarMoeda(item.mensalidade.valor)}</TableCell>
+                      <TableCell>{item.diasEmAtraso} dia(s)</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
