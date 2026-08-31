@@ -26,7 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
-import { formatarCpf } from "@/lib/format";
+import { formatarCpf, formatarTelefone, pareceEmail } from "@/lib/format";
 
 const dependenteSchema = z.object({
   nome: z.string().min(2, "Informe o nome do dependente."),
@@ -140,11 +140,28 @@ export default function NovoAssociadoPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="contato">Contato (telefone ou e-mail)</Label>
-                <Input
-                  id="contato"
-                  placeholder="Ex.: (55) 99999-0000"
-                  aria-invalid={!!errors.contato}
-                  {...register("contato")}
+                <Controller
+                  control={control}
+                  name="contato"
+                  render={({ field }) => (
+                    <Input
+                      id="contato"
+                      placeholder="Ex.: (55) 99999-0000"
+                      aria-invalid={!!errors.contato}
+                      value={
+                        pareceEmail(field.value ?? "")
+                          ? field.value
+                          : formatarTelefone(field.value ?? "")
+                      }
+                      onChange={(e) => {
+                        const bruto = e.target.value;
+                        field.onChange(
+                          pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
+                        );
+                      }}
+                      onBlur={field.onBlur}
+                    />
+                  )}
                 />
                 {errors.contato && (
                   <p className="text-sm text-destructive">{errors.contato.message}</p>

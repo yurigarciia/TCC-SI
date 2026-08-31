@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -45,6 +45,7 @@ import {
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { formatarTelefone, pareceEmail } from "@/lib/format";
 
 const dadosSchema = z.object({
   nome: z.string().min(3, "Informe o nome completo."),
@@ -101,6 +102,7 @@ function AssociadoDetalheConteudo({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isDirty },
@@ -219,7 +221,28 @@ function AssociadoDetalheConteudo({
             </div>
             <div className="space-y-2">
               <Label htmlFor="contato">Contato</Label>
-              <Input id="contato" aria-invalid={!!errors.contato} {...register("contato")} />
+              <Controller
+                control={control}
+                name="contato"
+                render={({ field }) => (
+                  <Input
+                    id="contato"
+                    aria-invalid={!!errors.contato}
+                    value={
+                      pareceEmail(field.value ?? "")
+                        ? field.value
+                        : formatarTelefone(field.value ?? "")
+                    }
+                    onChange={(e) => {
+                      const bruto = e.target.value;
+                      field.onChange(
+                        pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
+                      );
+                    }}
+                    onBlur={field.onBlur}
+                  />
+                )}
+              />
               {errors.contato && (
                 <p className="text-sm text-destructive">{errors.contato.message}</p>
               )}

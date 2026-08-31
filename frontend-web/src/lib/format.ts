@@ -28,3 +28,25 @@ export function formatarCpf(valor: string): string {
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
+
+// Campo "contato" aceita telefone OU e-mail (ver associados/novo e associados/[id]) — se o valor
+// tiver letra/@ tratamos como e-mail e não mexemos nele; caso contrário aplicamos a máscara
+// (00) 00000-0000 (ou (00) 0000-0000 pra fixo), puramente visual — quem chama guarda só os
+// dígitos quando for telefone.
+export function pareceEmail(valor: string): boolean {
+  return /[a-zA-Z@]/.test(valor);
+}
+
+export function formatarTelefone(valor: string): string {
+  const digitos = valor.replace(/\D/g, "").slice(0, 11);
+  if (digitos.length === 0) return "";
+  const ddd = digitos.slice(0, 2);
+  if (digitos.length <= 2) return `(${ddd}`;
+
+  // 11 dígitos = celular (9 no número local, ex.: 99999-0000); 10 = fixo (8, ex.: 9999-0000).
+  const restante = digitos.slice(2);
+  const tamanhoPrefixo = digitos.length > 10 ? 5 : 4;
+  const prefixo = restante.slice(0, tamanhoPrefixo);
+  const sufixo = restante.slice(tamanhoPrefixo);
+  return sufixo ? `(${ddd}) ${prefixo}-${sufixo}` : `(${ddd}) ${prefixo}`;
+}
