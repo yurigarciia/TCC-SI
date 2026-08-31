@@ -153,4 +153,28 @@
   html {
     @apply font-sans;
   }
+
+  /* Tailwind's Preflight zera o cursor de <button> pra "default" (comportamento nativo do
+   * browser) — bom pro reset, ruim pra UX: todo elemento clicável deve parecer clicável. Cobre
+   * elementos nativos e os roles ARIA que o base-ui/Radix aplicam em runtime (Select, Checkbox,
+   * Tabs, DropdownMenu etc.), sempre respeitando o estado desabilitado. */
+  button:not(:disabled),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  label[for],
+  select:not(:disabled),
+  summary,
+  [role="button"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="tab"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="menuitem"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="menuitemcheckbox"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="menuitemradio"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="option"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="checkbox"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="switch"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="combobox"]:not([data-disabled]):not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
