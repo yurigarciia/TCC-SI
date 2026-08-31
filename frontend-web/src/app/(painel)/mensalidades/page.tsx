@@ -37,16 +37,17 @@ export default function MensalidadesPage() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">
+          Mensalidades e inadimplência
+        </h1>
+        <p className="text-sm text-muted-foreground">Relatório de inadimplência e cobranças.</p>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
-            Mensalidades e inadimplência
-          </h1>
-          <p className="text-sm text-muted-foreground">Relatório de inadimplência e cobranças.</p>
-        </div>
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por associado" />
         <div className="flex gap-2">
           <Button
-            variant="outline"
             disabled={gerarCobrancas.isPending}
             onClick={() =>
               gerarCobrancas.mutate(undefined, {
@@ -63,7 +64,6 @@ export default function MensalidadesPage() {
             Gerar cobranças do mês
           </Button>
           <Button
-            variant="outline"
             disabled={processarInadimplencia.isPending}
             onClick={() =>
               processarInadimplencia.mutate(undefined, {
@@ -83,12 +83,9 @@ export default function MensalidadesPage() {
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="font-heading text-lg font-semibold text-foreground">
-            Relatório de inadimplência
-          </h2>
-          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por associado" />
-        </div>
+        <h2 className="font-heading text-lg font-semibold text-foreground">
+          Relatório de inadimplência
+        </h2>
 
         {isLoading && (
           <div className="space-y-2">
