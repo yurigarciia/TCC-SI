@@ -63,7 +63,12 @@ export default function NovoSalaoPage() {
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do salão</Label>
-              <Input id="nome" aria-invalid={!!errors.nome} {...register("nome")} />
+              <Input
+                id="nome"
+                placeholder="Ex.: Salão Social CTG Pia do Sul"
+                aria-invalid={!!errors.nome}
+                {...register("nome")}
+              />
               {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
             </div>
             <div className="space-y-2">
@@ -72,6 +77,7 @@ export default function NovoSalaoPage() {
                 id="capacidadeTotal"
                 type="number"
                 min={1}
+                placeholder="Ex.: 200"
                 aria-invalid={!!errors.capacidadeTotal}
                 {...register("capacidadeTotal")}
               />

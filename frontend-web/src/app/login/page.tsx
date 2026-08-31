@@ -52,6 +52,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 autoComplete="username"
+                placeholder="seuemail@piadosul.org.br"
                 aria-invalid={!!errors.email}
                 {...register("email")}
               />

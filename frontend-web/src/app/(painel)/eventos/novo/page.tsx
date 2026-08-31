@@ -87,7 +87,12 @@ export default function NovoEventoPage() {
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do evento</Label>
-              <Input id="nome" aria-invalid={!!errors.nome} {...register("nome")} />
+              <Input
+                id="nome"
+                placeholder="Ex.: Baile da Primavera"
+                aria-invalid={!!errors.nome}
+                {...register("nome")}
+              />
               {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
             </div>
 
@@ -104,7 +109,12 @@ export default function NovoEventoPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="local">Local</Label>
-                <Input id="local" aria-invalid={!!errors.local} {...register("local")} />
+                <Input
+                  id="local"
+                  placeholder="Ex.: Sede do CTG Pia do Sul"
+                  aria-invalid={!!errors.local}
+                  {...register("local")}
+                />
                 {errors.local && (
                   <p className="text-sm text-destructive">{errors.local.message}</p>
                 )}
@@ -113,7 +123,11 @@ export default function NovoEventoPage() {
 
             <div className="space-y-2">
               <Label htmlFor="descricao">Descrição (opcional)</Label>
-              <Textarea id="descricao" {...register("descricao")} />
+              <Textarea
+                id="descricao"
+                placeholder="Ex.: Baile tradicionalista com jantar e sorteios."
+                {...register("descricao")}
+              />
             </div>
 
             <div className="space-y-2">

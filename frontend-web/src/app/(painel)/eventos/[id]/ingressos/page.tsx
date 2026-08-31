@@ -147,6 +147,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
               <Label htmlFor="nomeComprador">Nome do comprador</Label>
               <Input
                 id="nomeComprador"
+                placeholder="Ex.: Maria da Silva"
                 aria-invalid={!!errors.nomeComprador}
                 {...register("nomeComprador")}
               />

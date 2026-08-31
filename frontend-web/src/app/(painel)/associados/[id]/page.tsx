@@ -216,7 +216,12 @@ function AssociadoDetalheConteudo({
           <form onSubmit={onSubmitDados} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="nome">Nome completo</Label>
-              <Input id="nome" aria-invalid={!!errors.nome} {...register("nome")} />
+              <Input
+                id="nome"
+                placeholder="Ex.: João da Silva"
+                aria-invalid={!!errors.nome}
+                {...register("nome")}
+              />
               {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
             </div>
             <div className="space-y-2">
@@ -227,6 +232,7 @@ function AssociadoDetalheConteudo({
                 render={({ field }) => (
                   <Input
                     id="contato"
+                    placeholder="Ex.: (55) 99999-0000"
                     aria-invalid={!!errors.contato}
                     value={
                       pareceEmail(field.value ?? "")
@@ -249,7 +255,11 @@ function AssociadoDetalheConteudo({
             </div>
             <div className="space-y-2">
               <Label htmlFor="vinculoInstitucional">Vínculo institucional</Label>
-              <Input id="vinculoInstitucional" {...register("vinculoInstitucional")} />
+              <Input
+                id="vinculoInstitucional"
+                placeholder="Ex.: Piquete Laço Firme"
+                {...register("vinculoInstitucional")}
+              />
             </div>
             <div className="flex justify-end">
               <Button type="submit" disabled={!isDirty || atualizar.isPending}>
@@ -278,7 +288,11 @@ function AssociadoDetalheConteudo({
             >
               <div className="flex-1 space-y-2">
                 <Label htmlFor="dependente-nome">Nome</Label>
-                <Input id="dependente-nome" {...registerDependente("nome")} />
+                <Input
+                  id="dependente-nome"
+                  placeholder="Ex.: Maria da Silva"
+                  {...registerDependente("nome")}
+                />
                 {errosDependente.nome && (
                   <p className="text-sm text-destructive">{errosDependente.nome.message}</p>
                 )}

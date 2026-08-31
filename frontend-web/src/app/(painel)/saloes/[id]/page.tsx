@@ -143,6 +143,7 @@ function SalaoDetalheConteudo({
               <Input
                 id="capacidade"
                 type="number"
+                placeholder="Ex.: 8"
                 aria-invalid={!!errors.capacidade}
                 {...register("capacidade")}
               />
@@ -152,11 +153,11 @@ function SalaoDetalheConteudo({
             </div>
             <div className="space-y-2">
               <Label htmlFor="posicaoX">Posição X</Label>
-              <Input id="posicaoX" type="number" {...register("posicaoX")} />
+              <Input id="posicaoX" type="number" placeholder="Ex.: 0" {...register("posicaoX")} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="posicaoY">Posição Y</Label>
-              <Input id="posicaoY" type="number" {...register("posicaoY")} />
+              <Input id="posicaoY" type="number" placeholder="Ex.: 0" {...register("posicaoY")} />
             </div>
             <div className="sm:col-span-2 flex justify-end">
               <Button type="submit" disabled={adicionarMesa.isPending}>

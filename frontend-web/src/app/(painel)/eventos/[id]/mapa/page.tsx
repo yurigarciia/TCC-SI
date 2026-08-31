@@ -222,7 +222,12 @@ function FormReservarMesa({
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
       <div className="space-y-2">
         <Label htmlFor="nomeTitular">Nome do titular</Label>
-        <Input id="nomeTitular" aria-invalid={!!errors.nomeTitular} {...register("nomeTitular")} />
+        <Input
+          id="nomeTitular"
+          placeholder="Ex.: Maria da Silva"
+          aria-invalid={!!errors.nomeTitular}
+          {...register("nomeTitular")}
+        />
         {errors.nomeTitular && (
           <p className="text-sm text-destructive">{errors.nomeTitular.message}</p>
         )}

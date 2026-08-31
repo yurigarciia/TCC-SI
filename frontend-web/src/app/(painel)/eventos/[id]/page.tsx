@@ -156,6 +156,7 @@ function EventoDetalheConteudo({
                 id="quantidadeDisponivel"
                 type="number"
                 min={0}
+                placeholder="Ex.: 100"
                 aria-invalid={!!errosIngresso.quantidadeDisponivel}
                 {...registerIngresso("quantidadeDisponivel")}
               />
@@ -172,6 +173,7 @@ function EventoDetalheConteudo({
                 type="number"
                 min={0}
                 step="0.01"
+                placeholder="0,00"
                 aria-invalid={!!errosIngresso.preco}
                 {...registerIngresso("preco")}
               />
@@ -273,6 +275,7 @@ function MesasDoEventoCard({
                   type="number"
                   min={0}
                   step="0.01"
+                  placeholder="0,00"
                   {...register(`mesas.${indice}.preco` as const)}
                 />
                 <Controller
