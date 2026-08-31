@@ -8,6 +8,7 @@ import {
   MenuIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
+  ShieldUserIcon,
   TagIcon,
   UsersIcon,
   WalletIcon,
@@ -53,6 +54,7 @@ const itensDeNavegacao: ItemDeNavegacao[] = [
   { href: "/mensalidades", label: "Mensalidades", icon: WalletIcon },
   { href: "/eventos", label: "Eventos", icon: CalendarIcon },
   { href: "/saloes", label: "Salões", icon: Building2Icon },
+  { href: "/usuarios", label: "Usuários", icon: ShieldUserIcon },
 ];
 
 function estaEmSecao(pathname: string, href: string): boolean {

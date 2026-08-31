@@ -16,8 +16,10 @@ import {
 import { AutenticarUsuarioUseCase } from '../../application/use-cases/autenticar-usuario.use-case';
 import type { TokenDeAcesso } from '../../application/use-cases/autenticar-usuario.use-case';
 import { ListarUsuariosUseCase } from '../../application/use-cases/listar-usuarios.use-case';
+import { CriarAdministradorUseCase } from '../../application/use-cases/criar-administrador.use-case';
 import { Perfil } from '../../domain/usuario.entity';
 import { LoginDto } from './dto/login.dto';
+import { CriarAdministradorDto } from './dto/criar-administrador.dto';
 import { JwtAuthGuard } from '../security/jwt-auth.guard';
 import { RolesGuard } from '../security/roles.guard';
 import { Roles } from '../security/roles.decorator';
@@ -30,6 +32,7 @@ export class AuthController {
   constructor(
     private readonly autenticarUsuario: AutenticarUsuarioUseCase,
     private readonly listarUsuarios: ListarUsuariosUseCase,
+    private readonly criarAdministrador: CriarAdministradorUseCase,
   ) {}
 
   @Post('login')
@@ -75,5 +78,29 @@ export class AuthController {
   > {
     const usuarios = await this.listarUsuarios.execute();
     return usuarios.map(({ id, email, perfil }) => ({ id, email, perfil }));
+  }
+
+  @Post('usuarios')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary:
+      'Cria uma nova conta de administrador (acesso ao painel da diretoria)',
+  })
+  @ApiResponse({ status: 201, description: 'Administrador criado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
+  async criar(
+    @Body() dto: CriarAdministradorDto,
+  ): Promise<{ id: string; email: string; perfil: Perfil }> {
+    const usuario = await this.criarAdministrador.execute(dto);
+    return { id: usuario.id, email: usuario.email, perfil: usuario.perfil };
   }
 }

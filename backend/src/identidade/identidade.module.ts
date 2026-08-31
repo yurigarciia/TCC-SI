@@ -7,6 +7,7 @@ import { UsuarioRepositoryPort } from './application/ports/usuario-repository.po
 import { PasswordHasherPort } from './application/ports/password-hasher.port';
 import { AutenticarUsuarioUseCase } from './application/use-cases/autenticar-usuario.use-case';
 import { ListarUsuariosUseCase } from './application/use-cases/listar-usuarios.use-case';
+import { CriarAdministradorUseCase } from './application/use-cases/criar-administrador.use-case';
 import { UsuarioOrmEntity } from './infrastructure/persistence/usuario.orm-entity';
 import { TypeOrmUsuarioRepositoryAdapter } from './infrastructure/persistence/typeorm-usuario-repository.adapter';
 import { BcryptPasswordHasherAdapter } from './infrastructure/security/bcrypt-password-hasher.adapter';
@@ -33,6 +34,7 @@ import { AuthController } from './infrastructure/controllers/auth.controller';
   providers: [
     AutenticarUsuarioUseCase,
     ListarUsuariosUseCase,
+    CriarAdministradorUseCase,
     JwtStrategy,
     {
       provide: UsuarioRepositoryPort,

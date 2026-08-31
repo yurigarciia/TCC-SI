@@ -108,4 +108,48 @@ describe('Auth (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(403);
   });
+
+  it('administrador cria uma nova conta de administrador, que consegue logar em seguida', async () => {
+    const { accessToken } = await login(app, adminEmail, adminSenha);
+    const novoEmail = 'novo.diretor@piadosul.org.br';
+
+    const criado = await request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ email: novoEmail, senha: 'senhaProvisoria123' })
+      .expect(201);
+    expect((criado.body as UsuarioResponseBody).perfil).toBe('administrador');
+
+    const novoLogin = await login(app, novoEmail, 'senhaProvisoria123');
+    expect(typeof novoLogin.accessToken).toBe('string');
+
+    await dataSource.query('DELETE FROM usuarios WHERE email = $1', [
+      novoEmail,
+    ]);
+  });
+
+  it('recusa criar administrador com e-mail já cadastrado (409)', async () => {
+    const { accessToken } = await login(app, adminEmail, adminSenha);
+
+    return request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ email: adminEmail, senha: 'qualquerSenha123' })
+      .expect(409);
+  });
+
+  it('nega criação de administrador para um associado (403) e sem token (401)', async () => {
+    const { accessToken } = await login(app, associadoEmail, associadoSenha);
+
+    await request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ email: 'outro@piadosul.org.br', senha: 'qualquerSenha123' })
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .send({ email: 'outro@piadosul.org.br', senha: 'qualquerSenha123' })
+      .expect(401);
+  });
 });

@@ -515,6 +515,26 @@ frentes de frontend-web e mobile.
   lint` e `npm run test:e2e` (40 testes no total; 3 novos: vincular-conta com sucesso+login+"me",
   404 para CPF inexistente, 409 para cadastro já vinculado).
 
+#### Ticket: T-BE-015 Gestão de contas de administrador
+- **Priority:** Should
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Endpoint pra criar uma nova conta de administrador pela própria aplicação.
+- **Acceptance Criteria:** Administrador autenticado consegue criar outra conta administrador
+  informando e-mail+senha; a conta criada consegue logar em seguida; e-mail duplicado dá 409;
+  associado não consegue criar (403); sem token dá 401.
+- **Validation Steps:** Teste de integração cobrindo criação→login com a conta nova.
+- **Notes:** Identificado numa conversa com o usuário — RNF02 previa RBAC/perfis
+  (administrador/associado), mas nunca a gestão de contas em si. Até esta ticket, a única forma de
+  existir uma conta administrador era o script `seed-admin.ts` (rodado manualmente, direto no
+  banco) — sem nenhum endpoint pra conceder acesso administrativo pela aplicação. `POST
+  /auth/usuarios` (`@Roles(ADMINISTRADOR)`) via `CriarAdministradorUseCase`, mesmo padrão de
+  `AutoCadastrarAssociadoUseCase` (checa e-mail duplicado, hasheia senha, `UsuarioRepositoryPort.
+  salvar`) — cria só `Usuario`, sem `Associado` associado, porque contas de associado sempre
+  nascem junto de um Associado (auto-cadastro ou vincular-conta), nunca soltas. O já existente
+  `GET /auth/usuarios` (existia desde T-BE-002, nunca tinha UI consumindo) passa a alimentar a
+  tela nova. 3 casos novos em `auth.e2e-spec.ts`, suíte completa em 53/53, build/lint limpos.
+
 ### Frontend Web (Painel Administrativo)
 
 #### Ticket: T-FE-001 Design System aplicado (tokens + tema shadcn/ui)
@@ -738,6 +758,28 @@ frentes de frontend-web e mobile.
   fiz check-in de um deles via API (mesmo payload que o campo "check-in por código" envia),
   confirmei a tentativa de reuso recusada (409) e recarreguei a página vendo o badge "Usado" +
   horário aparecerem sem o botão de check-in; conferi a busca por nome contra o endpoint real.
+
+#### Ticket: T-FE-009 Gestão de Usuários da Plataforma
+- **Priority:** Should
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Tela pra listar contas de login e criar novos administradores — fecha a lacuna
+  identificada em conversa com o usuário (RNF02 previa RBAC/perfis, nunca a gestão de contas).
+- **Acceptance Criteria:** Administrador consegue conceder acesso administrativo a outra pessoa
+  sem precisar de acesso ao servidor/banco.
+- **Validation Steps:** Teste manual ponta a ponta contra o backend real.
+- **Notes:** Nova seção top-level na sidebar (`/usuarios`, ícone `ShieldUserIcon` — separado de
+  "Associados" de propósito, são contas de sistema, não cadastro de sócio). Duas rotas: lista
+  (`/usuarios`, tabela e-mail+badge de perfil, consumindo o `GET /auth/usuarios` que já existia
+  sem UI) e cadastro exclusivo (`/usuarios/novo`, mesmo padrão visual de "Novo associado"/"Novo
+  salão" — Card com e-mail+senha provisória, redireciona pra lista no sucesso). Só cria
+  administrador por aqui, nunca associado (ver nota de T-BE-015). Validado com `npm run build`,
+  `npm run lint` e teste manual ponta a ponta contra o backend real: criei um novo administrador
+  pelo formulário, confirmei o toast e o redirect, vi a conta nova na lista, e confirmei via API
+  que ela consegue logar de fato. Achado no caminho (só de tooling, não da aplicação):
+  `--window-size` do Edge headless não bateu com o viewport real da página numa das rodadas
+  (pediu 1400px, `window.innerWidth` voltou 500) — contornado forçando o viewport via
+  `Emulation.setDeviceMetricsOverride` do CDP em vez de confiar na flag de lançamento.
 
 ### Mobile (App do Associado)
 
