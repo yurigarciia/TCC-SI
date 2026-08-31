@@ -3,6 +3,7 @@ import { CategoriaSocio } from '../../domain/categoria-socio.entity';
 export interface NovaCategoriaSocio {
   nome: string;
   valorMensalidade: number;
+  isenta: boolean;
 }
 
 export abstract class CategoriaSocioRepositoryPort {

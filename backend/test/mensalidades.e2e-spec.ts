@@ -124,6 +124,63 @@ describe('Mensalidades (e2e)', () => {
     expect(geradas.some((m) => m.associadoId === associadoId)).toBe(false);
   });
 
+  it('associado numa categoria isenta nunca recebe cobrança de mensalidade', async () => {
+    const nomeCategoriaIsenta = 'Benemérito — mensalidades e2e';
+    const cpfIsento = '55555555550';
+
+    const categoriaIsenta = await request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: nomeCategoriaIsenta, isenta: true })
+      .expect(201);
+    const categoriaIsentaBody = categoriaIsenta.body as {
+      id: string;
+      isenta: boolean;
+      valorMensalidade: number;
+    };
+    expect(categoriaIsentaBody.isenta).toBe(true);
+    expect(categoriaIsentaBody.valorMensalidade).toBe(0);
+
+    const associadoIsento = await request(app.getHttpServer())
+      .post('/associados')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nome: 'Associado Isento',
+        cpf: cpfIsento,
+        contato: '55999990006',
+        categoriaSocioId: categoriaIsentaBody.id,
+      })
+      .expect(201);
+    const associadoIsentoId = (
+      associadoIsento.body as { associado: { id: string } }
+    ).associado.id;
+
+    const response = await request(app.getHttpServer())
+      .post('/mensalidades/gerar')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(201);
+
+    const geradas = response.body as MensalidadeResponseBody[];
+    expect(geradas.some((m) => m.associadoId === associadoIsentoId)).toBe(
+      false,
+    );
+
+    await dataSource.query('DELETE FROM associados WHERE id = $1', [
+      associadoIsentoId,
+    ]);
+    await dataSource.query('DELETE FROM categorias_socio WHERE nome = $1', [
+      nomeCategoriaIsenta,
+    ]);
+  });
+
+  it('categoria não isenta exige valorMensalidade positivo (400 sem ele)', () => {
+    return request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Categoria sem valor — e2e' })
+      .expect(400);
+  });
+
   it('lista o histórico do associado com a mensalidade gerada', async () => {
     const response = await request(app.getHttpServer())
       .get(`/mensalidades/associado/${associadoId}`)

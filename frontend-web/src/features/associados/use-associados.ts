@@ -8,6 +8,7 @@ import type {
   AtualizarAssociadoInput,
   CadastrarAssociadoMediadoInput,
   CategoriaSocio,
+  CriarCategoriaSocioInput,
 } from "./types";
 
 const CHAVE_LISTA = ["associados"] as const;
@@ -40,7 +41,7 @@ export function useCategoriasSocio() {
 export function useCriarCategoriaSocio() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dados: { nome: string; valorMensalidade: number }) =>
+    mutationFn: (dados: CriarCategoriaSocioInput) =>
       apiFetch<CategoriaSocio>("/categorias-socio", {
         method: "POST",
         body: JSON.stringify(dados),

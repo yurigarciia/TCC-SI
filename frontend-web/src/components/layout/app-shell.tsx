@@ -3,10 +3,12 @@
 import {
   Building2Icon,
   CalendarIcon,
+  ChevronDownIcon,
   HomeIcon,
   MenuIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
+  TagIcon,
   UsersIcon,
   WalletIcon,
   type LucideIcon,
@@ -28,16 +30,42 @@ import { cn } from "@/lib/utils";
 
 const CHAVE_SIDEBAR_COLAPSADA = "pia_do_sul_sidebar_colapsada";
 
-const itensDeNavegacao: { href: string; label: string; icon: LucideIcon }[] = [
+interface ItemDeNavegacao {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  // Só "Associados" tem subitens hoje (Sócios/Categorias) — estrutura genérica pra caso outra
+  // seção precise do mesmo padrão no futuro (ex.: Eventos ganhar "Salões" como subitem).
+  subitens?: { href: string; label: string; icon: LucideIcon }[];
+}
+
+const itensDeNavegacao: ItemDeNavegacao[] = [
   { href: "/", label: "Início", icon: HomeIcon },
-  { href: "/associados", label: "Associados", icon: UsersIcon },
+  {
+    href: "/associados",
+    label: "Associados",
+    icon: UsersIcon,
+    subitens: [
+      { href: "/associados", label: "Sócios", icon: UsersIcon },
+      { href: "/associados/categorias", label: "Categorias", icon: TagIcon },
+    ],
+  },
   { href: "/mensalidades", label: "Mensalidades", icon: WalletIcon },
   { href: "/eventos", label: "Eventos", icon: CalendarIcon },
   { href: "/saloes", label: "Salões", icon: Building2Icon },
 ];
 
-function estaAtivo(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+function estaEmSecao(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+// "Sócios" (/associados) não pode ficar marcado como ativo em /associados/categorias — os dois
+// são subitens irmãos da mesma seção, prefixo sozinho não distingue.
+function subitemEstaAtivo(pathname: string, subitens: { href: string }[], href: string): boolean {
+  const maisEspecifico = subitens
+    .filter((s) => estaEmSecao(pathname, s.href))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  return maisEspecifico?.href === href;
 }
 
 function LinksDeNavegacao({
@@ -51,28 +79,118 @@ function LinksDeNavegacao({
   colapsada?: boolean;
   className?: string;
 }) {
+  // Grupo com subitens abre sozinho quando a navegação (inclusive troca de rota sem remount, ex.:
+  // clicar num link pra dentro da seção vindo de fora da sidebar) entra nele — nunca esconde onde
+  // o usuário está; só depois disso ele pode fechar manualmente.
+  const [gruposAbertos, setGruposAbertos] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    const item = itensDeNavegacao.find((i) => i.subitens && estaEmSecao(pathname, i.href));
+    if (!item) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGruposAbertos((atual) => (atual[item.href] ? atual : { ...atual, [item.href]: true }));
+  }, [pathname]);
+
   return (
     <ul className={cn("space-y-1", className)}>
       {itensDeNavegacao.map((item) => {
-        const ativo = estaAtivo(pathname, item.href);
+        const emSecao = estaEmSecao(pathname, item.href);
         const Icone = item.icon;
+
+        if (!item.subitens) {
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                title={colapsada ? item.label : undefined}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  colapsada && "justify-center px-0",
+                  emSecao
+                    ? "bg-secondary text-secondary-foreground"
+                    : "text-foreground hover:bg-muted",
+                )}
+              >
+                <Icone className="size-4 shrink-0" aria-hidden="true" />
+                <span className={cn("truncate", colapsada && "sr-only")}>{item.label}</span>
+              </Link>
+            </li>
+          );
+        }
+
+        // Sidebar encolhida: sem espaço pra submenu flutuante, o ícone do grupo vira atalho
+        // direto pro primeiro subitem (Sócios).
+        if (colapsada) {
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.subitens[0].href}
+                onClick={onNavigate}
+                title={item.label}
+                className={cn(
+                  "flex items-center justify-center rounded-md px-0 py-2 text-sm font-medium transition-colors",
+                  emSecao
+                    ? "bg-secondary text-secondary-foreground"
+                    : "text-foreground hover:bg-muted",
+                )}
+              >
+                <Icone className="size-4 shrink-0" aria-hidden="true" />
+                <span className="sr-only">{item.label}</span>
+              </Link>
+            </li>
+          );
+        }
+
+        const aberto = gruposAbertos[item.href] ?? false;
+
         return (
           <li key={item.href}>
-            <Link
-              href={item.href}
-              onClick={onNavigate}
-              title={colapsada ? item.label : undefined}
+            <button
+              type="button"
+              onClick={() =>
+                setGruposAbertos((atual) => ({ ...atual, [item.href]: !aberto }))
+              }
+              aria-expanded={aberto}
               className={cn(
-                "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                colapsada && "justify-center px-0",
-                ativo
-                  ? "bg-secondary text-secondary-foreground"
+                "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                emSecao
+                  ? "text-secondary-foreground"
                   : "text-foreground hover:bg-muted",
+                emSecao && !aberto && "bg-secondary",
               )}
             >
               <Icone className="size-4 shrink-0" aria-hidden="true" />
-              <span className={cn("truncate", colapsada && "sr-only")}>{item.label}</span>
-            </Link>
+              <span className="flex-1 truncate text-left">{item.label}</span>
+              <ChevronDownIcon
+                className={cn("size-3.5 shrink-0 transition-transform", aberto && "rotate-180")}
+                aria-hidden="true"
+              />
+            </button>
+            {aberto && (
+              <ul className="mt-1 space-y-1 border-l pl-3">
+                {item.subitens.map((sub) => {
+                  const SubIcone = sub.icon;
+                  const ativo = subitemEstaAtivo(pathname, item.subitens!, sub.href);
+                  return (
+                    <li key={sub.href}>
+                      <Link
+                        href={sub.href}
+                        onClick={onNavigate}
+                        className={cn(
+                          "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                          ativo
+                            ? "bg-secondary text-secondary-foreground"
+                            : "text-foreground hover:bg-muted",
+                        )}
+                      >
+                        <SubIcone className="size-3.5 shrink-0" aria-hidden="true" />
+                        <span className="truncate">{sub.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </li>
         );
       })}

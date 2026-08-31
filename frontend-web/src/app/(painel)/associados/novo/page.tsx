@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
-import { GerenciarCategoriasDialog } from "@/features/associados/gerenciar-categorias-dialog";
 import { ApiError } from "@/lib/api-client";
 
 const dependenteSchema = z.object({
@@ -132,13 +131,13 @@ export default function NovoAssociadoPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
-                  <GerenciarCategoriasDialog
-                    trigger={
-                      <Button type="button" variant="link" size="sm" className="h-auto p-0">
-                        Nova categoria
-                      </Button>
-                    }
-                  />
+                  <Link
+                    href="/associados/categorias"
+                    target="_blank"
+                    className="text-sm text-primary underline-offset-4 hover:underline"
+                  >
+                    Nova categoria ↗
+                  </Link>
                 </div>
                 <Controller
                   control={control}

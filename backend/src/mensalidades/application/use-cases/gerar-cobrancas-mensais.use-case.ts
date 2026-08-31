@@ -24,6 +24,7 @@ export class GerarCobrancasMensaisUseCase {
   // Gera a cobrança do mês corrente para cada associado ativo com categoria de sócio definida,
   // pulando quem já tem cobrança para a competência (idempotente — pode ser chamado mais de uma
   // vez com segurança). Segue cadastro-associado.json / mensalidade.json: valor vem da categoria.
+  // Categoria isenta (ex.: benemérito, honorário) nunca gera cobrança — nem de valor zero.
   async execute(referencia: Date = new Date()): Promise<Mensalidade[]> {
     const competencia = `${referencia.getFullYear()}-${String(referencia.getMonth() + 1).padStart(2, '0')}`;
     const vencimento = new Date(
@@ -54,7 +55,7 @@ export class GerarCobrancasMensaisUseCase {
       const categoria = await this.categorias.buscarPorId(
         associado.categoriaSocioId!,
       );
-      if (!categoria) {
+      if (!categoria || categoria.isenta) {
         continue;
       }
 

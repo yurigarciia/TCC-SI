@@ -51,6 +51,15 @@ diagramas navegáveis).
 - Quando o associado fica inadimplente, isso apenas aparece no relatório da diretoria (RF07), ou também
   bloqueia funcionalidades como reserva de mesa/ingresso até a regularização?
 
+**Adendo 2026-08-31 — categoria isenta de mensalidade:** decisão original não previa que algumas
+categorias de sócio (comum em entidades tradicionalistas gaúchas: benemérito, honorário, fundador)
+simplesmente não pagam mensalidade — passou batido tanto no artigo quanto nos fluxos mapeados,
+identificado só na implementação. Modelado como um flag `isenta` na categoria de sócio: quando
+verdadeiro, a geração automática de cobrança mensal (`GerarCobrancasMensaisUseCase`) pula por
+completo o associado, sem gerar nem uma cobrança de valor zero. Reflete a mesma composição de
+"categoria = enquadramento + regra de cobrança" já decidida acima, só que agora a regra pode ser
+"não cobra" em vez de só "cobra X reais".
+
 ---
 
 ## Cadastro de Croqui de Salão — 2026-08-11

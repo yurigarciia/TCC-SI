@@ -30,6 +30,17 @@ export interface CategoriaSocio {
   nome: string;
   valorMensalidade: number;
   ativa: boolean;
+  // Categoria isenta (ex.: benemérito, honorário) — associados nela nunca têm mensalidade
+  // gerada, valorMensalidade sempre vem 0 do backend nesse caso.
+  isenta: boolean;
+}
+
+export interface CriarCategoriaSocioInput {
+  nome: string;
+  // Obrigatório e deve ser positivo quando isenta não é true (ver backend
+  // CriarCategoriaSocioDto).
+  valorMensalidade?: number;
+  isenta?: boolean;
 }
 
 export interface CadastrarAssociadoMediadoInput {

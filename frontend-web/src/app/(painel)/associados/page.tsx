@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { useAssociados } from "@/features/associados/use-associados";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
-import { GerenciarCategoriasDialog } from "@/features/associados/gerenciar-categorias-dialog";
 
 export default function AssociadosPage() {
   const { data: associados, isLoading, isError } = useAssociados();
@@ -27,12 +26,7 @@ export default function AssociadosPage() {
             Cadastro, dependentes e situação de cada associado.
           </p>
         </div>
-        <div className="flex gap-2">
-          <GerenciarCategoriasDialog
-            trigger={<Button variant="outline">Categorias de sócio</Button>}
-          />
-          <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
-        </div>
+        <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
       </div>
 
       {isLoading && (

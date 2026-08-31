@@ -24,6 +24,9 @@ export class CategoriaSocioOrmEntity {
   @Column({ default: true })
   ativa: boolean;
 
+  @Column({ default: false })
+  isenta: boolean;
+
   @CreateDateColumn({ name: 'criado_em', type: 'timestamptz' })
   criadoEm: Date;
 }

@@ -269,6 +269,16 @@ planejamentos específicos — este backlog é o nível "épico/ticket inicial".
   como JSON estruturado, não PDF (decisão consciente — layout de impressão fica para quando o
   frontend existir). Validado com `npm run build`, `npm run lint` e `npm run test:e2e`.
 
+  **Adendo 2026-08-31 (isenção de mensalidade):** regra de negócio real de entidades
+  tradicionalistas gaúchas (categorias como benemérito/honorário não pagam mensalidade) nunca
+  tinha sido modelada — passou batido tanto no artigo quanto nos fluxos mapeados (ver adendo em
+  `decisoes.md` § Controle de Mensalidade). `CategoriaSocio` ganha `isenta: boolean` (migration
+  `AddIsentaToCategoriasSocio`); `GerarCobrancasMensaisUseCase` pula por completo o associado
+  cuja categoria é isenta, sem gerar cobrança de valor zero. `CriarCategoriaSocioDto` faz
+  `valorMensalidade` obrigatório apenas quando `isenta` não é `true` (`@ValidateIf`); o use case
+  força `valorMensalidade = 0` server-side quando isenta, nunca confia no que o cliente mandou.
+  2 casos novos em `mensalidades.e2e-spec.ts`, suíte completa em 50/50.
+
 #### Ticket: T-BE-006 Relatório de Inadimplência + lembrete automático (RF07)
 - **Priority:** Should
 - **Status:** Done
@@ -577,6 +587,26 @@ frentes de frontend-web e mobile.
   (2) nomes com acento enviados via `curl -d` no Git Bash do Windows chegavam corrompidos no
   banco — não é bug da aplicação, documentado como cuidado ao gerar dados de teste manualmente
   (usar arquivo JSON em vez de string inline em testes futuros).
+
+  **Adendo 2026-08-31 (categorias de sócio nunca tinham tela própria):** bug real reportado pelo
+  usuário — o `Select` de categoria em `/associados/novo` sempre aparecia vazio, porque
+  categorias só tinham sido criadas via API direta em teste manual, nunca existiu UI pra isso.
+  Corrigido com uma tela dedicada `/associados/categorias` (lista + formulário de criação inline,
+  não modal — pedido explícito do usuário) e, junto, o suporte a isenção de mensalidade (ver
+  adendo em T-BE-005 e em `decisoes.md`): checkbox "isenta" desabilita/ignora o campo de valor,
+  categoria isenta aparece como badge "Isenta" em vez do valor na tabela.
+
+  Sidebar (`AppShell`) ganhou dois refinamentos pedidos junto: (1) cada item de navegação (antes
+  só texto) ganhou um ícone `lucide-react`; (2) "Associados" virou um grupo expansível (chevron,
+  abre sozinho quando a rota atual já está dentro dele) com dois subitens — "Sócios" (`/associados`,
+  tela existente) e "Categorias" (`/associados/categorias`, tela nova). Sidebar colapsada (ver
+  T-FE refinamento de 2026-08-30) não tenta renderizar um flyout de submenu — o ícone do grupo
+  vira atalho direto pra "Sócios". Validado com `npm run build`/`npm run lint` (limpos) e teste
+  manual ponta a ponta contra o backend real: categoria paga e categoria isenta criadas com
+  sucesso, isenção confirmada não gerando mensalidade (checado direto no banco), navegação
+  sidebar → tela nova funcionando. Achado no caminho (só de tooling, não da aplicação): testar um
+  `Checkbox` do base-ui via clique sintético precisa mirar o `span[role="checkbox"]` visível, não
+  o `<input>` nativo (`aria-hidden`, 1×1px) que ele esconde por trás.
 
 #### Ticket: T-FE-004 Tela de Mensalidades e Inadimplência
 - **Priority:** Must

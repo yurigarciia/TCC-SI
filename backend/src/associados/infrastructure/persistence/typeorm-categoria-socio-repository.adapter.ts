@@ -22,6 +22,7 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
       this.repo.create({
         nome: dados.nome,
         valorMensalidade: String(dados.valorMensalidade),
+        isenta: dados.isenta,
       }),
     );
     return this.paraDominio(criado);
@@ -43,6 +44,7 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
       orm.nome,
       Number(orm.valorMensalidade),
       orm.ativa,
+      orm.isenta,
     );
   }
 }
