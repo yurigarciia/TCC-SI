@@ -47,7 +47,7 @@ export default function IngressosEventoPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl space-y-4">
+      <div className="mx-auto w-full max-w-5xl space-y-4">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-40 w-full" />
       </div>
@@ -119,7 +119,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   };
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
       <div>
         <Link href={`/eventos/${eventoId}`} className="text-sm text-muted-foreground hover:underline">
           ← {nomeEvento}

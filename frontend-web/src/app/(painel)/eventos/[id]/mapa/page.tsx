@@ -51,7 +51,7 @@ export default function MapaMesasPage() {
 
   if (carregandoEvento || carregandoMapa) {
     return (
-      <div className="max-w-3xl space-y-4">
+      <div className="mx-auto w-full max-w-5xl space-y-4">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-[420px] w-full" />
       </div>
@@ -83,7 +83,7 @@ function MapaMesasConteudo({
   const mesasLivres = mesas.filter((m) => m.status === "livre");
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
       <div>
         <Link href={`/eventos/${eventoId}`} className="text-sm text-muted-foreground hover:underline">
           ← {nomeEvento}

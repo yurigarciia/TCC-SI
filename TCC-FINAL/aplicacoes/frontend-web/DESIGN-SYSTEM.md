@@ -117,6 +117,26 @@ usuário final, considerando o público idoso. Títulos de tela: `text-2xl`/`tex
 - Sombra: usar apenas os níveis `shadow-sm`/`shadow` do Tailwind para cards e modais — evitar
   sombras pesadas, mantendo a leveza do fundo claro.
 
+### 4.1 Largura de página
+
+`AppShell` (`src/components/layout/app-shell.tsx`) deixa o `<main>` ocupar toda a largura
+disponível de propósito — cada página decide sua própria largura de conteúdo, nunca deixe uma
+página "grudada" à esquerda com espaço vazio à direita (bug real encontrado em 2026-08-30: telas
+de formulário/detalhe usavam `max-w-*` sem `mx-auto`, sobrando ~50% de tela em branco num monitor
+largo). Convenção:
+
+- Páginas de **lista** (tabelas, grids de cards) — sem `max-w`, ocupam 100% do `<main>`.
+- Páginas de **formulário simples** (poucos campos, ex. `saloes/novo`) — `mx-auto w-full max-w-lg`.
+- Páginas de **formulário/detalhe** com Cards empilhados (ex. `associados/novo`,
+  `associados/[id]`, `eventos/novo`, `eventos/[id]`) — `mx-auto w-full max-w-3xl`.
+- Páginas com **tabela densa ou canvas de croqui** (ex. `eventos/[id]/mapa`,
+  `eventos/[id]/ingressos`, `saloes/[id]`) — `mx-auto w-full max-w-5xl`: o `MapaMesasCanvas`/
+  `MesaCanvas` de coordenadas fixas em pixel se beneficia de verdade da largura extra (menos
+  rolagem horizontal), não é só estética.
+
+Sempre aplicar a mesma largura no estado de loading (`Skeleton`) e no conteúdo real da página —
+um mismatch entre os dois causa um "pulo" de layout visível ao carregar.
+
 ## 5. Componentes Base (shadcn/ui)
 
 Usar os componentes shadcn/ui como base de todo o painel, sem reescrever do zero:
