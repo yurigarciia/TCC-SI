@@ -781,6 +781,42 @@ frentes de frontend-web e mobile.
   (pediu 1400px, `window.innerWidth` voltou 500) — contornado forçando o viewport via
   `Emulation.setDeviceMetricsOverride` do CDP em vez de confiar na flag de lançamento.
 
+#### Ticket: T-BE-016 / T-FE-010 Paginação real das listagens
+- **Priority:** Should
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Nenhuma listagem do painel tinha paginação — respondiam/buscavam tudo de uma vez.
+  Achado numa conversa com o usuário ao notar que a tabela de associados sempre mostrava uma
+  altura fixa de ~10 linhas mesmo sem paginação real por trás. Adicionado `LIMIT`/`OFFSET` real
+  no backend e controles de página no frontend em todo endpoint de listagem: associados,
+  categorias de sócio, eventos, salões, usuários da plataforma, relatório de inadimplentes e
+  ingressos de um evento (este último preservando o filtro por nome já existente).
+- **Acceptance Criteria:** Toda listagem paginada responde `{ itens, total, pagina, limite,
+  totalPaginas }`; o painel mostra "Anterior/Próxima" e "Mostrando X–Y de Z" abaixo de cada
+  tabela/grid paginado; `limite` tem teto de 100 (validado via DTO, 400 se excedido).
+- **Validation Steps:** `npm run build`, `npm run test:e2e` (backend, 54/54) e `npm run build`/
+  `npm run lint` (frontend). Teste manual contra o backend real confirmando o formato da resposta
+  e que `GET /eventos/publicados` (vitrine pública do RF13, não paginada de propósito) continua
+  intacto.
+- **Notes:** Contrato compartilhado — `PaginacaoQueryDto` (query params `pagina`/`limite`,
+  padrão 1/20, teto 100) e `PaginaResultado<T>`/`montarPaginaResultado()`, ambos em
+  `backend/src/shared/pagination/`. Cada porta de repositório ganhou um `listarPaginado()` novo
+  via `findAndCount` do TypeORM; quando o `listarTodos()` antigo também era usado internamente por
+  outro caso de uso (ex.: `AssociadoRepositoryPort.listarTodos()`, usado por
+  `GerarCobrancasMensaisUseCase`), ele foi mantido e o paginado foi adicionado ao lado — nunca
+  substituído. O relatório de inadimplentes (`ListarInadimplentesUseCase`) pagina em memória, por
+  juntar mensalidade + nome do associado sem uma consulta paginável direta. No frontend, um
+  componente `Pagination` compartilhado (`src/components/pagination.tsx`) — só "Anterior/Próxima"
+  e contagem, sem input de "ir para a página" (DESIGN-SYSTEM: público com menor familiaridade
+  digital, evitar entradas numéricas soltas). Dropdowns de seleção (categoria de sócio em
+  associados/novo, salão em eventos/novo) e os cartões do dashboard buscam a página 1 com
+  `limite=100` em vez de paginar de fato — número desses itens tende a ser pequeno na escala real
+  da entidade; uma contagem por status direto na API fica pra quando o volume justificar.
+  Achado no caminho: um `Write` (sobrescrita completa) no arquivo de eventos apagou por engano o
+  `ListarEventosPublicadosUseCase`, que dividia o arquivo com `ListarEventosUseCase` — restaurado
+  antes de prosseguir; lição registrada para preferir `Edit` a `Write` em arquivos com mais de uma
+  classe.
+
 ### Mobile (App do Associado)
 
 #### Ticket: T-MOB-001 Autenticação e onboarding

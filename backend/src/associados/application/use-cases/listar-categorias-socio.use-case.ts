@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CategoriaSocioRepositoryPort } from '../ports/categoria-socio-repository.port';
 import { CategoriaSocio } from '../../domain/categoria-socio.entity';
+import {
+  montarPaginaResultado,
+  PaginaResultado,
+} from '../../../shared/pagination/pagina-resultado';
 
 @Injectable()
 export class ListarCategoriasSocioUseCase {
@@ -9,7 +13,14 @@ export class ListarCategoriasSocioUseCase {
     private readonly categorias: CategoriaSocioRepositoryPort,
   ) {}
 
-  execute(): Promise<CategoriaSocio[]> {
-    return this.categorias.listarTodas();
+  async execute(
+    pagina: number,
+    limite: number,
+  ): Promise<PaginaResultado<CategoriaSocio>> {
+    const { itens, total } = await this.categorias.listarPaginado(
+      pagina,
+      limite,
+    );
+    return montarPaginaResultado(itens, total, pagina, limite);
   }
 }

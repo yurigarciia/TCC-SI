@@ -5,6 +5,10 @@ import {
   Mensalidade,
   StatusMensalidade,
 } from '../../domain/mensalidade.entity';
+import {
+  montarPaginaResultado,
+  PaginaResultado,
+} from '../../../shared/pagination/pagina-resultado';
 
 export interface ItemInadimplencia {
   mensalidade: Mensalidade;
@@ -14,6 +18,8 @@ export interface ItemInadimplencia {
 
 // RF07 — relatório sempre disponível sob consulta (não é gerado por agendamento), conforme
 // decisão registrada em relatorio-inadimplencia.json.
+// Paginação aplicada em memória: o relatório junta mensalidade + nome do associado, sem uma
+// consulta paginável direta no repositório de mensalidades.
 @Injectable()
 export class ListarInadimplentesUseCase {
   constructor(
@@ -23,13 +29,16 @@ export class ListarInadimplentesUseCase {
     private readonly associados: AssociadoRepositoryPort,
   ) {}
 
-  async execute(): Promise<ItemInadimplencia[]> {
+  async execute(
+    pagina: number,
+    limite: number,
+  ): Promise<PaginaResultado<ItemInadimplencia>> {
     const inadimplentes = await this.mensalidades.listarPorStatus(
       StatusMensalidade.INADIMPLENTE,
     );
     const hoje = new Date();
 
-    const itens: ItemInadimplencia[] = [];
+    const todosOsItens: ItemInadimplencia[] = [];
     for (const mensalidade of inadimplentes) {
       const associado = await this.associados.buscarPorId(
         mensalidade.associadoId,
@@ -38,13 +47,16 @@ export class ListarInadimplentesUseCase {
         (hoje.getTime() - new Date(mensalidade.vencimento).getTime()) /
           (1000 * 60 * 60 * 24),
       );
-      itens.push({
+      todosOsItens.push({
         mensalidade,
         associadoNome: associado?.nome ?? 'Associado não encontrado',
         diasEmAtraso,
       });
     }
 
-    return itens;
+    todosOsItens.sort((a, b) => b.diasEmAtraso - a.diasEmAtraso);
+    const inicio = (pagina - 1) * limite;
+    const itens = todosOsItens.slice(inicio, inicio + limite);
+    return montarPaginaResultado(itens, todosOsItens.length, pagina, limite);
   }
 }

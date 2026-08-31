@@ -2,15 +2,19 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
+import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type { ItemInadimplencia, Mensalidade } from "./types";
 
 const CHAVE_INADIMPLENTES = ["mensalidades", "inadimplentes"] as const;
 const chaveHistorico = (associadoId: string) => ["mensalidades", "associado", associadoId] as const;
 
-export function useInadimplentes() {
+export function useInadimplentes(pagina: number, limite: number = LIMITE_PADRAO) {
   return useQuery({
-    queryKey: CHAVE_INADIMPLENTES,
-    queryFn: () => apiFetch<ItemInadimplencia[]>("/mensalidades/inadimplentes"),
+    queryKey: [...CHAVE_INADIMPLENTES, pagina, limite],
+    queryFn: () =>
+      apiFetch<PaginaResultado<ItemInadimplencia>>(
+        `/mensalidades/inadimplentes?pagina=${pagina}&limite=${limite}`,
+      ),
   });
 }
 

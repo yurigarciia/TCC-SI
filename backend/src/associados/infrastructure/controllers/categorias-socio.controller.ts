@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -11,6 +11,7 @@ import { Roles } from '../../../identidade/infrastructure/security/roles.decorat
 import { Perfil } from '../../../identidade/domain/usuario.entity';
 import { CriarCategoriaSocioUseCase } from '../../application/use-cases/criar-categoria-socio.use-case';
 import { ListarCategoriasSocioUseCase } from '../../application/use-cases/listar-categorias-socio.use-case';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 import { CriarCategoriaSocioDto } from './dto/criar-categoria-socio.dto';
 
 @ApiTags('categorias-socio')
@@ -40,14 +41,16 @@ export class CategoriasSocioController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todas as categorias de sócio cadastradas' })
-  @ApiResponse({ status: 200, description: 'Lista de categorias' })
+  @ApiOperation({
+    summary: 'Lista as categorias de sócio cadastradas, paginado',
+  })
+  @ApiResponse({ status: 200, description: 'Página de categorias' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodas() {
-    return this.listar.execute();
+  listarTodas(@Query() { pagina, limite }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!);
   }
 }

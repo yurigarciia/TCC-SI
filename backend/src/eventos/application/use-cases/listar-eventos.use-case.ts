@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventoRepositoryPort } from '../ports/evento-repository.port';
 import { Evento, StatusEvento } from '../../domain/evento.entity';
+import {
+  montarPaginaResultado,
+  PaginaResultado,
+} from '../../../shared/pagination/pagina-resultado';
 
 @Injectable()
 export class ListarEventosUseCase {
@@ -9,8 +13,15 @@ export class ListarEventosUseCase {
     private readonly eventos: EventoRepositoryPort,
   ) {}
 
-  execute(): Promise<Evento[]> {
-    return this.eventos.listarTodos();
+  async execute(
+    pagina: number,
+    limite: number,
+  ): Promise<PaginaResultado<Evento>> {
+    const { itens, total } = await this.eventos.listarPaginado(
+      pagina,
+      limite,
+    );
+    return montarPaginaResultado(itens, total, pagina, limite);
   }
 }
 

@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -24,6 +25,7 @@ import { CriarEventoUseCase } from '../../application/use-cases/criar-evento.use
 import { ConfigurarMesasEventoUseCase } from '../../application/use-cases/configurar-mesas-evento.use-case';
 import { ConfigurarIngressoEventoUseCase } from '../../application/use-cases/configurar-ingresso-evento.use-case';
 import { PublicarEventoUseCase } from '../../application/use-cases/publicar-evento.use-case';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 import {
   ListarEventosPublicadosUseCase,
   ListarEventosUseCase,
@@ -113,15 +115,17 @@ export class EventosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
-  @ApiOperation({ summary: 'Lista todos os eventos (rascunho e publicados)' })
-  @ApiResponse({ status: 200, description: 'Lista de eventos' })
+  @ApiOperation({
+    summary: 'Lista os eventos (rascunho e publicados), paginado',
+  })
+  @ApiResponse({ status: 200, description: 'Página de eventos' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos() {
-    return this.listar.execute();
+  listarTodos(@Query() { pagina, limite }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!);
   }
 
   @Get(':id')

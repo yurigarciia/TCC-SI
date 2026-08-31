@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
+import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type {
   Associado,
   AssociadoDetalhado,
@@ -14,10 +15,11 @@ import type {
 const CHAVE_LISTA = ["associados"] as const;
 const chaveDetalhe = (id: string) => ["associados", id] as const;
 
-export function useAssociados() {
+export function useAssociados(pagina: number, limite: number = LIMITE_PADRAO) {
   return useQuery({
-    queryKey: CHAVE_LISTA,
-    queryFn: () => apiFetch<Associado[]>("/associados"),
+    queryKey: [...CHAVE_LISTA, pagina, limite],
+    queryFn: () =>
+      apiFetch<PaginaResultado<Associado>>(`/associados?pagina=${pagina}&limite=${limite}`),
   });
 }
 
@@ -31,10 +33,13 @@ export function useAssociado(id: string) {
 
 const CHAVE_CATEGORIAS = ["categorias-socio"] as const;
 
-export function useCategoriasSocio() {
+export function useCategoriasSocio(pagina: number, limite: number = LIMITE_PADRAO) {
   return useQuery({
-    queryKey: CHAVE_CATEGORIAS,
-    queryFn: () => apiFetch<CategoriaSocio[]>("/categorias-socio"),
+    queryKey: [...CHAVE_CATEGORIAS, pagina, limite],
+    queryFn: () =>
+      apiFetch<PaginaResultado<CategoriaSocio>>(
+        `/categorias-socio?pagina=${pagina}&limite=${limite}`,
+      ),
   });
 }
 

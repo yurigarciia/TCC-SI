@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,6 +21,8 @@ import { CriarAdministradorUseCase } from '../../application/use-cases/criar-adm
 import { Perfil } from '../../domain/usuario.entity';
 import { LoginDto } from './dto/login.dto';
 import { CriarAdministradorDto } from './dto/criar-administrador.dto';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
+import { PaginaResultado } from '../../../shared/pagination/pagina-resultado';
 import { JwtAuthGuard } from '../security/jwt-auth.guard';
 import { RolesGuard } from '../security/roles.guard';
 import { Roles } from '../security/roles.decorator';
@@ -65,19 +68,26 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @ApiOperation({
-    summary: 'Lista todos os usuários (contas de login) cadastrados',
+    summary: 'Lista os usuários (contas de login) cadastrados, paginado',
   })
-  @ApiResponse({ status: 200, description: 'Lista de usuários' })
+  @ApiResponse({ status: 200, description: 'Página de usuários' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  async listar(): Promise<
-    Array<{ id: string; email: string; perfil: Perfil }>
-  > {
-    const usuarios = await this.listarUsuarios.execute();
-    return usuarios.map(({ id, email, perfil }) => ({ id, email, perfil }));
+  async listar(
+    @Query() { pagina, limite }: PaginacaoQueryDto,
+  ): Promise<PaginaResultado<{ id: string; email: string; perfil: Perfil }>> {
+    const resultado = await this.listarUsuarios.execute(pagina!, limite!);
+    return {
+      ...resultado,
+      itens: resultado.itens.map(({ id, email, perfil }) => ({
+        id,
+        email,
+        perfil,
+      })),
+    };
   }
 
   @Post('usuarios')

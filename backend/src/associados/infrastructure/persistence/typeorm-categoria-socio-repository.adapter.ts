@@ -33,9 +33,19 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
     return encontrado ? this.paraDominio(encontrado) : null;
   }
 
-  async listarTodas(): Promise<CategoriaSocio[]> {
-    const encontradas = await this.repo.find({ order: { nome: 'ASC' } });
-    return encontradas.map((categoria) => this.paraDominio(categoria));
+  async listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: CategoriaSocio[]; total: number }> {
+    const [encontradas, total] = await this.repo.findAndCount({
+      order: { nome: 'ASC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return {
+      itens: encontradas.map((categoria) => this.paraDominio(categoria)),
+      total,
+    };
   }
 
   private paraDominio(orm: CategoriaSocioOrmEntity): CategoriaSocio {

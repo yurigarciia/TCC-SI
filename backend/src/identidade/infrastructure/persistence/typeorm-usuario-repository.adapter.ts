@@ -32,9 +32,19 @@ export class TypeOrmUsuarioRepositoryAdapter extends UsuarioRepositoryPort {
     return encontrado ? this.paraDominio(encontrado) : null;
   }
 
-  async listarTodos(): Promise<Usuario[]> {
-    const encontrados = await this.repo.find();
-    return encontrados.map((usuario) => this.paraDominio(usuario));
+  async listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Usuario[]; total: number }> {
+    const [encontrados, total] = await this.repo.findAndCount({
+      order: { criadoEm: 'DESC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return {
+      itens: encontrados.map((usuario) => this.paraDominio(usuario)),
+      total,
+    };
   }
 
   private paraDominio(orm: UsuarioOrmEntity): Usuario {

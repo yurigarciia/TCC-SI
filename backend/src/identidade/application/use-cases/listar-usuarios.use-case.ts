@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UsuarioRepositoryPort } from '../ports/usuario-repository.port';
 import { Usuario } from '../../domain/usuario.entity';
+import {
+  montarPaginaResultado,
+  PaginaResultado,
+} from '../../../shared/pagination/pagina-resultado';
 
 @Injectable()
 export class ListarUsuariosUseCase {
@@ -9,7 +13,14 @@ export class ListarUsuariosUseCase {
     private readonly usuarios: UsuarioRepositoryPort,
   ) {}
 
-  execute(): Promise<Usuario[]> {
-    return this.usuarios.listarTodos();
+  async execute(
+    pagina: number,
+    limite: number,
+  ): Promise<PaginaResultado<Usuario>> {
+    const { itens, total } = await this.usuarios.listarPaginado(
+      pagina,
+      limite,
+    );
+    return montarPaginaResultado(itens, total, pagina, limite);
   }
 }

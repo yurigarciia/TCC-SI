@@ -8,5 +8,8 @@ export interface NovoSalao {
 export abstract class SalaoRepositoryPort {
   abstract salvar(dados: NovoSalao): Promise<Salao>;
   abstract buscarPorId(id: string): Promise<Salao | null>;
-  abstract listarTodos(): Promise<Salao[]>;
+  abstract listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Salao[]; total: number }>;
 }

@@ -33,6 +33,7 @@ import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos
 import { useEmitirIngresso, useIngressosEvento, useRegistrarCheckin } from "@/features/ingressos/use-ingressos";
 import { formatarDataHora, formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 const emitirSchema = z.object({
   nomeComprador: z.string().min(2, "Informe o nome do comprador."),
@@ -68,9 +69,15 @@ export default function IngressosEventoPage() {
 
 function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEvento: string }) {
   const [filtroNome, setFiltroNome] = useState("");
+  const [pagina, setPagina] = useState(1);
   const [codigoCheckin, setCodigoCheckin] = useState("");
 
-  const { data: ingressos, isLoading, isError } = useIngressosEvento(eventoId, filtroNome || undefined);
+  const { data: resultado, isLoading, isError } = useIngressosEvento(
+    eventoId,
+    pagina,
+    filtroNome || undefined,
+  );
+  const ingressos = resultado?.itens;
   const emitir = useEmitirIngresso(eventoId);
   const checkin = useRegistrarCheckin(eventoId);
 
@@ -226,7 +233,10 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           <Input
             placeholder="Buscar por nome do comprador"
             value={filtroNome}
-            onChange={(e) => setFiltroNome(e.target.value)}
+            onChange={(e) => {
+              setFiltroNome(e.target.value);
+              setPagina(1);
+            }}
           />
 
           {isLoading && <Skeleton className="h-24 w-full" />}
@@ -278,6 +288,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 )}
                 </TableBody>
               </Table>
+              {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
             </div>
           )}
         </CardContent>

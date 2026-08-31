@@ -238,10 +238,12 @@ describe('Mensalidades (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
 
-    const itens = relatorio.body as Array<{
-      mensalidade: { id: string };
-      diasEmAtraso: number;
-    }>;
+    const { itens } = relatorio.body as {
+      itens: Array<{
+        mensalidade: { id: string };
+        diasEmAtraso: number;
+      }>;
+    };
     const item = itens.find((i) => i.mensalidade.id === mensalidadeId);
     expect(item).toBeDefined();
     expect(item!.diasEmAtraso).toBeGreaterThan(0);

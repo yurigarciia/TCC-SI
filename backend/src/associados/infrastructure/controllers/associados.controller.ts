@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -32,6 +33,7 @@ import { AdicionarDependenteUseCase } from '../../application/use-cases/adiciona
 import { AprovarCadastroPendenteUseCase } from '../../application/use-cases/aprovar-cadastro-pendente.use-case';
 import { RejeitarCadastroPendenteUseCase } from '../../application/use-cases/rejeitar-cadastro-pendente.use-case';
 import { VincularContaAssociadoUseCase } from '../../application/use-cases/vincular-conta-associado.use-case';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 import { AutoCadastroAssociadoDto } from './dto/auto-cadastro-associado.dto';
 import { CadastrarAssociadoMediadoDto } from './dto/cadastrar-associado-mediado.dto';
 import { AtualizarAssociadoDto } from './dto/atualizar-associado.dto';
@@ -157,15 +159,15 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
-  @ApiOperation({ summary: 'Lista todos os associados cadastrados' })
-  @ApiResponse({ status: 200, description: 'Lista de associados' })
+  @ApiOperation({ summary: 'Lista os associados cadastrados, paginado' })
+  @ApiResponse({ status: 200, description: 'Página de associados' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos() {
-    return this.listar.execute();
+  listarTodos(@Query() { pagina, limite }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!);
   }
 
   @Get(':id')

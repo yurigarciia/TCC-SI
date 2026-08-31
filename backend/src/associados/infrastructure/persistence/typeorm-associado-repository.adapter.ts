@@ -43,6 +43,18 @@ export class TypeOrmAssociadoRepositoryAdapter extends AssociadoRepositoryPort {
     return encontrados.map((associado) => this.paraDominio(associado));
   }
 
+  async listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Associado[]; total: number }> {
+    const [encontrados, total] = await this.repo.findAndCount({
+      order: { criadoEm: 'DESC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return { itens: encontrados.map((a) => this.paraDominio(a)), total };
+  }
+
   async atualizar(id: string, dados: AtualizacaoAssociado): Promise<Associado> {
     await this.repo.update({ id }, dados);
     const atualizado = await this.repo.findOneByOrFail({ id });

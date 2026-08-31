@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -25,6 +26,7 @@ import { ListarSaloesUseCase } from '../../application/use-cases/listar-saloes.u
 import { ConsultarSalaoUseCase } from '../../application/use-cases/consultar-salao.use-case';
 import { CriarSalaoDto } from './dto/criar-salao.dto';
 import { AdicionarMesaDto } from './dto/adicionar-mesa.dto';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('saloes')
 @ApiBearerAuth()
@@ -54,15 +56,15 @@ export class SaloesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os salões cadastrados' })
-  @ApiResponse({ status: 200, description: 'Lista de salões' })
+  @ApiOperation({ summary: 'Lista os salões cadastrados, paginado' })
+  @ApiResponse({ status: 200, description: 'Página de salões' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos() {
-    return this.listar.execute();
+  listarTodos(@Query() { pagina, limite }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!);
   }
 
   @Get(':id')

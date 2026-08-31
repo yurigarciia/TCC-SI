@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +16,7 @@ import {
 import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 // T-FE-003 nunca teve tela pra isso — categorias só eram criadas via API direta em teste manual
 // (ver nota do ticket no PLANEJAMENTO-GERAL.md), por isso o Select de "categoria de sócio" em
@@ -22,7 +24,9 @@ import { TableEmptyRow } from "@/components/table-empty-row";
 // honorário, comum em entidades tradicionalistas) também nunca tinha sido modelada — ver adendo
 // na mesma seção do planejamento.
 export default function CategoriasSocioPage() {
-  const { data: categorias, isLoading, isError } = useCategoriasSocio();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useCategoriasSocio(pagina);
+  const categorias = resultado?.itens;
 
   return (
     <div className="space-y-6">
@@ -95,6 +99,7 @@ export default function CategoriasSocioPage() {
               )}
             </TableBody>
           </Table>
+          {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
         </div>
       )}
     </div>

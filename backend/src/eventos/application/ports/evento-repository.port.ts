@@ -12,7 +12,12 @@ export interface NovoEvento {
 export abstract class EventoRepositoryPort {
   abstract salvar(dados: NovoEvento): Promise<Evento>;
   abstract buscarPorId(id: string): Promise<Evento | null>;
-  abstract listarTodos(): Promise<Evento[]>;
+  abstract listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Evento[]; total: number }>;
+  // Sem paginação de propósito — usado só pela vitrine pública de eventos publicados
+  // (GET /eventos/publicados, consumido pelo app do associado).
   abstract listarPorStatus(status: StatusEvento): Promise<Evento[]>;
   abstract atualizarStatus(id: string, status: StatusEvento): Promise<Evento>;
 }

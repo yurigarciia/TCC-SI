@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -14,9 +15,12 @@ import {
 import { useAssociados } from "@/features/associados/use-associados";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 export default function AssociadosPage() {
-  const { data: associados, isLoading, isError } = useAssociados();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useAssociados(pagina);
+  const associados = resultado?.itens;
 
   return (
     <div className="space-y-6">
@@ -81,6 +85,7 @@ export default function AssociadosPage() {
               )}
             </TableBody>
           </Table>
+          {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
         </div>
       )}
     </div>

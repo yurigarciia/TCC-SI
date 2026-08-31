@@ -27,9 +27,16 @@ export class TypeOrmSalaoRepositoryAdapter extends SalaoRepositoryPort {
     return encontrado ? this.paraDominio(encontrado) : null;
   }
 
-  async listarTodos(): Promise<Salao[]> {
-    const encontrados = await this.repo.find({ order: { nome: 'ASC' } });
-    return encontrados.map((salao) => this.paraDominio(salao));
+  async listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Salao[]; total: number }> {
+    const [encontrados, total] = await this.repo.findAndCount({
+      order: { nome: 'ASC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return { itens: encontrados.map((salao) => this.paraDominio(salao)), total };
   }
 
   private paraDominio(orm: SalaoOrmEntity): Salao {

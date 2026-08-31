@@ -9,5 +9,8 @@ export interface NovaCategoriaSocio {
 export abstract class CategoriaSocioRepositoryPort {
   abstract salvar(dados: NovaCategoriaSocio): Promise<CategoriaSocio>;
   abstract buscarPorId(id: string): Promise<CategoriaSocio | null>;
-  abstract listarTodas(): Promise<CategoriaSocio[]>;
+  abstract listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: CategoriaSocio[]; total: number }>;
 }

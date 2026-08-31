@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,9 +16,12 @@ import { StatusEventoBadge } from "@/features/eventos/status-badge";
 import { useEventos } from "@/features/eventos/use-eventos";
 import { formatarDataHora } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 export default function EventosPage() {
-  const { data: eventos, isLoading, isError } = useEventos();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useEventos(pagina);
+  const eventos = resultado?.itens;
 
   return (
     <div className="space-y-6">
@@ -77,6 +81,7 @@ export default function EventosPage() {
               )}
             </TableBody>
           </Table>
+          {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
         </div>
       )}
     </div>

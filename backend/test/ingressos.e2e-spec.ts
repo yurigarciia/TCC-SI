@@ -155,10 +155,9 @@ describe('Ingressos (e2e)', () => {
       .query({ nome: 'Sócio' })
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    const encontrados = busca.body as Array<{
-      id: string;
-      nomeComprador: string;
-    }>;
+    const { itens: encontrados } = busca.body as {
+      itens: Array<{ id: string; nomeComprador: string }>;
+    };
     expect(encontrados).toHaveLength(1);
     const ingressoId = encontrados[0].id;
 

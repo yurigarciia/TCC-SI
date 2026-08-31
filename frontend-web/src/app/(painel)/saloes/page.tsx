@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSaloes } from "@/features/saloes/use-saloes";
+import { Pagination } from "@/components/pagination";
 
 export default function SaloesPage() {
-  const { data: saloes, isLoading, isError } = useSaloes();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useSaloes(pagina);
+  const saloes = resultado?.itens;
 
   return (
     <div className="space-y-6">
@@ -58,6 +62,8 @@ export default function SaloesPage() {
           ))}
         </div>
       )}
+
+      {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
     </div>
   );
 }

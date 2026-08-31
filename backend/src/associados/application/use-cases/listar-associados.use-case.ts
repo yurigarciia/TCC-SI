@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../ports/associado-repository.port';
 import { Associado } from '../../domain/associado.entity';
+import {
+  montarPaginaResultado,
+  PaginaResultado,
+} from '../../../shared/pagination/pagina-resultado';
 
 @Injectable()
 export class ListarAssociadosUseCase {
@@ -9,7 +13,14 @@ export class ListarAssociadosUseCase {
     private readonly associados: AssociadoRepositoryPort,
   ) {}
 
-  execute(): Promise<Associado[]> {
-    return this.associados.listarTodos();
+  async execute(
+    pagina: number,
+    limite: number,
+  ): Promise<PaginaResultado<Associado>> {
+    const { itens, total } = await this.associados.listarPaginado(
+      pagina,
+      limite,
+    );
+    return montarPaginaResultado(itens, total, pagina, limite);
   }
 }

@@ -31,6 +31,7 @@ import { ListarIngressosEventoUseCase } from '../../application/use-cases/listar
 import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-meu-ingresso.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('ingressos')
 @ApiBearerAuth()
@@ -155,9 +156,9 @@ export class IngressosController {
   @Get('eventos/:eventoId/ingressos')
   @ApiOperation({
     summary:
-      'Lista os ingressos de um evento, opcionalmente filtrando por nome do comprador (busca manual)',
+      'Lista os ingressos de um evento, paginado, opcionalmente filtrando por nome do comprador (busca manual)',
   })
-  @ApiResponse({ status: 200, description: 'Lista de ingressos' })
+  @ApiResponse({ status: 200, description: 'Página de ingressos' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
@@ -165,9 +166,10 @@ export class IngressosController {
   })
   listarOuBuscarIngressos(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
+    @Query() { pagina, limite }: PaginacaoQueryDto,
     @Query('nome') nome?: string,
   ) {
-    return this.listar.execute(eventoId, nome);
+    return this.listar.execute(eventoId, pagina!, limite!, nome);
   }
 
   @Post('ingressos/:id/checkin')

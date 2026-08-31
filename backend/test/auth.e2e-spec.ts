@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import request from 'supertest';
@@ -40,6 +40,9 @@ describe('Auth (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     await app.init();
 
     dataSource = moduleFixture.get(DataSource);
@@ -94,9 +97,9 @@ describe('Auth (e2e)', () => {
       .get('/auth/usuarios')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
-      .expect(({ body }: { body: UsuarioResponseBody[] }) => {
-        expect(Array.isArray(body)).toBe(true);
-        expect(body.some((u) => u.email === adminEmail)).toBe(true);
+      .expect(({ body }: { body: { itens: UsuarioResponseBody[] } }) => {
+        expect(Array.isArray(body.itens)).toBe(true);
+        expect(body.itens.some((u) => u.email === adminEmail)).toBe(true);
       });
   });
 

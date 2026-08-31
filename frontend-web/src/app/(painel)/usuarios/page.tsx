@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,13 +15,16 @@ import {
 } from "@/components/ui/table";
 import { useUsuarios } from "@/features/usuarios/use-usuarios";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 // Até esta ticket, a única forma de existir uma conta administrador era o script
 // seed-admin.ts (rodado manualmente, direto no banco) — não havia nenhum jeito de conceder
 // acesso administrativo pela própria aplicação. RNF02 previa RBAC/perfis (administrador/
 // associado), mas nunca a gestão de contas em si — passou batido do escopo original.
 export default function UsuariosPage() {
-  const { data: usuarios, isLoading, isError } = useUsuarios();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useUsuarios(pagina);
+  const usuarios = resultado?.itens;
 
   return (
     <div className="space-y-6">
@@ -79,6 +83,7 @@ export default function UsuariosPage() {
               )}
             </TableBody>
           </Table>
+          {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
         </div>
       )}
     </div>

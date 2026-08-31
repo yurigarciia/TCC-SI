@@ -39,7 +39,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function NovoEventoPage() {
   const router = useRouter();
-  const { data: saloes } = useSaloes();
+  // Dropdown de seleção — busca uma página grande o bastante para cobrir todos os salões
+  // cadastrados sem precisar de paginação aqui (número de croquis tende a ser pequeno).
+  const { data: resultadoSaloes } = useSaloes(1, 100);
+  const saloes = resultadoSaloes?.itens;
   const criar = useCriarEvento();
 
   const {

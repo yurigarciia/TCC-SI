@@ -34,19 +34,24 @@ export class TypeOrmIngressoRepositoryAdapter extends IngressoRepositoryPort {
     return this.repo.count({ where: { eventoId } });
   }
 
-  async listarPorEvento(eventoId: string): Promise<Ingresso[]> {
-    const encontrados = await this.repo.find({ where: { eventoId } });
-    return encontrados.map((ingresso) => this.paraDominio(ingresso));
-  }
-
-  async buscarPorNomeNoEvento(
+  async listarPaginadoPorEvento(
     eventoId: string,
-    nome: string,
-  ): Promise<Ingresso[]> {
-    const encontrados = await this.repo.find({
-      where: { eventoId, nomeComprador: ILike(`%${nome}%`) },
+    pagina: number,
+    limite: number,
+    nome?: string,
+  ): Promise<{ itens: Ingresso[]; total: number }> {
+    const [encontrados, total] = await this.repo.findAndCount({
+      where: nome
+        ? { eventoId, nomeComprador: ILike(`%${nome}%`) }
+        : { eventoId },
+      order: { criadoEm: 'DESC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
     });
-    return encontrados.map((ingresso) => this.paraDominio(ingresso));
+    return {
+      itens: encontrados.map((ingresso) => this.paraDominio(ingresso)),
+      total,
+    };
   }
 
   async atualizar(id: string, dados: AtualizacaoIngresso): Promise<Ingresso> {

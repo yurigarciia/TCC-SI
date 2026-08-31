@@ -196,14 +196,51 @@ describe('Associados (e2e)', () => {
       .expect(409);
   });
 
+  it('pagina a listagem de associados respeitando limite e página (contrato compartilhado por todo endpoint de listagem)', async () => {
+    const paginaUm = await request(app.getHttpServer())
+      .get('/associados')
+      .query({ pagina: 1, limite: 1 })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const corpoPaginaUm = paginaUm.body as {
+      itens: AssociadoResponseBody[];
+      total: number;
+      pagina: number;
+      limite: number;
+      totalPaginas: number;
+    };
+    expect(corpoPaginaUm.itens).toHaveLength(1);
+    expect(corpoPaginaUm.pagina).toBe(1);
+    expect(corpoPaginaUm.limite).toBe(1);
+    expect(corpoPaginaUm.total).toBeGreaterThanOrEqual(2);
+    expect(corpoPaginaUm.totalPaginas).toBeGreaterThanOrEqual(2);
+
+    const paginaDois = await request(app.getHttpServer())
+      .get('/associados')
+      .query({ pagina: 2, limite: 1 })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const corpoPaginaDois = paginaDois.body as {
+      itens: AssociadoResponseBody[];
+    };
+    expect(corpoPaginaDois.itens).toHaveLength(1);
+    expect(corpoPaginaDois.itens[0].id).not.toBe(corpoPaginaUm.itens[0].id);
+
+    await request(app.getHttpServer())
+      .get('/associados')
+      .query({ limite: 101 })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(400);
+  });
+
   it('aprova um cadastro pendente e reflete o novo status na consulta', async () => {
     const listagem = await request(app.getHttpServer())
       .get('/associados')
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    const pendente = (listagem.body as AssociadoResponseBody[]).find(
-      (a) => a.cpf === cpfAutoCadastro,
-    );
+    const pendente = (
+      listagem.body as { itens: AssociadoResponseBody[] }
+    ).itens.find((a) => a.cpf === cpfAutoCadastro);
     expect(pendente).toBeDefined();
 
     await request(app.getHttpServer())
@@ -237,9 +274,9 @@ describe('Associados (e2e)', () => {
       .get('/associados')
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    const pendente = (listagem.body as AssociadoResponseBody[]).find(
-      (a) => a.cpf === cpfParaRejeitar,
-    );
+    const pendente = (
+      listagem.body as { itens: AssociadoResponseBody[] }
+    ).itens.find((a) => a.cpf === cpfParaRejeitar);
     expect(pendente).toBeDefined();
 
     await request(app.getHttpServer())

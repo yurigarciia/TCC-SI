@@ -45,7 +45,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function NovoAssociadoPage() {
   const router = useRouter();
-  const { data: categorias } = useCategoriasSocio();
+  // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
+  // cadastradas sem precisar de paginação aqui (número de categorias tende a ser pequeno).
+  const { data: resultadoCategorias } = useCategoriasSocio(1, 100);
+  const categorias = resultadoCategorias?.itens;
   const cadastrar = useCadastrarAssociadoMediado();
 
   const {

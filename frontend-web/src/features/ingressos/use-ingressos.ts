@@ -2,17 +2,26 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
+import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type { CanalIngresso, EmitirIngressoInput, Ingresso } from "./types";
 
-const chaveIngressos = (eventoId: string, nome?: string) =>
-  ["eventos", eventoId, "ingressos", nome ?? ""] as const;
+const chaveIngressos = (eventoId: string, pagina: number, nome?: string) =>
+  ["eventos", eventoId, "ingressos", pagina, nome ?? ""] as const;
 
-export function useIngressosEvento(eventoId: string, nome?: string) {
+export function useIngressosEvento(
+  eventoId: string,
+  pagina: number,
+  nome?: string,
+  limite: number = LIMITE_PADRAO,
+) {
   return useQuery({
-    queryKey: chaveIngressos(eventoId, nome),
+    queryKey: chaveIngressos(eventoId, pagina, nome),
     queryFn: () => {
-      const query = nome ? `?nome=${encodeURIComponent(nome)}` : "";
-      return apiFetch<Ingresso[]>(`/eventos/${eventoId}/ingressos${query}`);
+      const query = new URLSearchParams({ pagina: String(pagina), limite: String(limite) });
+      if (nome) query.set("nome", nome);
+      return apiFetch<PaginaResultado<Ingresso>>(
+        `/eventos/${eventoId}/ingressos?${query.toString()}`,
+      );
     },
     enabled: !!eventoId,
   });

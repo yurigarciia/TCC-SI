@@ -25,7 +25,14 @@ export abstract class AssociadoRepositoryPort {
   abstract buscarPorId(id: string): Promise<Associado | null>;
   abstract buscarPorCpf(cpf: string): Promise<Associado | null>;
   abstract buscarPorUsuarioId(usuarioId: string): Promise<Associado | null>;
+  // Sem paginação — usado só por quem precisa varrer todo mundo de propósito (ex.:
+  // GerarCobrancasMensaisUseCase gerando a cobrança do mês pra cada associado ativo). A listagem
+  // do painel usa listarPaginado.
   abstract listarTodos(): Promise<Associado[]>;
+  abstract listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Associado[]; total: number }>;
   abstract atualizar(
     id: string,
     dados: AtualizacaoAssociado,

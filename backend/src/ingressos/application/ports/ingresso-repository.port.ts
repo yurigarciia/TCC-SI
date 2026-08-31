@@ -26,10 +26,11 @@ export abstract class IngressoRepositoryPort {
   abstract salvar(dados: NovoIngresso): Promise<Ingresso>;
   abstract buscarPorId(id: string): Promise<Ingresso | null>;
   abstract contarPorEvento(eventoId: string): Promise<number>;
-  abstract listarPorEvento(eventoId: string): Promise<Ingresso[]>;
-  abstract buscarPorNomeNoEvento(
+  abstract listarPaginadoPorEvento(
     eventoId: string,
-    nome: string,
-  ): Promise<Ingresso[]>;
+    pagina: number,
+    limite: number,
+    nome?: string,
+  ): Promise<{ itens: Ingresso[]; total: number }>;
   abstract atualizar(id: string, dados: AtualizacaoIngresso): Promise<Ingresso>;
 }

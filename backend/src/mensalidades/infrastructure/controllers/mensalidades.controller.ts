@@ -4,6 +4,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -30,6 +31,7 @@ import { ListarMinhasMensalidadesUseCase } from '../../application/use-cases/lis
 import { IniciarMeuPagamentoOnlineUseCase } from '../../application/use-cases/iniciar-meu-pagamento-online.use-case';
 import { ConfirmarMeuPagamentoOnlineUseCase } from '../../application/use-cases/confirmar-meu-pagamento-online.use-case';
 import { ObterMeuComprovanteUseCase } from '../../application/use-cases/obter-meu-comprovante.use-case';
+import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('mensalidades')
 @ApiBearerAuth()
@@ -291,15 +293,15 @@ export class MensalidadesController {
   @Get('inadimplentes')
   @ApiOperation({
     summary:
-      'Lista o relatório de associados inadimplentes, com dias em atraso',
+      'Lista, paginado, o relatório de associados inadimplentes, com dias em atraso',
   })
-  @ApiResponse({ status: 200, description: 'Lista de itens de inadimplência' })
+  @ApiResponse({ status: 200, description: 'Página de itens de inadimplência' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  relatorioInadimplencia() {
-    return this.listarInadimplentes.execute();
+  relatorioInadimplencia(@Query() { pagina, limite }: PaginacaoQueryDto) {
+    return this.listarInadimplentes.execute(pagina!, limite!);
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,9 +19,12 @@ import {
 } from "@/features/mensalidades/use-mensalidades";
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { Pagination } from "@/components/pagination";
 
 export default function MensalidadesPage() {
-  const { data: inadimplentes, isLoading, isError } = useInadimplentes();
+  const [pagina, setPagina] = useState(1);
+  const { data: resultado, isLoading, isError } = useInadimplentes(pagina);
+  const inadimplentes = resultado?.itens;
   const gerarCobrancas = useGerarCobrancasDoMes();
   const processarInadimplencia = useProcessarInadimplencia();
 
@@ -123,6 +127,7 @@ export default function MensalidadesPage() {
                 )}
               </TableBody>
             </Table>
+            {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
           </div>
         )}
       </div>

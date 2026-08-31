@@ -29,9 +29,16 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
     return encontrado ? this.paraDominio(encontrado) : null;
   }
 
-  async listarTodos(): Promise<Evento[]> {
-    const encontrados = await this.repo.find({ order: { data: 'ASC' } });
-    return encontrados.map((evento) => this.paraDominio(evento));
+  async listarPaginado(
+    pagina: number,
+    limite: number,
+  ): Promise<{ itens: Evento[]; total: number }> {
+    const [encontrados, total] = await this.repo.findAndCount({
+      order: { data: 'ASC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return { itens: encontrados.map((e) => this.paraDominio(e)), total };
   }
 
   async listarPorStatus(status: StatusEvento): Promise<Evento[]> {
