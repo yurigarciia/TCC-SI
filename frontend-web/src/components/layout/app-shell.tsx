@@ -153,10 +153,13 @@ function LinksDeNavegacao({
               aria-expanded={aberto}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                emSecao
-                  ? "text-secondary-foreground"
+                // Fundo+texto de "ativo" só quando o grupo está fechado — expandido, é o
+                // subitem que carrega o destaque (ver abaixo), o pai fica com o texto normal.
+                // Antes o texto claro (feito pra ficar sobre o fundo verde) aparecia sem o
+                // fundo, quase invisível sobre o cinza claro da sidebar.
+                emSecao && !aberto
+                  ? "bg-secondary text-secondary-foreground"
                   : "text-foreground hover:bg-muted",
-                emSecao && !aberto && "bg-secondary",
               )}
             >
               <Icone className="size-4 shrink-0" aria-hidden="true" />
