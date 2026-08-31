@@ -132,7 +132,7 @@ export default function NovoAssociadoPage() {
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
                   <Link
-                    href="/associados/categorias"
+                    href="/associados/categorias/novo"
                     target="_blank"
                     className="text-sm text-primary underline-offset-4 hover:underline"
                   >

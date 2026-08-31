@@ -34,7 +34,7 @@ interface ItemDeNavegacao {
   href: string;
   label: string;
   icon: LucideIcon;
-  // Só "Associados" tem subitens hoje (Sócios/Categorias) — estrutura genérica pra caso outra
+  // Só "Associados" tem subitens hoje (Associados/Categorias) — estrutura genérica pra caso outra
   // seção precise do mesmo padrão no futuro (ex.: Eventos ganhar "Salões" como subitem).
   subitens?: { href: string; label: string; icon: LucideIcon }[];
 }
@@ -46,7 +46,7 @@ const itensDeNavegacao: ItemDeNavegacao[] = [
     label: "Associados",
     icon: UsersIcon,
     subitens: [
-      { href: "/associados", label: "Sócios", icon: UsersIcon },
+      { href: "/associados", label: "Associados", icon: UsersIcon },
       { href: "/associados/categorias", label: "Categorias", icon: TagIcon },
     ],
   },
@@ -59,8 +59,9 @@ function estaEmSecao(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-// "Sócios" (/associados) não pode ficar marcado como ativo em /associados/categorias — os dois
-// são subitens irmãos da mesma seção, prefixo sozinho não distingue.
+// O subitem "Associados" (/associados) não pode ficar marcado como ativo em
+// /associados/categorias — os dois são subitens irmãos da mesma seção, prefixo sozinho não
+// distingue.
 function subitemEstaAtivo(pathname: string, subitens: { href: string }[], href: string): boolean {
   const maisEspecifico = subitens
     .filter((s) => estaEmSecao(pathname, s.href))
@@ -119,7 +120,7 @@ function LinksDeNavegacao({
         }
 
         // Sidebar encolhida: sem espaço pra submenu flutuante, o ícone do grupo vira atalho
-        // direto pro primeiro subitem (Sócios).
+        // direto pro primeiro subitem (Associados).
         if (colapsada) {
           return (
             <li key={item.href}>
