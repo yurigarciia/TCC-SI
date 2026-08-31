@@ -18,3 +18,13 @@ export function formatarDataHora(iso: string): string {
     timeStyle: "short",
   });
 }
+
+// Máscara visual de CPF (000.000.000-00) — puramente de exibição, formata progressivamente
+// enquanto a pessoa digita. Quem chama guarda/envia só os dígitos (ver uso em associados/novo).
+export function formatarCpf(valor: string): string {
+  const digitos = valor.replace(/\D/g, "").slice(0, 11);
+  return digitos
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}

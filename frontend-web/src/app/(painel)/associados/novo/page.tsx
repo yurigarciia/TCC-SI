@@ -26,6 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
+import { formatarCpf } from "@/lib/format";
 
 const dependenteSchema = z.object({
   nome: z.string().min(2, "Informe o nome do dependente."),
@@ -34,7 +35,7 @@ const dependenteSchema = z.object({
 
 const formSchema = z.object({
   nome: z.string().min(3, "Informe o nome completo."),
-  cpf: z.string().min(11, "CPF deve ter 11 dígitos.").max(14),
+  cpf: z.string().length(11, "CPF deve ter 11 dígitos."),
   contato: z.string().min(8, "Informe um telefone ou e-mail de contato."),
   vinculoInstitucional: z.string().optional(),
   categoriaSocioId: z.string().optional(),
@@ -106,7 +107,12 @@ export default function NovoAssociadoPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="nome">Nome completo</Label>
-                <Input id="nome" aria-invalid={!!errors.nome} {...register("nome")} />
+                <Input
+                  id="nome"
+                  placeholder="Ex.: João da Silva"
+                  aria-invalid={!!errors.nome}
+                  {...register("nome")}
+                />
                 {errors.nome && (
                   <p className="text-sm text-destructive">{errors.nome.message}</p>
                 )}
@@ -114,13 +120,32 @@ export default function NovoAssociadoPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" aria-invalid={!!errors.cpf} {...register("cpf")} />
+                <Controller
+                  control={control}
+                  name="cpf"
+                  render={({ field }) => (
+                    <Input
+                      id="cpf"
+                      inputMode="numeric"
+                      placeholder="000.000.000-00"
+                      aria-invalid={!!errors.cpf}
+                      value={formatarCpf(field.value ?? "")}
+                      onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
                 {errors.cpf && <p className="text-sm text-destructive">{errors.cpf.message}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="contato">Contato (telefone ou e-mail)</Label>
-                <Input id="contato" aria-invalid={!!errors.contato} {...register("contato")} />
+                <Input
+                  id="contato"
+                  placeholder="Ex.: (55) 99999-0000"
+                  aria-invalid={!!errors.contato}
+                  {...register("contato")}
+                />
                 {errors.contato && (
                   <p className="text-sm text-destructive">{errors.contato.message}</p>
                 )}
@@ -128,7 +153,11 @@ export default function NovoAssociadoPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="vinculoInstitucional">Vínculo institucional (opcional)</Label>
-                <Input id="vinculoInstitucional" {...register("vinculoInstitucional")} />
+                <Input
+                  id="vinculoInstitucional"
+                  placeholder="Ex.: Piquete Laço Firme"
+                  {...register("vinculoInstitucional")}
+                />
               </div>
 
               <div className="space-y-2">
@@ -193,6 +222,7 @@ export default function NovoAssociadoPage() {
                     <Label htmlFor={`dependentes.${indice}.nome`}>Nome</Label>
                     <Input
                       id={`dependentes.${indice}.nome`}
+                      placeholder="Ex.: Maria da Silva"
                       {...register(`dependentes.${indice}.nome` as const)}
                     />
                     {errors.dependentes?.[indice]?.nome && (
