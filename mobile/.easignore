@@ -1,0 +1,5 @@
+# Pastas nativas geradas localmente (expo prebuild/expo run:android) — o build do EAS gera as
+# suas próprias a partir do app.json, nunca deve empacotar a cópia local (que além de inútil aqui
+# pode estar sendo escrita ao mesmo tempo por um build nativo local em andamento).
+/android
+/ios

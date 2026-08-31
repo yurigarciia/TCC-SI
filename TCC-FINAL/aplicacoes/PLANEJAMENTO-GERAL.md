@@ -116,8 +116,9 @@ O projeto é considerado no ponto de MVP avaliável quando, simultaneamente:
       \* RF04 é Should no artigo, mas depende do mesmo fluxo de RF01 — tratado junto.
 - [ ] Requisitos **Should** priorizados (RF02, RF07, RF08, RF14, RNF04, RNF05) implementados na
       medida em que o tempo do cronograma permitir; os que ficarem de fora devem ser documentados
-      como limitação no TCC, não silenciados. RF02/RF08/RF14 Done; RF07 implementado mas
-      pendente de teste em device real (T-MOB-005); RNF04 Done (T-BE-013 — auditoria completa dos
+      como limitação no TCC, não silenciados. RF02/RF08/RF14 Done; RF07 implementado e permissão
+      de push confirmada num device real, mas token ainda pendente de credencial FCM/Firebase
+      (T-MOB-005 — ver adendo 2026-08-30 no ticket); RNF04 Done (T-BE-013 — auditoria completa dos
       55 endpoints com `@ApiOperation`/`@ApiResponse` e exemplos em `@ApiProperty`, ver nota do
       ticket); RNF05 (resposta <2s) nunca medido formalmente.
 - [x] RF15 (Could) implementado — `cancelamento-transferencia-reserva.json`, T-BE-010 Done.
@@ -132,11 +133,14 @@ O projeto é considerado no ponto de MVP avaliável quando, simultaneamente:
       (`frontend-web/DESIGN-SYSTEM.md`) — T-FE-001 a T-FE-008 concluídos e verificados ponta a
       ponta contra o backend real; checkup visual de responsividade/consistência feito em
       2026-08-29 (ver nota em T-FE-008 e commit correspondente).
-- [ ] App mobile instalável (build Expo Go ou APK/TestFlight interno) cobrindo os fluxos do
-      associado (consulta de reservas, pagamento de mensalidade, compra de ingresso). Todas as
-      telas (T-MOB-001 a T-MOB-004) estão implementadas e verificadas via `expo start --web` +
-      headless contra o backend real, mas **nunca rodaram num device/emulador físico** — nenhuma
-      build Expo Go/EAS foi gerada ainda. Bloqueia também o fechamento de T-MOB-005.
+- [x] App mobile instalável (build Expo Go ou APK/TestFlight interno) cobrindo os fluxos do
+      associado (consulta de reservas, pagamento de mensalidade, compra de ingresso). Concluído em
+      2026-08-30: projeto `@ogarciia/pia-do-sul` criado no EAS, build Android `preview` (APK,
+      assinado com keystore local em `mobile/keystores/`, fora do controle de versão) gerado com
+      sucesso via `eas build` — instalado e testado num emulador Android real (fluxo completo de
+      T-MOB-004 reproduzido de ponta a ponta, ver adendo em T-MOB-004). APK independente de Metro,
+      pronto pra instalar em qualquer Android via o link de build do EAS. iOS/TestFlight fora de
+      escopo por ora (sem Mac disponível neste ambiente de dev).
 - [ ] Sessão de avaliação com a diretoria e associados do Pia do Sul realizada, com SUS aplicado e
       notas de observação/entrevista coletadas.
 - [ ] Resultados da avaliação registrados em `TCC-FINAL/arquitetura/decisoes.md` (ou anexo
@@ -858,19 +862,41 @@ frentes de frontend-web e mobile.
   refresh), compra de ingresso avulso concluída com sucesso. Dados de teste (associado/salão/
   mesas/eventos) removidos do banco de dev ao final.
 
+  **Adendo 2026-08-30 (verificação em device real):** repetido o mesmo fluxo completo (login,
+  eventos, mapa de mesas, reserva, compra de ingresso) num emulador Android nativo (API 36,
+  `expo run:android`, GPU software — a aceleração de hardware padrão do emulador devolve
+  screenshot preto mesmo com o app renderizando normalmente, então `-gpu swiftshader_indirect` é
+  necessário pra capturar telas por `adb`, não é bug do app). Achado um bug real no *seed* de
+  teste (não no app): `ConfiguracaoMesaEventoDto.preco` exige `@IsPositive()` mesmo pra mesa
+  bloqueada — mandar `preco: 0` numa mesa bloqueada derruba a validação do array inteiro (400),
+  deixando o evento sem nenhuma mesa configurada; a UI reagiu corretamente ("Este evento ainda não
+  tem mesas configuradas"), then confirmado como erro de dado ao inspecionar a API diretamente.
+  Fora isso, todo o fluxo (mapa ao vivo, diálogo de reserva, confirmação, compra de ingresso,
+  Minhas Reservas atualizada) reproduziu exatamente o que já tinha passado no teste web. Prints
+  reais publicados em artifact (ver anexos da sessão).
+
 #### Ticket: T-MOB-005 Notificações (lembrete de inadimplência, confirmações)
 - **Priority:** Should
-- **Status:** Implementado, pendente de teste em device real
+- **Status:** Implementado, pendente de push token real (Firebase/FCM)
 - **Owner:** Unassigned
 - **Scope:** Push notification para lembrete automático de mensalidade em atraso e confirmações de
   reserva/compra.
 - **Acceptance Criteria:** Associado recebe notificação ao entrar em `Status: Inadimplente`.
 - **Validation Steps:** Teste manual disparando o job de lembrete do backend.
 - **Notes:** `mobile/PLANEJAMENTO.md` §5 exige "push notification testada de ponta a ponta (backend
-  dispara → device recebe)" antes de fechar esta ticket como Done — este ambiente de
-  desenvolvimento não tem device/emulador físico nem projeto EAS configurado (sem
-  `extra.eas.projectId`), então essa prova de ponta a ponta genuína não é possível aqui. Tudo que
-  dava pra construir e validar sem device foi feito; falta só a confirmação num aparelho real.
+  dispara → device recebe)" antes de fechar esta ticket como Done.
+
+  **Adendo 2026-08-30:** o bloqueio original ("sem device/emulador, sem projeto EAS") foi
+  parcialmente removido — o projeto EAS (`@ogarciia/pia-do-sul`) foi criado e um emulador Android
+  real passou a estar disponível nesta sessão. Rodando o app nativo no emulador, o diálogo real de
+  permissão do Android ("Allow Pia do Sul to send you notifications?") apareceu e foi concedido —
+  prova de que o fluxo de permissão funciona de ponta a ponta num device de verdade. Mas o token
+  não chegou a ser gerado: o logcat mostra `FirebaseApp failed to initialize... no default options
+  were found` — falta o `google-services.json` (projeto Firebase + credencial FCM configurada no
+  EAS), pré-requisito do Android pro Expo Push Service que é uma pendência separada e nova,
+  substituindo a pendência antiga. Sem isso, `getExpoPushTokenAsync` nunca retorna um token válido
+  neste app, mesmo com permissão concedida e projectId configurado — não é mais "sem device", é
+  "sem credencial FCM".
 
   Backend reaproveita a porta `NotificationSenderPort` que já existia (usada desde o lembrete de
   inadimplência, T-BE-006) — só trocou o adapter provisório

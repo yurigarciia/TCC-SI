@@ -41,3 +41,9 @@ example
 # generated native folders
 /ios
 /android
+
+# EAS local signing credentials (keystore path/password) — gerado localmente, nunca commitado.
+# Fora de /android de propósito: `expo prebuild`/`expo run:android` apaga e recria /android do
+# zero a cada execução, o que já destruiu um keystore guardado lá dentro uma vez.
+credentials.json
+/keystores

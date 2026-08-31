@@ -19,6 +19,35 @@ Depende da API do backend rodando em paralelo (ver `../backend/README.md`). URL 
 `.env.local` (`EXPO_PUBLIC_API_URL`, ver `.env.example`) — em device/emulador físico, `localhost`
 não alcança a máquina de dev: use o IP da rede local da máquina, ou `10.0.2.2` no emulador Android.
 
+## Build instalável (EAS)
+
+O projeto está configurado no EAS (`@ogarciia/pia-do-sul`, ver `app.json` → `extra.eas.projectId`
+e `eas.json`). Para gerar um APK instalável (perfil `preview`, distribuição interna):
+
+```bash
+eas build --platform android --profile preview
+```
+
+Assinatura local (`eas.json` → `"credentialsSource": "local"`), keystore em
+`mobile/keystores/release.keystore` (gerado com `keytool`, **fora do controle de versão** — ver
+`.gitignore` — e referenciado por `credentials.json`, também ignorado). Gerar de novo se faltar:
+
+```bash
+keytool -genkey -v -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 \
+  -storepass <senha> -keypass <senha> -alias piadosul \
+  -keystore keystores/release.keystore \
+  -dname "CN=br.org.piadosul.app,OU=TCC,O=CTG Pia do Sul,L=Santa Maria,S=RS,C=BR"
+```
+
+e recriar `credentials.json` (`{"android":{"keystore":{"keystorePath":"keystores/release.keystore","keystorePassword":"<senha>","keyAlias":"piadosul","keyPassword":"<senha>"}}}`).
+**Nunca guardar o keystore dentro de `android/`** — `expo prebuild`/`expo run:android` apagam e
+recriam essa pasta inteira a cada execução (já destruiu um keystore guardado lá).
+
+`.easignore` exclui `/android` e `/ios` do upload — sem isso o EAS tenta empacotar builds nativos
+locais em andamento (gerou um `EBUSY` real: o arquivo de lock do Gradle sendo escrito ao mesmo
+tempo que o `eas build` tentava lê-lo). Rode `expo run:android`/`eas build` um de cada vez, nunca
+em paralelo contra o mesmo `android/`.
+
 ## Antes de codar
 
 Este projeto foi gerado pelo `create-expo-app` mais recente — a versão do Expo pode ter mudado em
