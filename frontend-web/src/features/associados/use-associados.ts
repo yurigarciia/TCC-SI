@@ -28,10 +28,26 @@ export function useAssociado(id: string) {
   });
 }
 
+const CHAVE_CATEGORIAS = ["categorias-socio"] as const;
+
 export function useCategoriasSocio() {
   return useQuery({
-    queryKey: ["categorias-socio"],
+    queryKey: CHAVE_CATEGORIAS,
     queryFn: () => apiFetch<CategoriaSocio[]>("/categorias-socio"),
+  });
+}
+
+export function useCriarCategoriaSocio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: { nome: string; valorMensalidade: number }) =>
+      apiFetch<CategoriaSocio>("/categorias-socio", {
+        method: "POST",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_CATEGORIAS });
+    },
   });
 }
 
