@@ -16,6 +16,7 @@ import {
 import { useUsuarios } from "@/features/usuarios/use-usuarios";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 // Até esta ticket, a única forma de existir uma conta administrador era o script
 // seed-admin.ts (rodado manualmente, direto no banco) — não havia nenhum jeito de conceder
@@ -23,8 +24,14 @@ import { Pagination } from "@/components/pagination";
 // associado), mas nunca a gestão de contas em si — passou batido do escopo original.
 export default function UsuariosPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useUsuarios(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useUsuarios(pagina, busca || undefined);
   const usuarios = resultado?.itens;
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -40,6 +47,8 @@ export default function UsuariosPage() {
         </div>
         <Button render={<Link href="/usuarios/novo" />}>Novo administrador</Button>
       </div>
+
+      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por e-mail" />
 
       {isLoading && (
         <div className="space-y-2">
@@ -65,7 +74,11 @@ export default function UsuariosPage() {
             </TableHeader>
             <TableBody>
               {usuarios.length === 0 ? (
-                <TableEmptyRow colSpan={2}>Nenhum usuário cadastrado ainda.</TableEmptyRow>
+                <TableEmptyRow colSpan={2}>
+                  {busca
+                    ? "Nenhum usuário encontrado para esse termo."
+                    : "Nenhum usuário cadastrado ainda."}
+                </TableEmptyRow>
               ) : (
                 usuarios.map((usuario, indice) => (
                   <TableRow

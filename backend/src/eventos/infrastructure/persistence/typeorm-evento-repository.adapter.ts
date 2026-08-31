@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import {
   EventoRepositoryPort,
   NovoEvento,
@@ -32,8 +32,10 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
   async listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Evento[]; total: number }> {
     const [encontrados, total] = await this.repo.findAndCount({
+      where: busca ? { nome: ILike(`%${busca}%`) } : undefined,
       order: { data: 'ASC' },
       skip: (pagina - 1) * limite,
       take: limite,

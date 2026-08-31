@@ -293,7 +293,7 @@ export class MensalidadesController {
   @Get('inadimplentes')
   @ApiOperation({
     summary:
-      'Lista, paginado, o relatório de associados inadimplentes, com dias em atraso',
+      'Lista, paginado, o relatório de associados inadimplentes, com dias em atraso, opcionalmente filtrando por nome do associado',
   })
   @ApiResponse({ status: 200, description: 'Página de itens de inadimplência' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -301,7 +301,7 @@ export class MensalidadesController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  relatorioInadimplencia(@Query() { pagina, limite }: PaginacaoQueryDto) {
-    return this.listarInadimplentes.execute(pagina!, limite!);
+  relatorioInadimplencia(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
+    return this.listarInadimplentes.execute(pagina!, limite!, busca);
   }
 }

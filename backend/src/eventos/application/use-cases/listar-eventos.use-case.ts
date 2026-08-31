@@ -16,10 +16,12 @@ export class ListarEventosUseCase {
   async execute(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<PaginaResultado<Evento>> {
     const { itens, total } = await this.eventos.listarPaginado(
       pagina,
       limite,
+      busca,
     );
     return montarPaginaResultado(itens, total, pagina, limite);
   }

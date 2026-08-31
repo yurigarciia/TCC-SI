@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
+import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type {
   ConfigurarIngressoInput,
   ConfiguracaoMesaInput,
@@ -14,11 +14,11 @@ import type {
 const CHAVE_LISTA = ["eventos"] as const;
 const chaveDetalhe = (id: string) => ["eventos", id] as const;
 
-export function useEventos(pagina: number, limite: number = LIMITE_PADRAO) {
+export function useEventos(pagina: number, busca?: string, limite: number = LIMITE_PADRAO) {
   return useQuery({
-    queryKey: [...CHAVE_LISTA, pagina, limite],
+    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? ""],
     queryFn: () =>
-      apiFetch<PaginaResultado<Evento>>(`/eventos?pagina=${pagina}&limite=${limite}`),
+      apiFetch<PaginaResultado<Evento>>(`/eventos?${construirQueryPaginacao(pagina, limite, busca)}`),
   });
 }
 

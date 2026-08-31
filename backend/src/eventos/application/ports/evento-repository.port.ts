@@ -15,6 +15,7 @@ export abstract class EventoRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Evento[]; total: number }>;
   // Sem paginação de propósito — usado só pela vitrine pública de eventos publicados
   // (GET /eventos/publicados, consumido pelo app do associado).

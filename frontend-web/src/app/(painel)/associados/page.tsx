@@ -16,11 +16,18 @@ import { useAssociados } from "@/features/associados/use-associados";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 export default function AssociadosPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useAssociados(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useAssociados(pagina, busca || undefined);
   const associados = resultado?.itens;
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -33,6 +40,12 @@ export default function AssociadosPage() {
         </div>
         <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
       </div>
+
+      <SearchInput
+        value={busca}
+        onChange={mudarBusca}
+        placeholder="Buscar por nome ou CPF"
+      />
 
       {isLoading && (
         <div className="space-y-2">
@@ -61,7 +74,11 @@ export default function AssociadosPage() {
             </TableHeader>
             <TableBody>
               {associados.length === 0 ? (
-                <TableEmptyRow colSpan={4}>Nenhum associado cadastrado ainda.</TableEmptyRow>
+                <TableEmptyRow colSpan={4}>
+                  {busca
+                    ? "Nenhum associado encontrado para esse termo."
+                    : "Nenhum associado cadastrado ainda."}
+                </TableEmptyRow>
               ) : (
                 associados.map((associado, indice) => (
                   <TableRow

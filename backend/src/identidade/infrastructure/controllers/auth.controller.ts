@@ -68,7 +68,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @ApiOperation({
-    summary: 'Lista os usuários (contas de login) cadastrados, paginado',
+    summary:
+      'Lista os usuários (contas de login) cadastrados, paginado, opcionalmente filtrando por e-mail',
   })
   @ApiResponse({ status: 200, description: 'Página de usuários' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -77,9 +78,13 @@ export class AuthController {
     description: 'Usuário autenticado não é administrador',
   })
   async listar(
-    @Query() { pagina, limite }: PaginacaoQueryDto,
+    @Query() { pagina, limite, busca }: PaginacaoQueryDto,
   ): Promise<PaginaResultado<{ id: string; email: string; perfil: Perfil }>> {
-    const resultado = await this.listarUsuarios.execute(pagina!, limite!);
+    const resultado = await this.listarUsuarios.execute(
+      pagina!,
+      limite!,
+      busca,
+    );
     return {
       ...resultado,
       itens: resultado.itens.map(({ id, email, perfil }) => ({

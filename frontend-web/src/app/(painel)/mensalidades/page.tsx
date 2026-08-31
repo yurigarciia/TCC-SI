@@ -20,13 +20,20 @@ import {
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 export default function MensalidadesPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useInadimplentes(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useInadimplentes(pagina, busca || undefined);
   const inadimplentes = resultado?.itens;
   const gerarCobrancas = useGerarCobrancasDoMes();
   const processarInadimplencia = useProcessarInadimplencia();
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -83,6 +90,8 @@ export default function MensalidadesPage() {
           Relatório de inadimplência
         </h2>
 
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por associado" />
+
         {isLoading && (
           <div className="space-y-2">
             <Skeleton className="h-10 w-full" />
@@ -110,7 +119,9 @@ export default function MensalidadesPage() {
               <TableBody>
                 {inadimplentes.length === 0 ? (
                   <TableEmptyRow colSpan={4}>
-                    Nenhum associado inadimplente no momento.
+                    {busca
+                      ? "Nenhum associado inadimplente encontrado para esse termo."
+                      : "Nenhum associado inadimplente no momento."}
                   </TableEmptyRow>
                 ) : (
                   inadimplentes.map((item, indice) => (

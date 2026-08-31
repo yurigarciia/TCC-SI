@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import {
   AssociadoRepositoryPort,
   AtualizacaoAssociado,
@@ -46,8 +46,12 @@ export class TypeOrmAssociadoRepositoryAdapter extends AssociadoRepositoryPort {
   async listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Associado[]; total: number }> {
     const [encontrados, total] = await this.repo.findAndCount({
+      where: busca
+        ? [{ nome: ILike(`%${busca}%`) }, { cpf: ILike(`%${busca}%`) }]
+        : undefined,
       order: { criadoEm: 'DESC' },
       skip: (pagina - 1) * limite,
       take: limite,

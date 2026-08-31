@@ -233,6 +233,36 @@ describe('Associados (e2e)', () => {
       .expect(400);
   });
 
+  it('busca associados por nome (contrato compartilhado por todo endpoint de listagem)', async () => {
+    const porNome = await request(app.getHttpServer())
+      .get('/associados')
+      .query({ busca: 'joão mediado' })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const { itens } = porNome.body as { itens: AssociadoResponseBody[] };
+    expect(itens.length).toBeGreaterThan(0);
+    expect(itens.every((a) => a.cpf === cpfMediado)).toBe(true);
+
+    const porCpf = await request(app.getHttpServer())
+      .get('/associados')
+      .query({ busca: cpfMediado })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const { itens: itensPorCpf } = porCpf.body as {
+      itens: AssociadoResponseBody[];
+    };
+    expect(itensPorCpf.some((a) => a.cpf === cpfMediado)).toBe(true);
+
+    const semResultado = await request(app.getHttpServer())
+      .get('/associados')
+      .query({ busca: 'termo-que-nao-deve-existir-em-nenhum-associado' })
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect(
+      (semResultado.body as { itens: AssociadoResponseBody[] }).itens,
+    ).toHaveLength(0);
+  });
+
   it('aprova um cadastro pendente e reflete o novo status na consulta', async () => {
     const listagem = await request(app.getHttpServer())
       .get('/associados')

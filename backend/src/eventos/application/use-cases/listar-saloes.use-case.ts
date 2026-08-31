@@ -15,8 +15,13 @@ export class ListarSaloesUseCase {
   async execute(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<PaginaResultado<Salao>> {
-    const { itens, total } = await this.saloes.listarPaginado(pagina, limite);
+    const { itens, total } = await this.saloes.listarPaginado(
+      pagina,
+      limite,
+      busca,
+    );
     return montarPaginaResultado(itens, total, pagina, limite);
   }
 }

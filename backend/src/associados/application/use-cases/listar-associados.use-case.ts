@@ -16,10 +16,12 @@ export class ListarAssociadosUseCase {
   async execute(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<PaginaResultado<Associado>> {
     const { itens, total } = await this.associados.listarPaginado(
       pagina,
       limite,
+      busca,
     );
     return montarPaginaResultado(itens, total, pagina, limite);
   }

@@ -13,5 +13,6 @@ export abstract class UsuarioRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Usuario[]; total: number }>;
 }

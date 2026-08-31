@@ -49,12 +49,17 @@ export default function DashboardPage() {
   // Cartões de resumo somam/filtram no cliente — busca uma página grande o bastante pra cobrir o
   // volume real da entidade (ver DESIGN-SYSTEM/PLANEJAMENTO-GERAL: escala pequena, dezenas de
   // associados). Uma contagem por status direto na API fica pra quando o volume justificar.
-  const { data: resultadoAssociados, isLoading: carregandoAssociados } = useAssociados(1, 100);
-  const { data: resultadoInadimplentes, isLoading: carregandoInadimplentes } = useInadimplentes(
+  const { data: resultadoAssociados, isLoading: carregandoAssociados } = useAssociados(
     1,
+    undefined,
     100,
   );
-  const { data: resultadoEventos, isLoading: carregandoEventos } = useEventos(1, 100);
+  const { data: resultadoInadimplentes, isLoading: carregandoInadimplentes } = useInadimplentes(
+    1,
+    undefined,
+    100,
+  );
+  const { data: resultadoEventos, isLoading: carregandoEventos } = useEventos(1, undefined, 100);
   const associados = resultadoAssociados?.itens;
   const inadimplentes = resultadoInadimplentes?.itens;
   const eventos = resultadoEventos?.itens;

@@ -7,11 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSaloes } from "@/features/saloes/use-saloes";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 export default function SaloesPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useSaloes(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useSaloes(pagina, busca || undefined);
   const saloes = resultado?.itens;
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -27,6 +34,8 @@ export default function SaloesPage() {
         <Button render={<Link href="/saloes/novo" />}>Novo salão</Button>
       </div>
 
+      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2">
           <Skeleton className="h-28 w-full" />
@@ -41,7 +50,9 @@ export default function SaloesPage() {
       )}
 
       {saloes && saloes.length === 0 && (
-        <p className="text-muted-foreground">Nenhum salão cadastrado ainda.</p>
+        <p className="text-muted-foreground">
+          {busca ? "Nenhum salão encontrado para esse termo." : "Nenhum salão cadastrado ainda."}
+        </p>
       )}
 
       {saloes && saloes.length > 0 && (

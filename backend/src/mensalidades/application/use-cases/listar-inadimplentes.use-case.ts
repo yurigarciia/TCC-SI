@@ -32,13 +32,14 @@ export class ListarInadimplentesUseCase {
   async execute(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<PaginaResultado<ItemInadimplencia>> {
     const inadimplentes = await this.mensalidades.listarPorStatus(
       StatusMensalidade.INADIMPLENTE,
     );
     const hoje = new Date();
 
-    const todosOsItens: ItemInadimplencia[] = [];
+    let todosOsItens: ItemInadimplencia[] = [];
     for (const mensalidade of inadimplentes) {
       const associado = await this.associados.buscarPorId(
         mensalidade.associadoId,
@@ -52,6 +53,13 @@ export class ListarInadimplentesUseCase {
         associadoNome: associado?.nome ?? 'Associado não encontrado',
         diasEmAtraso,
       });
+    }
+
+    if (busca) {
+      const termo = busca.toLocaleLowerCase('pt-BR');
+      todosOsItens = todosOsItens.filter((item) =>
+        item.associadoNome.toLocaleLowerCase('pt-BR').includes(termo),
+      );
     }
 
     todosOsItens.sort((a, b) => b.diasEmAtraso - a.diasEmAtraso);

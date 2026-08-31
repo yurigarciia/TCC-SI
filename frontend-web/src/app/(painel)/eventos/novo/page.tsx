@@ -41,7 +41,7 @@ export default function NovoEventoPage() {
   const router = useRouter();
   // Dropdown de seleção — busca uma página grande o bastante para cobrir todos os salões
   // cadastrados sem precisar de paginação aqui (número de croquis tende a ser pequeno).
-  const { data: resultadoSaloes } = useSaloes(1, 100);
+  const { data: resultadoSaloes } = useSaloes(1, undefined, 100);
   const saloes = resultadoSaloes?.itens;
   const criar = useCriarEvento();
 

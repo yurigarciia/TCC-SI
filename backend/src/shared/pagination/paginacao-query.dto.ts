@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 // Query params compartilhados por todo endpoint de listagem do painel — nenhum endpoint tinha
 // paginação até esta ticket, listava tudo de uma vez (achado numa conversa com o usuário: uma
@@ -20,4 +20,12 @@ export class PaginacaoQueryDto {
   @Min(1)
   @Max(100)
   limite?: number = 20;
+
+  @ApiPropertyOptional({
+    description: 'Termo de busca textual (varia por endpoint qual campo é comparado)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  busca?: string;
 }

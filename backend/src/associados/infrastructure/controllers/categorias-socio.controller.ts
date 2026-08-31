@@ -42,7 +42,8 @@ export class CategoriasSocioController {
 
   @Get()
   @ApiOperation({
-    summary: 'Lista as categorias de sócio cadastradas, paginado',
+    summary:
+      'Lista as categorias de sócio cadastradas, paginado, opcionalmente filtrando por nome',
   })
   @ApiResponse({ status: 200, description: 'Página de categorias' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -50,7 +51,7 @@ export class CategoriasSocioController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodas(@Query() { pagina, limite }: PaginacaoQueryDto) {
-    return this.listar.execute(pagina!, limite!);
+  listarTodas(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!, busca);
   }
 }

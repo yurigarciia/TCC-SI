@@ -29,9 +29,11 @@ export abstract class AssociadoRepositoryPort {
   // GerarCobrancasMensaisUseCase gerando a cobrança do mês pra cada associado ativo). A listagem
   // do painel usa listarPaginado.
   abstract listarTodos(): Promise<Associado[]>;
+  // `busca`, quando informado, filtra por nome ou CPF (contendo o termo, sem diferenciar caixa).
   abstract listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Associado[]; total: number }>;
   abstract atualizar(
     id: string,

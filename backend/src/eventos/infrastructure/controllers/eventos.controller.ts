@@ -116,7 +116,8 @@ export class EventosController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @ApiOperation({
-    summary: 'Lista os eventos (rascunho e publicados), paginado',
+    summary:
+      'Lista os eventos (rascunho e publicados), paginado, opcionalmente filtrando por nome',
   })
   @ApiResponse({ status: 200, description: 'Página de eventos' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -124,8 +125,8 @@ export class EventosController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos(@Query() { pagina, limite }: PaginacaoQueryDto) {
-    return this.listar.execute(pagina!, limite!);
+  listarTodos(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!, busca);
   }
 
   @Get(':id')

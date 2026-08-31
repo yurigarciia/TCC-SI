@@ -11,5 +11,6 @@ export abstract class SalaoRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: Salao[]; total: number }>;
 }

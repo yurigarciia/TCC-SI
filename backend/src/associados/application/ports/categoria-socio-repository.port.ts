@@ -12,5 +12,6 @@ export abstract class CategoriaSocioRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: CategoriaSocio[]; total: number }>;
 }

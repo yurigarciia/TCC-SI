@@ -17,11 +17,18 @@ import { useEventos } from "@/features/eventos/use-eventos";
 import { formatarDataHora } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 export default function EventosPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useEventos(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined);
   const eventos = resultado?.itens;
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -32,6 +39,8 @@ export default function EventosPage() {
         </div>
         <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
       </div>
+
+      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
 
       {isLoading && (
         <div className="space-y-2">
@@ -59,7 +68,11 @@ export default function EventosPage() {
             </TableHeader>
             <TableBody>
               {eventos.length === 0 ? (
-                <TableEmptyRow colSpan={4}>Nenhum evento cadastrado ainda.</TableEmptyRow>
+                <TableEmptyRow colSpan={4}>
+                  {busca
+                    ? "Nenhum evento encontrado para esse termo."
+                    : "Nenhum evento cadastrado ainda."}
+                </TableEmptyRow>
               ) : (
                 eventos.map((evento, indice) => (
                   <TableRow

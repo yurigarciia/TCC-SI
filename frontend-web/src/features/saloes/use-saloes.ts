@@ -2,17 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
+import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type { Mesa, NovaMesaInput, NovoSalaoInput, Salao, SalaoComMesas } from "./types";
 
 const CHAVE_LISTA = ["saloes"] as const;
 const chaveDetalhe = (id: string) => ["saloes", id] as const;
 
-export function useSaloes(pagina: number, limite: number = LIMITE_PADRAO) {
+export function useSaloes(pagina: number, busca?: string, limite: number = LIMITE_PADRAO) {
   return useQuery({
-    queryKey: [...CHAVE_LISTA, pagina, limite],
+    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? ""],
     queryFn: () =>
-      apiFetch<PaginaResultado<Salao>>(`/saloes?pagina=${pagina}&limite=${limite}`),
+      apiFetch<PaginaResultado<Salao>>(`/saloes?${construirQueryPaginacao(pagina, limite, busca)}`),
   });
 }
 

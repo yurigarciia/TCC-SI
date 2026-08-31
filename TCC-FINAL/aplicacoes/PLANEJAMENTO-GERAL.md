@@ -816,6 +816,21 @@ frentes de frontend-web e mobile.
   `ListarEventosPublicadosUseCase`, que dividia o arquivo com `ListarEventosUseCase` — restaurado
   antes de prosseguir; lição registrada para preferir `Edit` a `Write` em arquivos com mais de uma
   classe.
+- **Adendo (busca textual):** pedido do usuário logo em seguida ("campo de busca textual por
+  termo em todas essas listagens também"). Reaproveitado o mesmo `PaginacaoQueryDto` — novo campo
+  opcional `busca` (string, teto 200 caracteres) — em vez de criar um DTO por endpoint. Cada
+  `listarPaginado()` ganhou um parâmetro `busca?` opcional e filtra via `ILIKE` do TypeORM (sem
+  diferenciar caixa) no campo mais relevante do recurso: associados (nome OU CPF, `where` como
+  array de duas condições — OR), categorias de sócio/eventos/salões (nome), usuários (e-mail).
+  Ingressos já tinha esse filtro desde antes (`nome`, preservado como está — a mesma ideia, nome
+  específico ao domínio). Inadimplentes filtra em memória por nome do associado, antes de fatiar a
+  página (mesma razão de já paginar em memória: é um relatório de junção, não uma consulta direta).
+  Frontend: componente `SearchInput` compartilhado (`src/components/search-input.tsx`, ícone de
+  lupa) em cada listagem, sempre resetando pra página 1 ao mudar o termo; texto de "sem itens"
+  diferencia "nenhum X cadastrado ainda" de "nenhum X encontrado para esse termo". Validado com
+  `npm run build`/`npm run test:e2e` (backend, 55/55, novo teste de busca por nome/CPF/termo sem
+  match em associados) e `npm run build`/`npm run lint` (frontend), mais teste manual contra o
+  backend real.
 
 ### Mobile (App do Associado)
 

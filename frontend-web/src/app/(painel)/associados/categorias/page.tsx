@@ -17,6 +17,7 @@ import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
+import { SearchInput } from "@/components/search-input";
 
 // T-FE-003 nunca teve tela pra isso — categorias só eram criadas via API direta em teste manual
 // (ver nota do ticket no PLANEJAMENTO-GERAL.md), por isso o Select de "categoria de sócio" em
@@ -25,8 +26,14 @@ import { Pagination } from "@/components/pagination";
 // na mesma seção do planejamento.
 export default function CategoriasSocioPage() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError } = useCategoriasSocio(pagina);
+  const [busca, setBusca] = useState("");
+  const { data: resultado, isLoading, isError } = useCategoriasSocio(pagina, busca || undefined);
   const categorias = resultado?.itens;
+
+  const mudarBusca = (valor: string) => {
+    setBusca(valor);
+    setPagina(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -48,6 +55,8 @@ export default function CategoriasSocioPage() {
         </div>
         <Button render={<Link href="/associados/categorias/novo" />}>Nova categoria</Button>
       </div>
+
+      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
 
       {isLoading && (
         <div className="space-y-2">
@@ -74,7 +83,11 @@ export default function CategoriasSocioPage() {
             </TableHeader>
             <TableBody>
               {categorias.length === 0 ? (
-                <TableEmptyRow colSpan={3}>Nenhuma categoria cadastrada ainda.</TableEmptyRow>
+                <TableEmptyRow colSpan={3}>
+                  {busca
+                    ? "Nenhuma categoria encontrada para esse termo."
+                    : "Nenhuma categoria cadastrada ainda."}
+                </TableEmptyRow>
               ) : (
                 categorias.map((categoria, indice) => (
                   <TableRow

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import {
   CategoriaSocioRepositoryPort,
   NovaCategoriaSocio,
@@ -36,8 +36,10 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
   async listarPaginado(
     pagina: number,
     limite: number,
+    busca?: string,
   ): Promise<{ itens: CategoriaSocio[]; total: number }> {
     const [encontradas, total] = await this.repo.findAndCount({
+      where: busca ? { nome: ILike(`%${busca}%`) } : undefined,
       order: { nome: 'ASC' },
       skip: (pagina - 1) * limite,
       take: limite,

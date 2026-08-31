@@ -159,15 +159,18 @@ export class AssociadosController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
-  @ApiOperation({ summary: 'Lista os associados cadastrados, paginado' })
+  @ApiOperation({
+    summary:
+      'Lista os associados cadastrados, paginado, opcionalmente filtrando por nome ou CPF',
+  })
   @ApiResponse({ status: 200, description: 'Página de associados' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos(@Query() { pagina, limite }: PaginacaoQueryDto) {
-    return this.listar.execute(pagina!, limite!);
+  listarTodos(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
+    return this.listar.execute(pagina!, limite!, busca);
   }
 
   @Get(':id')
