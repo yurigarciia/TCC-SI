@@ -31,21 +31,15 @@ export default function AssociadosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-foreground">Associados</h1>
-          <p className="text-muted-foreground">
-            Cadastro, dependentes e situação de cada associado.
-          </p>
-        </div>
-        <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
+      <div>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">Associados</h1>
+        <p className="text-sm text-muted-foreground">Cadastro e situação de cada associado.</p>
       </div>
 
-      <SearchInput
-        value={busca}
-        onChange={mudarBusca}
-        placeholder="Buscar por nome ou CPF"
-      />
+      <div className="flex items-center justify-between gap-4">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou CPF" />
+        <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
+      </div>
 
       {isLoading && (
         <div className="space-y-2">

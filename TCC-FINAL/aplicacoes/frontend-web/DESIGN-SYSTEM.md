@@ -159,6 +159,11 @@ Convenções específicas deste projeto:
   (`src/components/table-empty-row.tsx`) como única linha do `<TableBody>`, com `colSpan` igual ao
   número de colunas. Mantém cabeçalho/largura/formatação visíveis mesmo sem dado nenhum — dá pra
   conferir a tela sem precisar semear registros de teste.
+- **Cabeçalho de listagem**: título + subtítulo curto (uma linha, `text-sm`, sem tom de tutorial)
+  em bloco próprio; o campo de busca (`SearchInput`, `src/components/search-input.tsx`) fica numa
+  linha separada logo abaixo, sempre ao lado da ação principal da tela (ex.: busca à esquerda,
+  botão "Novo X" à direita, mesma linha) — nunca sozinho ocupando uma linha inteira antes do botão.
+  Mudar o termo de busca sempre reseta a página pra 1.
 
 ## 6. Acessibilidade e Adoção Gradual
 

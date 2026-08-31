@@ -35,20 +35,17 @@ export default function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
-            Usuários da plataforma
-          </h1>
-          <p className="text-muted-foreground">
-            Contas de login com acesso ao painel — associados autenticam pelo app, não aparecem
-            aqui pra criação, só administradores.
-          </p>
-        </div>
-        <Button render={<Link href="/usuarios/novo" />}>Novo administrador</Button>
+      <div>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">
+          Usuários da plataforma
+        </h1>
+        <p className="text-sm text-muted-foreground">Contas com acesso ao painel administrativo.</p>
       </div>
 
-      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por e-mail" />
+      <div className="flex items-center justify-between gap-4">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por e-mail" />
+        <Button render={<Link href="/usuarios/novo" />}>Novo administrador</Button>
+      </div>
 
       {isLoading && (
         <div className="space-y-2">

@@ -37,26 +37,25 @@ export default function CategoriasSocioPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <Link
-            href="/associados"
-            className="text-sm text-muted-foreground hover:underline"
-          >
-            ← Associados
-          </Link>
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
-            Categorias de sócio
-          </h1>
-          <p className="text-muted-foreground">
-            Cada categoria define o valor de mensalidade cobrado do associado — ou a isenção,
-            para categorias como sócio benemérito/honorário que não pagam mensalidade.
-          </p>
-        </div>
-        <Button render={<Link href="/associados/categorias/novo" />}>Nova categoria</Button>
+      <div>
+        <Link
+          href="/associados"
+          className="text-sm text-muted-foreground hover:underline"
+        >
+          ← Associados
+        </Link>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">
+          Categorias de sócio
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Valor de mensalidade por categoria — ou isenção.
+        </p>
       </div>
 
-      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+      <div className="flex items-center justify-between gap-4">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+        <Button render={<Link href="/associados/categorias/novo" />}>Nova categoria</Button>
+      </div>
 
       {isLoading && (
         <div className="space-y-2">

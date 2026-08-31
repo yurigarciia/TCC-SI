@@ -42,10 +42,7 @@ export default function MensalidadesPage() {
           <h1 className="font-heading text-2xl font-semibold text-foreground">
             Mensalidades e inadimplência
           </h1>
-          <p className="text-muted-foreground">
-            Relatório sempre disponível — não precisa ser gerado manualmente. O histórico de
-            pagamentos de cada associado fica na tela dele.
-          </p>
+          <p className="text-sm text-muted-foreground">Relatório de inadimplência e cobranças.</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -86,11 +83,12 @@ export default function MensalidadesPage() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-heading text-lg font-semibold text-foreground">
-          Relatório de inadimplência
-        </h2>
-
-        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por associado" />
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
+            Relatório de inadimplência
+          </h2>
+          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por associado" />
+        </div>
 
         {isLoading && (
           <div className="space-y-2">

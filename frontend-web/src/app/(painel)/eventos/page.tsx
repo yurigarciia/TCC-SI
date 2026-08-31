@@ -32,15 +32,15 @@ export default function EventosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-foreground">Eventos</h1>
-          <p className="text-muted-foreground">Bailes e fandangos — cadastro e publicação.</p>
-        </div>
-        <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
+      <div>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">Eventos</h1>
+        <p className="text-sm text-muted-foreground">Bailes e fandangos.</p>
       </div>
 
-      <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+      <div className="flex items-center justify-between gap-4">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+        <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
+      </div>
 
       {isLoading && (
         <div className="space-y-2">
