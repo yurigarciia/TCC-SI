@@ -152,6 +152,11 @@ Convenções específicas deste projeto:
   importante). Ações secundárias usam `variant="outline"` ou `variant="secondary"`.
 - **Ícones**: `lucide-react` (padrão shadcn/ui), tamanho mínimo 20px em botões clicáveis (alvo de
   toque generoso).
+- **Campos de formulário** (`input`, `textarea`, `select`): mesmo raciocínio das tabelas — nunca
+  `bg-transparent` (mostrava o fundo por trás, achatado sem personalidade). Usam `bg-card` +
+  `shadow-xs` (mais discreto que o `shadow-sm` das tabelas/cards, proporcional ao tamanho do
+  elemento) — dá contraste quando o campo está direto sobre `--background` (ex.: `SearchInput` no
+  topo de uma listagem) e uma borda com leve profundidade quando já está dentro de um `Card` branco.
 - **Tabelas** (associados, mensalidades, reservas): a tabela nunca fica "solta" contra o fundo da
   página — o container em volta de `<Table>` sempre leva `bg-card` + `shadow-sm` + `border` +
   `rounded-lg` (`overflow-hidden` no lugar de `overflow-x-auto`, que já vem do próprio `<Table>`),
