@@ -77,7 +77,7 @@ describe('Ingressos (e2e)', () => {
     await request(app.getHttpServer())
       .put(`/eventos/${eventoId}/ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ quantidadeDisponivel: 3, preco: 20 });
+      .send({ quantidadeDisponivel: 3 });
     // Timeout maior que o padrão do Jest (5s) — este hook faz o bootstrap do módulo (Nest +
     // conexão TypeORM) mais várias requisições HTTP sequenciais de setup, e o banco de testes é o
     // mesmo Postgres remoto (Neon) usado em dev, sem baixa latência garantida (achado numa
@@ -314,7 +314,7 @@ describe('Ingressos (e2e)', () => {
     await request(app.getHttpServer())
       .put(`/eventos/${eventoAssociadoId}/ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ quantidadeDisponivel: 5, preco: 20 })
+      .send({ quantidadeDisponivel: 5 })
       .expect(200);
 
     const login = await request(app.getHttpServer())
@@ -322,6 +322,18 @@ describe('Ingressos (e2e)', () => {
       .send({ email, senha: 'senha123' })
       .expect(200);
     const associadoToken = (login.body as { accessToken: string }).accessToken;
+
+    const meuPreco = await request(app.getHttpServer())
+      .get(`/eventos/${eventoAssociadoId}/meu-preco-ingresso`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    expect(Number((meuPreco.body as { preco: number | string }).preco)).toBe(20); // padrão da entidade pra essa categoria
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .get(`/eventos/${eventoAssociadoId}/meu-preco-ingresso`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
 
     const compra = await request(app.getHttpServer())
       .post(`/eventos/${eventoAssociadoId}/meu-ingresso`)

@@ -26,7 +26,6 @@ export class TypeOrmConfiguracaoIngressoEventoRepositoryAdapter extends Configur
         ...(existente ? { id: existente.id } : {}),
         eventoId: dados.eventoId,
         quantidadeDisponivel: dados.quantidadeDisponivel,
-        preco: String(dados.preco),
       }),
     );
     return this.paraDominio(salvo);
@@ -46,7 +45,6 @@ export class TypeOrmConfiguracaoIngressoEventoRepositoryAdapter extends Configur
       orm.id,
       orm.eventoId,
       orm.quantidadeDisponivel,
-      Number(orm.preco),
     );
   }
 }

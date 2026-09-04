@@ -60,7 +60,6 @@ const formSchema = z.object({
   descricao: z.string().optional(),
   salaoId: z.string().optional(),
   quantidadeDisponivel: z.string().optional(),
-  precoAvulso: z.string().optional(),
   precosPorCategoria: z.array(precoCategoriaFormSchema),
   precoNaoSocio: z.string().optional(),
   precoCrianca: z.string().optional(),
@@ -121,7 +120,6 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       quantidadeDisponivel: dadosIniciais?.ingresso
         ? String(dadosIniciais.ingresso.quantidadeDisponivel)
         : "",
-      precoAvulso: dadosIniciais?.ingresso ? String(dadosIniciais.ingresso.preco) : "",
       precosPorCategoria: [],
       precoNaoSocio:
         dadosIniciais?.precos.naoSocio != null ? String(dadosIniciais.precos.naoSocio) : "",
@@ -232,11 +230,10 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       }
 
       const quantidade = paraNumeroOpcional(dados.quantidadeDisponivel);
-      const precoAvulso = paraNumeroOpcional(dados.precoAvulso);
-      if (quantidade !== undefined && precoAvulso !== undefined) {
+      if (quantidade !== undefined) {
         await apiFetch(`/eventos/${idAlvo}/ingresso`, {
           method: "PUT",
-          body: JSON.stringify({ quantidadeDisponivel: quantidade, preco: precoAvulso }),
+          body: JSON.stringify({ quantidadeDisponivel: quantidade }),
         });
       }
 
@@ -377,33 +374,20 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         <CardHeader>
           <CardTitle>Ingresso avulso</CardTitle>
           <CardDescription>
-            Preço de vitrine mostrado ao associado no app antes de comprar — opcional, deixe em
-            branco pra não vender ingresso avulso neste evento.
+            Quantidade disponível pra venda — opcional, deixe em branco pra não vender ingresso
+            avulso neste evento. O preço cobrado é o configurado por perfil de comprador, ao lado.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="quantidadeDisponivel">Quantidade disponível</Label>
-              <Input
-                id="quantidadeDisponivel"
-                type="number"
-                min={0}
-                placeholder="Ex.: 100"
-                {...register("quantidadeDisponivel")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="precoAvulso">Preço de vitrine</Label>
-              <Input
-                id="precoAvulso"
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="0,00"
-                {...register("precoAvulso")}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="quantidadeDisponivel">Quantidade disponível</Label>
+            <Input
+              id="quantidadeDisponivel"
+              type="number"
+              min={0}
+              placeholder="Ex.: 100"
+              {...register("quantidadeDisponivel")}
+            />
           </div>
         </CardContent>
       </Card>

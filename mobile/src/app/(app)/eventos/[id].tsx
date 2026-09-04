@@ -8,6 +8,7 @@ import {
   useComprarMeuIngresso,
   useEventoPublicado,
   useMapaMesas,
+  useMeuPrecoIngresso,
   useSolicitarMinhaReserva,
 } from "@/features/eventos/use-eventos";
 import type { FormaPagamentoReserva, MesaNoMapa } from "@/features/eventos/types";
@@ -79,7 +80,7 @@ export default function EventoDetalheScreen() {
         </Surface>
       )}
 
-      {ingresso && <IngressoCard eventoId={id} preco={ingresso.preco} />}
+      {ingresso && <IngressoCard eventoId={id} />}
 
       <Portal>
         <Dialog visible={!!mesaSelecionada} onDismiss={() => setMesaSelecionada(null)}>
@@ -171,26 +172,44 @@ function ConteudoDialogMesa({
   );
 }
 
-function IngressoCard({ eventoId, preco }: { eventoId: string; preco: number }) {
+// Mostra o preço que o próprio associado pagaria (resolvido por categoria dele), em vez do antigo
+// "preço de vitrine" fixo — os dois podiam divergir. Ver useMeuPrecoIngresso.
+function IngressoCard({ eventoId }: { eventoId: string }) {
+  const { data: meuPreco, isLoading: carregandoPreco } = useMeuPrecoIngresso(eventoId);
   const comprar = useComprarMeuIngresso(eventoId);
   const [sucesso, setSucesso] = useState(false);
+
+  const precoIndisponivel = !carregandoPreco && meuPreco?.preco == null;
 
   return (
     <Surface style={styles.card} elevation={1}>
       <Text variant="titleMedium" style={styles.tituloSecao}>
         Ingresso avulso
       </Text>
-      <Text variant="headlineSmall" style={styles.preco}>
-        {formatarMoeda(preco)}
-      </Text>
-      <Text variant="bodySmall" style={styles.textoMuted}>
-        Preço de sócio, pago online — entrada única, sem mesa.
-      </Text>
+
+      {carregandoPreco ? (
+        <ActivityIndicator style={{ alignSelf: "flex-start", marginVertical: 4 }} />
+      ) : precoIndisponivel ? (
+        <Text variant="bodyMedium" style={styles.textoMuted}>
+          Preço ainda não configurado pra sua categoria de sócio. Fale com a diretoria pra comprar
+          seu ingresso.
+        </Text>
+      ) : (
+        <>
+          <Text variant="headlineSmall" style={styles.preco}>
+            {formatarMoeda(meuPreco!.preco!)}
+          </Text>
+          <Text variant="bodySmall" style={styles.textoMuted}>
+            Preço de sócio, pago online — entrada única, sem mesa.
+          </Text>
+        </>
+      )}
+
       <Button
         mode="contained"
         icon="ticket-outline"
         loading={comprar.isPending}
-        disabled={comprar.isPending}
+        disabled={comprar.isPending || precoIndisponivel || carregandoPreco}
         onPress={() => comprar.mutate(undefined, { onSuccess: () => setSucesso(true) })}
         style={styles.botaoComprar}
       >

@@ -10,7 +10,4 @@ export class ConfiguracaoIngressoEventoOrmEntity {
 
   @Column({ name: 'quantidade_disponivel', type: 'int' })
   quantidadeDisponivel: number;
-
-  @Column({ type: 'numeric', precision: 10, scale: 2 })
-  preco: string;
 }

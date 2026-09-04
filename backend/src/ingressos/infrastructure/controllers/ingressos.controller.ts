@@ -30,6 +30,7 @@ import { RegistrarCheckinUseCase } from '../../application/use-cases/registrar-c
 import { ListarIngressosEventoUseCase } from '../../application/use-cases/listar-ingressos-evento.use-case';
 import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-meu-ingresso.use-case';
 import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/consultar-precos-ingresso.use-case';
+import { ConsultarMeuPrecoIngressoUseCase } from '../../application/use-cases/consultar-meu-preco-ingresso.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
@@ -48,6 +49,7 @@ export class IngressosController {
     private readonly listar: ListarIngressosEventoUseCase,
     private readonly comprarMeu: ComprarMeuIngressoUseCase,
     private readonly consultarPrecos: ConsultarPrecosIngressoUseCase,
+    private readonly consultarMeuPreco: ConsultarMeuPrecoIngressoUseCase,
   ) {}
 
   // RF12 (T-MOB-004) — associado compra o próprio ingresso pelo app; perfil/canal/forma de
@@ -89,6 +91,34 @@ export class IngressosController {
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
   ) {
     return this.comprarMeu.execute(usuario.sub, eventoId);
+  }
+
+  // RF11/RF12 (T-MOB-004) — preço que o próprio associado logado pagaria pelo ingresso avulso
+  // (sempre sócio, pela categoria dele), pra mostrar na tela do evento no app em vez do antigo
+  // "preço de vitrine" solto (ver adendo em T-BE-009: os dois podiam divergir).
+  @Get('eventos/:eventoId/meu-preco-ingresso')
+  @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Consulta o preço de ingresso avulso que o associado logado pagaria neste evento',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Preço efetivo (null se o associado não tem categoria, ou preço não configurado)',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum associado vinculado ao usuário',
+  })
+  consultarMeuPrecoIngresso(
+    @CurrentUser() usuario: JwtPayload,
+    @Param('eventoId', ParseUUIDPipe) eventoId: string,
+  ) {
+    return this.consultarMeuPreco.execute(usuario.sub, eventoId);
   }
 
   @Put('precos-ingresso')

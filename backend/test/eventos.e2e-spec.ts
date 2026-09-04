@@ -159,7 +159,7 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     await request(app.getHttpServer())
       .put(`/eventos/${eventoComCroquiId}/ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ quantidadeDisponivel: 100, preco: 25 })
+      .send({ quantidadeDisponivel: 100 })
       .expect(200);
 
     await request(app.getHttpServer())
@@ -174,11 +174,11 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     const body = detalhado.body as {
       evento: { status: string };
       mesas: unknown[];
-      ingresso: { preco: string | number };
+      ingresso: { quantidadeDisponivel: number };
     };
     expect(body.evento.status).toBe('publicado');
     expect(body.mesas).toHaveLength(1);
-    expect(Number(body.ingresso.preco)).toBe(25);
+    expect(body.ingresso.quantidadeDisponivel).toBe(100);
   });
 
   it('lista o evento publicado na vitrine pública, sem exigir autenticação', async () => {

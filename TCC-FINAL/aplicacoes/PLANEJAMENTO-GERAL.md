@@ -416,6 +416,17 @@ planejamentos específicos — este backlog é o nível "épico/ticket inicial".
   preço de cada uma) mais os dois valores fixos (`naoSocio`, `crianca`). Validado com `npm run
   build` e `npm run test:e2e` (60/60, um teste novo: recusa emitir ingresso de sócio sem
   categoria).
+- **Adendo (remoção do "preço de vitrine"):** achado numa conversa com o usuário revisando o texto
+  da tela de evento — até então `ConfiguracaoIngressoEvento` (T-BE-007) guardava um `preco` próprio
+  ("preço de vitrine", mostrado no app antes de comprar) que nunca era o valor de fato cobrado
+  (`EmitirIngressoUseCase` sempre resolve via `PrecoIngressoRepositoryPort.resolverPreco`, ignorando
+  esse campo); os dois podiam divergir e confundir o associado. Coluna `preco` removida de
+  `configuracoes_ingresso_evento` (migração
+  `1756200000000-RemovePrecoFromConfiguracaoIngressoEvento`) — a entidade agora só controla
+  `quantidadeDisponivel`. Novo endpoint `GET /eventos/:eventoId/meu-preco-ingresso` (só
+  `Perfil.ASSOCIADO`, `ConsultarMeuPrecoIngressoUseCase`) resolve o preço efetivo do associado
+  logado (perfil sócio, pela categoria dele) pra ser mostrado no lugar do preço de vitrine. Validado
+  com `npm run build` e `npm run test:e2e` (60/60).
 
 #### Ticket: T-BE-010 Cancelamento/Transferência de Reserva (RF15)
 - **Priority:** Could
@@ -797,6 +808,12 @@ frentes de frontend-web e mobile.
   verificação visual headless em três larguras (2560px simulando o monitor de 27" do usuário,
   800px confirmando que volta a empilhar abaixo do breakpoint `lg`, e a suíte de screenshots já
   feita pra esta ticket).
+- **Adendo (remoção do "preço de vitrine"):** pedido do usuário perguntando sobre o texto do card
+  "Ingresso avulso" — ver adendo correspondente em T-BE-009 pra explicação completa do problema
+  (preço de vitrine podia divergir do preço efetivamente cobrado). Campo "Preço de vitrine" removido
+  do card (schema, `defaultValues`, JSX e corpo do `PUT /eventos/:id/ingresso` no submit) — sobra só
+  "Quantidade disponível". O card passou a caber numa coluna só (não precisa mais do `grid
+  sm:grid-cols-2`). Validado com `npm run build` e `npm run lint`.
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must
@@ -1117,6 +1134,14 @@ frentes de frontend-web e mobile.
   Fora isso, todo o fluxo (mapa ao vivo, diálogo de reserva, confirmação, compra de ingresso,
   Minhas Reservas atualizada) reproduziu exatamente o que já tinha passado no teste web. Prints
   reais publicados em artifact (ver anexos da sessão).
+
+  **Adendo 2026-09-04 (remoção do "preço de vitrine"):** ver adendo correspondente em T-BE-009 pra
+  explicação completa do problema. O cartão "Ingresso avulso" não recebe mais um `preco` fixo vindo
+  de `ConfiguracaoIngressoEvento` — passa a buscar o preço efetivo do próprio associado logado via
+  novo hook `useMeuPrecoIngresso` (`GET /eventos/:eventoId/meu-preco-ingresso`). Estados novos no
+  cartão: carregando (spinner), preço indisponível (associado sem categoria de sócio configurada,
+  ou categoria sem preço nem override do evento nem padrão da entidade — mensagem orientando a
+  falar com a diretoria, botão de compra desabilitado). Validado com `npx tsc --noEmit` (limpo).
 
 #### Ticket: T-MOB-005 Notificações (lembrete de inadimplência, confirmações)
 - **Priority:** Should

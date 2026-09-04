@@ -3,7 +3,6 @@ import { ConfiguracaoIngressoEvento } from '../../domain/configuracao-ingresso-e
 export interface DadosConfiguracaoIngressoEvento {
   eventoId: string;
   quantidadeDisponivel: number;
-  preco: number;
 }
 
 export abstract class ConfiguracaoIngressoEventoRepositoryPort {

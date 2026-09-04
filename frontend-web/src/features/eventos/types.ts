@@ -18,11 +18,13 @@ export interface ConfiguracaoMesaEvento {
   bloqueada: boolean;
 }
 
+// Só controla o estoque — o preço de fato cobrado é resolvido por perfil/categoria (ver
+// PrecosIngressoConfigurados), nunca um valor fixo aqui (antes havia um "preço de vitrine" aqui
+// que podia divergir do efetivamente cobrado — removido).
 export interface ConfiguracaoIngressoEvento {
   id: string;
   eventoId: string;
   quantidadeDisponivel: number;
-  preco: number;
 }
 
 export interface EventoDetalhado {
@@ -47,7 +49,6 @@ export interface ConfiguracaoMesaInput {
 
 export interface ConfigurarIngressoInput {
   quantidadeDisponivel: number;
-  preco: number;
 }
 
 export interface AtualizarEventoInput {

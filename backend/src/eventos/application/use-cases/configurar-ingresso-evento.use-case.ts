@@ -5,7 +5,6 @@ import { ConfiguracaoIngressoEvento } from '../../domain/configuracao-ingresso-e
 
 export interface DadosConfigurarIngresso {
   quantidadeDisponivel: number;
-  preco: number;
 }
 
 @Injectable()

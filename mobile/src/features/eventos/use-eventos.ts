@@ -65,3 +65,17 @@ export function useComprarMeuIngresso(eventoId: string) {
     mutationFn: () => apiFetch(`/eventos/${eventoId}/meu-ingresso`, { method: "POST" }),
   });
 }
+
+// RF11/RF12 (T-MOB-004) — preço efetivo que o associado logado pagaria pelo ingresso avulso deste
+// evento (sempre sócio, pela categoria dele). Substitui o antigo "preço de vitrine" que ficava em
+// ConfiguracaoIngressoEvento e podia divergir do preço realmente cobrado — ver adendo em
+// T-BE-009/T-MOB-004 no PLANEJAMENTO-GERAL.md. null = associado sem categoria, ou sem preço
+// configurado (nem override do evento, nem padrão da entidade).
+export function useMeuPrecoIngresso(eventoId: string) {
+  return useQuery({
+    queryKey: ["eventos", eventoId, "meu-preco-ingresso"],
+    queryFn: () =>
+      apiFetch<{ preco: number | null }>(`/eventos/${eventoId}/meu-preco-ingresso`),
+    enabled: !!eventoId,
+  });
+}
