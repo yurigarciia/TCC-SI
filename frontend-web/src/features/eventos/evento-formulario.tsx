@@ -344,7 +344,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       <Card>
         <CardHeader>
           <TituloComIcone icon={PartyPopper}>Dados do evento</TituloComIcone>
-          <CardDescription>Um croqui vinculado habilita mesas numeradas para este evento.</CardDescription>
+          <CardDescription>Nome, data, local e descrição aparecem para o associado no app.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
