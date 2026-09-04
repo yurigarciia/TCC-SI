@@ -353,6 +353,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               icon={PartyPopper}
               id="nome"
               placeholder="Ex.: Baile da Primavera"
+              autoComplete="off"
               aria-invalid={!!errors.nome}
               {...register("nome")}
             />
@@ -366,6 +367,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
                 icon={CalendarClock}
                 id="data"
                 type="datetime-local"
+                autoComplete="off"
                 aria-invalid={!!errors.data}
                 {...register("data")}
               />
@@ -377,6 +379,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
                 icon={MapPin}
                 id="local"
                 placeholder="Ex.: Sede do CTG Pia do Sul"
+                autoComplete="off"
                 aria-invalid={!!errors.local}
                 {...register("local")}
               />
@@ -389,6 +392,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
             <Textarea
               id="descricao"
               placeholder="Ex.: Baile tradicionalista com jantar e sorteios."
+              autoComplete="off"
               {...register("descricao")}
             />
           </div>

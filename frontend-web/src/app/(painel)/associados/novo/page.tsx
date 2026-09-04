@@ -112,6 +112,7 @@ export default function NovoAssociadoPage() {
                 <Input
                   id="nome"
                   placeholder="Ex.: João da Silva"
+                  autoComplete="off"
                   aria-invalid={!!errors.nome}
                   {...register("nome")}
                 />
@@ -129,6 +130,7 @@ export default function NovoAssociadoPage() {
                     <Input
                       id="cpf"
                       inputMode="numeric"
+                      autoComplete="off"
                       placeholder="000.000.000-00"
                       aria-invalid={!!errors.cpf}
                       value={formatarCpf(field.value ?? "")}
@@ -148,6 +150,7 @@ export default function NovoAssociadoPage() {
                   render={({ field }) => (
                     <Input
                       id="contato"
+                      autoComplete="new-password"
                       placeholder="Ex.: (55) 99999-0000"
                       aria-invalid={!!errors.contato}
                       value={
@@ -174,6 +177,7 @@ export default function NovoAssociadoPage() {
                 <Label htmlFor="vinculoInstitucional">Vínculo institucional (opcional)</Label>
                 <Input
                   id="vinculoInstitucional"
+                  autoComplete="off"
                   placeholder="Ex.: Piquete Laço Firme"
                   {...register("vinculoInstitucional")}
                 />
