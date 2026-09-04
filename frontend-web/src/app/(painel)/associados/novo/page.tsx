@@ -95,7 +95,7 @@ export default function NovoAssociadoPage() {
         <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Novo associado</h1>
         <p className="text-muted-foreground">
-          Cadastro mediado pela diretoria — o associado entra como Ativo imediatamente.
+          Cadastro de novo associado e seus dependentes, com ativação imediata.
         </p>
       </div>
 

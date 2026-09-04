@@ -39,9 +39,9 @@ export default function CategoriasSocioPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Categorias de sócio" }]} />
+        <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Categorias de associado" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">
-          Categorias de sócio
+          Categorias de associado
         </h1>
         <p className="text-sm text-muted-foreground">
           Valor de mensalidade por categoria.

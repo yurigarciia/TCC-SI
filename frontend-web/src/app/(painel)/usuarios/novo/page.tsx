@@ -61,8 +61,7 @@ export default function NovoAdministradorPage() {
           Novo administrador
         </h1>
         <p className="text-muted-foreground">
-          Concede acesso administrativo ao painel. Ainda não existe troca de senha pelo próprio
-          usuário — combine a senha provisória com a pessoa por um canal seguro (não por e-mail).
+          Usuário com acesso exclusivo ao painel administrativo.
         </p>
       </div>
 
@@ -80,6 +79,7 @@ export default function NovoAdministradorPage() {
                 type="email"
                 placeholder="nome@piadosul.org.br"
                 aria-invalid={!!errors.email}
+                autoComplete="off"
                 {...register("email")}
               />
               {errors.email && (
@@ -93,6 +93,7 @@ export default function NovoAdministradorPage() {
                 type="password"
                 placeholder="Mínimo 6 caracteres"
                 aria-invalid={!!errors.senha}
+                autoComplete="new-password"
                 {...register("senha")}
               />
               {errors.senha && (
