@@ -24,7 +24,7 @@ export function Pagination({ pagina, onMudarPagina }: PaginationProps) {
   const fim = Math.min(atual * limite, total);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border-t px-2 py-3 sm:flex-row">
+    <div className="flex flex-col items-center justify-between gap-3 border-t-2 border-border bg-muted/60 px-3 py-3 sm:flex-row">
       <p className="text-sm text-muted-foreground">
         Mostrando {inicio}–{fim} de {total}
       </p>

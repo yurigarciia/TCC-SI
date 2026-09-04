@@ -61,7 +61,7 @@ export default function UsuariosPage() {
       )}
 
       {usuarios && (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

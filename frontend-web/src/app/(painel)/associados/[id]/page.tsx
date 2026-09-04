@@ -319,7 +319,7 @@ function AssociadoDetalheConteudo({
             </form>
           )}
 
-          <div className="overflow-x-auto rounded-lg border">
+          <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow>

@@ -177,7 +177,7 @@ export default function DesignSystemPage() {
 
       <section className="space-y-4">
         <h2 className="font-heading text-xl font-semibold text-foreground">Tabela</h2>
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

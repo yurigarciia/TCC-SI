@@ -56,7 +56,7 @@ export default function AssociadosPage() {
       )}
 
       {associados && (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

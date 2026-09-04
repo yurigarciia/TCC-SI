@@ -152,8 +152,16 @@ Convenções específicas deste projeto:
   importante). Ações secundárias usam `variant="outline"` ou `variant="secondary"`.
 - **Ícones**: `lucide-react` (padrão shadcn/ui), tamanho mínimo 20px em botões clicáveis (alvo de
   toque generoso).
-- **Tabelas** (associados, mensalidades, reservas): linha alternada com `--muted`, nunca cor pura;
-  linha com foco de teclado usa `--ring`.
+- **Tabelas** (associados, mensalidades, reservas): a tabela nunca fica "solta" contra o fundo da
+  página — o container em volta de `<Table>` sempre leva `bg-card` + `shadow-sm` + `border` +
+  `rounded-lg` (`overflow-hidden` no lugar de `overflow-x-auto`, que já vem do próprio `<Table>`),
+  senão ela se confunde com o `--background` pergaminho por trás (achado numa conversa com o
+  usuário: sem isso a tabela "parecia fazer parte do background"). Cabeçalho (`TableHeader`) e
+  rodapé de paginação (`Pagination`, `src/components/pagination.tsx`) levam `bg-muted/60` +
+  `border-b-2`/`border-t-2` (não a borda de 1px padrão) pra se destacarem como blocos estruturais
+  — sem isso, o cabeçalho "parece só mais uma linha" da tabela (achado na mesma conversa). Linha
+  alternada do corpo com `--muted`, nunca cor pura; hover usa `--accent` (couro claro, mais quente
+  que o `--muted` da zebra, pra não se confundir com ela); linha com foco de teclado usa `--ring`.
 - **Tabela vazia**: nunca substituir a tabela inteira por um texto solto quando não há itens —
   sempre renderizar `<Table>`/`<TableHeader>` normalmente e usar `TableEmptyRow`
   (`src/components/table-empty-row.tsx`) como única linha do `<TableBody>`, com `colSpan` igual ao

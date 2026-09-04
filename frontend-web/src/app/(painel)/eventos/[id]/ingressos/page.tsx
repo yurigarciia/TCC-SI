@@ -245,7 +245,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
             <p className="text-sm text-destructive">Não foi possível carregar os ingressos.</p>
           )}
           {ingressos && (
-            <div className="overflow-x-auto rounded-lg border">
+            <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
               <Table>
                 <TableHeader>
                   <TableRow>
