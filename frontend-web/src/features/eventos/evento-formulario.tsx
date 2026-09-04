@@ -1,6 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CalendarClock,
+  Hash,
+  LayoutGrid,
+  MapPin,
+  PartyPopper,
+  Table2,
+  Ticket,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -30,6 +41,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-client";
 import { paraInputDatetimeLocal } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { useSalao, useSaloes } from "@/features/saloes/use-saloes";
 import type {
@@ -73,6 +85,50 @@ function paraNumeroOpcional(valor?: string): number | undefined {
   if (!valor || !valor.trim()) return undefined;
   const numero = Number(valor);
   return Number.isFinite(numero) ? numero : undefined;
+}
+
+// Título de card com um ícone num badge — achado numa conversa com o usuário: cards da tela
+// ficavam todos muito parecidos, sem nada pra diferenciar visualmente um do outro à primeira
+// vista.
+function TituloComIcone({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="size-4" aria-hidden="true" />
+      </span>
+      <CardTitle>{children}</CardTitle>
+    </div>
+  );
+}
+
+// Input com ícone (ou prefixo de texto, pra "R$") à esquerda — mesmo padrão já usado no campo de
+// busca (components/search-input.tsx), generalizado aqui pra não repetir o wrapper relative/
+// absolute em cada campo desta tela.
+function InputComIcone({
+  icon: Icon,
+  prefixo,
+  className,
+  ...props
+}: React.ComponentProps<typeof Input> & { icon?: LucideIcon; prefixo?: string }) {
+  return (
+    <div className="relative">
+      {Icon && (
+        <Icon
+          className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+          aria-hidden="true"
+        />
+      )}
+      {prefixo && (
+        <span
+          className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-sm text-muted-foreground"
+          aria-hidden="true"
+        >
+          {prefixo}
+        </span>
+      )}
+      <Input className={cn(Icon ? "pl-8" : prefixo ? "pl-8" : undefined, className)} {...props} />
+    </div>
+  );
 }
 
 export interface DadosIniciaisEvento {
@@ -284,13 +340,14 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
       <Card>
         <CardHeader>
-          <CardTitle>Dados do evento</CardTitle>
+          <TituloComIcone icon={PartyPopper}>Dados do evento</TituloComIcone>
           <CardDescription>Vincular um croqui de salão é opcional.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="nome">Nome do evento</Label>
-            <Input
+            <InputComIcone
+              icon={PartyPopper}
               id="nome"
               placeholder="Ex.: Baile da Primavera"
               aria-invalid={!!errors.nome}
@@ -302,7 +359,8 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="data">Data e horário</Label>
-              <Input
+              <InputComIcone
+                icon={CalendarClock}
                 id="data"
                 type="datetime-local"
                 aria-invalid={!!errors.data}
@@ -312,7 +370,8 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
             </div>
             <div className="space-y-2">
               <Label htmlFor="local">Local</Label>
-              <Input
+              <InputComIcone
+                icon={MapPin}
                 id="local"
                 placeholder="Ex.: Sede do CTG Pia do Sul"
                 aria-invalid={!!errors.local}
@@ -333,7 +392,10 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <Label htmlFor="salaoId">Croqui de salão (opcional)</Label>
+              <Label htmlFor="salaoId" className="flex items-center gap-1.5">
+                <LayoutGrid className="size-4 text-muted-foreground" aria-hidden="true" />
+                Croqui de salão (opcional)
+              </Label>
               <Link
                 href="/saloes/novo"
                 target="_blank"
@@ -369,21 +431,23 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         </CardContent>
       </Card>
 
-      <div className="space-y-6">
+      {/* Um card só pra ingresso avulso — antes quantidade e preço por perfil viviam em cards
+          separados, mas são a mesma coisa (o preço configurado aqui é o que se cobra pela
+          quantidade configurada aqui do lado), separar só distanciava informação relacionada. */}
       <Card>
         <CardHeader>
-          <CardTitle>Ingresso avulso</CardTitle>
+          <TituloComIcone icon={Ticket}>Ingresso avulso</TituloComIcone>
           <CardDescription>
-            Entrada avulsa, sem mesa vinculada. Deixe em branco se este evento só vende por mesa
-            (veja &quot;Mesas do croqui&quot;, abaixo) — ou se não tiver salão nem ingresso avulso,
-            ninguém consegue comprar entrada pelo app. O preço cobrado é o configurado por perfil de
-            comprador, ao lado.
+            Entrada sem mesa vinculada. Deixe a quantidade em branco se este evento só vende por
+            mesa (veja &quot;Mesas do croqui&quot;, abaixo) — ou se não tiver salão nem ingresso
+            avulso, ninguém consegue comprar entrada pelo app.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="quantidadeDisponivel">Quantidade disponível</Label>
-            <Input
+            <InputComIcone
+              icon={Hash}
               id="quantidadeDisponivel"
               type="number"
               min={0}
@@ -391,87 +455,84 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               {...register("quantidadeDisponivel")}
             />
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Preço por perfil de comprador</CardTitle>
-          <CardDescription>
-            Preço realmente cobrado na emissão do ingresso (venda presencial ou pelo app). Sócio
-            varia por categoria; cada campo em branco cai no padrão já configurado pra entidade,
-            se houver.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {fieldsCategoria.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma categoria de sócio cadastrada —{" "}
-              <Link
-                href="/associados/categorias/novo"
-                target="_blank"
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                crie uma
-              </Link>{" "}
-              pra poder definir o preço de sócio.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              <Label>Sócio, por categoria</Label>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {fieldsCategoria.map((campo, indice) => (
-                  <div key={campo.id} className="space-y-2">
-                    <Label htmlFor={`precoCategoria-${indice}`} className="font-normal text-muted-foreground">
-                      {campo.categoriaNome}
-                    </Label>
-                    <Input
-                      id={`precoCategoria-${indice}`}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      placeholder="0,00"
-                      {...register(`precosPorCategoria.${indice}.preco` as const)}
-                    />
-                  </div>
-                ))}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center gap-1.5 text-sm font-medium">
+              <Users className="size-4 text-muted-foreground" aria-hidden="true" />
+              Preço por perfil de comprador
+            </div>
+
+            {fieldsCategoria.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhuma categoria de sócio cadastrada —{" "}
+                <Link
+                  href="/associados/categorias/novo"
+                  target="_blank"
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  crie uma
+                </Link>{" "}
+                pra poder definir o preço de sócio.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <Label>Sócio, por categoria</Label>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {fieldsCategoria.map((campo, indice) => (
+                    <div key={campo.id} className="space-y-2">
+                      <Label htmlFor={`precoCategoria-${indice}`} className="font-normal text-muted-foreground">
+                        {campo.categoriaNome}
+                      </Label>
+                      <InputComIcone
+                        prefixo="R$"
+                        id={`precoCategoria-${indice}`}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        placeholder="0,00"
+                        {...register(`precosPorCategoria.${indice}.preco` as const)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="precoNaoSocio">Não-sócio</Label>
-              <Input
-                id="precoNaoSocio"
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="0,00"
-                {...register("precoNaoSocio")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="precoCrianca">Criança</Label>
-              <Input
-                id="precoCrianca"
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="0,00"
-                {...register("precoCrianca")}
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="precoNaoSocio">Não-sócio</Label>
+                <InputComIcone
+                  prefixo="R$"
+                  id="precoNaoSocio"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="0,00"
+                  {...register("precoNaoSocio")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="precoCrianca">Criança</Label>
+                <InputComIcone
+                  prefixo="R$"
+                  id="precoCrianca"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="0,00"
+                  {...register("precoCrianca")}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
       </div>
-      </div>
 
       {salaoIdSelecionado && (
         <Card>
           <CardHeader>
-            <CardTitle>Mesas do croqui vinculado</CardTitle>
+            <TituloComIcone icon={Table2}>Mesas do croqui vinculado</TituloComIcone>
             <CardDescription>Preço por mesa e bloqueio individual, se necessário.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -496,7 +557,8 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
                     className="grid grid-cols-[80px_1fr_auto] items-center gap-3 border-b pb-3 last:border-b-0"
                   >
                     <span className="font-medium">Mesa {campo.numero}</span>
-                    <Input
+                    <InputComIcone
+                      prefixo="R$"
                       type="number"
                       min={0}
                       step="0.01"

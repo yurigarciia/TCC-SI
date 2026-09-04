@@ -814,6 +814,18 @@ frentes de frontend-web e mobile.
   do card (schema, `defaultValues`, JSX e corpo do `PUT /eventos/:id/ingresso` no submit) — sobra só
   "Quantidade disponível". O card passou a caber numa coluna só (não precisa mais do `grid
   sm:grid-cols-2`). Validado com `npm run build` e `npm run lint`.
+- **Adendo (unificação visual + ícones):** pedido do usuário — os cards da tela estavam "muito
+  semelhantes", sem nada pra diferenciar um do outro à primeira vista, e "Ingresso avulso" (só a
+  quantidade) e "Preço por perfil de comprador" viviam em cards separados sem motivo (o preço
+  configurado ali é o que se cobra pela quantidade configurada ao lado — são a mesma coisa).
+  Unificados num card só ("Ingresso avulso": quantidade no topo, "Preço por perfil de comprador"
+  como subseção abaixo de um `border-t`). Título de cada card ganhou um ícone num badge
+  (`TituloComIcone`, `lucide-react`: `PartyPopper` pra Dados do evento, `Ticket` pra Ingresso
+  avulso, `Table2` pra Mesas do croqui) e os campos de texto/data/local/quantidade ganharam ícone
+  interno à esquerda (`InputComIcone`, mesmo padrão de `components/search-input.tsx`
+  generalizado); campos de preço ganharam prefixo "R$" em vez de ícone (mais informativo que um
+  ícone de cifrão genérico numa tela em reais). Validado com `npm run build`, `npm run lint` e
+  screenshot headless de `/eventos/novo` logado.
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must
