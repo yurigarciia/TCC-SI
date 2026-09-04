@@ -189,7 +189,7 @@ export default function NovoAssociadoPage() {
                   <Link
                     href="/associados/categorias/novo"
                     target="_blank"
-                    className="text-sm text-primary underline-offset-4 hover:underline"
+                    className="text-sm leading-none text-primary underline-offset-4 hover:underline"
                   >
                     Nova categoria ↗
                   </Link>

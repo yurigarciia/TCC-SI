@@ -406,7 +406,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               <Link
                 href="/saloes/novo"
                 target="_blank"
-                className="text-sm text-primary underline-offset-4 hover:underline"
+                className="text-sm leading-none text-primary underline-offset-4 hover:underline"
               >
                 Novo salão ↗
               </Link>
