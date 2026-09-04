@@ -374,8 +374,10 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         <CardHeader>
           <CardTitle>Ingresso avulso</CardTitle>
           <CardDescription>
-            Quantidade disponível pra venda — opcional, deixe em branco pra não vender ingresso
-            avulso neste evento. O preço cobrado é o configurado por perfil de comprador, ao lado.
+            Entrada avulsa, sem mesa vinculada. Deixe em branco se este evento só vende por mesa
+            (veja &quot;Mesas do croqui&quot;, abaixo) — ou se não tiver salão nem ingresso avulso,
+            ninguém consegue comprar entrada pelo app. O preço cobrado é o configurado por perfil de
+            comprador, ao lado.
           </CardDescription>
         </CardHeader>
         <CardContent>
