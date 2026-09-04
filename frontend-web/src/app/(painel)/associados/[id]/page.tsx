@@ -69,7 +69,7 @@ export default function AssociadoDetalhePage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto w-full max-w-3xl space-y-4">
+      <div className="space-y-4">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-40 w-full" />
       </div>
@@ -148,7 +148,7 @@ function AssociadoDetalheConteudo({
   });
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: associado.nome }]} />

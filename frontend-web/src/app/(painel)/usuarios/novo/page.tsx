@@ -54,7 +54,7 @@ export default function NovoAdministradorPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-6">
+    <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Usuários", href: "/usuarios" }, { label: "Novo administrador" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">
@@ -66,7 +66,7 @@ export default function NovoAdministradorPage() {
         </p>
       </div>
 
-      <Card>
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados de acesso</CardTitle>
           <CardDescription>A senha é provisória — comunique por um canal seguro.</CardDescription>

@@ -90,7 +90,7 @@ export default function NovoAssociadoPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Novo associado</h1>

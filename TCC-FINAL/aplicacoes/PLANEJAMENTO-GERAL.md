@@ -645,6 +645,30 @@ frentes de frontend-web e mobile.
   "pai" acima delas na navegação. Validado com `npm run build`, `npm run lint` e screenshot headless
   logado de três telas com profundidades diferentes (`eventos/novo`: 2 níveis,
   `associados/categorias/novo`: 3 níveis, `usuarios/novo`: 2 níveis).
+- **Adendo (largura padronizada, sem margens laterais mortas):** pedido do usuário — telas de
+  listagem (`/eventos`, `/associados` etc.) já ocupavam a largura inteira do conteúdo, mas toda
+  "subtela" (detalhe/cadastro) usava `mx-auto w-full max-w-{3xl,5xl,lg}`, centralizando o conteúdo e
+  deixando cantos vazios nas laterais em monitores largos — inconsistente com as listagens.
+  Removido o wrapper `mx-auto w-full max-w-*` das 10 telas afetadas (todas as 11 da lista de
+  breadcrumb acima, exceto `associados/categorias` que já não tinha), alinhando o padrão ao das
+  listagens (`<div className="space-y-N">`, sem limite de largura). Ressalva encontrada depois de
+  aplicar direto em tudo: nas 3 telas de formulário de coluna única (`usuarios/novo`, `saloes/novo`,
+  `associados/categorias/novo`) isso esticava os campos de input a quase 1300px de largura — ruim,
+  não é "aproveitar o espaço", é só feio. Corrigido com um `max-w-lg` direto no `Card` dessas 3
+  telas (o container da página continua full-width e alinhado à esquerda, sem a margem morta
+  reclamada; só o cartão do formulário em si fica com uma largura de leitura razoável). Achado no
+  caminho, não relacionado à mudança em si: um erro anterior desta sessão (ver adendo abaixo) deixou
+  o cache do Turbopack corrompido a ponto de retornar 500 em `/associados/novo` e servir HTML/CSS
+  desatualizado mesmo após `npm run build` limpo — resolvido matando o processo do `next dev` e
+  apagando `.next` de novo antes de reiniciar. **Lição de processo:** nunca apontar o
+  `--user-data-dir` de um Chrome/Edge headless de verificação para dentro de um diretório que o
+  Turbopack está observando (ex.: `frontend-web/.tmp-cdp/`) — o watcher tenta ler os arquivos de
+  sessão do navegador, um deles fica bloqueado enquanto o navegador está aberto, e um build
+  concorrente derruba com `TurbopackInternalError` (arquivo em uso, os error 32), corrompendo o
+  cache em disco para builds seguintes também. Perfil do navegador de verificação passa a ficar
+  sempre fora do repositório (no diretório de scratchpad da sessão). Validado com `npm run build`,
+  `npm run lint` e screenshot headless logado das 3 telas de coluna única mais uma de duas colunas
+  (`eventos/[id]`), após restart limpo do `next dev`.
 
 #### Ticket: T-FE-003 Tela de Associados (cadastro mediado, consulta, status)
 - **Priority:** Must

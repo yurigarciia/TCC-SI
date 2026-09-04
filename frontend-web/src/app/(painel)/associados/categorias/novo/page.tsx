@@ -73,7 +73,7 @@ export default function NovaCategoriaSocioPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-6">
+    <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb
           items={[
@@ -88,7 +88,7 @@ export default function NovaCategoriaSocioPage() {
         </p>
       </div>
 
-      <Card>
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados da categoria</CardTitle>
           <CardDescription>

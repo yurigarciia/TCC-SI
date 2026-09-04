@@ -17,7 +17,7 @@ export default function EventoDetalhePage() {
 
   if (isLoading || carregandoPrecos) {
     return (
-      <div className="mx-auto w-full max-w-5xl space-y-4">
+      <div className="space-y-4">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-40 w-full" />
       </div>
@@ -48,7 +48,7 @@ function EventoDetalheConteudo({
   const publicar = usePublicarEvento(eventoId);
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <Breadcrumb items={[{ label: "Eventos", href: "/eventos" }, { label: evento.nome }]} />

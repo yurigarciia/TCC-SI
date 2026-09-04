@@ -47,7 +47,7 @@ export default function NovoSalaoPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-6">
+    <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Salões", href: "/saloes" }, { label: "Novo salão" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Novo salão</h1>
@@ -56,7 +56,7 @@ export default function NovoSalaoPage() {
         </p>
       </div>
 
-      <Card>
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados do salão</CardTitle>
           <CardDescription>As mesas são adicionadas na próxima tela.</CardDescription>
