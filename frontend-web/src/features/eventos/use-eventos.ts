@@ -4,11 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type {
+  AtualizarEventoInput,
   ConfigurarIngressoInput,
   ConfiguracaoMesaInput,
+  DefinirPrecoIngressoInput,
   Evento,
   EventoDetalhado,
   NovoEventoInput,
+  PrecosIngressoPorPerfil,
 } from "./types";
 
 const CHAVE_LISTA = ["eventos"] as const;
@@ -37,6 +40,46 @@ export function useCriarEvento() {
       apiFetch<Evento>("/eventos", { method: "POST", body: JSON.stringify(dados) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
+    },
+  });
+}
+
+export function useAtualizarEvento(eventoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: AtualizarEventoInput) =>
+      apiFetch<Evento>(`/eventos/${eventoId}`, {
+        method: "PATCH",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(eventoId) });
+    },
+  });
+}
+
+const chavePrecos = (eventoId: string) => ["eventos", eventoId, "precos-ingresso"] as const;
+
+export function usePrecosIngressoEvento(eventoId: string) {
+  return useQuery({
+    queryKey: chavePrecos(eventoId),
+    queryFn: () =>
+      apiFetch<PrecosIngressoPorPerfil>(`/eventos/${eventoId}/precos-ingresso`),
+    enabled: !!eventoId,
+  });
+}
+
+export function useDefinirPrecoIngressoEvento(eventoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: DefinirPrecoIngressoInput) =>
+      apiFetch(`/eventos/${eventoId}/precos-ingresso`, {
+        method: "PUT",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chavePrecos(eventoId) });
     },
   });
 }

@@ -48,7 +48,7 @@ export default function CategoriasSocioPage() {
           Categorias de sócio
         </h1>
         <p className="text-sm text-muted-foreground">
-          Valor de mensalidade por categoria — ou isenção.
+          Valor de mensalidade por categoria.
         </p>
       </div>
 

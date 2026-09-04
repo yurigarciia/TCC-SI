@@ -328,6 +328,22 @@ planejamentos específicos — este backlog é o nível "épico/ticket inicial".
   intermitente entre suítes (`mensalidades.e2e-spec.ts` via endpoint global de inadimplência) —
   corrigido fixando `maxWorkers: 1` em `test/jest-e2e.json`, já que os testes e2e compartilham
   estado real no banco e não devem rodar concorrentes entre arquivos.
+- **Adendo (edição de evento e consulta de preços por perfil):** pré-requisito pro redesenho da
+  tela de evento (ver adendo em T-FE-006) — faltavam dois endpoints. `PATCH /eventos/:id`
+  (`AtualizarEventoUseCase`) — não existia nenhum jeito de editar nome/data/local/descrição/salão
+  depois de criado, só criar (POST) e publicar; mesma validação de salão do `CriarEventoUseCase`
+  (404 se `salaoId` informado não existe). `GET /eventos/:eventoId/precos-ingresso`
+  (`ConsultarPrecosIngressoUseCase`, módulo de ingressos) — só existia o `PUT` pra definir preço
+  por perfil (`DefinirPrecoPadraoUseCase`/`DefinirPrecoPorEventoUseCase`), nunca um jeito de
+  consultar o que já estava configurado; resolve com o mesmo método já usado de fato na emissão
+  (`PrecoIngressoRepositoryPort.resolverPreco()` — override do evento, senão o padrão da entidade,
+  senão `null`), só que pros 3 perfis de uma vez. Validado com `npm run build` e `npm run
+  test:e2e`. Achado no caminho, sem relação com este adendo: boa parte da suíte e2e (Reservas,
+  Ingressos, Mensalidades) começou a estourar de forma consistente (não esporádica) o timeout
+  padrão de 5s do Jest em hooks/testes com muitas requisições sequenciais contra o Postgres remoto
+  (Neon) usado em dev/teste — timeout aumentado (15-30s conforme o volume de chamadas) nos
+  hooks/testes específicos que precisavam; suíte completa (59/59) passa de forma consistente
+  agora.
 
 #### Ticket: T-BE-008 Módulo Reservas de Mesa (RF11, RF14)
 - **Priority:** Must
@@ -696,6 +712,41 @@ frentes de frontend-web e mobile.
   avulso via API, recarreguei a página e confirmei que preço, checkbox "Bloqueada" e os campos de
   ingresso refletem o estado salvo, publiquei e confirmei o badge "Publicado" (sem botão Publicar)
   e a presença do evento em `GET /eventos/publicados`.
+- **Adendo (redesenho cadastro/edição unificados):** pedido do usuário — o fluxo original tinha
+  telas diferentes pra criar (só dados básicos) e editar (dados básicos + ingresso avulso + mesas,
+  cada seção com seu próprio botão "Salvar"), muito espaço vazio na tela de criação, e não existia
+  campo de preço por perfil de comprador (sócio/não-sócio/criança) em lugar nenhum do painel — só
+  dava pra configurar via API direta. Resolvido com um componente único,
+  `src/features/eventos/evento-formulario.tsx`, renderizado tanto por `/eventos/novo` quanto por
+  `/eventos/[id]` (modo `criar`/`editar`) — as duas telas ficam visualmente idênticas, cada seção
+  em um `Card` (Dados do evento, Ingresso avulso, Preço por perfil, Mesas do croqui — este último
+  só aparece com um salão selecionado) e um único botão "Salvar" no fim. Precisou de dois
+  endpoints novos no backend (ver adendo "Edição de evento e consulta de preços por perfil" em
+  T-BE-007 — não havia PATCH de evento nem GET de preço por perfil antes desta ticket).
+
+  No modo criar, o evento ainda não existe quando o formulário é preenchido, mas mesas/ingresso/
+  preços por perfil dependem de um `eventoId` — resolvido encadeando as chamadas no submit: POST
+  `/eventos` primeiro (pega o id), depois PUT mesas (se um salão foi escolhido), PUT ingresso (se
+  quantidade e preço de vitrine foram preenchidos) e um PUT por perfil de preço preenchido, nessa
+  ordem, tudo dentro do mesmo `onSubmit`. Erro na primeira etapa (criar/atualizar o evento em si)
+  mantém a pessoa no formulário; erro numa etapa posterior ainda navega pra `/eventos/[id]` (o
+  evento já existe nesse ponto) com um aviso de que parte da configuração não foi salva. Campos de
+  preço/quantidade usam `z.string().optional()` em vez de `z.coerce.number()` — coerção de número
+  em cima de string vazia dá `0` (não `undefined`), o que faria todo campo em branco virar um
+  preço zerado ao salvar; a conversão pra número (ou `undefined`, se vazio) é manual no submit.
+  Novo helper `paraInputDatetimeLocal` (`lib/format.ts`) — não existia conversão de ISO pro formato
+  que `<input type="datetime-local">` espera (a mesma tela agora precisa disso na edição, pra
+  pré-popular o campo).
+
+  Validado com `npm run build`, `npm run lint` e teste manual ponta a ponta headless contra o
+  backend real: preenchi o formulário de criação inteiro (dados básicos, ingresso avulso, preço
+  por perfil), salvei, confirmei o redirecionamento pra `/eventos/[id]` com todos os campos
+  pré-preenchidos vindos da API (prova que os dois GETs — evento e preços por perfil — resolvem
+  certo); separadamente, editei um evento já vinculado a um croqui e confirmei que a seção de
+  mesas aparece e o botão "Mapa de mesas" some/aparece corretamente conforme o salão. Achado no
+  caminho, sem relação com esta ticket: um `curl` desta própria sessão gravou um nome de salão com
+  acentuação corrompida no banco (charset do terminal, não um bug do app) — encontrado ao revisar
+  o screenshot, confirmado direto no Postgres, e limpo.
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must
