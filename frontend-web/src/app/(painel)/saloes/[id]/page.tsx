@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -94,7 +95,8 @@ function SalaoDetalheConteudo({
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
-      <div>
+      <div className="space-y-1">
+        <Breadcrumb items={[{ label: "Salões", href: "/saloes" }, { label: salao.nome }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">{salao.nome}</h1>
         <p className="text-muted-foreground">
           Capacidade total: {salao.capacidadeTotal} pessoas · {mesas.length} mesa(s) cadastrada(s)

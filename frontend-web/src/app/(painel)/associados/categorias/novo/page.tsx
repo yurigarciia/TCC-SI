@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -73,13 +74,14 @@ export default function NovaCategoriaSocioPage() {
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6">
-      <div>
-        <Link
-          href="/associados/categorias"
-          className="text-sm text-muted-foreground hover:underline"
-        >
-          ← Categorias de sócio
-        </Link>
+      <div className="space-y-1">
+        <Breadcrumb
+          items={[
+            { label: "Associados", href: "/associados" },
+            { label: "Categorias de sócio", href: "/associados/categorias" },
+            { label: "Nova categoria" },
+          ]}
+        />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Nova categoria</h1>
         <p className="text-muted-foreground">
           Define o valor de mensalidade cobrado do associado — ou a isenção.

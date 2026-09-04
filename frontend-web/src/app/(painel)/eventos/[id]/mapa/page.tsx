@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Breadcrumb } from "@/components/breadcrumb";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -84,10 +84,14 @@ function MapaMesasConteudo({
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
-      <div>
-        <Link href={`/eventos/${eventoId}`} className="text-sm text-muted-foreground hover:underline">
-          ← {nomeEvento}
-        </Link>
+      <div className="space-y-1">
+        <Breadcrumb
+          items={[
+            { label: "Eventos", href: "/eventos" },
+            { label: nomeEvento, href: `/eventos/${eventoId}` },
+            { label: "Mapa de mesas" },
+          ]}
+        />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Mapa de mesas</h1>
         <p className="text-muted-foreground">
           Clique numa mesa para registrar, confirmar, cancelar ou transferir uma reserva.

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -90,7 +91,8 @@ export default function NovoAssociadoPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div>
+      <div className="space-y-1">
+        <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">Novo associado</h1>
         <p className="text-muted-foreground">
           Cadastro mediado pela diretoria — o associado entra como Ativo imediatamente.

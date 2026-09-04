@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,10 +55,8 @@ export default function NovoAdministradorPage() {
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6">
-      <div>
-        <Link href="/usuarios" className="text-sm text-muted-foreground hover:underline">
-          ← Usuários da plataforma
-        </Link>
+      <div className="space-y-1">
+        <Breadcrumb items={[{ label: "Usuários", href: "/usuarios" }, { label: "Novo administrador" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">
           Novo administrador
         </h1>

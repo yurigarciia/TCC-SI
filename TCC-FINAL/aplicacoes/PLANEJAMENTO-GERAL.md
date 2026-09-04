@@ -630,6 +630,21 @@ frentes de frontend-web e mobile.
   headless confirmou o visual de `/login`. Achado no caminho: as portas `3000` (backend) e `3001`
   (usada por outro projeto não relacionado nesta máquina de dev) colidiam — `frontend-web` fixado
   na porta `3010` em `package.json`.
+- **Adendo (breadcrumb compartilhado):** pedido do usuário — a tela `/eventos/novo` tinha só um
+  `<h1>` "flutuando sozinho" (depois de remover um subtítulo tipo tutorial, ver adendo em T-FE-006),
+  e algumas telas aninhadas do painel já inventavam cada uma o seu próprio jeito de indicar "de onde
+  vim" (um link solto "← Associados", "← {nome do evento}" etc.), inconsistente e sem mostrar o
+  caminho completo quando havia mais de um nível (ex.: emissão de ingressos, dois níveis abaixo de
+  Eventos). Criado `src/components/breadcrumb.tsx` (`Breadcrumb`, recebe uma lista de `{label,
+  href?}` — o último item, sem `href`, é a página atual) e aplicado nas 11 telas aninhadas do
+  painel: `eventos/novo`, `eventos/[id]`, `eventos/[id]/ingressos`, `eventos/[id]/mapa`,
+  `associados/novo`, `associados/[id]`, `associados/categorias`, `associados/categorias/novo`,
+  `saloes/novo`, `saloes/[id]`, `usuarios/novo` — substituindo todo link "← X" ad hoc encontrado.
+  Telas de listagem no primeiro nível (`/eventos`, `/associados`, `/saloes`, `/usuarios`,
+  `/mensalidades`, `/`) não ganham breadcrumb — a barra lateral já indica a seção atual, não têm
+  "pai" acima delas na navegação. Validado com `npm run build`, `npm run lint` e screenshot headless
+  logado de três telas com profundidades diferentes (`eventos/novo`: 2 níveis,
+  `associados/categorias/novo`: 3 níveis, `usuarios/novo`: 2 níveis).
 
 #### Ticket: T-FE-003 Tela de Associados (cadastro mediado, consulta, status)
 - **Priority:** Must

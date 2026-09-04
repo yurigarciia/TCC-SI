@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusEventoBadge } from "@/features/eventos/status-badge";
@@ -49,7 +50,8 @@ function EventoDetalheConteudo({
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+        <div className="space-y-1">
+          <Breadcrumb items={[{ label: "Eventos", href: "/eventos" }, { label: evento.nome }]} />
           <h1 className="font-heading text-2xl font-semibold text-foreground">{evento.nome}</h1>
           <StatusEventoBadge status={evento.status} />
         </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,13 +38,8 @@ export default function CategoriasSocioPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link
-          href="/associados"
-          className="text-sm text-muted-foreground hover:underline"
-        >
-          ← Associados
-        </Link>
+      <div className="space-y-1">
+        <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Categorias de sócio" }]} />
         <h1 className="font-heading text-2xl font-semibold text-foreground">
           Categorias de sócio
         </h1>

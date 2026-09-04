@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -149,7 +150,8 @@ function AssociadoDetalheConteudo({
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+        <div className="space-y-1">
+          <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: associado.nome }]} />
           <h1 className="font-heading text-2xl font-semibold text-foreground">
             {associado.nome}
           </h1>
