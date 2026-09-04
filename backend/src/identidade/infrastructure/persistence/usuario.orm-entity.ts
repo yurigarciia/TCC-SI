@@ -20,6 +20,10 @@ export class UsuarioOrmEntity {
   @Column({ type: 'varchar' })
   perfil: Perfil;
 
+  // Nullable — só administrador exige nome hoje (associado tem o dele na entidade Associado).
+  @Column({ type: 'varchar', nullable: true })
+  nome: string | null;
+
   @CreateDateColumn({ name: 'criado_em', type: 'timestamptz' })
   criadoEm: Date;
 }

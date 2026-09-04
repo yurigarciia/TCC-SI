@@ -80,9 +80,15 @@ function subitemEstaAtivo(pathname: string, subitens: { href: string }[], href: 
   return maisEspecifico?.href === href;
 }
 
-// Iniciais pro avatar — usuários de administração só têm e-mail (sem campo "nome"), então usamos
-// as 2 primeiras letras da parte local do e-mail (ex.: "diretoria@..." -> "DI").
-function iniciaisDoEmail(email: string): string {
+// Iniciais pro avatar — prefere o nome (ex.: "Maria da Silva" -> "MS"); cai pras 2 primeiras
+// letras da parte local do e-mail quando não há nome (contas de associado ainda não têm nome no
+// Usuario, ver domain/usuario.entity.ts).
+function iniciaisDoUsuario(nome: string | null, email: string): string {
+  if (nome) {
+    const partes = nome.trim().split(/\s+/);
+    const iniciais = partes.length > 1 ? partes[0][0] + partes[partes.length - 1][0] : partes[0].slice(0, 2);
+    return iniciais.toUpperCase();
+  }
   return email.slice(0, 2).toUpperCase();
 }
 
@@ -238,12 +244,13 @@ function ContaDoUsuario({
 
   if (!usuario) return null;
 
-  const iniciais = iniciaisDoEmail(usuario.email);
+  const nomeExibido = usuario.nome ?? usuario.email;
+  const iniciais = iniciaisDoUsuario(usuario.nome, usuario.email);
 
   if (colapsada) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <Avatar size="sm" title={usuario.email}>
+        <Avatar size="sm" title={nomeExibido}>
           <AvatarFallback className="bg-primary text-xs font-medium text-primary-foreground">
             {iniciais}
           </AvatarFallback>
@@ -270,7 +277,7 @@ function ContaDoUsuario({
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-sidebar-foreground">{usuario.email}</p>
+        <p className="truncate text-sm font-medium text-sidebar-foreground">{nomeExibido}</p>
         <p className="truncate text-xs text-sidebar-foreground/70">
           {ROTULO_PERFIL[usuario.perfil]}
         </p>

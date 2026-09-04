@@ -31,6 +31,7 @@ export class AutenticarUsuarioUseCase {
       sub: usuario.id,
       email: usuario.email,
       perfil: usuario.perfil,
+      nome: usuario.nome,
     });
     return { accessToken };
   }

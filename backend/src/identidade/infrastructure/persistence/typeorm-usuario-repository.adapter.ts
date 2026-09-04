@@ -38,7 +38,9 @@ export class TypeOrmUsuarioRepositoryAdapter extends UsuarioRepositoryPort {
     busca?: string,
   ): Promise<{ itens: Usuario[]; total: number }> {
     const [encontrados, total] = await this.repo.findAndCount({
-      where: busca ? { email: ILike(`%${busca}%`) } : undefined,
+      where: busca
+        ? [{ email: ILike(`%${busca}%`) }, { nome: ILike(`%${busca}%`) }]
+        : undefined,
       order: { criadoEm: 'DESC' },
       skip: (pagina - 1) * limite,
       take: limite,
@@ -50,6 +52,6 @@ export class TypeOrmUsuarioRepositoryAdapter extends UsuarioRepositoryPort {
   }
 
   private paraDominio(orm: UsuarioOrmEntity): Usuario {
-    return new Usuario(orm.id, orm.email, orm.senhaHash, orm.perfil);
+    return new Usuario(orm.id, orm.email, orm.senhaHash, orm.perfil, orm.nome);
   }
 }

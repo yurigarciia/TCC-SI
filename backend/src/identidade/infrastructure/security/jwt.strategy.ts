@@ -8,6 +8,9 @@ export interface JwtPayload {
   sub: string;
   email: string;
   perfil: Perfil;
+  // Só preenchido pra administrador hoje — ver Usuario.nome. Nula pra associado (que ainda loga
+  // sem nome no token).
+  nome: string | null;
 }
 
 @Injectable()

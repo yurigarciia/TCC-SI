@@ -12,6 +12,7 @@ interface LoginResponseBody {
 
 interface UsuarioResponseBody {
   id: string;
+  nome: string | null;
   email: string;
   perfil: string;
 }
@@ -119,9 +120,10 @@ describe('Auth (e2e)', () => {
     const criado = await request(app.getHttpServer())
       .post('/auth/usuarios')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ email: novoEmail, senha: 'senhaProvisoria123' })
+      .send({ nome: 'Novo Diretor', email: novoEmail, senha: 'senhaProvisoria123' })
       .expect(201);
     expect((criado.body as UsuarioResponseBody).perfil).toBe('administrador');
+    expect((criado.body as UsuarioResponseBody).nome).toBe('Novo Diretor');
 
     const novoLogin = await login(app, novoEmail, 'senhaProvisoria123');
     expect(typeof novoLogin.accessToken).toBe('string');
@@ -137,7 +139,7 @@ describe('Auth (e2e)', () => {
     return request(app.getHttpServer())
       .post('/auth/usuarios')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ email: adminEmail, senha: 'qualquerSenha123' })
+      .send({ nome: 'Qualquer Nome', email: adminEmail, senha: 'qualquerSenha123' })
       .expect(409);
   });
 

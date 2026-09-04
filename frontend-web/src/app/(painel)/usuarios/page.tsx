@@ -43,7 +43,7 @@ export default function UsuariosPage() {
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por e-mail" />
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou e-mail" />
         <Button render={<Link href="/usuarios/novo" />}>Novo administrador</Button>
       </div>
 
@@ -65,13 +65,14 @@ export default function UsuariosPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Nome</TableHead>
                 <TableHead>E-mail</TableHead>
                 <TableHead>Perfil</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {usuarios.length === 0 ? (
-                <TableEmptyRow colSpan={2}>
+                <TableEmptyRow colSpan={3}>
                   {busca
                     ? "Nenhum usuário encontrado para esse termo."
                     : "Nenhum usuário cadastrado ainda."}
@@ -82,7 +83,10 @@ export default function UsuariosPage() {
                     key={usuario.id}
                     className={indice % 2 === 1 ? "bg-muted/50" : undefined}
                   >
-                    <TableCell className="font-medium">{usuario.email}</TableCell>
+                    <TableCell className="font-medium">
+                      {usuario.nome ?? <span className="text-muted-foreground">—</span>}
+                    </TableCell>
+                    <TableCell>{usuario.email}</TableCell>
                     <TableCell>
                       <Badge variant={usuario.perfil === "administrador" ? "success" : "outline"}>
                         {usuario.perfil === "administrador" ? "Administrador" : "Associado"}

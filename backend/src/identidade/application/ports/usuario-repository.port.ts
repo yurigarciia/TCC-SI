@@ -4,6 +4,7 @@ export interface NovoUsuario {
   email: string;
   senhaHash: string;
   perfil: Perfil;
+  nome?: string | null;
 }
 
 export abstract class UsuarioRepositoryPort {

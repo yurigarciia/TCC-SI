@@ -949,6 +949,23 @@ frentes de frontend-web e mobile.
   `--window-size` do Edge headless não bateu com o viewport real da página numa das rodadas
   (pediu 1400px, `window.innerWidth` voltou 500) — contornado forçando o viewport via
   `Emulation.setDeviceMetricsOverride` do CDP em vez de confiar na flag de lançamento.
+- **Adendo (nome no usuário interno):** pedido do usuário — contas de administrador só tinham
+  e-mail (`Usuario` nunca teve campo nome, diferente de `Associado`), então a sidebar/lista de
+  usuários mostrava só o e-mail cru como identidade de quem estava logado. `Usuario.nome` novo
+  (nullable — migração `1756300000000-AddNomeToUsuarios`; nulo pra conta de associado, que segue
+  sem nome no `Usuario`, o nome dela vive na entidade `Associado`), obrigatório só em
+  `CriarAdministradorDto`. Embarcado direto no JWT (`JwtPayload.nome`) em vez de exigir um select
+  extra em toda request autenticada — mesmo padrão já usado pra `email`/`perfil` no token; troca de
+  nome só reflete depois de um novo login, ressalva que já existia pro e-mail. Sidebar
+  (`iniciaisDoUsuario`) e lista de `/usuarios` passam a mostrar o nome, com fallback pro e-mail
+  quando `nome` é nulo (conta de associado, ou conta de administrador seedada antes desta ticket).
+  Busca da listagem (`GET /auth/usuarios?busca=`) passou a casar por nome OU e-mail. `seed-admin.ts`
+  ganhou `SEED_ADMIN_NOME` (padrão "Diretoria"); a conta seed já existente no banco de dev foi
+  atualizada manualmente (`UPDATE usuarios SET nome = 'Diretoria' WHERE nome IS NULL`), já que o
+  script só insere se a conta ainda não existir. Validado com `npm run build` e `npm run test:e2e`
+  (backend, 60/60) e `npm run build`/`npm run lint` (frontend); teste manual ponta a ponta headless
+  logado: criei um administrador pelo formulário com nome, confirmei ele aparecendo na lista e a
+  sidebar mostrando "Diretoria" em vez do e-mail — conta de teste removida do banco ao final.
 
 #### Ticket: T-BE-016 / T-FE-010 Paginação real das listagens
 - **Priority:** Should

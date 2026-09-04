@@ -79,7 +79,14 @@ export class AuthController {
   })
   async listar(
     @Query() { pagina, limite, busca }: PaginacaoQueryDto,
-  ): Promise<PaginaResultado<{ id: string; email: string; perfil: Perfil }>> {
+  ): Promise<
+    PaginaResultado<{
+      id: string;
+      nome: string | null;
+      email: string;
+      perfil: Perfil;
+    }>
+  > {
     const resultado = await this.listarUsuarios.execute(
       pagina!,
       limite!,
@@ -87,8 +94,9 @@ export class AuthController {
     );
     return {
       ...resultado,
-      itens: resultado.itens.map(({ id, email, perfil }) => ({
+      itens: resultado.itens.map(({ id, nome, email, perfil }) => ({
         id,
+        nome,
         email,
         perfil,
       })),
@@ -114,8 +122,13 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
   async criar(
     @Body() dto: CriarAdministradorDto,
-  ): Promise<{ id: string; email: string; perfil: Perfil }> {
+  ): Promise<{ id: string; nome: string | null; email: string; perfil: Perfil }> {
     const usuario = await this.criarAdministrador.execute(dto);
-    return { id: usuario.id, email: usuario.email, perfil: usuario.perfil };
+    return {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      perfil: usuario.perfil,
+    };
   }
 }

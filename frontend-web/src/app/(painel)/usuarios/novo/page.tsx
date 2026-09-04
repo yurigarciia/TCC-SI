@@ -21,6 +21,7 @@ import { useCriarAdministrador } from "@/features/usuarios/use-usuarios";
 import { ApiError } from "@/lib/api-client";
 
 const formSchema = z.object({
+  nome: z.string().min(2, "Informe o nome completo."),
   email: z.string().email("Informe um e-mail válido."),
   senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
 });
@@ -72,6 +73,17 @@ export default function NovoAdministradorPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="nome">Nome completo</Label>
+              <Input
+                id="nome"
+                placeholder="Ex.: Maria da Silva"
+                aria-invalid={!!errors.nome}
+                autoComplete="off"
+                {...register("nome")}
+              />
+              {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input

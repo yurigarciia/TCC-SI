@@ -4,6 +4,7 @@ import { PasswordHasherPort } from '../ports/password-hasher.port';
 import { Perfil, Usuario } from '../../domain/usuario.entity';
 
 export interface DadosNovoAdministrador {
+  nome: string;
   email: string;
   senha: string;
 }
@@ -29,6 +30,7 @@ export class CriarAdministradorUseCase {
 
     const senhaHash = await this.hasher.hash(dados.senha);
     return this.usuarios.salvar({
+      nome: dados.nome,
       email: dados.email,
       senhaHash,
       perfil: Perfil.ADMINISTRADOR,

@@ -13,4 +13,5 @@ export interface UsuarioAutenticado {
   sub: string;
   email: string;
   perfil: Perfil;
+  nome: string | null;
 }
