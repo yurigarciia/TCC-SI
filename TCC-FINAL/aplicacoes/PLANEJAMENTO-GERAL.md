@@ -832,6 +832,25 @@ frentes de frontend-web e mobile.
   match em associados) e `npm run build`/`npm run lint` (frontend), mais teste manual contra o
   backend real.
 
+#### Ticket: T-FE-011 Sidebar escura + conta no rodapé
+- **Priority:** Could
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Refinamento visual pedido pelo usuário: a sidebar estava "crua" — mesmo fundo claro do
+  resto do painel, sem identidade própria — e os dados de quem está logado (e-mail, perfil, sair)
+  ficavam no header, compartilhado com o conteúdo.
+- **Acceptance Criteria:** Sidebar com fundo distinto do restante do painel, contraste AA
+  verificado; conta autenticada (avatar com iniciais, e-mail, perfil, botão "Sair") no rodapé da
+  sidebar (desktop) e do drawer (mobile), não mais no header.
+- **Validation Steps:** `npm run lint`, `npm run build`, verificação visual headless (expandida,
+  colapsada e drawer mobile) contra o backend real.
+- **Notes:** Ver detalhamento dos tokens `--sidebar*` e da nova estrutura (marca+conta dentro da
+  sidebar, header claro só no mobile) no §5.1 do `DESIGN-SYSTEM.md`. Reaproveitou o token set
+  `--sidebar*` que já vinha do scaffold shadcn/ui (nunca usado até aqui — o componente `AppShell`
+  usava `bg-card` na nav), só substituindo os valores oklch neutros pela paleta gaúcha ("couro
+  escuro" — única superfície escura do painel, deliberado, não é dark mode geral). Iniciais do
+  avatar vêm das 2 primeiras letras do e-mail (contas de administrador não têm campo "nome").
+
 ### Mobile (App do Associado)
 
 #### Ticket: T-MOB-001 Autenticação e onboarding

@@ -165,6 +165,36 @@ Convenções específicas deste projeto:
   botão "Novo X" à direita, mesma linha) — nunca sozinho ocupando uma linha inteira antes do botão.
   Mudar o termo de busca sempre reseta a página pra 1.
 
+### 5.1 Sidebar (única superfície escura do painel)
+
+A navegação lateral (`AppShell`, `src/components/layout/app-shell.tsx`) é a única superfície do
+painel com fundo escuro — "couro escuro" (galpão/campereada), deliberado: dá contraste moderno
+contra o restante do painel claro sem contradizer o Non Goal de dark mode geral (§2 do
+`PLANEJAMENTO-GERAL.md`), que é sobre o tema do app inteiro, não sobre uma superfície fixa. Tokens
+dedicados (`--sidebar*`, já vinham do scaffold do shadcn/ui, substituídos pela paleta gaúcha):
+
+| Token | Hex | Uso |
+|---|---|---|
+| `--sidebar` | `#241A13` | Fundo da sidebar (couro escuro) |
+| `--sidebar-foreground` | `#F1E7D8` | Texto sobre a sidebar (pergaminho quente) |
+| `--sidebar-primary` | `#3E7A50` | Item de navegação ativo (verde-bandeira claro) |
+| `--sidebar-primary-foreground` | `#FDF8F3` | Texto sobre item ativo |
+| `--sidebar-accent` | `#38291D` | Hover de item |
+| `--sidebar-accent-foreground` | `#F1E7D8` | Texto sobre hover |
+| `--sidebar-border` | `#4A3726` | Divisores (topo/rodapé da sidebar) |
+| `--sidebar-ring` | `#C9A15A` | Anel de foco sobre fundo escuro |
+
+Contraste conferido (fórmula WCAG, ver `contrast.mjs` descartável usado na sessão): texto principal
+13.9:1, texto secundário a 70% de opacidade (`text-sidebar-foreground/70`, usado no e-mail/perfil)
+7.4:1, pílula ativa 4.9:1 — todos acima do mínimo AA (4.5:1) do §6.
+
+A marca ("Pia do Sul") e a conta autenticada (avatar com iniciais, e-mail, perfil, botão "Sair")
+vivem dentro da própria sidebar — topo e rodapé, respectivamente —, não mais numa barra superior
+compartilhada. O header claro (`bg-card`) só existe no mobile (`sm:hidden`), como gatilho do menu;
+o drawer mobile (`Sheet`) replica o mesmo fundo escuro e o mesmo rodapé de conta, pra não haver
+inconsistência entre breakpoints. Colapsada, a sidebar mostra só avatar + ícone de sair (sem
+texto), mesmo padrão dos itens de navegação colapsados.
+
 ## 6. Acessibilidade e Adoção Gradual
 
 Diretrizes específicas por causa do público (pessoas idosas, diretoria com menor familiaridade

@@ -5,6 +5,7 @@ import {
   CalendarIcon,
   ChevronDownIcon,
   HomeIcon,
+  LogOutIcon,
   MenuIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
@@ -19,17 +20,25 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/features/auth/use-current-user";
 import { useLogout } from "@/features/auth/use-logout";
+import type { Perfil } from "@/features/auth/types";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetFooter,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const CHAVE_SIDEBAR_COLAPSADA = "pia_do_sul_sidebar_colapsada";
+
+const ROTULO_PERFIL: Record<Perfil, string> = {
+  administrador: "Administrador",
+  associado: "Associado",
+};
 
 interface ItemDeNavegacao {
   href: string;
@@ -71,6 +80,12 @@ function subitemEstaAtivo(pathname: string, subitens: { href: string }[], href: 
   return maisEspecifico?.href === href;
 }
 
+// Iniciais pro avatar — usuários de administração só têm e-mail (sem campo "nome"), então usamos
+// as 2 primeiras letras da parte local do e-mail (ex.: "diretoria@..." -> "DI").
+function iniciaisDoEmail(email: string): string {
+  return email.slice(0, 2).toUpperCase();
+}
+
 function LinksDeNavegacao({
   pathname,
   onNavigate,
@@ -107,11 +122,11 @@ function LinksDeNavegacao({
                 onClick={onNavigate}
                 title={colapsada ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors",
                   colapsada && "justify-center px-0",
                   emSecao
-                    ? "bg-secondary text-secondary-foreground"
-                    : "text-foreground hover:bg-muted",
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                    : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
                 <Icone className="size-4 shrink-0" aria-hidden="true" />
@@ -131,10 +146,10 @@ function LinksDeNavegacao({
                 onClick={onNavigate}
                 title={item.label}
                 className={cn(
-                  "flex items-center justify-center rounded-md px-0 py-2 text-sm font-medium transition-colors",
+                  "flex items-center justify-center rounded-md px-0 py-2 text-sm font-medium text-sidebar-foreground transition-colors",
                   emSecao
-                    ? "bg-secondary text-secondary-foreground"
-                    : "text-foreground hover:bg-muted",
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                    : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
                 <Icone className="size-4 shrink-0" aria-hidden="true" />
@@ -155,14 +170,12 @@ function LinksDeNavegacao({
               }
               aria-expanded={aberto}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors",
                 // Fundo+texto de "ativo" só quando o grupo está fechado — expandido, é o
                 // subitem que carrega o destaque (ver abaixo), o pai fica com o texto normal.
-                // Antes o texto claro (feito pra ficar sobre o fundo verde) aparecia sem o
-                // fundo, quase invisível sobre o cinza claro da sidebar.
                 emSecao && !aberto
-                  ? "bg-secondary text-secondary-foreground"
-                  : "text-foreground hover:bg-muted",
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >
               <Icone className="size-4 shrink-0" aria-hidden="true" />
@@ -173,7 +186,7 @@ function LinksDeNavegacao({
               />
             </button>
             {aberto && (
-              <ul className="mt-1 space-y-1 border-l pl-3">
+              <ul className="mt-1 space-y-1 border-l border-sidebar-border pl-3">
                 {item.subitens.map((sub) => {
                   const SubIcone = sub.icon;
                   const ativo = subitemEstaAtivo(pathname, item.subitens!, sub.href);
@@ -183,10 +196,10 @@ function LinksDeNavegacao({
                         href={sub.href}
                         onClick={onNavigate}
                         className={cn(
-                          "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                          "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground transition-colors",
                           ativo
-                            ? "bg-secondary text-secondary-foreground"
-                            : "text-foreground hover:bg-muted",
+                            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                            : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                         )}
                       >
                         <SubIcone className="size-3.5 shrink-0" aria-hidden="true" />
@@ -204,10 +217,80 @@ function LinksDeNavegacao({
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+// Bloco com a conta autenticada — fica fixo no rodapé da sidebar (desktop) ou do drawer (mobile),
+// no lugar de header. Colapsada, mostra só o avatar (com o e-mail em `title`) + botão de sair.
+function ContaDoUsuario({
+  colapsada = false,
+}: {
+  colapsada?: boolean;
+}) {
   const { data: usuario, isLoading } = useCurrentUser();
   const logout = useLogout();
+
+  if (isLoading) {
+    return (
+      <div className={cn("flex items-center gap-3", colapsada && "justify-center")}>
+        <Skeleton className="size-8 shrink-0 rounded-full bg-sidebar-accent" />
+        {!colapsada && <Skeleton className="h-4 w-24 bg-sidebar-accent" />}
+      </div>
+    );
+  }
+
+  if (!usuario) return null;
+
+  const iniciais = iniciaisDoEmail(usuario.email);
+
+  if (colapsada) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <Avatar size="sm" title={usuario.email}>
+          <AvatarFallback className="bg-primary text-xs font-medium text-primary-foreground">
+            {iniciais}
+          </AvatarFallback>
+        </Avatar>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          aria-label="Sair"
+          title="Sair"
+          onClick={logout}
+        >
+          <LogOutIcon />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2.5">
+      <Avatar size="sm" className="shrink-0">
+        <AvatarFallback className="bg-primary text-xs font-medium text-primary-foreground">
+          {iniciais}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-sidebar-foreground">{usuario.email}</p>
+        <p className="truncate text-xs text-sidebar-foreground/70">
+          {ROTULO_PERFIL[usuario.perfil]}
+        </p>
+      </div>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        aria-label="Sair"
+        title="Sair"
+        onClick={logout}
+      >
+        <LogOutIcon />
+      </Button>
+    </div>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   // Fecha o menu mobile ao tocar num link (ver onNavigate em LinksDeNavegacao) — evita o drawer
   // ficar aberto sobre a próxima tela.
   const [menuAberto, setMenuAberto] = useState(false);
@@ -233,13 +316,59 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen min-w-0 flex-col">
-      <header className="flex h-14 items-center justify-between gap-3 border-b bg-card px-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-h-screen min-w-0">
+      {/* Sidebar (desktop) — coluna escura de ponta a ponta, com marca e conta próprias (não usa
+          mais o header claro compartilhado, ver adendo "Sidebar escura" no PLANEJAMENTO-GERAL.md). */}
+      <nav
+        aria-label="Navegação principal"
+        className={cn(
+          "hidden shrink-0 flex-col bg-sidebar transition-[width] duration-200 sm:flex",
+          colapsada ? "w-16" : "w-60",
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border px-4",
+            colapsada && "justify-center px-0",
+          )}
+        >
+          {!colapsada && (
+            <span className="truncate font-heading text-lg font-semibold text-sidebar-foreground">
+              Pia do Sul
+            </span>
+          )}
           <Button
             variant="ghost"
             size="icon-sm"
-            className="-ml-1 sm:hidden"
+            className={cn(
+              "shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              !colapsada && "ml-auto",
+            )}
+            aria-label={colapsada ? "Expandir menu" : "Encolher menu"}
+            title={colapsada ? "Expandir menu" : "Encolher menu"}
+            onClick={alternarColapso}
+          >
+            {colapsada ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
+          </Button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-3">
+          <LinksDeNavegacao pathname={pathname} colapsada={colapsada} />
+        </div>
+
+        <div className="shrink-0 border-t border-sidebar-border p-3">
+          <ContaDoUsuario colapsada={colapsada} />
+        </div>
+      </nav>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Barra superior — só existe no mobile (gatilho do drawer); no desktop a marca e a conta
+            já vivem na sidebar. */}
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4 sm:hidden">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="-ml-1"
             aria-label="Abrir menu de navegação"
             onClick={() => setMenuAberto(true)}
           >
@@ -248,57 +377,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span className="truncate font-heading text-lg font-semibold text-foreground">
             Pia do Sul
           </span>
-        </div>
-        <div className="flex shrink-0 items-center gap-3">
-          {isLoading ? (
-            <Skeleton className="h-4 w-32" />
-          ) : (
-            usuario && (
-              <span className="hidden text-sm text-muted-foreground sm:inline">
-                {usuario.email} · {usuario.perfil}
-              </span>
-            )
-          )}
-          <Button variant="ghost" size="sm" onClick={logout}>
-            Sair
-          </Button>
-        </div>
-      </header>
-
-      <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
-        <SheetContent side="left" className="p-0">
-          <SheetHeader className="border-b">
-            <SheetTitle>Pia do Sul</SheetTitle>
-          </SheetHeader>
-          <nav aria-label="Navegação principal" className="p-4">
-            <LinksDeNavegacao pathname={pathname} onNavigate={() => setMenuAberto(false)} />
-          </nav>
-        </SheetContent>
-      </Sheet>
-
-      <div className="flex min-w-0 flex-1">
-        <nav
-          aria-label="Navegação principal"
-          className={cn(
-            "hidden shrink-0 flex-col border-r bg-card p-4 transition-[width] duration-200 sm:flex",
-            colapsada ? "w-16" : "w-56",
-          )}
-        >
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={cn("mb-2", colapsada ? "self-center" : "self-end")}
-            aria-label={colapsada ? "Expandir menu" : "Encolher menu"}
-            title={colapsada ? "Expandir menu" : "Encolher menu"}
-            onClick={alternarColapso}
-          >
-            {colapsada ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
-          </Button>
-          <LinksDeNavegacao pathname={pathname} colapsada={colapsada} />
-        </nav>
+        </header>
 
         <main className="min-w-0 flex-1 p-6">{children}</main>
       </div>
+
+      <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
+        <SheetContent side="left" className="flex flex-col gap-0 bg-sidebar p-0 text-sidebar-foreground">
+          <SheetHeader className="border-b border-sidebar-border">
+            <SheetTitle className="text-sidebar-foreground">Pia do Sul</SheetTitle>
+          </SheetHeader>
+          <nav aria-label="Navegação principal" className="flex-1 overflow-y-auto p-4">
+            <LinksDeNavegacao pathname={pathname} onNavigate={() => setMenuAberto(false)} />
+          </nav>
+          <SheetFooter className="border-t border-sidebar-border">
+            <ContaDoUsuario />
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

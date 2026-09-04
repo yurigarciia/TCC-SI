@@ -93,14 +93,20 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sidebar — única superfície escura do painel, de propósito: "couro escuro" (galpão/campereada),
+   * a única cor da paleta que nunca foi usada em bloco de fundo até aqui (ver §1 do
+   * DESIGN-SYSTEM.md). Contrastes conferidos manualmente (ver adendo "Sidebar escura" no
+   * PLANEJAMENTO-GERAL.md): texto principal 13.9:1, texto 70% opacidade 7.4:1, pílula ativa
+   * (verde-bandeira claro) 4.9:1 — todos acima do mínimo AA (4.5:1) exigido pelo §6.
+   */
+  --sidebar: #241a13; /* Couro escuro */
+  --sidebar-foreground: #f1e7d8; /* Pergaminho quente */
+  --sidebar-primary: #3e7a50; /* Verde-bandeira claro — item de navegação ativo */
+  --sidebar-primary-foreground: #fdf8f3;
+  --sidebar-accent: #38291d; /* Couro escuro, um tom acima — hover de item */
+  --sidebar-accent-foreground: #f1e7d8;
+  --sidebar-border: #4a3726; /* Couro escuro, divisor sutil */
+  --sidebar-ring: #c9a15a; /* Prata-âmbar clareada — anel de foco sobre fundo escuro */
 }
 
 .dark {
