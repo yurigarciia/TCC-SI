@@ -783,6 +783,20 @@ frentes de frontend-web e mobile.
   evento, confirmei o toast e o redirect, e vi o mesmo valor pré-preenchido na tela de edição —
   prova de que a escrita (um `PUT /precos-ingresso` por categoria preenchida) e a leitura (o novo
   formato do `GET`) resolvem corretamente ponta a ponta.
+- **Adendo (duas colunas em monitores largos):** pedido do usuário olhando o formulário num
+  monitor de 27" — os Cards empilhados numa coluna só sobravam bastante espaço vazio nas laterais.
+  "Dados do evento" e "Ingresso avulso" + "Preço por perfil" (empilhados) passam a ficar lado a
+  lado (`grid lg:grid-cols-2`, ver §5.2 do `DESIGN-SYSTEM.md`) a partir do breakpoint `lg`; abaixo
+  disso continua empilhado numa coluna só. "Mesas do croqui" continua full-width abaixo (é uma
+  lista que se beneficia da largura total, não faz sentido dividir em coluna). Página sobe de
+  `max-w-3xl` pra `max-w-5xl` nas duas rotas (`/eventos/novo`, `/eventos/[id]`). Achado no
+  caminho: as classes `lg:*` novas não apareciam no CSS compilado (`lg:grid-cols-2` ausente até de
+  `getComputedStyle`, junto com todo e qualquer outro `lg:*` do projeto) — cache do Turbopack preso
+  numa versão anterior da varredura de conteúdo; resolvido limpando `.next` e reiniciando o `next
+  dev`, sem precisar mudar nada no código. Validado com `npm run build`, `npm run lint` e
+  verificação visual headless em três larguras (2560px simulando o monitor de 27" do usuário,
+  800px confirmando que volta a empilhar abaixo do breakpoint `lg`, e a suíte de screenshots já
+  feita pra esta ticket).
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must

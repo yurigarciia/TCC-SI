@@ -127,12 +127,14 @@ largo). Convenção:
 
 - Páginas de **lista** (tabelas, grids de cards) — sem `max-w`, ocupam 100% do `<main>`.
 - Páginas de **formulário simples** (poucos campos, ex. `saloes/novo`) — `mx-auto w-full max-w-lg`.
-- Páginas de **formulário/detalhe** com Cards empilhados (ex. `associados/novo`,
-  `associados/[id]`, `eventos/novo`, `eventos/[id]`) — `mx-auto w-full max-w-3xl`.
-- Páginas com **tabela densa ou canvas de croqui** (ex. `eventos/[id]/mapa`,
-  `eventos/[id]/ingressos`, `saloes/[id]`) — `mx-auto w-full max-w-5xl`: o `MapaMesasCanvas`/
-  `MesaCanvas` de coordenadas fixas em pixel se beneficia de verdade da largura extra (menos
-  rolagem horizontal), não é só estética.
+- Páginas de **formulário/detalhe** com Cards empilhados numa coluna só (ex. `associados/novo`,
+  `associados/[id]`) — `mx-auto w-full max-w-3xl`.
+- Páginas com **tabela densa, canvas de croqui, ou formulário em duas colunas** (ex.
+  `eventos/[id]/mapa`, `eventos/[id]/ingressos`, `saloes/[id]`, `eventos/novo`, `eventos/[id]`) —
+  `mx-auto w-full max-w-5xl`: o `MapaMesasCanvas`/`MesaCanvas` de coordenadas fixas em pixel se
+  beneficia de verdade da largura extra (menos rolagem horizontal); o formulário de evento usa a
+  largura extra pra um layout em duas colunas (`grid lg:grid-cols-2`) em vez de empilhar tudo numa
+  coluna só em monitores grandes (achado numa conversa com o usuário — ver §5.2).
 
 Sempre aplicar a mesma largura no estado de loading (`Skeleton`) e no conteúdo real da página —
 um mismatch entre os dois causa um "pulo" de layout visível ao carregar.
@@ -207,6 +209,18 @@ compartilhada. O header claro (`bg-card`) só existe no mobile (`sm:hidden`), co
 o drawer mobile (`Sheet`) replica o mesmo fundo escuro e o mesmo rodapé de conta, pra não haver
 inconsistência entre breakpoints. Colapsada, a sidebar mostra só avatar + ícone de sair (sem
 texto), mesmo padrão dos itens de navegação colapsados.
+
+### 5.2 Formulários grandes em duas colunas (monitores largos)
+
+Formulários com várias seções (Cards) empilhados numa coluna só ficam com bastante espaço vazio
+nas laterais em monitores grandes (achado numa conversa com o usuário, olhando o formulário de
+evento num monitor de 27"). Quando fizer sentido agrupar duas seções lado a lado (ex.: dados
+principais à esquerda, configurações secundárias empilhadas à direita —
+`features/eventos/evento-formulario.tsx`), usar `grid gap-6 lg:grid-cols-2 lg:items-start`
+envolvendo as duas colunas, com a coluna da direita sendo um `<div className="space-y-6">` se
+tiver mais de um Card. Abaixo do breakpoint `lg` tudo volta a empilhar numa coluna só. Seções que
+se beneficiam de largura total (tabela, canvas) continuam fora do grid, full-width. Página
+correspondente sobe pra `max-w-5xl` (ver §4.1).
 
 ## 6. Acessibilidade e Adoção Gradual
 

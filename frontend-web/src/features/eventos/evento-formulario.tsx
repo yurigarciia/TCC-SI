@@ -280,6 +280,11 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
 
   return (
     <form onSubmit={onSubmit} className="space-y-6" noValidate>
+      {/* Dados do evento à esquerda, ingresso avulso + preço por perfil empilhados à direita —
+          aproveita a largura em monitores maiores em vez de empilhar tudo numa coluna só (achado
+          numa conversa com o usuário, em telas grandes as seções ficavam meio "vazias" na
+          largura). Em telas menores (abaixo de lg) tudo volta a empilhar numa coluna. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
       <Card>
         <CardHeader>
           <CardTitle>Dados do evento</CardTitle>
@@ -367,6 +372,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         </CardContent>
       </Card>
 
+      <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Ingresso avulso</CardTitle>
@@ -473,6 +479,8 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           </div>
         </CardContent>
       </Card>
+      </div>
+      </div>
 
       {salaoIdSelecionado && (
         <Card>
