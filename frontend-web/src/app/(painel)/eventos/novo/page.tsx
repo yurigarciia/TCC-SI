@@ -8,7 +8,7 @@ export default function NovoEventoPage() {
       <div>
         <h1 className="font-heading text-2xl font-semibold text-foreground">Novo evento</h1>
         <p className="text-sm text-muted-foreground">
-          Dados básicos, ingresso e mesas — tudo nesta tela.
+          Preencha tudo de uma vez, sem etapas separadas.
         </p>
       </div>
 
