@@ -127,7 +127,11 @@ describe('Reservas de Mesa (e2e)', () => {
           { mesaId: mesaMinhaReservaId, preco: 90, bloqueada: false },
         ],
       });
-  });
+    // Timeout maior que o padrão do Jest (5s) — este hook faz o bootstrap do módulo mais ~11
+    // requisições HTTP sequenciais de setup (salão + 9 mesas + evento + configuração de mesas)
+    // contra o Postgres remoto (Neon) usado em dev/teste, sem baixa latência garantida (mesmo
+    // achado do ingressos.e2e-spec.ts).
+  }, 30000);
 
   afterAll(async () => {
     await dataSource.query('DELETE FROM reservas WHERE evento_id = $1', [
@@ -308,6 +312,8 @@ describe('Reservas de Mesa (e2e)', () => {
   });
 
   it('recusa transferência de mesa quando a mesa nova já está ocupada, mantendo a original intacta', async () => {
+    // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll acima: várias
+    // requisições sequenciais contra o Postgres remoto (Neon).
     await request(app.getHttpServer())
       .post(`/eventos/${eventoId}/mesas/${mesaOcupadaId}/reservar`)
       .set('Authorization', `Bearer ${adminToken}`)
@@ -353,9 +359,10 @@ describe('Reservas de Mesa (e2e)', () => {
       [reservaId],
     );
     expect(consultaOriginal[0].status).toBe('confirmada');
-  });
+  }, 15000);
 
   it('RF13 — associado autenticado consulta suas próprias reservas em /reservas/minhas', async () => {
+    // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll acima.
     const autoCadastro = await request(app.getHttpServer())
       .post('/associados/auto-cadastro')
       .send({
@@ -402,7 +409,7 @@ describe('Reservas de Mesa (e2e)', () => {
       .get('/reservas/minhas')
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(403);
-  });
+  }, 15000);
 
   it('T-MOB-004 — associado solicita a própria reserva pelo app (reservar-minha)', async () => {
     const login = await request(app.getHttpServer())

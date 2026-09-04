@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -22,6 +23,7 @@ import { RolesGuard } from '../../../identidade/infrastructure/security/roles.gu
 import { Roles } from '../../../identidade/infrastructure/security/roles.decorator';
 import { Perfil } from '../../../identidade/domain/usuario.entity';
 import { CriarEventoUseCase } from '../../application/use-cases/criar-evento.use-case';
+import { AtualizarEventoUseCase } from '../../application/use-cases/atualizar-evento.use-case';
 import { ConfigurarMesasEventoUseCase } from '../../application/use-cases/configurar-mesas-evento.use-case';
 import { ConfigurarIngressoEventoUseCase } from '../../application/use-cases/configurar-ingresso-evento.use-case';
 import { PublicarEventoUseCase } from '../../application/use-cases/publicar-evento.use-case';
@@ -33,6 +35,7 @@ import {
 import { ConsultarEventoUseCase } from '../../application/use-cases/consultar-evento.use-case';
 import { ConsultarEventoPublicadoUseCase } from '../../application/use-cases/consultar-evento-publicado.use-case';
 import { CriarEventoDto } from './dto/criar-evento.dto';
+import { AtualizarEventoDto } from './dto/atualizar-evento.dto';
 import { ConfigurarMesasEventoDto } from './dto/configurar-mesas-evento.dto';
 import { ConfigurarIngressoEventoDto } from './dto/configurar-ingresso-evento.dto';
 
@@ -41,6 +44,7 @@ import { ConfigurarIngressoEventoDto } from './dto/configurar-ingresso-evento.dt
 export class EventosController {
   constructor(
     private readonly criar: CriarEventoUseCase,
+    private readonly atualizar: AtualizarEventoUseCase,
     private readonly configurarMesas: ConfigurarMesasEventoUseCase,
     private readonly configurarIngresso: ConfigurarIngressoEventoUseCase,
     private readonly publicar: PublicarEventoUseCase,
@@ -145,6 +149,31 @@ export class EventosController {
   @ApiResponse({ status: 404, description: 'Evento não encontrado' })
   consultarDetalhado(@Param('id', ParseUUIDPipe) id: string) {
     return this.consultar.execute(id);
+  }
+
+  @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Atualiza dados básicos de um evento (nome, data, local, descrição, salão)',
+  })
+  @ApiResponse({ status: 200, description: 'Evento atualizado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Evento não encontrado, ou salão informado não encontrado',
+  })
+  atualizarEvento(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AtualizarEventoDto,
+  ) {
+    return this.atualizar.execute(id, dto);
   }
 
   @Put(':id/mesas')

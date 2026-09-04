@@ -102,6 +102,33 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     expect((response.body as { status: string }).status).toBe('rascunho');
   });
 
+  it('atualiza dados básicos de um evento (nome, local)', async () => {
+    const atualizado = await request(app.getHttpServer())
+      .patch(`/eventos/${eventoSemCroquiId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Fandango sem mesa (renomeado) — e2e', local: 'Galpão novo' })
+      .expect(200);
+    expect((atualizado.body as { nome: string }).nome).toBe(
+      'Fandango sem mesa (renomeado) — e2e',
+    );
+
+    const consulta = await request(app.getHttpServer())
+      .get(`/eventos/${eventoSemCroquiId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const body = consulta.body as { evento: { nome: string; local: string } };
+    expect(body.evento.nome).toBe('Fandango sem mesa (renomeado) — e2e');
+    expect(body.evento.local).toBe('Galpão novo');
+  });
+
+  it('recusa atualizar um evento inexistente (404)', () => {
+    return request(app.getHttpServer())
+      .patch('/eventos/00000000-0000-0000-0000-000000000000')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Não existe' })
+      .expect(404);
+  });
+
   it('rejeita configurar mesas em evento sem croqui vinculado (400)', () => {
     return request(app.getHttpServer())
       .put(`/eventos/${eventoSemCroquiId}/mesas`)

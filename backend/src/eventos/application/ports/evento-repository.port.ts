@@ -9,9 +9,18 @@ export interface NovoEvento {
   status: StatusEvento;
 }
 
+export interface AtualizacaoEvento {
+  nome?: string;
+  data?: string;
+  local?: string;
+  descricao?: string | null;
+  salaoId?: string | null;
+}
+
 export abstract class EventoRepositoryPort {
   abstract salvar(dados: NovoEvento): Promise<Evento>;
   abstract buscarPorId(id: string): Promise<Evento | null>;
+  abstract atualizar(id: string, dados: AtualizacaoEvento): Promise<Evento>;
   abstract listarPaginado(
     pagina: number,
     limite: number,

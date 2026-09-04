@@ -250,6 +250,9 @@ describe('Mensalidades (e2e)', () => {
   });
 
   it('T-MOB-002 — associado autenticado vê e paga a própria mensalidade em /mensalidades/minhas', async () => {
+    // Timeout maior que o padrão do Jest (5s) — 8 requisições sequenciais (incluindo um
+    // auto-cadastro com hash de senha) contra o Postgres remoto (Neon) usado em dev/teste (mesmo
+    // achado do ingressos.e2e-spec.ts e do reservas.e2e-spec.ts).
     const autoCadastro = await request(app.getHttpServer())
       .post('/associados/auto-cadastro')
       .send({
@@ -320,7 +323,7 @@ describe('Mensalidades (e2e)', () => {
     expect(
       (comprovante.body as { formaPagamento: string }).formaPagamento,
     ).toBe('online');
-  });
+  }, 15000);
 
   it('recusa acesso de um associado à mensalidade de outro (403)', async () => {
     const login = await request(app.getHttpServer())

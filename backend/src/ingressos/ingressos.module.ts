@@ -8,6 +8,7 @@ import { EmitirIngressoUseCase } from './application/use-cases/emitir-ingresso.u
 import { RegistrarCheckinUseCase } from './application/use-cases/registrar-checkin.use-case';
 import { ListarIngressosEventoUseCase } from './application/use-cases/listar-ingressos-evento.use-case';
 import { ComprarMeuIngressoUseCase } from './application/use-cases/comprar-meu-ingresso.use-case';
+import { ConsultarPrecosIngressoUseCase } from './application/use-cases/consultar-precos-ingresso.use-case';
 import { IngressoOrmEntity } from './infrastructure/persistence/ingresso.orm-entity';
 import { PrecoIngressoOrmEntity } from './infrastructure/persistence/preco-ingresso.orm-entity';
 import { TypeOrmIngressoRepositoryAdapter } from './infrastructure/persistence/typeorm-ingresso-repository.adapter';
@@ -36,6 +37,7 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
     RegistrarCheckinUseCase,
     ListarIngressosEventoUseCase,
     ComprarMeuIngressoUseCase,
+    ConsultarPrecosIngressoUseCase,
     {
       provide: IngressoRepositoryPort,
       useClass: TypeOrmIngressoRepositoryAdapter,

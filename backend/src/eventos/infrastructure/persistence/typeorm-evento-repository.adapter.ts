@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import {
+  AtualizacaoEvento,
   EventoRepositoryPort,
   NovoEvento,
 } from '../../application/ports/evento-repository.port';
@@ -27,6 +28,13 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
   async buscarPorId(id: string): Promise<Evento | null> {
     const encontrado = await this.repo.findOneBy({ id });
     return encontrado ? this.paraDominio(encontrado) : null;
+  }
+
+  async atualizar(id: string, dados: AtualizacaoEvento): Promise<Evento> {
+    const { data, ...resto } = dados;
+    await this.repo.update({ id }, { ...resto, ...(data ? { data: new Date(data) } : {}) });
+    const atualizado = await this.repo.findOneByOrFail({ id });
+    return this.paraDominio(atualizado);
   }
 
   async listarPaginado(

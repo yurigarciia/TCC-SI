@@ -29,6 +29,7 @@ import { EmitirIngressoUseCase } from '../../application/use-cases/emitir-ingres
 import { RegistrarCheckinUseCase } from '../../application/use-cases/registrar-checkin.use-case';
 import { ListarIngressosEventoUseCase } from '../../application/use-cases/listar-ingressos-evento.use-case';
 import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-meu-ingresso.use-case';
+import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/consultar-precos-ingresso.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
@@ -46,6 +47,7 @@ export class IngressosController {
     private readonly checkin: RegistrarCheckinUseCase,
     private readonly listar: ListarIngressosEventoUseCase,
     private readonly comprarMeu: ComprarMeuIngressoUseCase,
+    private readonly consultarPrecos: ConsultarPrecosIngressoUseCase,
   ) {}
 
   // RF12 (T-MOB-004) — associado compra o próprio ingresso pelo app; perfil/canal/forma de
@@ -123,6 +125,24 @@ export class IngressosController {
     @Body() dto: DefinirPrecoDto,
   ) {
     return this.definirPrecoPorEvento.execute(eventoId, dto.perfil, dto.preco);
+  }
+
+  @Get('eventos/:eventoId/precos-ingresso')
+  @ApiOperation({
+    summary:
+      'Consulta o preço efetivo de ingresso por perfil de comprador pra este evento (override do evento, senão o padrão da entidade)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Preço por perfil (null quando nenhum preço foi configurado ainda)',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  consultarPrecosDoEvento(@Param('eventoId', ParseUUIDPipe) eventoId: string) {
+    return this.consultarPrecos.execute(eventoId);
   }
 
   @Post('eventos/:eventoId/ingressos')

@@ -10,6 +10,7 @@ import { AdicionarMesaUseCase } from './application/use-cases/adicionar-mesa.use
 import { ListarSaloesUseCase } from './application/use-cases/listar-saloes.use-case';
 import { ConsultarSalaoUseCase } from './application/use-cases/consultar-salao.use-case';
 import { CriarEventoUseCase } from './application/use-cases/criar-evento.use-case';
+import { AtualizarEventoUseCase } from './application/use-cases/atualizar-evento.use-case';
 import { ConfigurarMesasEventoUseCase } from './application/use-cases/configurar-mesas-evento.use-case';
 import { ConfigurarIngressoEventoUseCase } from './application/use-cases/configurar-ingresso-evento.use-case';
 import { PublicarEventoUseCase } from './application/use-cases/publicar-evento.use-case';
@@ -51,6 +52,7 @@ import { IdentidadeModule } from '../identidade/identidade.module';
     ListarSaloesUseCase,
     ConsultarSalaoUseCase,
     CriarEventoUseCase,
+    AtualizarEventoUseCase,
     ConfigurarMesasEventoUseCase,
     ConfigurarIngressoEventoUseCase,
     PublicarEventoUseCase,
