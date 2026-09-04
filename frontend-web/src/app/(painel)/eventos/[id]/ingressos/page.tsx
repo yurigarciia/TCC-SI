@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { useEvento } from "@/features/eventos/use-eventos";
 import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
@@ -35,11 +36,22 @@ import { formatarDataHora, formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
 
-const emitirSchema = z.object({
-  nomeComprador: z.string().min(2, "Informe o nome do comprador."),
-  perfilComprador: z.enum(["socio", "nao_socio", "crianca"]),
-  formaPagamento: z.enum(["presencial", "online"]),
-});
+const emitirSchema = z
+  .object({
+    nomeComprador: z.string().min(2, "Informe o nome do comprador."),
+    perfilComprador: z.enum(["socio", "nao_socio", "crianca"]),
+    categoriaSocioId: z.string().optional(),
+    formaPagamento: z.enum(["presencial", "online"]),
+  })
+  .superRefine((dados, ctx) => {
+    if (dados.perfilComprador === "socio" && !dados.categoriaSocioId) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["categoriaSocioId"],
+        message: "Selecione a categoria de sócio do comprador.",
+      });
+    }
+  });
 
 type EmitirFormValues = z.infer<typeof emitirSchema>;
 
@@ -81,6 +93,11 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const emitir = useEmitirIngresso(eventoId);
   const checkin = useRegistrarCheckin(eventoId);
 
+  // Dropdown de seleção — busca uma página grande o bastante pra cobrir todas as categorias
+  // cadastradas sem precisar de paginação aqui (número de categorias tende a ser pequeno).
+  const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
+  const categorias = resultadoCategorias?.itens;
+
   const {
     register,
     control,
@@ -92,11 +109,18 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     defaultValues: { perfilComprador: "socio", formaPagamento: "presencial" },
   });
 
+  const perfilSelecionado = useWatch({ control, name: "perfilComprador" });
+
   const onSubmitEmitir = handleSubmit((dados) => {
     emitir.mutate(dados, {
       onSuccess: (ingresso) => {
         toast.success(`Ingresso emitido — ${formatarMoeda(ingresso.preco)}.`);
-        reset({ nomeComprador: "", perfilComprador: "socio", formaPagamento: "presencial" });
+        reset({
+          nomeComprador: "",
+          perfilComprador: "socio",
+          categoriaSocioId: undefined,
+          formaPagamento: "presencial",
+        });
       },
       onError: (erro) => toast.error(erro.message || "Não foi possível emitir o ingresso."),
     });
@@ -198,6 +222,41 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 )}
               />
             </div>
+            {perfilSelecionado === "socio" && (
+              <div className="space-y-2 sm:col-span-3">
+                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                <Controller
+                  control={control}
+                  name="categoriaSocioId"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="categoriaSocioId"
+                        className="w-full"
+                        aria-invalid={!!errors.categoriaSocioId}
+                      >
+                        <SelectValue placeholder="Selecionar categoria">
+                          {(valor: string | null) =>
+                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                            "Selecionar categoria"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categorias?.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.id}>
+                            {categoria.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.categoriaSocioId && (
+                  <p className="text-sm text-destructive">{errors.categoriaSocioId.message}</p>
+                )}
+              </div>
+            )}
             <div className="sm:col-span-3 flex justify-end">
               <Button type="submit" disabled={emitir.isPending}>
                 {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}

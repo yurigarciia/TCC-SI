@@ -19,6 +19,9 @@ describe('Ingressos (e2e)', () => {
   let dataSource: DataSource;
   let adminToken: string;
   let eventoId: string;
+  let categoriaId: string;
+
+  const nomeCategoria = 'Contribuinte — ingressos e2e';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -44,11 +47,18 @@ describe('Ingressos (e2e)', () => {
       });
     eventoId = (evento.body as { id: string }).id;
 
+    // preço de sócio varia por categoria — precisa de uma categoria existente pra testar.
+    const categoria = await request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: nomeCategoria, valorMensalidade: 60 });
+    categoriaId = (categoria.body as { id: string }).id;
+
     // preço padrão da entidade (usado quando o evento não sobrescreve)
     await request(app.getHttpServer())
       .put('/precos-ingresso')
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ perfil: 'socio', preco: 20 });
+      .send({ perfil: 'socio', preco: 20, categoriaSocioId: categoriaId });
     await request(app.getHttpServer())
       .put('/precos-ingresso')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -58,18 +68,18 @@ describe('Ingressos (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ perfil: 'crianca', preco: 5 });
 
-    // override específico deste evento para sócio
+    // override específico deste evento para sócio (mesma categoria)
     await request(app.getHttpServer())
       .put(`/eventos/${eventoId}/precos-ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ perfil: 'socio', preco: 15 });
+      .send({ perfil: 'socio', preco: 15, categoriaSocioId: categoriaId });
 
     await request(app.getHttpServer())
       .put(`/eventos/${eventoId}/ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ quantidadeDisponivel: 3, preco: 20 });
     // Timeout maior que o padrão do Jest (5s) — este hook faz o bootstrap do módulo (Nest +
-    // conexão TypeORM) mais 6 requisições HTTP sequenciais de setup, e o banco de testes é o
+    // conexão TypeORM) mais várias requisições HTTP sequenciais de setup, e o banco de testes é o
     // mesmo Postgres remoto (Neon) usado em dev, sem baixa latência garantida (achado numa
     // conversa com o usuário: essa suíte estourava o hook de forma consistente, não só
     // esporádica — as outras suítes têm menos chamadas sequenciais no beforeAll e raramente
@@ -91,6 +101,9 @@ describe('Ingressos (e2e)', () => {
       [eventoId],
     );
     await dataSource.query('DELETE FROM eventos WHERE id = $1', [eventoId]);
+    await dataSource.query('DELETE FROM categorias_socio WHERE nome = $1', [
+      nomeCategoria,
+    ]);
     await app.close();
   });
 
@@ -101,11 +114,25 @@ describe('Ingressos (e2e)', () => {
       .send({
         nomeComprador: 'Sócio Teste',
         perfilComprador: 'socio',
+        categoriaSocioId: categoriaId,
         canal: 'mediado',
         formaPagamento: 'presencial',
       })
       .expect(201);
     expect(Number((response.body as { preco: string }).preco)).toBe(15);
+  });
+
+  it('recusa emitir ingresso de sócio sem informar a categoria (400)', () => {
+    return request(app.getHttpServer())
+      .post(`/eventos/${eventoId}/ingressos`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nomeComprador: 'Sócio Sem Categoria',
+        perfilComprador: 'socio',
+        canal: 'mediado',
+        formaPagamento: 'presencial',
+      })
+      .expect(400);
   });
 
   it('aplica o preço padrão da entidade para não-sócio (sem override no evento)', async () => {
@@ -122,18 +149,31 @@ describe('Ingressos (e2e)', () => {
     expect(Number((response.body as { preco: string }).preco)).toBe(40);
   });
 
-  it('consulta os preços por perfil resolvidos pra este evento (override + padrão)', async () => {
+  it('consulta os preços resolvidos pra este evento, por categoria de sócio (override + padrão)', async () => {
     const resposta = await request(app.getHttpServer())
       .get(`/eventos/${eventoId}/precos-ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    const precos = resposta.body as Record<string, number | string | null>;
-    expect(Number(precos.socio)).toBe(15); // override específico do evento
-    expect(Number(precos.nao_socio)).toBe(40); // cai pro padrão da entidade
-    expect(Number(precos.crianca)).toBe(5); // cai pro padrão da entidade
+    const corpo = resposta.body as {
+      porCategoria: Array<{
+        categoriaSocioId: string;
+        categoriaNome: string;
+        preco: number | string | null;
+      }>;
+      naoSocio: number | string | null;
+      crianca: number | string | null;
+    };
+    const precoCategoria = corpo.porCategoria.find(
+      (item) => item.categoriaSocioId === categoriaId,
+    );
+    expect(precoCategoria).toBeDefined();
+    expect(precoCategoria!.categoriaNome).toBe(nomeCategoria);
+    expect(Number(precoCategoria!.preco)).toBe(15); // override específico do evento
+    expect(Number(corpo.naoSocio)).toBe(40); // cai pro padrão da entidade
+    expect(Number(corpo.crianca)).toBe(5); // cai pro padrão da entidade
   });
 
-  it('preço por perfil não configurado (nem padrão, nem override) resolve como null', async () => {
+  it('preço não configurado (nem padrão, nem override) resolve como null', async () => {
     const outroEvento = await request(app.getHttpServer())
       .post('/eventos')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -144,19 +184,31 @@ describe('Ingressos (e2e)', () => {
       });
     const outroEventoId = (outroEvento.body as { id: string }).id;
 
-    // este evento nunca teve preço padrão nem override definidos pra nenhum perfil — a única
-    // forma disso acontecer é rodando este teste isolado (sem o beforeAll de outro describe já
-    // ter definido o padrão da entidade); mesmo que o padrão já exista de outro teste, o que
-    // importa aqui é a forma da resposta (nunca falha com erro, sempre 200 com os 3 perfis).
+    const outraCategoria = await request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Categoria sem preço — ingressos e2e', valorMensalidade: 30 });
+    const outraCategoriaId = (outraCategoria.body as { id: string }).id;
+
     const resposta = await request(app.getHttpServer())
       .get(`/eventos/${outroEventoId}/precos-ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    const precos = resposta.body as Record<string, number | string | null>;
-    expect(Object.keys(precos).sort()).toEqual(['crianca', 'nao_socio', 'socio']);
+    const corpo = resposta.body as {
+      porCategoria: Array<{ categoriaSocioId: string; preco: number | null }>;
+      naoSocio: number | null;
+      crianca: number | null;
+    };
+    const precoCategoria = corpo.porCategoria.find(
+      (item) => item.categoriaSocioId === outraCategoriaId,
+    );
+    expect(precoCategoria?.preco).toBeNull();
 
     await dataSource.query('DELETE FROM eventos WHERE id = $1', [
       outroEventoId,
+    ]);
+    await dataSource.query('DELETE FROM categorias_socio WHERE id = $1', [
+      outraCategoriaId,
     ]);
   });
 
@@ -239,6 +291,14 @@ describe('Ingressos (e2e)', () => {
       .post(`/associados/${associadoId}/aprovar`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(201);
+
+    // Preço de sócio varia por categoria — associado precisa ter uma categoria definida antes de
+    // conseguir comprar (ComprarMeuIngressoUseCase recusa sem isso).
+    await request(app.getHttpServer())
+      .patch(`/associados/${associadoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ categoriaSocioId: categoriaId })
+      .expect(200);
 
     const eventoAssociado = await request(app.getHttpServer())
       .post('/eventos')

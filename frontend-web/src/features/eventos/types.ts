@@ -62,10 +62,23 @@ export interface AtualizarEventoInput {
 // aqui pra não criar um import cruzado só por causa de um tipo.
 export type PerfilComprador = "socio" | "nao_socio" | "crianca";
 
-// null = nenhum preço configurado ainda (nem override do evento, nem padrão da entidade).
-export type PrecosIngressoPorPerfil = Record<PerfilComprador, number | null>;
+export interface PrecoPorCategoriaSocio {
+  categoriaSocioId: string;
+  categoriaNome: string;
+  preco: number | null;
+}
+
+// Preço de sócio varia por categoria (Contribuinte, Benemérito etc.) — não-sócio e criança
+// continuam com um preço só, não têm categoria. null = nenhum preço configurado ainda (nem
+// override do evento, nem padrão da entidade).
+export interface PrecosIngressoConfigurados {
+  porCategoria: PrecoPorCategoriaSocio[];
+  naoSocio: number | null;
+  crianca: number | null;
+}
 
 export interface DefinirPrecoIngressoInput {
   perfil: PerfilComprador;
   preco: number;
+  categoriaSocioId?: string;
 }

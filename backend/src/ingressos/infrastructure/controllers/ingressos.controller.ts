@@ -104,7 +104,7 @@ export class IngressosController {
     description: 'Usuário autenticado não é administrador',
   })
   definirPrecoPadraoDaEntidade(@Body() dto: DefinirPrecoDto) {
-    return this.definirPrecoPadrao.execute(dto.perfil, dto.preco);
+    return this.definirPrecoPadrao.execute(dto.perfil, dto.preco, dto.categoriaSocioId);
   }
 
   @Put('eventos/:eventoId/precos-ingresso')
@@ -124,7 +124,12 @@ export class IngressosController {
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
     @Body() dto: DefinirPrecoDto,
   ) {
-    return this.definirPrecoPorEvento.execute(eventoId, dto.perfil, dto.preco);
+    return this.definirPrecoPorEvento.execute(
+      eventoId,
+      dto.perfil,
+      dto.preco,
+      dto.categoriaSocioId,
+    );
   }
 
   @Get('eventos/:eventoId/precos-ingresso')

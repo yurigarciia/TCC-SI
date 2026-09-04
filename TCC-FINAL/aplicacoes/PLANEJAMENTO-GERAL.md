@@ -396,6 +396,26 @@ planejamentos específicos — este backlog é o nível "épico/ticket inicial".
   run build`, `npm run lint` e `npm run test:e2e` (5 testes: override de preço por evento, preço
   padrão, pagamento online via gateway, esgotamento de quantidade, busca manual + check-in +
   reuso recusado).
+- **Adendo (preço de sócio por categoria):** pedido do usuário depois do preço "sócio" único ter
+  sido exposto na UI pela primeira vez (ver adendo em T-FE-006) — a ideia sempre foi variar o
+  preço por categoria de sócio (Contribuinte, Benemérito etc.), não um valor fixo pra "sócio"
+  igual pra todo mundo; nao_socio/crianca continuam com um preço só (não têm categoria).
+  `PrecoIngresso` ganha `categoriaSocioId` nullable (migração
+  `1756100000000-AddCategoriaSocioIdToPrecosIngresso`) — preenchido só quando `perfil = SOCIO`,
+  validado nos use cases (`DefinirPrecoPadraoUseCase`/`DefinirPrecoPorEventoUseCase`: 400 sem
+  categoria informada quando perfil é sócio, 404 se a categoria não existe — mesma checagem via
+  `CategoriaSocioRepositoryPort.buscarPorId`, já exportado por `AssociadosModule` e importado por
+  `IngressosModule` desde antes). `EmitirIngressoUseCase` passa a exigir `categoriaSocioId` pra
+  perfil sócio, tanto na venda presencial (`EmitirIngressoDto`, escolhida por quem está vendendo)
+  quanto na compra pelo app (`ComprarMeuIngressoUseCase` usa a categoria já cadastrada do
+  associado — recusa com 400 se o associado não tiver categoria definida). `resolverPreco` e o
+  upsert interno do adapter passam a incluir `categoriaSocioId` na chave de busca (`IsNull()`
+  quando não se aplica, senão duas linhas com perfil sócio e categorias diferentes colidiriam).
+  `ConsultarPrecosIngressoUseCase` reescrito: em vez de um valor por perfil, resolve um preço por
+  categoria cadastrada (busca todas via `CategoriaSocioRepositoryPort.listarPaginado`, resolve o
+  preço de cada uma) mais os dois valores fixos (`naoSocio`, `crianca`). Validado com `npm run
+  build` e `npm run test:e2e` (60/60, um teste novo: recusa emitir ingresso de sócio sem
+  categoria).
 
 #### Ticket: T-BE-010 Cancelamento/Transferência de Reserva (RF15)
 - **Priority:** Could
@@ -747,6 +767,22 @@ frentes de frontend-web e mobile.
   caminho, sem relação com esta ticket: um `curl` desta própria sessão gravou um nome de salão com
   acentuação corrompida no banco (charset do terminal, não um bug do app) — encontrado ao revisar
   o screenshot, confirmado direto no Postgres, e limpo.
+- **Adendo (preço de sócio por categoria):** o card "Preço por perfil de comprador" tinha um
+  campo "Sócio" único — pedido do usuário logo em seguida pra variar por categoria de sócio (ver
+  adendo correspondente em T-BE-009). Campo único vira uma lista dinâmica, uma linha por categoria
+  cadastrada (`useCategoriasSocio`, mesmo hook e mesmo `limite=100` já usado no dropdown de croqui
+  — sem paginação aqui, número de categorias tende a ser pequeno), populada via `useFieldArray` +
+  `reset()` num `useEffect` dependente da query de categorias, mesmo padrão já usado pras mesas do
+  croqui. Não-sócio/criança continuam como campos fixos (não têm categoria). O `POST`/`PUT` de
+  cada categoria preenchida no submit passa `categoriaSocioId` no corpo. Tela de emissão de
+  ingresso (`/eventos/[id]/ingressos`) ganhou o mesmo tratamento: um `Select` de "Categoria de
+  sócio" aparece condicionalmente (`useWatch` no perfil escolhido) só quando o perfil selecionado
+  é "Sócio", validado com `superRefine` no schema (exige a categoria só nesse caso). Validado com
+  `npm run build`, `npm run lint` e teste manual ponta a ponta headless contra o backend real:
+  criei 2 categorias, preenchi preço só pra uma delas + não-sócio no formulário de criação de
+  evento, confirmei o toast e o redirect, e vi o mesmo valor pré-preenchido na tela de edição —
+  prova de que a escrita (um `PUT /precos-ingresso` por categoria preenchida) e a leitura (o novo
+  formato do `GET`) resolvem corretamente ponta a ponta.
 
 #### Ticket: T-FE-007 Mapa de Mesas e Reservas (visão da diretoria)
 - **Priority:** Must

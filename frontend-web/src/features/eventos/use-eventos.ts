@@ -11,7 +11,7 @@ import type {
   Evento,
   EventoDetalhado,
   NovoEventoInput,
-  PrecosIngressoPorPerfil,
+  PrecosIngressoConfigurados,
 } from "./types";
 
 const CHAVE_LISTA = ["eventos"] as const;
@@ -65,7 +65,7 @@ export function usePrecosIngressoEvento(eventoId: string) {
   return useQuery({
     queryKey: chavePrecos(eventoId),
     queryFn: () =>
-      apiFetch<PrecosIngressoPorPerfil>(`/eventos/${eventoId}/precos-ingresso`),
+      apiFetch<PrecosIngressoConfigurados>(`/eventos/${eventoId}/precos-ingresso`),
     enabled: !!eventoId,
   });
 }

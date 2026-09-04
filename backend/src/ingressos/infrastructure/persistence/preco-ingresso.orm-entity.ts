@@ -12,6 +12,10 @@ export class PrecoIngressoOrmEntity {
   @Column({ type: 'varchar' })
   perfil: PerfilComprador;
 
+  // Preenchido só quando perfil = 'socio' — cada categoria de sócio tem seu próprio preço.
+  @Column({ name: 'categoria_socio_id', type: 'uuid', nullable: true })
+  categoriaSocioId: string | null;
+
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   preco: string;
 }

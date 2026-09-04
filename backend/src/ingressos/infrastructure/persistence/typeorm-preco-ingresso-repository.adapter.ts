@@ -18,44 +18,58 @@ export class TypeOrmPrecoIngressoRepositoryAdapter extends PrecoIngressoReposito
   async definirPadrao(
     perfil: PerfilComprador,
     preco: number,
+    categoriaSocioId: string | null,
   ): Promise<PrecoIngresso> {
-    return this.upsert(null, perfil, preco);
+    return this.upsert(null, perfil, categoriaSocioId, preco);
   }
 
   async definirPorEvento(
     eventoId: string,
     perfil: PerfilComprador,
     preco: number,
+    categoriaSocioId: string | null,
   ): Promise<PrecoIngresso> {
-    return this.upsert(eventoId, perfil, preco);
+    return this.upsert(eventoId, perfil, categoriaSocioId, preco);
   }
 
   async resolverPreco(
     eventoId: string,
     perfil: PerfilComprador,
+    categoriaSocioId: string | null,
   ): Promise<number | null> {
-    const override = await this.repo.findOneBy({ eventoId, perfil });
+    const override = await this.repo.findOneBy({
+      eventoId,
+      perfil,
+      categoriaSocioId: categoriaSocioId ?? IsNull(),
+    });
     if (override) {
       return Number(override.preco);
     }
-    const padrao = await this.repo.findOneBy({ eventoId: IsNull(), perfil });
+    const padrao = await this.repo.findOneBy({
+      eventoId: IsNull(),
+      perfil,
+      categoriaSocioId: categoriaSocioId ?? IsNull(),
+    });
     return padrao ? Number(padrao.preco) : null;
   }
 
   private async upsert(
     eventoId: string | null,
     perfil: PerfilComprador,
+    categoriaSocioId: string | null,
     preco: number,
   ): Promise<PrecoIngresso> {
     const existente = await this.repo.findOneBy({
       eventoId: eventoId ?? IsNull(),
       perfil,
+      categoriaSocioId: categoriaSocioId ?? IsNull(),
     });
     const salvo = await this.repo.save(
       this.repo.create({
         ...(existente ? { id: existente.id } : {}),
         eventoId,
         perfil,
+        categoriaSocioId,
         preco: String(preco),
       }),
     );
@@ -67,6 +81,7 @@ export class TypeOrmPrecoIngressoRepositoryAdapter extends PrecoIngressoReposito
       orm.id,
       orm.eventoId,
       orm.perfil,
+      orm.categoriaSocioId,
       Number(orm.preco),
     );
   }

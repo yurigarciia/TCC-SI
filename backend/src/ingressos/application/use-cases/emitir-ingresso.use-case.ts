@@ -23,6 +23,9 @@ export interface DadosEmissaoIngresso {
   perfilComprador: PerfilComprador;
   canal: CanalIngresso;
   formaPagamento: FormaPagamentoIngresso;
+  // Obrigatório quando perfilComprador = SOCIO (preço varia por categoria de sócio); ignorado
+  // pros demais perfis.
+  categoriaSocioId?: string;
 }
 
 // emissao-ingresso.json: preço diferenciado por perfil (sócio/não-sócio/criança), padrão da
@@ -63,9 +66,16 @@ export class EmitirIngressoUseCase {
       throw new ConflictException('Ingressos esgotados para este evento');
     }
 
+    if (dados.perfilComprador === PerfilComprador.SOCIO && !dados.categoriaSocioId) {
+      throw new BadRequestException(
+        'Informe a categoria de sócio do comprador',
+      );
+    }
+
     const preco = await this.precos.resolverPreco(
       eventoId,
       dados.perfilComprador,
+      dados.categoriaSocioId ?? null,
     );
     if (preco === null) {
       throw new BadRequestException(

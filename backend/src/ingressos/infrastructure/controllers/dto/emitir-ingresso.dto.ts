@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, MinLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
 import {
   CanalIngresso,
   FormaPagamentoIngresso,
@@ -15,6 +15,13 @@ export class EmitirIngressoDto {
   @ApiProperty({ enum: PerfilComprador, example: PerfilComprador.SOCIO })
   @IsEnum(PerfilComprador)
   perfilComprador: PerfilComprador;
+
+  // Obrigatório quando perfilComprador = SOCIO (validado no use case — preço varia por
+  // categoria); ignorado pros demais perfis.
+  @ApiPropertyOptional({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })
+  @IsOptional()
+  @IsUUID()
+  categoriaSocioId?: string;
 
   @ApiProperty({ enum: CanalIngresso, example: CanalIngresso.MEDIADO })
   @IsEnum(CanalIngresso)

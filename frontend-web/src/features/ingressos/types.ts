@@ -20,4 +20,6 @@ export interface EmitirIngressoInput {
   nomeComprador: string;
   perfilComprador: PerfilComprador;
   formaPagamento: FormaPagamentoIngresso;
+  // Obrigatório quando perfilComprador = "socio" (preço varia por categoria de sócio).
+  categoriaSocioId?: string;
 }

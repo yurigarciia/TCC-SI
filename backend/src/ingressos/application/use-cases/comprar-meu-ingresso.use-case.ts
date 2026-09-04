@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../../../associados/application/ports/associado-repository.port';
 import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-repository.port';
 import { NotificationSenderPort } from '../../../shared/notifications/application/ports/notification-sender.port';
@@ -31,11 +31,17 @@ export class ComprarMeuIngressoUseCase {
     if (!associado) {
       throw new NotFoundException('Nenhum associado vinculado a este usuário');
     }
+    if (!associado.categoriaSocioId) {
+      throw new BadRequestException(
+        'Associado sem categoria de sócio definida — procure a diretoria antes de comprar',
+      );
+    }
     const ingresso = await this.emitirIngresso.execute(eventoId, {
       nomeComprador: associado.nome,
       perfilComprador: PerfilComprador.SOCIO,
       canal: CanalIngresso.APP,
       formaPagamento: FormaPagamentoIngresso.ONLINE,
+      categoriaSocioId: associado.categoriaSocioId,
     });
 
     const evento = await this.eventos.buscarPorId(eventoId);

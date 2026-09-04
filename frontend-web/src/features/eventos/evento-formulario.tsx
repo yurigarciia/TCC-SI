@@ -30,13 +30,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-client";
 import { paraInputDatetimeLocal } from "@/lib/format";
+import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { useSalao, useSaloes } from "@/features/saloes/use-saloes";
 import type {
   ConfiguracaoIngressoEvento,
   ConfiguracaoMesaEvento,
   Evento,
   PerfilComprador,
-  PrecosIngressoPorPerfil,
+  PrecosIngressoConfigurados,
 } from "./types";
 
 const mesaFormSchema = z.object({
@@ -44,6 +45,12 @@ const mesaFormSchema = z.object({
   numero: z.number(),
   preco: z.coerce.number().min(0, "Informe um preço válido."),
   bloqueada: z.boolean(),
+});
+
+const precoCategoriaFormSchema = z.object({
+  categoriaSocioId: z.string(),
+  categoriaNome: z.string(),
+  preco: z.string().optional(),
 });
 
 const formSchema = z.object({
@@ -54,7 +61,7 @@ const formSchema = z.object({
   salaoId: z.string().optional(),
   quantidadeDisponivel: z.string().optional(),
   precoAvulso: z.string().optional(),
-  precoSocio: z.string().optional(),
+  precosPorCategoria: z.array(precoCategoriaFormSchema),
   precoNaoSocio: z.string().optional(),
   precoCrianca: z.string().optional(),
   mesas: z.array(mesaFormSchema),
@@ -73,7 +80,7 @@ export interface DadosIniciaisEvento {
   evento: Evento;
   mesas: ConfiguracaoMesaEvento[];
   ingresso: ConfiguracaoIngressoEvento | null;
-  precos: PrecosIngressoPorPerfil;
+  precos: PrecosIngressoConfigurados;
 }
 
 interface EventoFormularioProps {
@@ -115,9 +122,9 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         ? String(dadosIniciais.ingresso.quantidadeDisponivel)
         : "",
       precoAvulso: dadosIniciais?.ingresso ? String(dadosIniciais.ingresso.preco) : "",
-      precoSocio: dadosIniciais?.precos.socio != null ? String(dadosIniciais.precos.socio) : "",
+      precosPorCategoria: [],
       precoNaoSocio:
-        dadosIniciais?.precos.nao_socio != null ? String(dadosIniciais.precos.nao_socio) : "",
+        dadosIniciais?.precos.naoSocio != null ? String(dadosIniciais.precos.naoSocio) : "",
       precoCrianca:
         dadosIniciais?.precos.crianca != null ? String(dadosIniciais.precos.crianca) : "",
       mesas: [],
@@ -127,6 +134,35 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
   const salaoIdSelecionado = useWatch({ control, name: "salaoId" });
   const { data: salaoData, isLoading: carregandoSalao } = useSalao(salaoIdSelecionado ?? "");
   const { fields, replace } = useFieldArray({ control, name: "mesas" });
+
+  // Dropdown/lista de categorias — busca uma página grande o bastante pra cobrir todas as
+  // categorias cadastradas sem precisar de paginação aqui (número de categorias tende a ser
+  // pequeno). Preço de sócio varia por categoria (Contribuinte, Benemérito etc.), em vez de um
+  // valor único pra qualquer sócio.
+  const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
+  const categorias = resultadoCategorias?.itens;
+  const { fields: fieldsCategoria, replace: replaceCategorias } = useFieldArray({
+    control,
+    name: "precosPorCategoria",
+  });
+
+  useEffect(() => {
+    if (!categorias) return;
+    const precoPorCategoria = new Map(
+      (dadosIniciais?.precos.porCategoria ?? []).map((p) => [p.categoriaSocioId, p.preco]),
+    );
+    replaceCategorias(
+      categorias.map((categoria) => {
+        const preco = precoPorCategoria.get(categoria.id);
+        return {
+          categoriaSocioId: categoria.id,
+          categoriaNome: categoria.nome,
+          preco: preco != null ? String(preco) : "",
+        };
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categorias]);
 
   useEffect(() => {
     if (!salaoData) {
@@ -204,12 +240,24 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         });
       }
 
-      const precosParaSalvar: Array<[PerfilComprador, number | undefined]> = [
-        ["socio", paraNumeroOpcional(dados.precoSocio)],
+      for (const item of dados.precosPorCategoria) {
+        const preco = paraNumeroOpcional(item.preco);
+        if (preco === undefined) continue;
+        await apiFetch(`/eventos/${idAlvo}/precos-ingresso`, {
+          method: "PUT",
+          body: JSON.stringify({
+            perfil: "socio" satisfies PerfilComprador,
+            preco,
+            categoriaSocioId: item.categoriaSocioId,
+          }),
+        });
+      }
+
+      const precosFlat: Array<[PerfilComprador, number | undefined]> = [
         ["nao_socio", paraNumeroOpcional(dados.precoNaoSocio)],
         ["crianca", paraNumeroOpcional(dados.precoCrianca)],
       ];
-      for (const [perfil, preco] of precosParaSalvar) {
+      for (const [perfil, preco] of precosFlat) {
         if (preco === undefined) continue;
         await apiFetch(`/eventos/${idAlvo}/precos-ingresso`, {
           method: "PUT",
@@ -358,23 +406,48 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
         <CardHeader>
           <CardTitle>Preço por perfil de comprador</CardTitle>
           <CardDescription>
-            Preço realmente cobrado na emissão do ingresso (venda presencial ou pelo app) — cada
-            perfil em branco cai no padrão já configurado pra entidade, se houver.
+            Preço realmente cobrado na emissão do ingresso (venda presencial ou pelo app). Sócio
+            varia por categoria; cada campo em branco cai no padrão já configurado pra entidade,
+            se houver.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-3">
+        <CardContent className="space-y-4">
+          {fieldsCategoria.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nenhuma categoria de sócio cadastrada —{" "}
+              <Link
+                href="/associados/categorias/novo"
+                target="_blank"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                crie uma
+              </Link>{" "}
+              pra poder definir o preço de sócio.
+            </p>
+          ) : (
             <div className="space-y-2">
-              <Label htmlFor="precoSocio">Sócio</Label>
-              <Input
-                id="precoSocio"
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="0,00"
-                {...register("precoSocio")}
-              />
+              <Label>Sócio, por categoria</Label>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {fieldsCategoria.map((campo, indice) => (
+                  <div key={campo.id} className="space-y-2">
+                    <Label htmlFor={`precoCategoria-${indice}`} className="font-normal text-muted-foreground">
+                      {campo.categoriaNome}
+                    </Label>
+                    <Input
+                      id={`precoCategoria-${indice}`}
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="0,00"
+                      {...register(`precosPorCategoria.${indice}.preco` as const)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="precoNaoSocio">Não-sócio</Label>
               <Input
