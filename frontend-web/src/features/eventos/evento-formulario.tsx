@@ -333,11 +333,14 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
 
   return (
     <form onSubmit={onSubmit} className="space-y-6" noValidate>
-      {/* Dados do evento à esquerda, ingresso avulso + preço por perfil empilhados à direita —
-          aproveita a largura em monitores maiores em vez de empilhar tudo numa coluna só (achado
-          numa conversa com o usuário, em telas grandes as seções ficavam meio "vazias" na
-          largura). Em telas menores (abaixo de lg) tudo volta a empilhar numa coluna. */}
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      {/* Dados do evento à esquerda, ingresso avulso + preço por perfil à direita — aproveita a
+          largura em monitores maiores em vez de empilhar tudo numa coluna só (achado numa
+          conversa com o usuário, em telas grandes as seções ficavam meio "vazias" na largura).
+          Em telas menores (abaixo de lg) tudo volta a empilhar numa coluna. Colunas esticam pra
+          mesma altura (`items-stretch`, o padrão do grid) — antes eram `items-start`, e o card de
+          ingresso, bem mais curto que o de dados do evento, ficava visualmente desbalanceado ao
+          lado dele. */}
+      <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
           <TituloComIcone icon={PartyPopper}>Dados do evento</TituloComIcone>
@@ -439,8 +442,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           <TituloComIcone icon={Ticket}>Ingresso avulso</TituloComIcone>
           <CardDescription>
             Entrada sem mesa vinculada. Deixe a quantidade em branco se este evento só vende por
-            mesa (veja &quot;Mesas do croqui&quot;, abaixo) — ou se não tiver salão nem ingresso
-            avulso, ninguém consegue comprar entrada pelo app.
+            mesa (veja &quot;Mesas do croqui&quot;, abaixo).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
