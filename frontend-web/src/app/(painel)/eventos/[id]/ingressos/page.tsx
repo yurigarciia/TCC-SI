@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QrCode, TicketPlus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -9,6 +10,13 @@ import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -83,6 +91,12 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const [filtroNome, setFiltroNome] = useState("");
   const [pagina, setPagina] = useState(1);
   const [codigoCheckin, setCodigoCheckin] = useState("");
+  // Achado numa conversa com o usuário: os cards de "Vender ingresso" e "Check-in" ficavam sempre
+  // abertos, competindo com a listagem (o foco de verdade da tela — é o que a diretoria mais
+  // consulta) por espaço. Viraram botões de ação que abrem um modal cada, deixando a listagem
+  // como o conteúdo principal da página.
+  const [modalVenda, setModalVenda] = useState(false);
+  const [modalCheckin, setModalCheckin] = useState(false);
 
   const { data: resultado, isLoading, isError } = useIngressosEvento(
     eventoId,
@@ -152,142 +166,30 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <Breadcrumb
-          items={[
-            { label: "Eventos", href: "/eventos" },
-            { label: nomeEvento, href: `/eventos/${eventoId}` },
-            { label: "Ingressos" },
-          ]}
-        />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
-          Emissão e check-in de ingressos
-        </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <Breadcrumb
+            items={[
+              { label: "Eventos", href: "/eventos" },
+              { label: nomeEvento, href: `/eventos/${eventoId}` },
+              { label: "Ingressos" },
+            ]}
+          />
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            Emissão e check-in de ingressos
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setModalCheckin(true)}>
+            <QrCode />
+            Check-in
+          </Button>
+          <Button onClick={() => setModalVenda(true)}>
+            <TicketPlus />
+            Vender ingresso
+          </Button>
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Vender ingresso presencial</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmitEmitir} className="grid gap-4 sm:grid-cols-3" noValidate>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="nomeComprador">Nome do comprador</Label>
-              <Input
-                id="nomeComprador"
-                placeholder="Ex.: Maria da Silva"
-                aria-invalid={!!errors.nomeComprador}
-                {...register("nomeComprador")}
-              />
-              {errors.nomeComprador && (
-                <p className="text-sm text-destructive">{errors.nomeComprador.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="perfilComprador">Perfil</Label>
-              <Controller
-                control={control}
-                name="perfilComprador"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="perfilComprador" className="w-full">
-                      <SelectValue>
-                        {(valor: EmitirFormValues["perfilComprador"]) => rotuloPerfilComprador(valor)}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="socio">Sócio</SelectItem>
-                      <SelectItem value="nao_socio">Não-sócio</SelectItem>
-                      <SelectItem value="crianca">Criança</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="formaPagamento">Forma de pagamento</Label>
-              <Controller
-                control={control}
-                name="formaPagamento"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="formaPagamento" className="w-full">
-                      <SelectValue>
-                        {(valor: EmitirFormValues["formaPagamento"]) =>
-                          valor === "online" ? "Online" : "Presencial"
-                        }
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="presencial">Presencial</SelectItem>
-                      <SelectItem value="online">Online</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            {perfilSelecionado === "socio" && (
-              <div className="space-y-2 sm:col-span-3">
-                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
-                <Controller
-                  control={control}
-                  name="categoriaSocioId"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger
-                        id="categoriaSocioId"
-                        className="w-full"
-                        aria-invalid={!!errors.categoriaSocioId}
-                      >
-                        <SelectValue placeholder="Selecionar categoria">
-                          {(valor: string | null) =>
-                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
-                            "Selecionar categoria"
-                          }
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categorias?.map((categoria) => (
-                          <SelectItem key={categoria.id} value={categoria.id}>
-                            {categoria.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.categoriaSocioId && (
-                  <p className="text-sm text-destructive">{errors.categoriaSocioId.message}</p>
-                )}
-              </div>
-            )}
-            <div className="sm:col-span-3 flex justify-end">
-              <Button type="submit" disabled={emitir.isPending}>
-                {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Check-in por código (QR)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <QrCodeScanner onScan={processarCheckinPorCodigo} />
-          <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
-            <Input
-              placeholder="Ou cole/digite o código do ingresso"
-              value={codigoCheckin}
-              onChange={(e) => setCodigoCheckin(e.target.value)}
-            />
-            <Button type="submit" disabled={!codigoCheckin.trim() || checkin.isPending}>
-              Validar entrada
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>
@@ -357,6 +259,136 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={modalVenda} onOpenChange={setModalVenda}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Vender ingresso presencial</DialogTitle>
+            <DialogDescription>
+              Emitido na hora, na mão — pra quando alguém compra na entrada, sem passar pelo app.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={onSubmitEmitir} className="grid gap-4 sm:grid-cols-3" noValidate>
+            <div className="space-y-2 sm:col-span-3">
+              <Label htmlFor="nomeComprador">Nome do comprador</Label>
+              <Input
+                id="nomeComprador"
+                placeholder="Ex.: Maria da Silva"
+                aria-invalid={!!errors.nomeComprador}
+                {...register("nomeComprador")}
+              />
+              {errors.nomeComprador && (
+                <p className="text-sm text-destructive">{errors.nomeComprador.message}</p>
+              )}
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="perfilComprador">Perfil</Label>
+              <Controller
+                control={control}
+                name="perfilComprador"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="perfilComprador" className="w-full">
+                      <SelectValue>
+                        {(valor: EmitirFormValues["perfilComprador"]) => rotuloPerfilComprador(valor)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="socio">Sócio</SelectItem>
+                      <SelectItem value="nao_socio">Não-sócio</SelectItem>
+                      <SelectItem value="crianca">Criança</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="formaPagamento">Pagamento</Label>
+              <Controller
+                control={control}
+                name="formaPagamento"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="formaPagamento" className="w-full">
+                      <SelectValue>
+                        {(valor: EmitirFormValues["formaPagamento"]) =>
+                          valor === "online" ? "Online" : "Presencial"
+                        }
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="presencial">Presencial</SelectItem>
+                      <SelectItem value="online">Online</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+            {perfilSelecionado === "socio" && (
+              <div className="space-y-2 sm:col-span-3">
+                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                <Controller
+                  control={control}
+                  name="categoriaSocioId"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="categoriaSocioId"
+                        className="w-full"
+                        aria-invalid={!!errors.categoriaSocioId}
+                      >
+                        <SelectValue placeholder="Selecionar categoria">
+                          {(valor: string | null) =>
+                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                            "Selecionar categoria"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categorias?.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.id}>
+                            {categoria.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.categoriaSocioId && (
+                  <p className="text-sm text-destructive">{errors.categoriaSocioId.message}</p>
+                )}
+              </div>
+            )}
+            <div className="sm:col-span-3 flex justify-end">
+              <Button type="submit" disabled={emitir.isPending}>
+                {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modalCheckin} onOpenChange={setModalCheckin}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Check-in por código (QR)</DialogTitle>
+            <DialogDescription>Aponte a câmera pro QR do ingresso, ou digite o código na mão.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <QrCodeScanner onScan={processarCheckinPorCodigo} />
+            <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
+              <Input
+                placeholder="Ou cole/digite o código do ingresso"
+                value={codigoCheckin}
+                onChange={(e) => setCodigoCheckin(e.target.value)}
+              />
+              <Button type="submit" disabled={!codigoCheckin.trim() || checkin.isPending}>
+                Validar entrada
+              </Button>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

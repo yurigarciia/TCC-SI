@@ -1048,6 +1048,20 @@ frentes de frontend-web e mobile.
   fiz check-in de um deles via API (mesmo payload que o campo "check-in por código" envia),
   confirmei a tentativa de reuso recusada (409) e recarreguei a página vendo o badge "Usado" +
   horário aparecerem sem o botão de check-in; conferi a busca por nome contra o endpoint real.
+- **Adendo (venda/check-in viram modal, listagem é o foco da tela):** pedido do usuário — os cards
+  "Vender ingresso presencial" e "Check-in por código (QR)" ficavam sempre abertos, competindo por
+  espaço com "Ingressos emitidos" (a listagem é o que a diretoria mais consulta na prática). Os
+  dois viraram botões de ação no cabeçalho da página (`Check-in` com ícone `QrCode`, `Vender
+  ingresso` com ícone `TicketPlus`, mesmo padrão de cabeçalho com ações já usado em
+  `eventos/[id]`), cada um abrindo o formulário correspondente num `Dialog` — a listagem passa a
+  ser o único conteúdo sempre visível da página. Comportamento de cada modal após sucesso
+  mantido igual a antes (fica aberto, só limpa os campos) — pensado pra quem está vendendo/
+  validando entrada de várias pessoas em sequência na portaria não precisar reabrir o modal a cada
+  ingresso. Validado com `npm run build`/`npm run lint` e teste manual ponta a ponta headless:
+  abri e fechei os dois modais, emiti um ingresso (peguei o erro esperado de "ingresso avulso não
+  configurado" num evento de teste sem essa configuração — confirma que o toast de erro aparece
+  corretamente sem quebrar a página por trás do modal), e abri o modal de check-in confirmando o
+  botão de câmera e o campo de código manual.
 
 #### Ticket: T-FE-009 Gestão de Usuários da Plataforma
 - **Priority:** Should
