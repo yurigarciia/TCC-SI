@@ -5,6 +5,7 @@ import {
   AtualizacaoIngresso,
   IngressoRepositoryPort,
   NovoIngresso,
+  ResumoIngressosEvento,
 } from '../../application/ports/ingresso-repository.port';
 import { Ingresso } from '../../domain/ingresso.entity';
 import { IngressoOrmEntity } from './ingresso.orm-entity';
@@ -58,6 +59,32 @@ export class TypeOrmIngressoRepositoryAdapter extends IngressoRepositoryPort {
     await this.repo.update({ id }, dados);
     const atualizado = await this.repo.findOneByOrFail({ id });
     return this.paraDominio(atualizado);
+  }
+
+  async resumoPorEvento(eventoId: string): Promise<ResumoIngressosEvento> {
+    const [linha] = await this.repo.manager.query<
+      Array<{
+        total_emitidos: string;
+        total_usados: string;
+        total_pendentes: string;
+        receita_total: string;
+      }>
+    >(
+      `SELECT
+         COUNT(*) AS total_emitidos,
+         COUNT(*) FILTER (WHERE status = 'usado') AS total_usados,
+         COUNT(*) FILTER (WHERE status = 'emitido') AS total_pendentes,
+         COALESCE(SUM(preco), 0) AS receita_total
+       FROM ingressos
+       WHERE evento_id = $1`,
+      [eventoId],
+    );
+    return {
+      totalEmitidos: Number(linha?.total_emitidos ?? 0),
+      totalUsados: Number(linha?.total_usados ?? 0),
+      totalPendentes: Number(linha?.total_pendentes ?? 0),
+      receitaTotal: Number(linha?.receita_total ?? 0),
+    };
   }
 
   private paraDominio(orm: IngressoOrmEntity): Ingresso {

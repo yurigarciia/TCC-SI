@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
-import type { CanalIngresso, EmitirIngressoInput, Ingresso } from "./types";
+import type { CanalIngresso, EmitirIngressoInput, Ingresso, ResumoIngressosEvento } from "./types";
 
 const chaveIngressos = (eventoId: string, pagina: number, nome?: string) =>
   ["eventos", eventoId, "ingressos", pagina, nome ?? ""] as const;
@@ -23,6 +23,18 @@ export function useIngressosEvento(
         `/eventos/${eventoId}/ingressos?${query.toString()}`,
       );
     },
+    enabled: !!eventoId,
+  });
+}
+
+// "Big numbers" pra acompanhar o evento no dia — agregado no backend, cobre o evento inteiro.
+// Chave aninhada sob o mesmo prefixo de useIngressosEvento de propósito: invalidar
+// ["eventos", eventoId, "ingressos"] (emitir/check-in, abaixo) já invalida este também, sem
+// precisar de uma chamada de invalidação extra.
+export function useResumoIngressosEvento(eventoId: string) {
+  return useQuery({
+    queryKey: ["eventos", eventoId, "ingressos", "resumo"] as const,
+    queryFn: () => apiFetch<ResumoIngressosEvento>(`/eventos/${eventoId}/ingressos/resumo`),
     enabled: !!eventoId,
   });
 }

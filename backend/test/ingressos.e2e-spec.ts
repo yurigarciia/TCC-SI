@@ -286,6 +286,30 @@ describe('Ingressos (e2e)', () => {
       .expect(409);
   });
 
+  it('resumo do evento reflete emitidos, check-ins, pendentes e receita total', async () => {
+    const resposta = await request(app.getHttpServer())
+      .get(`/eventos/${eventoId}/ingressos/resumo`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const resumo = resposta.body as {
+      totalEmitidos: number;
+      totalUsados: number;
+      totalPendentes: number;
+      receitaTotal: number | string;
+    };
+    // 4 emitidos até aqui: sócio (15) + não-sócio (40) + criança com preço sobrescrito (12) +
+    // criança via app (5); só o sócio fez check-in.
+    expect(resumo.totalEmitidos).toBe(4);
+    expect(resumo.totalUsados).toBe(1);
+    expect(resumo.totalPendentes).toBe(3);
+    expect(Number(resumo.receitaTotal)).toBe(72);
+
+    await request(app.getHttpServer())
+      .get('/eventos/00000000-0000-0000-0000-000000000000/ingressos/resumo')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+  });
+
   it('T-MOB-004 — associado compra o próprio ingresso pelo app (RF12)', async () => {
     // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll acima: várias
     // requisições sequenciais (incluindo um auto-cadastro com hash de senha) contra o Postgres

@@ -4,46 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CartaoResumo } from "@/components/cartao-resumo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAssociados } from "@/features/associados/use-associados";
 import { useEventos } from "@/features/eventos/use-eventos";
 import { useInadimplentes } from "@/features/mensalidades/use-mensalidades";
 import { formatarDataHora } from "@/lib/format";
-
-interface CartaoResumoProps {
-  href: string;
-  titulo: string;
-  valor: number | undefined;
-  carregando: boolean;
-  descricao: string;
-  tom?: "default" | "warning" | "destructive";
-}
-
-const TOM_VALOR: Record<NonNullable<CartaoResumoProps["tom"]>, string> = {
-  default: "text-foreground",
-  warning: "text-warning",
-  destructive: "text-destructive",
-};
-
-function CartaoResumo({ href, titulo, valor, carregando, descricao, tom = "default" }: CartaoResumoProps) {
-  return (
-    <Link href={href} className="block">
-      <Card className="h-full transition-colors hover:border-secondary">
-        <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">{titulo}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {carregando ? (
-            <Skeleton className="h-9 w-16" />
-          ) : (
-            <p className={`font-heading text-3xl font-semibold ${TOM_VALOR[tom]}`}>{valor}</p>
-          )}
-          <p className="mt-1 text-sm text-muted-foreground">{descricao}</p>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
 
 export default function DashboardPage() {
   // Cartões de resumo somam/filtram no cliente — busca uma página grande o bastante pra cobrir o

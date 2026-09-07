@@ -8,6 +8,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { CartaoResumo } from "@/components/cartao-resumo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -40,7 +41,12 @@ import { useEvento, usePrecosIngressoEvento } from "@/features/eventos/use-event
 import type { PrecosIngressoConfigurados } from "@/features/eventos/types";
 import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
-import { useEmitirIngresso, useIngressosEvento, useRegistrarCheckin } from "@/features/ingressos/use-ingressos";
+import {
+  useEmitirIngresso,
+  useIngressosEvento,
+  useRegistrarCheckin,
+  useResumoIngressosEvento,
+} from "@/features/ingressos/use-ingressos";
 import { formatarDataHora, formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
@@ -137,6 +143,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const ingressos = resultado?.itens;
   const emitir = useEmitirIngresso(eventoId);
   const checkin = useRegistrarCheckin(eventoId);
+  const { data: resumo, isLoading: carregandoResumo } = useResumoIngressosEvento(eventoId);
 
   // Dropdown de seleção — busca uma página grande o bastante pra cobrir todas as categorias
   // cadastradas sem precisar de paginação aqui (número de categorias tende a ser pequeno).
@@ -238,6 +245,37 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
             Vender ingresso
           </Button>
         </div>
+      </div>
+
+      {/* "Big numbers" pra acompanhar o evento no dia — achado numa conversa com o usuário.
+          Agregado no backend (useResumoIngressosEvento), cobre o evento inteiro, não só a página
+          atual da listagem abaixo. */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CartaoResumo
+          titulo="Ingressos emitidos"
+          valor={resumo?.totalEmitidos}
+          carregando={carregandoResumo}
+          descricao="Vendidos pelo app ou presencial"
+        />
+        <CartaoResumo
+          titulo="Já entraram"
+          valor={resumo?.totalUsados}
+          carregando={carregandoResumo}
+          descricao="Check-in feito"
+          tom="success"
+        />
+        <CartaoResumo
+          titulo="Aguardando entrada"
+          valor={resumo?.totalPendentes}
+          carregando={carregandoResumo}
+          descricao="Emitido, check-in pendente"
+        />
+        <CartaoResumo
+          titulo="Receita total"
+          valor={resumo ? formatarMoeda(resumo.receitaTotal) : undefined}
+          carregando={carregandoResumo}
+          descricao="Soma de todos os ingressos"
+        />
       </div>
 
       <Card>

@@ -31,6 +31,7 @@ import { ListarIngressosEventoUseCase } from '../../application/use-cases/listar
 import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-meu-ingresso.use-case';
 import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/consultar-precos-ingresso.use-case';
 import { ConsultarMeuPrecoIngressoUseCase } from '../../application/use-cases/consultar-meu-preco-ingresso.use-case';
+import { ConsultarResumoIngressosUseCase } from '../../application/use-cases/consultar-resumo-ingressos.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
@@ -50,6 +51,7 @@ export class IngressosController {
     private readonly comprarMeu: ComprarMeuIngressoUseCase,
     private readonly consultarPrecos: ConsultarPrecosIngressoUseCase,
     private readonly consultarMeuPreco: ConsultarMeuPrecoIngressoUseCase,
+    private readonly consultarResumo: ConsultarResumoIngressosUseCase,
   ) {}
 
   // RF12 (T-MOB-004) — associado compra o próprio ingresso pelo app; perfil/canal/forma de
@@ -225,6 +227,25 @@ export class IngressosController {
     @Query('nome') nome?: string,
   ) {
     return this.listar.execute(eventoId, pagina!, limite!, nome);
+  }
+
+  // Achado numa conversa com o usuário — "big numbers" pra acompanhar o evento no dia (emitidos,
+  // check-ins feitos, faltam entrar, receita). Agregado à parte da listagem paginada, que só
+  // cobre a página atual.
+  @Get('eventos/:eventoId/ingressos/resumo')
+  @ApiOperation({
+    summary:
+      'Resumo numérico dos ingressos de um evento — emitidos, check-ins feitos, pendentes e receita total',
+  })
+  @ApiResponse({ status: 200, description: 'Resumo' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Evento não encontrado' })
+  consultarResumoIngressos(@Param('eventoId', ParseUUIDPipe) eventoId: string) {
+    return this.consultarResumo.execute(eventoId);
   }
 
   @Post('ingressos/:id/checkin')

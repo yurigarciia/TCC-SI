@@ -1098,6 +1098,25 @@ frentes de frontend-web e mobile.
   automaticamente, sobrescrevi pra um valor diferente e o toast/registro confirmaram o valor
   digitado (não o sugerido); perfil sem preço configurado mostrou o campo vazio com o aviso certo,
   emissão bloqueada até digitar algo.
+- **Adendo ("big numbers" pra acompanhar o evento no dia):** pedido do usuário — a tela só tinha a
+  listagem paginada de ingressos, sem nenhum resumo pra bater o olho e saber quantos já entraram
+  no evento. Backend ganha `GET /eventos/:eventoId/ingressos/resumo`
+  (`ConsultarResumoIngressosUseCase`/`IngressoRepositoryPort.resumoPorEvento`) — agregado em SQL
+  puro (`COUNT`/`COUNT ... FILTER`/`SUM`) em vez de contar em cima da listagem paginada do
+  frontend, que só cobre a página atual (um evento grande passa fácil de uma página). Frontend
+  ganha 4 cartões acima da listagem: "Ingressos emitidos", "Já entraram" (tom `success`),
+  "Aguardando entrada" e "Receita total". O cartão em si (`CartaoResumo`) já existia só na tela
+  Início (T-FE-002) — extraído pra `src/components/cartao-resumo.tsx` reaproveitável, ganhando um
+  tom `success` novo (só tinha default/warning/destructive) e um `href` agora opcional (a tela
+  Início sempre linka pra algum lugar, aqui os cartões são só informativos). Chave de cache do
+  React Query do resumo (`["eventos", eventoId, "ingressos", "resumo"]`) aninhada de propósito sob
+  o mesmo prefixo da listagem — invalidar `["eventos", eventoId, "ingressos"]` ao emitir/fazer
+  check-in (já existia) atualiza os dois automaticamente, sem uma invalidação extra. Validado com
+  `npm run test:e2e` (backend, 65/65, 1 teste novo: resumo bate com 4 emitidos/1 usado/3
+  pendentes/receita 72 depois da sequência de testes anteriores, mais 404 pra evento inexistente)
+  e `npm run build`/`npm run lint` (frontend), mais teste manual ponta a ponta headless: criei
+  evento, emiti 3 ingressos, fiz check-in de 1, e os 4 cartões bateram exatamente com a tabela
+  logo abaixo (3 emitidos, 1 já entrou, 2 aguardando, R$ 90,00).
 
 #### Ticket: T-FE-009 Gestão de Usuários da Plataforma
 - **Priority:** Should

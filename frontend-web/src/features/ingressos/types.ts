@@ -16,6 +16,15 @@ export interface Ingresso {
   usadoEm: string | null;
 }
 
+// Números pra acompanhar o evento no dia — agregado no backend, cobre o evento inteiro, não só
+// a página atual da listagem.
+export interface ResumoIngressosEvento {
+  totalEmitidos: number;
+  totalUsados: number;
+  totalPendentes: number;
+  receitaTotal: number;
+}
+
 export interface EmitirIngressoInput {
   nomeComprador: string;
   perfilComprador: PerfilComprador;
