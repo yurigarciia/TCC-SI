@@ -806,6 +806,34 @@ frentes de frontend-web e mobile.
   croqui, texto voltou pra "Nenhuma mesa cadastrada"), e confirmei via API+UI que excluir uma mesa
   já vinculada a um evento é recusado com a mensagem certa. Zero warnings de console na segunda
   rodada.
+- **Adendo (usuário leigo — sem coordenada, sem rolar a tela):** pedido do usuário logo em seguida,
+  olhando a mesma tela: "Posição X"/"Posição Y" apareciam como campos de formulário — coordenada em
+  pixel não significa nada pra quem vai usar o sistema de verdade (diretoria de um CTG, não gente
+  técnica). E o formulário de adicionar/editar mesa vivia num card separado, embaixo do croqui —
+  clicar no croqui e ter que rolar a tela até um formulário sem nenhuma pista visual de que ele se
+  referia àquele clique deixava o fluxo sem sentido nenhum pra quem tá vendo pela primeira vez.
+
+  `posicaoX`/`posicaoY` continuam existindo no formulário (`react-hook-form` continua validando e
+  enviando os dois pro backend), só nunca aparecem — viraram `<input type="hidden">`, preenchidos
+  só pelo clique no croqui, nunca digitados à mão. O formulário de adicionar/editar em si saiu do
+  card solto embaixo e virou um painel pequeno flutuando ao lado do ponto clicado dentro do
+  próprio `MesaCanvas` (prop nova `painel`/`painelPosicao`) — abre pro lado com mais espaço
+  sobrando (nunca estoura a borda do croqui, testado perto das 4 quinas), campo "Quantas pessoas
+  sentam?" com foco automático, e um "X" pra fechar sem salvar. Clicar numa mesa em edição também
+  funciona pra mover ela — clicar em outro ponto do croqui atualiza a posição pendente (o círculo
+  tracejado mostra pra onde), o círculo cheio da mesa some do lugar antigo só depois de "Salvar
+  alterações" de verdade (a chamada à API). Rótulo do campo trocado de "Capacidade (lugares)" pra
+  "Quantas pessoas sentam?" — mais direto pra quem não é do ramo de eventos.
+
+  A questão de desenhar paredes/portas/formato do salão (mencionada na mesma conversa) ficou de
+  fora deste adendo — depende de uma decisão de escopo maior (imagem de planta baixa enviada pela
+  entidade vs. uma ferramenta de desenho vetorial dentro do app) que precisa ser combinada com o
+  usuário antes de implementar; ver ticket/decisão a abrir separadamente.
+
+  Validado com `npm run build`/`npm run lint` (frontend, sem mudança no backend) e teste manual
+  ponta a ponta headless: cliquei perto de cada quina do croqui confirmando que o painel nunca sai
+  da área visível, adicionei mesa com sucesso pelo painel, cliquei nela de novo e confirmei que o
+  painel abre em modo edição pré-preenchido com o valor certo (persistido, não só local).
 
 #### Ticket: T-FE-006 Cadastro/Publicação de Evento
 - **Priority:** Must

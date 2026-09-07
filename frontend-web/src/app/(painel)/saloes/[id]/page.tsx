@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +31,7 @@ import { ApiError } from "@/lib/api-client";
 
 const mesaSchema = z.object({
   numero: z.coerce.number().int().positive("Informe um número de mesa válido."),
-  capacidade: z.coerce.number().int().positive("Informe a capacidade de lugares."),
+  capacidade: z.coerce.number().int().positive("Informe a quantidade de lugares."),
   posicaoX: z.coerce.number().int().min(0),
   posicaoY: z.coerce.number().int().min(0),
 });
@@ -80,11 +81,14 @@ function SalaoDetalheConteudo({
   const atualizarMesa = useAtualizarMesa(salaoId);
   const removerMesa = useRemoverMesa(salaoId);
 
-  // Achado numa conversa com o usuário (QA do cadastro/edição de croqui — antes só dava pra
-  // adicionar mesa, nunca corrigir um clique errado): clicar numa mesa já existente no croqui
-  // agora abre ela pra editar (numero/capacidade/posição) em vez de silenciosamente preparar uma
-  // mesa nova na mesma posição. `posicaoPendente` é só o marcador tracejado de prévia — sem ele,
-  // clicar no croqui não mudava nada visualmente ali até o formulário ser de fato salvo.
+  // Achado numa conversa com o usuário: quem usa essa tela não é técnico — coordenada X/Y não
+  // significa nada pra essa pessoa, e um formulário solto embaixo do croqui (sem nenhuma pista de
+  // que ele se referia ao clique que acabou de dar) obrigava rolar a tela pra digitar a
+  // quantidade de lugares. Os dois campos de posição continuam existindo no formulário (por
+  // baixo, via input hidden) — só nunca aparecem pra ninguém digitar; a posição em si só se define
+  // clicando no croqui. O formulário em si virou um painel pequeno, flutuando bem ao lado do
+  // ponto clicado — mesma lógica de antes (adicionar/editar/excluir), só que onde a atenção da
+  // pessoa já está.
   const [mesaEditando, setMesaEditando] = useState<Mesa | null>(null);
   const [posicaoPendente, setPosicaoPendente] = useState<{ x: number; y: number } | null>(null);
 
@@ -101,12 +105,16 @@ function SalaoDetalheConteudo({
     defaultValues: { numero: proximoNumero, posicaoX: 40, posicaoY: 40 },
   });
 
-  function voltarParaModoAdicionar(numeroSugerido: number) {
+  function fecharPainel() {
     setMesaEditando(null);
     setPosicaoPendente(null);
+  }
+
+  function voltarParaModoAdicionar(numeroSugerido: number) {
+    fecharPainel();
     // "" em vez de undefined — reset() com undefined não limpa um input que já teve valor
     // digitado pelo usuário (achado em teste manual: excluir uma mesa editada deixava
-    // "Capacidade" com o número antigo, mesmo com o formulário voltando pro modo adicionar).
+    // "Lugares" com o número antigo, mesmo com o formulário voltando pro modo adicionar).
     reset({ numero: numeroSugerido, capacidade: "" as unknown as number, posicaoX: 40, posicaoY: 40 });
   }
 
@@ -182,6 +190,7 @@ function SalaoDetalheConteudo({
   };
 
   const salvando = adicionarMesa.isPending || atualizarMesa.isPending;
+  const painelAberto = !!mesaEditando || !!posicaoPendente;
 
   return (
     <div className="space-y-6">
@@ -203,108 +212,118 @@ function SalaoDetalheConteudo({
             mesaSelecionadaId={mesaEditando?.id}
             posicaoPendente={posicaoPendente}
             onCanvasClick={({ x, y }) => {
+              // Também funciona editando uma mesa — clicar em outro ponto do croqui move ela pra
+              // lá (o ponto tracejado mostra pra onde, o círculo cheio continua no lugar antigo
+              // até salvar).
               setValue("posicaoX", x, { shouldValidate: true });
               setValue("posicaoY", y, { shouldValidate: true });
               setPosicaoPendente({ x, y });
             }}
             onMesaClick={selecionarMesaParaEditar}
+            painelPosicao={
+              posicaoPendente ?? (mesaEditando ? { x: mesaEditando.posicaoX, y: mesaEditando.posicaoY } : null)
+            }
+            painel={
+              painelAberto ? (
+                <form onSubmit={onSubmit} className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-foreground">
+                      {mesaEditando ? `Mesa ${mesaEditando.numero}` : "Nova mesa"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={fecharPainel}
+                      aria-label="Fechar"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+
+                  <input type="hidden" {...register("posicaoX")} />
+                  <input type="hidden" {...register("posicaoY")} />
+
+                  <div className="space-y-1">
+                    <Label htmlFor="numero" className="text-xs text-muted-foreground">
+                      Número
+                    </Label>
+                    <Input
+                      id="numero"
+                      type="number"
+                      className="h-8"
+                      aria-invalid={!!errors.numero}
+                      {...register("numero")}
+                    />
+                    {errors.numero && (
+                      <p className="text-xs text-destructive">{errors.numero.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="capacidade" className="text-xs text-muted-foreground">
+                      Quantas pessoas sentam?
+                    </Label>
+                    <Input
+                      id="capacidade"
+                      type="number"
+                      className="h-8"
+                      placeholder="Ex.: 8"
+                      autoFocus
+                      aria-invalid={!!errors.capacidade}
+                      {...register("capacidade")}
+                    />
+                    {errors.capacidade && (
+                      <p className="text-xs text-destructive">{errors.capacidade.message}</p>
+                    )}
+                  </div>
+
+                  {mesaEditando && (
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            disabled={removerMesa.isPending}
+                          />
+                        }
+                      >
+                        {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Só é possível se esta mesa nunca foi usada em nenhum evento (reserva ou
+                            preço configurado). Não dá pra desfazer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={excluirMesaSelecionada}>
+                            Confirmar exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+
+                  <Button type="submit" size="sm" className="w-full" disabled={salvando}>
+                    {salvando
+                      ? "Salvando…"
+                      : mesaEditando
+                        ? "Salvar alterações"
+                        : "Adicionar mesa"}
+                  </Button>
+                </form>
+              ) : null
+            }
           />
           <p className="text-xs text-muted-foreground">
-            Clique numa área vazia do croqui pra posicionar uma mesa nova, ou numa mesa já
-            existente pra editar ou excluir ela.
+            Clique num espaço vazio do croqui pra colocar uma mesa nova, ou numa mesa já colocada
+            pra editar ou excluir ela.
           </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{mesaEditando ? `Editar mesa ${mesaEditando.numero}` : "Adicionar mesa"}</CardTitle>
-          {mesaEditando && (
-            <CardDescription>
-              Excluir só é permitido se esta mesa nunca foi usada em nenhum evento.
-            </CardDescription>
-          )}
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2" noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="numero">Número da mesa</Label>
-              <Input
-                id="numero"
-                type="number"
-                aria-invalid={!!errors.numero}
-                {...register("numero")}
-              />
-              {errors.numero && (
-                <p className="text-sm text-destructive">{errors.numero.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="capacidade">Capacidade (lugares)</Label>
-              <Input
-                id="capacidade"
-                type="number"
-                placeholder="Ex.: 8"
-                aria-invalid={!!errors.capacidade}
-                {...register("capacidade")}
-              />
-              {errors.capacidade && (
-                <p className="text-sm text-destructive">{errors.capacidade.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="posicaoX">Posição X</Label>
-              <Input id="posicaoX" type="number" placeholder="Ex.: 0" {...register("posicaoX")} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="posicaoY">Posição Y</Label>
-              <Input id="posicaoY" type="number" placeholder="Ex.: 0" {...register("posicaoY")} />
-            </div>
-            <div className="sm:col-span-2 flex justify-end gap-2">
-              {mesaEditando && (
-                <>
-                  <AlertDialog>
-                    <AlertDialogTrigger
-                      render={
-                        <Button type="button" variant="outline" disabled={removerMesa.isPending} />
-                      }
-                    >
-                      {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Só é possível se esta mesa nunca foi usada em nenhum evento (reserva ou
-                          preço configurado). Não dá pra desfazer.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={excluirMesaSelecionada}>
-                          Confirmar exclusão
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => voltarParaModoAdicionar(proximoNumero)}
-                  >
-                    Cancelar edição
-                  </Button>
-                </>
-              )}
-              <Button type="submit" disabled={salvando}>
-                {salvando
-                  ? "Salvando…"
-                  : mesaEditando
-                    ? "Salvar alterações"
-                    : "Adicionar mesa"}
-              </Button>
-            </div>
-          </form>
         </CardContent>
       </Card>
     </div>

@@ -1,9 +1,15 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { Mesa } from "./types";
 
 const LARGURA = 640;
 const ALTURA = 420;
+
+// Largura/altura aproximadas do painel flutuante — só pra decidir de que lado do ponto clicado ele
+// abre, sem estourar a borda do croqui (ver `estiloPainel`).
+const PAINEL_LARGURA = 224;
+const PAINEL_ALTURA = 190;
 
 interface MesaCanvasProps {
   mesas: Mesa[];
@@ -19,6 +25,28 @@ interface MesaCanvasProps {
   // no croqui não mudava nada visualmente ali (só nos campos do formulário abaixo), parecendo que
   // o clique não tinha feito nada.
   posicaoPendente?: { x: number; y: number } | null;
+  // Formulário compacto de adicionar/editar mesa, aberto flutuando bem ao lado do ponto clicado —
+  // achado numa conversa com o usuário: pra alguém leigo, ter que rolar a tela até um formulário
+  // solto lá embaixo pra digitar a quantidade de lugares (sem nenhuma pista visual de que aquele
+  // formulário se referia ao clique que acabou de dar) não parecia parte do mesmo fluxo.
+  painel?: ReactNode;
+  painelPosicao?: { x: number; y: number } | null;
+}
+
+function estiloPainel(posicao: { x: number; y: number }): React.CSSProperties {
+  // Abre pro lado com mais espaço sobrando, em vez de sempre pro mesmo lado — evita que o painel
+  // estoure a borda do croqui quando o clique é perto de uma quina.
+  const abrirParaEsquerda = posicao.x > LARGURA / 2;
+  const abrirParaCima = posicao.y > ALTURA - PAINEL_ALTURA - 24;
+  return {
+    [abrirParaEsquerda ? "right" : "left"]: abrirParaEsquerda
+      ? LARGURA - posicao.x + 16
+      : posicao.x + 16,
+    [abrirParaCima ? "bottom" : "top"]: abrirParaCima
+      ? ALTURA - posicao.y + 16
+      : posicao.y - PAINEL_ALTURA / 3,
+    width: PAINEL_LARGURA,
+  };
 }
 
 // Mapa clicável simples (RF10/croqui-salao.json): cada mesa é um círculo posicionado por x/y
@@ -36,6 +64,8 @@ export function MesaCanvas({
   onMesaClick,
   mesaSelecionadaId,
   posicaoPendente,
+  painel,
+  painelPosicao,
 }: MesaCanvasProps) {
   const interativo = !!onCanvasClick;
 
@@ -44,9 +74,7 @@ export function MesaCanvas({
       <div
         role={interativo ? "button" : undefined}
         tabIndex={interativo ? 0 : undefined}
-        aria-label={
-          interativo ? "Clique para posicionar uma mesa nova; use os campos abaixo pra digitar a posição exata" : undefined
-        }
+        aria-label={interativo ? "Clique pra posicionar uma mesa nova" : undefined}
         onClick={(evento) => {
           if (!onCanvasClick) return;
           const retangulo = evento.currentTarget.getBoundingClientRect();
@@ -113,6 +141,16 @@ export function MesaCanvas({
             style={{ left: posicaoPendente.x, top: posicaoPendente.y }}
             aria-hidden="true"
           />
+        )}
+        {painel && painelPosicao && (
+          <div
+            className="absolute z-10 rounded-lg border bg-popover p-3 text-popover-foreground shadow-lg"
+            style={estiloPainel(painelPosicao)}
+            onClick={(evento) => evento.stopPropagation()}
+            onKeyDown={(evento) => evento.stopPropagation()}
+          >
+            {painel}
+          </div>
         )}
       </div>
     </div>
