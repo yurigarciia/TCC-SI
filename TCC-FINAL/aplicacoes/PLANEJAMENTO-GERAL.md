@@ -1076,6 +1076,28 @@ frentes de frontend-web e mobile.
   `npm run lint` e teste manual ponta a ponta headless: evento de teste com preço configurado só
   pra "Não-sócio" — selecionar esse perfil mostrou "R$ 30,00" ao vivo, selecionar "Criança" (sem
   preço configurado) mostrou o aviso com o botão desabilitado.
+- **Adendo (sobrescrever o valor na venda + bug do aviso prematuro):** dois achados do usuário
+  revisando o adendo anterior: (1) a "prévia" era só leitura — não dava pra vender por um valor
+  diferente do configurado (desconto, cortesia, ou repassar um evento sem preço configurado ainda
+  sem precisar ir até a tela do evento configurar antes); (2) selecionar "Sócio" já mostrava o
+  aviso vermelho de "preço não configurado" antes até da categoria aparecer pra escolher — bug em
+  `resolverPrecoPrevisto`, que devolvia `null` (não configurado) pra "sócio sem categoria ainda
+  escolhida" em vez de `undefined` (ainda não decidiu), fazendo o aviso aparecer cedo demais.
+
+  Corrigido o bug (`!categoriaSocioId` agora devolve `undefined`, não `null`) e "Valor a cobrar"
+  virou um campo editável de verdade: sugere o preço resolvido assim que dá pra calcular
+  (`setValue` sem `shouldDirty`, então não conta como editado pela pessoa), mas aceita qualquer
+  valor digitado por cima — inclusive quando não há preço configurado pra esse perfil/categoria,
+  caso em que o campo fica vazio e o aviso agora orienta "informe o valor manualmente pra vender
+  assim mesmo" em vez de só bloquear. Backend: `EmitirIngressoDto`/`EmitirIngressoUseCase` ganham
+  `preco?: number` opcional — quando informado, sobrescreve o preço resolvido por perfil/categoria
+  (não afeta `ComprarMeuIngressoUseCase`, a compra pelo app nunca preenche esse campo, sempre
+  resolvido automaticamente). Validado com `npm run test:e2e` (backend, 64/64, 1 teste novo:
+  preço informado vence o preço padrão da entidade) e `npm run build`/`npm run lint` (frontend),
+  mais teste manual ponta a ponta headless: perfil com preço configurado sugeriu o valor
+  automaticamente, sobrescrevi pra um valor diferente e o toast/registro confirmaram o valor
+  digitado (não o sugerido); perfil sem preço configurado mostrou o campo vazio com o aviso certo,
+  emissão bloqueada até digitar algo.
 
 #### Ticket: T-FE-009 Gestão de Usuários da Plataforma
 - **Priority:** Should

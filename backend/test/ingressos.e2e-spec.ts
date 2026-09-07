@@ -77,7 +77,7 @@ describe('Ingressos (e2e)', () => {
     await request(app.getHttpServer())
       .put(`/eventos/${eventoId}/ingresso`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ quantidadeDisponivel: 3 });
+      .send({ quantidadeDisponivel: 4 });
     // Timeout maior que o padrão do Jest (5s) — este hook faz o bootstrap do módulo (Nest +
     // conexão TypeORM) mais várias requisições HTTP sequenciais de setup, e o banco de testes é o
     // mesmo Postgres remoto (Neon) usado em dev, sem baixa latência garantida (achado numa
@@ -147,6 +147,23 @@ describe('Ingressos (e2e)', () => {
       })
       .expect(201);
     expect(Number((response.body as { preco: string }).preco)).toBe(40);
+  });
+
+  it('preço informado na venda sobrescreve o preço resolvido por perfil/categoria', async () => {
+    const response = await request(app.getHttpServer())
+      .post(`/eventos/${eventoId}/ingressos`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nomeComprador: 'Criança Cortesia',
+        perfilComprador: 'crianca',
+        canal: 'mediado',
+        formaPagamento: 'presencial',
+        preco: 12,
+      })
+      .expect(201);
+    // Padrão da entidade pra criança é 5 (ver beforeAll) — 12 aqui prova que o valor informado
+    // venceu, não o resolvido automaticamente.
+    expect(Number((response.body as { preco: string }).preco)).toBe(12);
   });
 
   it('consulta os preços resolvidos pra este evento, por categoria de sócio (override + padrão)', async () => {
@@ -232,7 +249,8 @@ describe('Ingressos (e2e)', () => {
   });
 
   it('bloqueia emissão além da quantidade disponível (409)', () => {
-    // já emitimos 3 (sócio + não-sócio + criança) para uma quantidadeDisponivel de 3
+    // já emitimos 4 (sócio + não-sócio + criança com preço sobrescrito + criança via app) para
+    // uma quantidadeDisponivel de 4
     return request(app.getHttpServer())
       .post(`/eventos/${eventoId}/ingressos`)
       .set('Authorization', `Bearer ${adminToken}`)

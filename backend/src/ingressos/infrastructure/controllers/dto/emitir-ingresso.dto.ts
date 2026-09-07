@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+  MinLength,
+} from 'class-validator';
 import {
   CanalIngresso,
   FormaPagamentoIngresso,
@@ -33,4 +41,15 @@ export class EmitirIngressoDto {
   })
   @IsEnum(FormaPagamentoIngresso)
   formaPagamento: FormaPagamentoIngresso;
+
+  // Sobrescreve o preço resolvido por perfil/categoria (padrão da entidade ou override do
+  // evento) — pra vender por um valor diferente do configurado (desconto, cortesia parcial,
+  // evento sem preço configurado ainda etc.). Achado numa conversa com o usuário: sem isso, um
+  // evento sem preço configurado pra um perfil simplesmente não deixava vender ingresso nenhum
+  // pra esse perfil, mesmo presencialmente.
+  @ApiPropertyOptional({ example: 25 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  preco?: number;
 }

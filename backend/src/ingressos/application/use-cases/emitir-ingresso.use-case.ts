@@ -26,6 +26,10 @@ export interface DadosEmissaoIngresso {
   // Obrigatório quando perfilComprador = SOCIO (preço varia por categoria de sócio); ignorado
   // pros demais perfis.
   categoriaSocioId?: string;
+  // Sobrescreve o preço resolvido por perfil/categoria — ver nota em EmitirIngressoDto. Só chega
+  // aqui pela venda presencial (EmitirIngressoDto); ComprarMeuIngressoUseCase (compra pelo app)
+  // nunca preenche isso, sempre resolvido pelo backend.
+  preco?: number;
 }
 
 // emissao-ingresso.json: preço diferenciado por perfil (sócio/não-sócio/criança), padrão da
@@ -72,11 +76,14 @@ export class EmitirIngressoUseCase {
       );
     }
 
-    const preco = await this.precos.resolverPreco(
-      eventoId,
-      dados.perfilComprador,
-      dados.categoriaSocioId ?? null,
-    );
+    const preco =
+      dados.preco !== undefined
+        ? dados.preco
+        : await this.precos.resolverPreco(
+            eventoId,
+            dados.perfilComprador,
+            dados.categoriaSocioId ?? null,
+          );
     if (preco === null) {
       throw new BadRequestException(
         'Preço não configurado para esse perfil de comprador',

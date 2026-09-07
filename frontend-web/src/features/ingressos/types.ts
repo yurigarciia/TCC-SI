@@ -22,4 +22,7 @@ export interface EmitirIngressoInput {
   formaPagamento: FormaPagamentoIngresso;
   // Obrigatório quando perfilComprador = "socio" (preço varia por categoria de sócio).
   categoriaSocioId?: string;
+  // Sobrescreve o preço resolvido por perfil/categoria — desconto, cortesia parcial, ou evento
+  // sem preço configurado ainda pra esse perfil. Omitido = backend resolve como sempre.
+  preco?: number;
 }

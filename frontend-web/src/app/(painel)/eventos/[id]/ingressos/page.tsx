@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QrCode, TicketPlus } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -51,6 +51,10 @@ const emitirSchema = z
     perfilComprador: z.enum(["socio", "nao_socio", "crianca"]),
     categoriaSocioId: z.string().optional(),
     formaPagamento: z.enum(["presencial", "online"]),
+    // String em vez de z.coerce.number() — coerção de número em cima de "" dá 0, não undefined
+    // (mesmo motivo já documentado em evento-formulario.tsx). Sobrescreve o preço resolvido pelo
+    // backend quando preenchido; convertido pra número só no submit.
+    preco: z.string().optional(),
   })
   .superRefine((dados, ctx) => {
     if (dados.perfilComprador === "socio" && !dados.categoriaSocioId) {
@@ -64,6 +68,12 @@ const emitirSchema = z
 
 type EmitirFormValues = z.infer<typeof emitirSchema>;
 
+function paraNumeroOpcional(valor?: string): number | undefined {
+  if (!valor || !valor.trim()) return undefined;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : undefined;
+}
+
 // Achado numa conversa com o usuário: o valor cobrado só aparecia depois de já ter emitido o
 // ingresso (num toast que passa rápido). Resolve o mesmo preço que o backend vai cobrar — mesma
 // fonte de dados de PrecosIngressoConfigurados (GET /eventos/:id/precos-ingresso), só pra prévia;
@@ -76,7 +86,11 @@ function resolverPrecoPrevisto(
   if (!precos || !perfil) return undefined;
   if (perfil === "nao_socio") return precos.naoSocio;
   if (perfil === "crianca") return precos.crianca;
-  if (!categoriaSocioId) return null;
+  // Sócio ainda sem categoria escolhida — undefined (não decidiu ainda), não null (não
+  // configurado). Achado numa conversa com o usuário: mostrava o aviso de "preço não
+  // configurado" assim que "Sócio" era selecionado, antes até da categoria aparecer pra
+  // escolher.
+  if (!categoriaSocioId) return undefined;
   return precos.porCategoria.find((p) => p.categoriaSocioId === categoriaSocioId)?.preco ?? null;
 }
 
@@ -135,7 +149,8 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    setValue,
+    formState: { errors, dirtyFields },
   } = useForm<EmitirFormValues>({
     resolver: zodResolver(emitirSchema),
     defaultValues: { perfilComprador: "socio", formaPagamento: "presencial" },
@@ -143,21 +158,35 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
 
   const perfilSelecionado = useWatch({ control, name: "perfilComprador" });
   const categoriaSelecionada = useWatch({ control, name: "categoriaSocioId" });
+  const precoDigitado = useWatch({ control, name: "preco" });
   const precoPrevisto = resolverPrecoPrevisto(precos, perfilSelecionado, categoriaSelecionada);
 
+  // Sugere o preço resolvido assim que dá pra calcular, mas só enquanto a pessoa não digitou nada
+  // por conta própria (setValue sem shouldDirty não marca o campo como "sujo") — permite vender
+  // por um valor diferente do configurado sem a sugestão ficar sobrescrevendo o que foi digitado.
+  useEffect(() => {
+    if (typeof precoPrevisto === "number" && !dirtyFields.preco) {
+      setValue("preco", String(precoPrevisto));
+    }
+  }, [precoPrevisto, dirtyFields.preco, setValue]);
+
   const onSubmitEmitir = handleSubmit((dados) => {
-    emitir.mutate(dados, {
-      onSuccess: (ingresso) => {
-        toast.success(`Ingresso emitido — ${formatarMoeda(ingresso.preco)}.`);
-        reset({
-          nomeComprador: "",
-          perfilComprador: "socio",
-          categoriaSocioId: undefined,
-          formaPagamento: "presencial",
-        });
+    emitir.mutate(
+      { ...dados, preco: paraNumeroOpcional(dados.preco) },
+      {
+        onSuccess: (ingresso) => {
+          toast.success(`Ingresso emitido — ${formatarMoeda(ingresso.preco)}.`);
+          reset({
+            nomeComprador: "",
+            perfilComprador: "socio",
+            categoriaSocioId: undefined,
+            formaPagamento: "presencial",
+            preco: undefined,
+          });
+        },
+        onError: (erro) => toast.error(erro.message || "Não foi possível emitir o ingresso."),
       },
-      onError: (erro) => toast.error(erro.message || "Não foi possível emitir o ingresso."),
-    });
+    );
   });
 
   const fazerCheckin = (ingressoId: string) => {
@@ -379,23 +408,38 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 )}
               </div>
             )}
-            <div className="sm:col-span-3">
-              {precoPrevisto === null ? (
-                <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-                  Preço não configurado pra esse perfil{perfilSelecionado === "socio" ? " e categoria" : ""}{" "}
-                  neste evento — configure antes de vender.
-                </p>
-              ) : precoPrevisto !== undefined ? (
-                <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2">
-                  <span className="text-sm text-muted-foreground">Valor a cobrar</span>
-                  <span className="text-base font-semibold text-foreground">
-                    {formatarMoeda(precoPrevisto)}
-                  </span>
-                </div>
-              ) : null}
-            </div>
+            {(perfilSelecionado === "nao_socio" ||
+              perfilSelecionado === "crianca" ||
+              (perfilSelecionado === "socio" && categoriaSelecionada)) && (
+              <div className="space-y-2 sm:col-span-3">
+                <Label htmlFor="preco">Valor a cobrar</Label>
+                <Input
+                  id="preco"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="0,00"
+                  aria-invalid={precoPrevisto === null && !paraNumeroOpcional(precoDigitado)}
+                  {...register("preco")}
+                />
+                {precoPrevisto === null ? (
+                  <p className="text-sm text-destructive">
+                    Preço não configurado pra esse perfil{perfilSelecionado === "socio" ? " e categoria" : ""}{" "}
+                    neste evento — informe o valor manualmente pra vender assim mesmo.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Sugestão a partir do preço configurado — pode mudar se for vender por outro
+                    valor.
+                  </p>
+                )}
+              </div>
+            )}
             <div className="sm:col-span-3 flex justify-end">
-              <Button type="submit" disabled={emitir.isPending || precoPrevisto === null}>
+              <Button
+                type="submit"
+                disabled={emitir.isPending || paraNumeroOpcional(precoDigitado) === undefined}
+              >
                 {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}
               </Button>
             </div>
