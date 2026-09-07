@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { Armchair, DoorOpen, Minus, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -24,9 +24,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MesaCanvas } from "@/features/saloes/mesa-canvas";
-import type { Mesa } from "@/features/saloes/types";
-import { useAdicionarMesa, useAtualizarMesa, useRemoverMesa, useSalao } from "@/features/saloes/use-saloes";
+import { MesaCanvas, pontoMedioElemento, type ModoCroqui } from "@/features/saloes/mesa-canvas";
+import type { ElementoEstrutural, Mesa, TipoElementoEstrutural } from "@/features/saloes/types";
+import {
+  useAdicionarElemento,
+  useAdicionarMesa,
+  useAtualizarMesa,
+  useRemoverElemento,
+  useRemoverMesa,
+  useSalao,
+} from "@/features/saloes/use-saloes";
 import { ApiError } from "@/lib/api-client";
 
 const mesaSchema = z.object({
@@ -39,11 +46,28 @@ const mesaSchema = z.object({
 type MesaFormInput = z.input<typeof mesaSchema>;
 type MesaFormValues = z.output<typeof mesaSchema>;
 
+const FERRAMENTAS: Array<{ modo: ModoCroqui; rotulo: string; icone: typeof Armchair }> = [
+  { modo: "mesa", rotulo: "Mesas", icone: Armchair },
+  { modo: "parede", rotulo: "Paredes", icone: Minus },
+  { modo: "porta", rotulo: "Portas", icone: DoorOpen },
+];
+
+const NOME_TIPO_ELEMENTO: Record<TipoElementoEstrutural, string> = {
+  parede: "Parede",
+  porta: "Porta",
+};
+
 function textoContagemMesas(quantidade: number): string {
   if (quantidade === 0) return "Nenhuma mesa cadastrada";
   if (quantidade === 1) return "1 mesa cadastrada";
   return `${quantidade} mesas cadastradas`;
 }
+
+const TEXTO_INSTRUCAO: Record<ModoCroqui, string> = {
+  mesa: "Clique num espaço vazio do croqui pra colocar uma mesa nova, ou numa mesa já colocada pra editar ou excluir ela.",
+  parede: "Arraste no croqui pra desenhar uma parede. Clique numa parede já desenhada pra excluir ela.",
+  porta: "Arraste no croqui pra desenhar uma porta. Clique numa porta já desenhada pra excluir ela.",
+};
 
 export default function SalaoDetalhePage() {
   const params = useParams<{ id: string }>();
@@ -76,10 +100,12 @@ function SalaoDetalheConteudo({
   salaoId: string;
   data: NonNullable<ReturnType<typeof useSalao>["data"]>;
 }) {
-  const { salao, mesas } = data;
+  const { salao, mesas, elementos } = data;
   const adicionarMesa = useAdicionarMesa(salaoId);
   const atualizarMesa = useAtualizarMesa(salaoId);
   const removerMesa = useRemoverMesa(salaoId);
+  const adicionarElemento = useAdicionarElemento(salaoId);
+  const removerElemento = useRemoverElemento(salaoId);
 
   // Achado numa conversa com o usuário: quem usa essa tela não é técnico — coordenada X/Y não
   // significa nada pra essa pessoa, e um formulário solto embaixo do croqui (sem nenhuma pista de
@@ -89,8 +115,10 @@ function SalaoDetalheConteudo({
   // clicando no croqui. O formulário em si virou um painel pequeno, flutuando bem ao lado do
   // ponto clicado — mesma lógica de antes (adicionar/editar/excluir), só que onde a atenção da
   // pessoa já está.
+  const [modo, setModo] = useState<ModoCroqui>("mesa");
   const [mesaEditando, setMesaEditando] = useState<Mesa | null>(null);
   const [posicaoPendente, setPosicaoPendente] = useState<{ x: number; y: number } | null>(null);
+  const [elementoSelecionado, setElementoSelecionado] = useState<ElementoEstrutural | null>(null);
 
   const proximoNumero = mesas.reduce((maior, mesa) => Math.max(maior, mesa.numero), 0) + 1;
 
@@ -108,6 +136,12 @@ function SalaoDetalheConteudo({
   function fecharPainel() {
     setMesaEditando(null);
     setPosicaoPendente(null);
+    setElementoSelecionado(null);
+  }
+
+  function trocarFerramenta(novoModo: ModoCroqui) {
+    setModo(novoModo);
+    fecharPainel();
   }
 
   function voltarParaModoAdicionar(numeroSugerido: number) {
@@ -189,8 +223,30 @@ function SalaoDetalheConteudo({
     });
   };
 
+  function desenharElemento(segmento: { x1: number; y1: number; x2: number; y2: number }) {
+    adicionarElemento.mutate(
+      { tipo: modo === "porta" ? "porta" : "parede", ...segmento },
+      {
+        onSuccess: () => toast.success(`${NOME_TIPO_ELEMENTO[modo === "porta" ? "porta" : "parede"]} adicionada.`),
+        onError: () => toast.error("Não foi possível salvar o traço no croqui."),
+      },
+    );
+  }
+
+  function excluirElementoSelecionado() {
+    if (!elementoSelecionado) return;
+    const nome = NOME_TIPO_ELEMENTO[elementoSelecionado.tipo];
+    removerElemento.mutate(elementoSelecionado.id, {
+      onSuccess: () => {
+        toast.success(`${nome} excluída.`);
+        setElementoSelecionado(null);
+      },
+      onError: () => toast.error(`Não foi possível excluir ${nome === "Porta" ? "a porta" : "a parede"}.`),
+    });
+  }
+
   const salvando = adicionarMesa.isPending || atualizarMesa.isPending;
-  const painelAberto = !!mesaEditando || !!posicaoPendente;
+  const painelMesaAberto = !!mesaEditando || !!posicaoPendente;
 
   return (
     <div className="space-y-6">
@@ -207,28 +263,153 @@ function SalaoDetalheConteudo({
           <CardTitle>Mapa de mesas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex gap-1.5 rounded-lg border bg-muted/40 p-1">
+            {FERRAMENTAS.map(({ modo: ferramenta, rotulo, icone: Icone }) => (
+              <Button
+                key={ferramenta}
+                type="button"
+                variant={modo === ferramenta ? "default" : "ghost"}
+                size="sm"
+                className="flex-1"
+                onClick={() => trocarFerramenta(ferramenta)}
+              >
+                <Icone />
+                {rotulo}
+              </Button>
+            ))}
+          </div>
+
           <MesaCanvas
             mesas={mesas}
+            elementos={elementos}
+            modo={modo}
             mesaSelecionadaId={mesaEditando?.id}
             posicaoPendente={posicaoPendente}
-            onCanvasClick={({ x, y }) => {
-              // Também funciona editando uma mesa — clicar em outro ponto do croqui move ela pra
-              // lá (o ponto tracejado mostra pra onde, o círculo cheio continua no lugar antigo
-              // até salvar).
-              setValue("posicaoX", x, { shouldValidate: true });
-              setValue("posicaoY", y, { shouldValidate: true });
-              setPosicaoPendente({ x, y });
-            }}
-            onMesaClick={selecionarMesaParaEditar}
+            onCanvasClick={
+              modo === "mesa"
+                ? ({ x, y }) => {
+                    // Também funciona editando uma mesa — clicar em outro ponto do croqui move ela
+                    // pra lá (o ponto tracejado mostra pra onde, o círculo cheio continua no lugar
+                    // antigo até salvar).
+                    setValue("posicaoX", x, { shouldValidate: true });
+                    setValue("posicaoY", y, { shouldValidate: true });
+                    setPosicaoPendente({ x, y });
+                  }
+                : undefined
+            }
+            onMesaClick={modo === "mesa" ? selecionarMesaParaEditar : undefined}
+            onSegmentoDesenhado={modo !== "mesa" ? desenharElemento : undefined}
+            onElementoClick={modo !== "mesa" ? setElementoSelecionado : undefined}
+            elementoSelecionadoId={elementoSelecionado?.id}
             painelPosicao={
-              posicaoPendente ?? (mesaEditando ? { x: mesaEditando.posicaoX, y: mesaEditando.posicaoY } : null)
+              modo === "mesa"
+                ? (posicaoPendente ??
+                  (mesaEditando ? { x: mesaEditando.posicaoX, y: mesaEditando.posicaoY } : null))
+                : elementoSelecionado
+                  ? pontoMedioElemento(elementoSelecionado)
+                  : null
             }
             painel={
-              painelAberto ? (
-                <form onSubmit={onSubmit} className="space-y-3">
+              modo === "mesa" ? (
+                painelMesaAberto ? (
+                  <form onSubmit={onSubmit} className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-foreground">
+                        {mesaEditando ? `Mesa ${mesaEditando.numero}` : "Nova mesa"}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={fecharPainel}
+                        aria-label="Fechar"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+
+                    <input type="hidden" {...register("posicaoX")} />
+                    <input type="hidden" {...register("posicaoY")} />
+
+                    <div className="space-y-1">
+                      <Label htmlFor="numero" className="text-xs text-muted-foreground">
+                        Número
+                      </Label>
+                      <Input
+                        id="numero"
+                        type="number"
+                        className="h-8"
+                        aria-invalid={!!errors.numero}
+                        {...register("numero")}
+                      />
+                      {errors.numero && (
+                        <p className="text-xs text-destructive">{errors.numero.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="capacidade" className="text-xs text-muted-foreground">
+                        Quantas pessoas sentam?
+                      </Label>
+                      <Input
+                        id="capacidade"
+                        type="number"
+                        className="h-8"
+                        placeholder="Ex.: 8"
+                        autoFocus
+                        aria-invalid={!!errors.capacidade}
+                        {...register("capacidade")}
+                      />
+                      {errors.capacidade && (
+                        <p className="text-xs text-destructive">{errors.capacidade.message}</p>
+                      )}
+                    </div>
+
+                    {mesaEditando && (
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              disabled={removerMesa.isPending}
+                            />
+                          }
+                        >
+                          {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Só é possível se esta mesa nunca foi usada em nenhum evento (reserva
+                              ou preço configurado). Não dá pra desfazer.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={excluirMesaSelecionada}>
+                              Confirmar exclusão
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+
+                    <Button type="submit" size="sm" className="w-full" disabled={salvando}>
+                      {salvando
+                        ? "Salvando…"
+                        : mesaEditando
+                          ? "Salvar alterações"
+                          : "Adicionar mesa"}
+                    </Button>
+                  </form>
+                ) : null
+              ) : elementoSelecionado ? (
+                <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-medium text-foreground">
-                      {mesaEditando ? `Mesa ${mesaEditando.numero}` : "Nova mesa"}
+                      {NOME_TIPO_ELEMENTO[elementoSelecionado.tipo]}
                     </p>
                     <button
                       type="button"
@@ -239,91 +420,21 @@ function SalaoDetalheConteudo({
                       <X className="size-4" />
                     </button>
                   </div>
-
-                  <input type="hidden" {...register("posicaoX")} />
-                  <input type="hidden" {...register("posicaoY")} />
-
-                  <div className="space-y-1">
-                    <Label htmlFor="numero" className="text-xs text-muted-foreground">
-                      Número
-                    </Label>
-                    <Input
-                      id="numero"
-                      type="number"
-                      className="h-8"
-                      aria-invalid={!!errors.numero}
-                      {...register("numero")}
-                    />
-                    {errors.numero && (
-                      <p className="text-xs text-destructive">{errors.numero.message}</p>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="capacidade" className="text-xs text-muted-foreground">
-                      Quantas pessoas sentam?
-                    </Label>
-                    <Input
-                      id="capacidade"
-                      type="number"
-                      className="h-8"
-                      placeholder="Ex.: 8"
-                      autoFocus
-                      aria-invalid={!!errors.capacidade}
-                      {...register("capacidade")}
-                    />
-                    {errors.capacidade && (
-                      <p className="text-xs text-destructive">{errors.capacidade.message}</p>
-                    )}
-                  </div>
-
-                  {mesaEditando && (
-                    <AlertDialog>
-                      <AlertDialogTrigger
-                        render={
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            disabled={removerMesa.isPending}
-                          />
-                        }
-                      >
-                        {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Só é possível se esta mesa nunca foi usada em nenhum evento (reserva ou
-                            preço configurado). Não dá pra desfazer.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={excluirMesaSelecionada}>
-                            Confirmar exclusão
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-
-                  <Button type="submit" size="sm" className="w-full" disabled={salvando}>
-                    {salvando
-                      ? "Salvando…"
-                      : mesaEditando
-                        ? "Salvar alterações"
-                        : "Adicionar mesa"}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    disabled={removerElemento.isPending}
+                    onClick={excluirElementoSelecionado}
+                  >
+                    {removerElemento.isPending ? "Excluindo…" : "Excluir"}
                   </Button>
-                </form>
+                </div>
               ) : null
             }
           />
-          <p className="text-xs text-muted-foreground">
-            Clique num espaço vazio do croqui pra colocar uma mesa nova, ou numa mesa já colocada
-            pra editar ou excluir ela.
-          </p>
+          <p className="text-xs text-muted-foreground">{TEXTO_INSTRUCAO[modo]}</p>
         </CardContent>
       </Card>
     </div>

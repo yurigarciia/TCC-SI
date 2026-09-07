@@ -5,8 +5,10 @@ import { apiFetch } from "@/lib/api-client";
 import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type {
   AtualizarMesaInput,
+  ElementoEstrutural,
   Mesa,
   NovaMesaInput,
+  NovoElementoEstruturalInput,
   NovoSalaoInput,
   Salao,
   SalaoComMesas,
@@ -80,6 +82,33 @@ export function useRemoverMesa(salaoId: string) {
   return useMutation({
     mutationFn: (mesaId: string) =>
       apiFetch<void>(`/saloes/${salaoId}/mesas/${mesaId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    },
+  });
+}
+
+// Parede/porta desenhada no croqui — achado numa conversa com o usuário: mesas soltas num plano
+// em branco não davam pra reconhecer o salão de verdade.
+export function useAdicionarElemento(salaoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: NovoElementoEstruturalInput) =>
+      apiFetch<ElementoEstrutural>(`/saloes/${salaoId}/elementos`, {
+        method: "POST",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    },
+  });
+}
+
+export function useRemoverElemento(salaoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (elementoId: string) =>
+      apiFetch<void>(`/saloes/${salaoId}/elementos/${elementoId}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
     },

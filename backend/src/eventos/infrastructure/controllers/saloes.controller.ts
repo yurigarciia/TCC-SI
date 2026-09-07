@@ -28,9 +28,12 @@ import { AtualizarMesaUseCase } from '../../application/use-cases/atualizar-mesa
 import { RemoverMesaUseCase } from '../../application/use-cases/remover-mesa.use-case';
 import { ListarSaloesUseCase } from '../../application/use-cases/listar-saloes.use-case';
 import { ConsultarSalaoUseCase } from '../../application/use-cases/consultar-salao.use-case';
+import { AdicionarElementoEstruturalUseCase } from '../../application/use-cases/adicionar-elemento-estrutural.use-case';
+import { RemoverElementoEstruturalUseCase } from '../../application/use-cases/remover-elemento-estrutural.use-case';
 import { CriarSalaoDto } from './dto/criar-salao.dto';
 import { AdicionarMesaDto } from './dto/adicionar-mesa.dto';
 import { AtualizarMesaDto } from './dto/atualizar-mesa.dto';
+import { CriarElementoEstruturalDto } from './dto/criar-elemento-estrutural.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('saloes')
@@ -46,6 +49,8 @@ export class SaloesController {
     private readonly removerMesa: RemoverMesaUseCase,
     private readonly listar: ListarSaloesUseCase,
     private readonly consultar: ConsultarSalaoUseCase,
+    private readonly adicionarElemento: AdicionarElementoEstruturalUseCase,
+    private readonly removerElemento: RemoverElementoEstruturalUseCase,
   ) {}
 
   @Post()
@@ -161,5 +166,42 @@ export class SaloesController {
     @Param('mesaId', ParseUUIDPipe) mesaId: string,
   ) {
     return this.removerMesa.execute(id, mesaId);
+  }
+
+  @Post(':id/elementos')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Adiciona um traço de parede ou porta ao croqui do salão',
+  })
+  @ApiResponse({ status: 201, description: 'Elemento criado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão não encontrado' })
+  adicionarElementoAoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CriarElementoEstruturalDto,
+  ) {
+    return this.adicionarElemento.execute(id, dto);
+  }
+
+  @Delete(':id/elementos/:elementoId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove um traço de parede ou porta do croqui do salão' })
+  @ApiResponse({ status: 204, description: 'Elemento removido' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão ou elemento não encontrados' })
+  removerElementoDoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('elementoId', ParseUUIDPipe) elementoId: string,
+  ) {
+    return this.removerElemento.execute(id, elementoId);
   }
 }

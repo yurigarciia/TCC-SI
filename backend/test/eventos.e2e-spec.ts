@@ -135,6 +135,58 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     )).toBe(false);
   });
 
+  it('adiciona e remove parede/porta do croqui, e recusa elemento em salão inexistente (404)', async () => {
+    const parede = await request(app.getHttpServer())
+      .post(`/saloes/${salaoId}/elementos`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ tipo: 'parede', x1: 0, y1: 0, x2: 200, y2: 0 })
+      .expect(201);
+    const paredeId = (parede.body as { id: string; tipo: string }).id;
+    expect((parede.body as { tipo: string }).tipo).toBe('parede');
+
+    const porta = await request(app.getHttpServer())
+      .post(`/saloes/${salaoId}/elementos`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ tipo: 'porta', x1: 80, y1: 0, x2: 120, y2: 0 })
+      .expect(201);
+    const portaId = (porta.body as { id: string }).id;
+
+    const consulta = await request(app.getHttpServer())
+      .get(`/saloes/${salaoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const elementos = (consulta.body as { elementos: Array<{ id: string }> })
+      .elementos;
+    expect(elementos.some((e) => e.id === paredeId)).toBe(true);
+    expect(elementos.some((e) => e.id === portaId)).toBe(true);
+
+    await request(app.getHttpServer())
+      .post('/saloes/00000000-0000-0000-0000-000000000000/elementos')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ tipo: 'parede', x1: 0, y1: 0, x2: 10, y2: 10 })
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .delete(`/saloes/${salaoId}/elementos/${paredeId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .delete(`/saloes/${salaoId}/elementos/00000000-0000-0000-0000-000000000000`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+
+    const consultaFinal = await request(app.getHttpServer())
+      .get(`/saloes/${salaoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const elementosFinais = (
+      consultaFinal.body as { elementos: Array<{ id: string }> }
+    ).elementos;
+    expect(elementosFinais.some((e) => e.id === paredeId)).toBe(false);
+    expect(elementosFinais.some((e) => e.id === portaId)).toBe(true);
+  });
+
   it('cria evento sem croqui (só ingresso avulso), nasce como rascunho', async () => {
     const response = await request(app.getHttpServer())
       .post('/eventos')

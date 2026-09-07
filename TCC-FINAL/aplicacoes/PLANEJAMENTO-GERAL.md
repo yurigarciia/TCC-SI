@@ -828,12 +828,56 @@ frentes de frontend-web e mobile.
   A questão de desenhar paredes/portas/formato do salão (mencionada na mesma conversa) ficou de
   fora deste adendo — depende de uma decisão de escopo maior (imagem de planta baixa enviada pela
   entidade vs. uma ferramenta de desenho vetorial dentro do app) que precisa ser combinada com o
-  usuário antes de implementar; ver ticket/decisão a abrir separadamente.
+  usuário antes de implementar; ver próximo adendo.
 
   Validado com `npm run build`/`npm run lint` (frontend, sem mudança no backend) e teste manual
   ponta a ponta headless: cliquei perto de cada quina do croqui confirmando que o painel nunca sai
   da área visível, adicionei mesa com sucesso pelo painel, cliquei nela de novo e confirmei que o
   painel abre em modo edição pré-preenchido com o valor certo (persistido, não só local).
+- **Adendo (paredes e portas — ferramenta de desenho vetorial):** perguntado ao usuário se
+  parede/porta/formato do salão deveriam vir de uma imagem de planta baixa enviada pela entidade
+  ou de uma ferramenta de desenho dentro do próprio app — escolhida a ferramenta de desenho (RF10
+  ampliado; croqui-salao.json nunca tinha modelado isso, é extensão de escopo pedida em conversa).
+
+  Novo conceito de domínio `ElementoEstrutural` (backend, `eventos/domain/`) — um traço livre
+  (`tipo: 'parede' | 'porta'`, dois pontos `x1,y1`/`x2,y2`, mesmo plano cartesiano das mesas), sem
+  exigir formar um polígono fechado nem validação de geometria nenhuma — a entidade desenha do
+  jeito que representa o espaço real. Nova tabela `elementos_estruturais` (migração
+  `1756400000000-CreateElementosEstruturaisTable`, FK `salao_id` `ON DELETE CASCADE`) e endpoints
+  `POST`/`DELETE /saloes/:id/elementos(/:elementoId)` (`AdicionarElementoEstruturalUseCase`/
+  `RemoverElementoEstruturalUseCase`). Diferente de mesa, excluir elemento não tem restrição de
+  "em uso" — parede/porta nunca é referenciada por reserva nem configuração de evento, é só
+  desenho. `ConsultarSalaoUseCase`/`GET /saloes/:id` passa a devolver `elementos` junto de
+  `salao`/`mesas`.
+
+  Frontend: `MesaCanvas` ganhou um `modo` (`mesa`/`parede`/`porta`, controlado por um seletor de
+  ferramentas em abas acima do croqui, ícones `Armchair`/`Minus`/`DoorOpen`) que muda o que
+  clicar/arrastar no croqui faz. Em modo parede/porta, arrastar desenha um traço (linha de prévia
+  tracejada acompanhando o mouse via `<svg>` sobreposto, elementos existentes desenhados como
+  `<line>`; parede sólida escura, porta pontilhada numa cor mais clara — visualmente distinguíveis
+  mesmo sobrepostas) — comprimento mínimo de 12px pra não criar traço de um clique acidental sem
+  arrastar quase nada. Clicar num traço já existente (em vez de arrastar) abre o mesmo painel
+  flutuante já usado pras mesas, agora só com "Excluir" (sem confirmação — diferente de mesa, não
+  tem risco de perder histórico, redesenhar é trivial). Mesas ficam com opacidade reduzida e
+  não-clicáveis enquanto uma ferramenta de parede/porta está ativa (só contexto visual, sem
+  disputar o mesmo clique).
+
+  Achado em teste manual, corrigido antes de considerar pronto: o navegador dispara um "click"
+  nativo no elemento embaixo do cursor mesmo depois de um arraste (mousedown→mousemove→mouseup
+  ainda conta como clique nesse elemento) — desenhar uma porta cruzando por cima de uma parede já
+  existente também selecionava a parede pra excluir, efeito colateral do mesmo gesto. Corrigido
+  com uma ref que marca "acabei de desenhar um traço de verdade" pra engolir esse clique fantasma
+  uma única vez. Segundo achado: já que a ordem que a API devolve os elementos não é garantida, uma
+  parede podia ser pintada por cima de uma porta na mesma posição, escondendo o traço pontilhado
+  dela — corrigido ordenando parede sempre antes de porta no render (porta sempre por cima).
+
+  Validado com `npm run test:e2e` (backend, 63/63, 1 teste novo: adiciona parede e porta, lista
+  ambas em `GET /saloes/:id`, recusa elemento em salão inexistente com 404, remove e confirma que
+  só a removida some) e `npm run build`/`npm run lint` (frontend), mais teste manual ponta a ponta
+  headless: troquei de ferramenta, arrastei uma parede e depois uma porta cruzando por cima dela,
+  confirmei visualmente (screenshot com zoom 4x) que a porta aparece distinguível por cima da
+  parede, cliquei na parede pra selecionar e excluir — sem seleção fantasma da porta que acabou de
+  ser desenhada por cima. Zero warnings de console.
 
 #### Ticket: T-FE-006 Cadastro/Publicação de Evento
 - **Priority:** Must
