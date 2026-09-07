@@ -36,7 +36,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCategoriasSocio } from "@/features/associados/use-associados";
-import { useEvento } from "@/features/eventos/use-eventos";
+import { useEvento, usePrecosIngressoEvento } from "@/features/eventos/use-eventos";
+import type { PrecosIngressoConfigurados } from "@/features/eventos/types";
 import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
 import { useEmitirIngresso, useIngressosEvento, useRegistrarCheckin } from "@/features/ingressos/use-ingressos";
@@ -62,6 +63,22 @@ const emitirSchema = z
   });
 
 type EmitirFormValues = z.infer<typeof emitirSchema>;
+
+// Achado numa conversa com o usuário: o valor cobrado só aparecia depois de já ter emitido o
+// ingresso (num toast que passa rápido). Resolve o mesmo preço que o backend vai cobrar — mesma
+// fonte de dados de PrecosIngressoConfigurados (GET /eventos/:id/precos-ingresso), só pra prévia;
+// quem decide o preço de verdade continua sendo o backend na hora de emitir.
+function resolverPrecoPrevisto(
+  precos: PrecosIngressoConfigurados | undefined,
+  perfil: EmitirFormValues["perfilComprador"] | undefined,
+  categoriaSocioId: string | undefined,
+): number | null | undefined {
+  if (!precos || !perfil) return undefined;
+  if (perfil === "nao_socio") return precos.naoSocio;
+  if (perfil === "crianca") return precos.crianca;
+  if (!categoriaSocioId) return null;
+  return precos.porCategoria.find((p) => p.categoriaSocioId === categoriaSocioId)?.preco ?? null;
+}
 
 export default function IngressosEventoPage() {
   const params = useParams<{ id: string }>();
@@ -111,6 +128,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   // cadastradas sem precisar de paginação aqui (número de categorias tende a ser pequeno).
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
   const categorias = resultadoCategorias?.itens;
+  const { data: precos } = usePrecosIngressoEvento(eventoId);
 
   const {
     register,
@@ -124,6 +142,8 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   });
 
   const perfilSelecionado = useWatch({ control, name: "perfilComprador" });
+  const categoriaSelecionada = useWatch({ control, name: "categoriaSocioId" });
+  const precoPrevisto = resolverPrecoPrevisto(precos, perfilSelecionado, categoriaSelecionada);
 
   const onSubmitEmitir = handleSubmit((dados) => {
     emitir.mutate(dados, {
@@ -265,7 +285,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           <DialogHeader>
             <DialogTitle>Vender ingresso presencial</DialogTitle>
             <DialogDescription>
-              Emitido na hora, na mão — pra quando alguém compra na entrada, sem passar pelo app.
+              Venda ingresso presencialmente, sem pagamento online. O ingresso será emitido e o comprador poderá entrar no evento.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={onSubmitEmitir} className="grid gap-4 sm:grid-cols-3" noValidate>
@@ -359,8 +379,23 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 )}
               </div>
             )}
+            <div className="sm:col-span-3">
+              {precoPrevisto === null ? (
+                <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                  Preço não configurado pra esse perfil{perfilSelecionado === "socio" ? " e categoria" : ""}{" "}
+                  neste evento — configure antes de vender.
+                </p>
+              ) : precoPrevisto !== undefined ? (
+                <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2">
+                  <span className="text-sm text-muted-foreground">Valor a cobrar</span>
+                  <span className="text-base font-semibold text-foreground">
+                    {formatarMoeda(precoPrevisto)}
+                  </span>
+                </div>
+              ) : null}
+            </div>
             <div className="sm:col-span-3 flex justify-end">
-              <Button type="submit" disabled={emitir.isPending}>
+              <Button type="submit" disabled={emitir.isPending || precoPrevisto === null}>
                 {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}
               </Button>
             </div>

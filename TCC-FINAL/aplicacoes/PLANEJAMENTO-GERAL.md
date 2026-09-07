@@ -1062,6 +1062,20 @@ frentes de frontend-web e mobile.
   configurado" num evento de teste sem essa configuração — confirma que o toast de erro aparece
   corretamente sem quebrar a página por trás do modal), e abri o modal de check-in confirmando o
   botão de câmera e o campo de código manual.
+- **Adendo (prévia do valor a cobrar):** pedido do usuário — o valor cobrado só aparecia depois de
+  já ter emitido o ingresso, num toast que passa rápido; nada mostrava o preço antes de confirmar
+  a venda. Achado ao investigar: o registro "fortemente vinculado" que o usuário pediu já existia
+  — `Ingresso.preco` é resolvido uma vez em `EmitirIngressoUseCase` e gravado como valor fixo na
+  própria linha do ingresso (nunca recalculado depois), já aparece na coluna "Preço" da listagem;
+  o que faltava era mostrar esse valor *antes* de emitir. Modal de "Vender ingresso" passa a
+  calcular e mostrar "Valor a cobrar" ao vivo, conforme perfil/categoria escolhidos, reaproveitando
+  `usePrecosIngressoEvento` (mesmo hook já usado na tela do evento pra configurar preço por
+  perfil) — sem endpoint novo. Quando não há preço configurado pra esse perfil/categoria, mostra
+  um aviso vermelho ("Preço não configurado... configure antes de vender") e desabilita "Emitir
+  ingresso", evitando uma tentativa fadada a dar 400 no backend. Validado com `npm run build`/
+  `npm run lint` e teste manual ponta a ponta headless: evento de teste com preço configurado só
+  pra "Não-sócio" — selecionar esse perfil mostrou "R$ 30,00" ao vivo, selecionar "Criança" (sem
+  preço configurado) mostrou o aviso com o botão desabilitado.
 
 #### Ticket: T-FE-009 Gestão de Usuários da Plataforma
 - **Priority:** Should
