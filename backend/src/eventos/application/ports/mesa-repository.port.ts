@@ -8,6 +8,13 @@ export interface NovaMesa {
   posicaoY: number;
 }
 
+export interface AtualizacaoMesa {
+  numero?: number;
+  capacidade?: number;
+  posicaoX?: number;
+  posicaoY?: number;
+}
+
 export abstract class MesaRepositoryPort {
   abstract salvar(dados: NovaMesa): Promise<Mesa>;
   abstract buscarPorId(id: string): Promise<Mesa | null>;
@@ -16,4 +23,10 @@ export abstract class MesaRepositoryPort {
     numero: number,
   ): Promise<Mesa | null>;
   abstract listarPorSalao(salaoId: string): Promise<Mesa[]>;
+  abstract atualizar(id: string, dados: AtualizacaoMesa): Promise<Mesa>;
+  abstract remover(id: string): Promise<void>;
+  // true se a mesa já aparece em alguma reserva ou configuração de preço/bloqueio de evento —
+  // excluir apagaria histórico de verdade (ambas as FKs são ON DELETE CASCADE, ver migrations
+  // CreateReservasTable/CreateEventosTables), então o use case bloqueia antes de chegar aqui.
+  abstract estaEmUso(id: string): Promise<boolean>;
 }

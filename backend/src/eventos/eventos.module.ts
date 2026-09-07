@@ -7,6 +7,8 @@ import { ConfiguracaoMesaEventoRepositoryPort } from './application/ports/config
 import { ConfiguracaoIngressoEventoRepositoryPort } from './application/ports/configuracao-ingresso-evento-repository.port';
 import { CriarSalaoUseCase } from './application/use-cases/criar-salao.use-case';
 import { AdicionarMesaUseCase } from './application/use-cases/adicionar-mesa.use-case';
+import { AtualizarMesaUseCase } from './application/use-cases/atualizar-mesa.use-case';
+import { RemoverMesaUseCase } from './application/use-cases/remover-mesa.use-case';
 import { ListarSaloesUseCase } from './application/use-cases/listar-saloes.use-case';
 import { ConsultarSalaoUseCase } from './application/use-cases/consultar-salao.use-case';
 import { CriarEventoUseCase } from './application/use-cases/criar-evento.use-case';
@@ -49,6 +51,8 @@ import { IdentidadeModule } from '../identidade/identidade.module';
   providers: [
     CriarSalaoUseCase,
     AdicionarMesaUseCase,
+    AtualizarMesaUseCase,
+    RemoverMesaUseCase,
     ListarSaloesUseCase,
     ConsultarSalaoUseCase,
     CriarEventoUseCase,

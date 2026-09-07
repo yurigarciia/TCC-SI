@@ -757,6 +757,55 @@ frentes de frontend-web e mobile.
   numéricos com `z.coerce.number()` exigem tipar `useForm` com os três genéricos
   (`<Input, unknown, Output>`) para o TypeScript aceitar o resolver — documentado no README como
   padrão a seguir nas próximas telas com número (eventos, ingressos).
+- **Adendo (QA — cadastro/edição de croqui "completamente quebrado"):** pedido do usuário pra fazer
+  QA na tela; achados reproduzidos ao vivo (headless, logado), do pior pro mais cosmético:
+  1. Clicar no croqui não dava feedback nenhum ali — só atualizava os campos Posição X/Y do
+     formulário abaixo, sem marcador nenhum no próprio croqui. Corrigido com um marcador tracejado
+     (`posicaoPendente` em `MesaCanvas`) que aparece na hora, no ponto clicado, até a mesa ser de
+     fato salva.
+  2. Impossível editar ou excluir uma mesa depois de criada — só existia `POST`, nunca
+     `PATCH`/`DELETE`, nem na API nem na UI. Um clique errado era permanente.
+  3. Clicar em cima de uma mesa já existente não selecionava nada — só preparava silenciosamente
+     uma mesa *nova* nas mesmas coordenadas (número seguinte, validado, mas posição sem checagem
+     nenhuma), deixando fácil empilhar mesas exatamente uma em cima da outra sem aviso.
+  4. Warning real de console ("Base UI: A component is changing the default value state of an
+     uncontrolled FieldControl after being initialized") — causado por um `defaultValue={...}` do
+     DOM lado a lado com `register()` do react-hook-form no campo "Número da mesa" (dois
+     mecanismos definindo o valor inicial do mesmo input). Resolvido tirando o `defaultValue` e
+     deixando só `defaultValues`/`reset()` do RHF controlar isso, como os outros campos já faziam.
+  5. Canvas marcado `role="button"` mas sem `onKeyDown` — não dava pra operar por teclado apesar
+     de se anunciar como elemento interativo pro leitor de tela.
+
+  Resolvido com endpoints novos `PATCH /saloes/:id/mesas/:mesaId` e
+  `DELETE /saloes/:id/mesas/:mesaId` (`AtualizarMesaUseCase`/`RemoverMesaUseCase`, backend).
+  Editar nunca tem restrição — capacidade é só informativa no mapa de mesas
+  (`ConsultarMapaMesasUseCase`), nunca entra em validação de reserva. Excluir é bloqueado (409) se
+  a mesa já aparece em alguma `reserva` ou `configuracao_mesa_evento` — as duas FKs são
+  `ON DELETE CASCADE` (ver migrations `CreateReservasTable`/`CreateEventosTables`), então deletar
+  direto apagaria histórico de verdade; a checagem faz uma consulta direta nessas duas tabelas a
+  partir do adapter de mesa (em vez de injetar `ReservaRepositoryPort` no módulo `eventos`, que
+  criaria um ciclo — `reservas` já importa `eventos`, não o contrário). Mesa sem uso nenhum pode
+  ser excluída livremente; isso não conflita com a pendência já documentada acima ("mover/remover
+  mesa de um croqui já usado com reservas" — essa pergunta continua em aberto, mas nunca bloqueou
+  excluir uma mesa que nunca teve reserva nenhuma).
+
+  `MesaCanvas` ganhou `onMesaClick` (mesa existente abre pra editar, com `stopPropagation` pra não
+  disparar `onCanvasClick` também) e `mesaSelecionadaId` (realce visual da mesa em edição). A tela
+  `/saloes/[id]` unificou os dois modos num só formulário — "Adicionar mesa" vira
+  "Editar mesa N" com botões "Excluir mesa" (`AlertDialog` de confirmação, chamando
+  `DELETE`) e "Cancelar edição" quando uma mesa está selecionada. Achado em teste manual depois do
+  fix: excluir uma mesa editada deixava o campo "Capacidade" com o número antigo (`reset()` com
+  `capacidade: undefined` não limpa um input que já teve valor digitado pelo usuário) — trocado
+  por `""` explícito. Texto "X mesa(s) cadastrada(s)" (nunca pluralizava de verdade) trocado por
+  uma função de pluralização de verdade.
+
+  Validado com `npm run test:e2e` (backend, 62/62, 2 testes novos: editar bloqueando número
+  duplicado e 404 pra mesa inexistente, excluir com sucesso e recusar quando em uso) e
+  `npm run build`/`npm run lint` (frontend), mais teste manual ponta a ponta headless: criei mesa,
+  vi o marcador de prévia aparecer no clique, editei capacidade/posição, excluí (mesa sumiu do
+  croqui, texto voltou pra "Nenhuma mesa cadastrada"), e confirmei via API+UI que excluir uma mesa
+  já vinculada a um evento é recusado com a mensagem certa. Zero warnings de console na segunda
+  rodada.
 
 #### Ticket: T-FE-006 Cadastro/Publicação de Evento
 - **Priority:** Must

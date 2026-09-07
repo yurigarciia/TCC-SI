@@ -87,6 +87,54 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
       .expect(409);
   });
 
+  it('edita número/capacidade/posição de uma mesa, bloqueia número duplicado e 404 pra mesa inexistente', async () => {
+    const mesa = await request(app.getHttpServer())
+      .post(`/saloes/${salaoId}/mesas`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ numero: 9, capacidade: 4, posicaoX: 5, posicaoY: 5 })
+      .expect(201);
+    const mesaEditavelId = (mesa.body as { id: string }).id;
+
+    const editada = await request(app.getHttpServer())
+      .patch(`/saloes/${salaoId}/mesas/${mesaEditavelId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ capacidade: 6, posicaoX: 55, posicaoY: 66 })
+      .expect(200);
+    const body = editada.body as {
+      capacidade: number;
+      posicaoX: number;
+      posicaoY: number;
+    };
+    expect(body.capacidade).toBe(6);
+    expect(body.posicaoX).toBe(55);
+    expect(body.posicaoY).toBe(66);
+
+    await request(app.getHttpServer())
+      .patch(`/saloes/${salaoId}/mesas/${mesaEditavelId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ numero: 1 })
+      .expect(409);
+
+    await request(app.getHttpServer())
+      .patch(`/saloes/${salaoId}/mesas/00000000-0000-0000-0000-000000000000`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ capacidade: 10 })
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .delete(`/saloes/${salaoId}/mesas/${mesaEditavelId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(204);
+
+    const consulta = await request(app.getHttpServer())
+      .get(`/saloes/${salaoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect((consulta.body as { mesas: Array<{ id: string }> }).mesas.some(
+      (m) => m.id === mesaEditavelId,
+    )).toBe(false);
+  });
+
   it('cria evento sem croqui (só ingresso avulso), nasce como rascunho', async () => {
     const response = await request(app.getHttpServer())
       .post('/eventos')
@@ -205,5 +253,12 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/eventos/publicados/${eventoSemCroquiId}`)
       .expect(404);
+  });
+
+  it('recusa excluir mesa já usada numa configuração de evento (409)', () => {
+    return request(app.getHttpServer())
+      .delete(`/saloes/${salaoId}/mesas/${mesaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(409);
   });
 });

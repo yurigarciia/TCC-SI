@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -22,10 +24,13 @@ import { Roles } from '../../../identidade/infrastructure/security/roles.decorat
 import { Perfil } from '../../../identidade/domain/usuario.entity';
 import { CriarSalaoUseCase } from '../../application/use-cases/criar-salao.use-case';
 import { AdicionarMesaUseCase } from '../../application/use-cases/adicionar-mesa.use-case';
+import { AtualizarMesaUseCase } from '../../application/use-cases/atualizar-mesa.use-case';
+import { RemoverMesaUseCase } from '../../application/use-cases/remover-mesa.use-case';
 import { ListarSaloesUseCase } from '../../application/use-cases/listar-saloes.use-case';
 import { ConsultarSalaoUseCase } from '../../application/use-cases/consultar-salao.use-case';
 import { CriarSalaoDto } from './dto/criar-salao.dto';
 import { AdicionarMesaDto } from './dto/adicionar-mesa.dto';
+import { AtualizarMesaDto } from './dto/atualizar-mesa.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('saloes')
@@ -37,6 +42,8 @@ export class SaloesController {
   constructor(
     private readonly criar: CriarSalaoUseCase,
     private readonly adicionarMesa: AdicionarMesaUseCase,
+    private readonly atualizarMesa: AtualizarMesaUseCase,
+    private readonly removerMesa: RemoverMesaUseCase,
     private readonly listar: ListarSaloesUseCase,
     private readonly consultar: ConsultarSalaoUseCase,
   ) {}
@@ -105,5 +112,54 @@ export class SaloesController {
     @Body() dto: AdicionarMesaDto,
   ) {
     return this.adicionarMesa.execute(id, dto);
+  }
+
+  @Patch(':id/mesas/:mesaId')
+  @ApiOperation({
+    summary:
+      'Edita número, capacidade ou posição de uma mesa do croqui (número segue único dentro do salão)',
+  })
+  @ApiResponse({ status: 200, description: 'Mesa atualizada' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão ou mesa não encontrados' })
+  @ApiResponse({
+    status: 409,
+    description: 'Já existe uma mesa com esse número neste salão',
+  })
+  atualizarMesaDoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('mesaId', ParseUUIDPipe) mesaId: string,
+    @Body() dto: AtualizarMesaDto,
+  ) {
+    return this.atualizarMesa.execute(id, mesaId, dto);
+  }
+
+  @Delete(':id/mesas/:mesaId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary:
+      'Remove uma mesa do croqui — só se ela nunca foi usada em reserva ou configuração de evento',
+  })
+  @ApiResponse({ status: 204, description: 'Mesa removida' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão ou mesa não encontrados' })
+  @ApiResponse({
+    status: 409,
+    description: 'Mesa já usada em um evento — não pode ser excluída',
+  })
+  removerMesaDoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('mesaId', ParseUUIDPipe) mesaId: string,
+  ) {
+    return this.removerMesa.execute(id, mesaId);
   }
 }

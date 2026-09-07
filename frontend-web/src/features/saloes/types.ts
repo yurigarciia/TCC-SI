@@ -29,3 +29,10 @@ export interface NovaMesaInput {
   posicaoX: number;
   posicaoY: number;
 }
+
+export interface AtualizarMesaInput {
+  numero?: number;
+  capacidade?: number;
+  posicaoX?: number;
+  posicaoY?: number;
+}
