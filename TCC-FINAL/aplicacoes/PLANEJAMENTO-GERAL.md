@@ -10,20 +10,31 @@
 
 ## 1. Visão Geral
 
-Construir um ecossistema digital — painel web administrativo + aplicativo mobile para associados —
-que digitalize a gestão de associados, mensalidades e eventos sociais (bailes e fandangos) de
-entidades tradicionalistas gaúchas, usando o CTG/CPF **Pia do Sul** (Santa Maria/RS, 13ª RT) como
-estudo de caso e validador do MVP.
+Construir um ecossistema digital — painel web administrativo + aplicativo mobile para associados,
+com o nome **Pampa Gestão** — que digitalize a gestão de associados, mensalidades e eventos sociais
+(bailes e fandangos) de entidades tradicionalistas gaúchas. Desde 2026-09-15 (achado de uma segunda
+entrevista, com o CTG Sentinela da Querência, convergindo fortemente com a do Pia do Sul), o produto
+é desenhado como reutilizável entre entidades — não sob medida pra uma única — e validado como
+**estudo de casos múltiplos** com duas entidades parceiras: o **CPF Pia do Sul** e o **CTG Sentinela
+da Querência** (ambos Santa Maria/RS, 13ª RT). Isso não é multi-tenant (ver §2) — cada entidade roda
+sua própria instância/banco no mesmo código-base; o que muda é que a marca do produto na UI é
+genérica ("Pampa Gestão", não o nome de uma entidade específica) e o modelo de dados já era, antes
+disso, desacoplado o bastante (categorias de sócio configuráveis N×N, por exemplo) pra não exigir
+retrabalho nessa mudança de enquadramento.
 
 Sucesso, para efeito deste projeto, significa: um MVP funcional cobrindo os requisitos Must/Should
-do artigo (ver §7 Backlog), avaliado com a diretoria e associados reais do Pia do Sul via SUS +
-entrevista/observação, produzindo resultados que sustentem o capítulo de Resultados e Discussão do
-TCC até o prazo de 2026-06-19.
+do artigo (ver §7 Backlog), avaliado com a diretoria e associados reais das duas entidades parceiras
+via SUS + entrevista/observação, produzindo resultados que sustentem o capítulo de Resultados e
+Discussão do TCC até o prazo de 2026-06-19.
 
 O sistema não substitui o julgamento humano da diretoria — os fluxos são majoritariamente
 **mediados pela entidade** (RNF01), refletindo o nível de familiaridade digital heterogêneo do
-público (associados incluem pessoas idosas; a diretoria tem dificuldade digital, conforme relatado
-na entrevista escrita de 2026-08-11).
+público. As duas entrevistas escritas (Pia do Sul em 2026-08-11, Sentinela da Querência depois)
+mostram que esse perfil varia por entidade — não é uma constante do público-alvo: o Pia do Sul
+relatou diretoria leiga e confiança nos associados; o Sentinela da Querência espera um colaborador
+contratado e instruído operando o painel, mas antecipa dificuldade de acesso pelos associados. RNF01
+segue como diretriz porque cobre os dois perfis (fluxo mediado sempre disponível, nunca a única
+opção), não porque assume um único perfil de usuário leigo universal.
 
 ## 2. Não Objetivos (Non Goals)
 
@@ -34,9 +45,10 @@ na entrevista escrita de 2026-08-11).
 - Totem físico de autoatendimento (pedido levantado na entrevista, fora do escopo do MVP).
 - Tema escuro (dark mode) no frontend administrativo — pode ser considerado pós-MVP, não é meta do
   system design atual.
-- Multi-tenant (suporte a múltiplas entidades ao mesmo tempo) — o MVP é validado com uma única
-  entidade parceira; arquitetura deve ser desacoplada o suficiente para não impedir isso no futuro,
-  mas não é entregável agora.
+- Multi-tenant (suporte a múltiplas entidades compartilhando a mesma implantação/banco ao mesmo
+  tempo) — o MVP é validado com duas entidades parceiras, mas cada uma em sua própria
+  implantação/banco isolados (mesmo código-base); arquitetura deve ser desacoplada o suficiente para
+  não impedir multi-tenant real no futuro, mas não é entregável agora.
 
 ## 3. Premissas
 

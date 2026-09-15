@@ -11,11 +11,20 @@ Faculdade Antônio Meneghetti (AMF). The document is written in Portuguese (Braz
 Entidades Tradicionalistas Gaúchas
 **Author:** Yuri Garcia Baptista
 **Orientador:** Prof. Dr. Felipe Becker Nunes
-**Case study partner:** CPF Pia do Sul, Santa Maria/RS (13ª RT)
+**Case study partners (multiple-case study):** CPF Pia do Sul and CTG Sentinela da Querência, both
+Santa Maria/RS (13ª RT)
+**System name:** Pampa Gestão
 
 The work proposes and evaluates a digital ecosystem (web admin panel + mobile app for members) for
 managing associados, mensalidades, and social events (bailes e fandangos) at Gaúcho traditionalist
-entities.
+entities. As of 2026-09-15, the system is deliberately designed as a reusable product across
+traditionalist entities (not coupled to one partner's particularities — e.g. member categories are
+configurable N×N, not hard-coded), validated via a two-entity multiple-case study rather than a
+single-entity case study. This is NOT multi-tenancy: each partner entity runs its own isolated
+deployment/database on the same codebase. Product branding in the UI ("Pampa Gestão") is intentionally
+generic; do not reintroduce a single entity's name into UI copy, titles, or placeholders — entity
+names remain legitimate in the thesis text itself (method/diagnosis sections) as case-study
+identifiers, and in per-deployment config/seed data for a specific entity's own instance.
 
 ## Repository Structure
 

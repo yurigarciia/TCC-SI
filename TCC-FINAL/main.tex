@@ -223,28 +223,37 @@
 \end{center}
 
 \vspace{\baselineskip}
-\noindent\textbf{RESUMO:} Este artigo apresenta o desenvolvimento e a avaliação de um ecossistema digital
-entidade-associado voltado à gestão de associados e de eventos sociais tradicionais, com ênfase em
-bailes e fandangos, no contexto das entidades tradicionalistas gaúchas. Partindo da identificação de
-lacunas na literatura e de um diagnóstico dos processos administrativos do CPF Pia do Sul, em Santa
-Maria/RS, o estudo propõe uma solução composta por uma plataforma \textit{web} para administração da
-entidade e um aplicativo \textit{mobile} para os associados, integrados por uma API REST. A
-arquitetura adota a abordagem Hexagonal combinada com princípios da \textit{Clean Architecture}, e o
+\noindent\textbf{RESUMO:} Este artigo apresenta o desenvolvimento e a avaliação do Pampa Gestão, um
+ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais
+tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
+Partindo da identificação de lacunas na literatura e de um diagnóstico dos processos administrativos
+de duas entidades parceiras — o CPF Pia do Sul e o CTG Sentinela da Querência, ambos em Santa
+Maria/RS, vinculados à 13ª Região Tradicionalista —, o estudo propõe uma solução composta por uma
+plataforma \textit{web} para administração da entidade e um aplicativo \textit{mobile} para os
+associados, integrados por uma API REST. A convergência de processos e necessidades identificada
+entre as duas entidades parceiras orientou o desenho do sistema como um produto reutilizável entre
+entidades tradicionalistas — não acoplado às particularidades de uma única entidade —, ainda que cada
+implantação permaneça isolada, com instância e base de dados próprias por entidade. A arquitetura
+adota a abordagem Hexagonal combinada com princípios da \textit{Clean Architecture}, e o
 desenvolvimento segue o método DSDM com priorização MoSCoW. [Resumo a ser complementado com os
-resultados da avaliação conduzida no CPF Pia do Sul.]
+resultados da avaliação conduzida junto às entidades parceiras.]
 
 \vspace{\baselineskip}
 \noindent\textbf{Palavras-chave:} ecossistema digital; gestão associativa; entidades tradicionalistas gaúchas; transformação digital; usabilidade.
 
 \vspace{\baselineskip}
-\noindent\textbf{ABSTRACT:} This article presents the development and evaluation of a digital
-ecosystem aimed at managing members and traditional social events, with emphasis on \textit{bailes}
-and \textit{fandangos}, in the context of Gaúcho traditionalist entities. Based on identified gaps
-in the literature and a diagnosis of administrative processes at CPF Pia do Sul, in Santa Maria/RS,
-the study proposes a solution composed of a web platform for entity administration and a mobile
-application for members, integrated through a REST API. The architecture adopts the Hexagonal
-approach combined with Clean Architecture principles, and development follows the DSDM method with
-MoSCoW prioritization. [Abstract to be completed with evaluation results.]
+\noindent\textbf{ABSTRACT:} This article presents the development and evaluation of Pampa Gestão, a
+digital ecosystem aimed at managing members and traditional social events, with emphasis on
+\textit{bailes} and \textit{fandangos}, in the context of Gaúcho traditionalist entities. Based on
+identified gaps in the literature and a diagnosis of administrative processes at two partner
+entities — CPF Pia do Sul and CTG Sentinela da Querência, both in Santa Maria/RS —, the study
+proposes a solution composed of a web platform for entity administration and a mobile application
+for members, integrated through a REST API. The convergence of processes and needs identified
+between the two partner entities guided the design of the system as a reusable product across
+traditionalist entities, rather than one coupled to a single entity's particularities, although each
+deployment remains isolated, with its own instance and database per entity. The architecture adopts
+the Hexagonal approach combined with Clean Architecture principles, and development follows the DSDM
+method with MoSCoW prioritization. [Abstract to be completed with evaluation results.]
 
 \vspace{\baselineskip}
 \noindent\textbf{Keywords:} digital ecosystem; associative management; Gaúcho traditionalist entities; digital transformation; usability.
@@ -509,31 +518,47 @@ voltada à melhoria de processos administrativos em entidades tradicionalistas, 
 por envolver levantamento de requisitos e avaliação do uso do sistema a partir da percepção de
 usuários e gestores \parencite{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adota-se
 uma combinação de pesquisa bibliográfica, para fundamentação teórica e identificação de trabalhos
-correlatos, e estudo de caso, considerando a aplicação do ecossistema digital no CPF Pia do Sul,
-utilizado como ambiente real de validação e coleta de informações \parencite{yin2015}.
+correlatos, e estudo de casos múltiplos, considerando a aplicação do ecossistema digital em duas
+entidades parceiras, utilizadas como ambiente real de validação e coleta de informações
+\parencite{yin2015}. A opção por duas entidades, em vez de uma única, buscou avaliar até que ponto os
+processos administrativos e as necessidades levantadas são específicos de uma organização isolada ou
+recorrentes no contexto das entidades tradicionalistas gaúchas de forma mais ampla, fortalecendo a
+validade externa das conclusões dentro dos limites de um estudo de casos múltiplos \parencite{yin2015}.
 
 O desenvolvimento do trabalho foi organizado em três etapas principais e sequenciais: (1) levantamento
-e validação de requisitos junto ao CPF Pia do Sul, por meio de entrevistas semiestruturadas, análise
-documental e observação dos processos atuais; (2) implementação iterativa do MVP do ecossistema
-digital, priorizando as funcionalidades essenciais conforme a técnica MoSCoW do DSDM; e (3)
-avaliação do sistema com usuários reais da entidade parceira, combinando instrumentos qualitativos e
-a escala SUS para verificar usabilidade e adequação ao contexto organizacional.
+e validação de requisitos junto às entidades parceiras, por meio de entrevistas semiestruturadas,
+análise documental e observação dos processos atuais; (2) implementação iterativa do MVP do
+ecossistema digital, priorizando as funcionalidades essenciais conforme a técnica MoSCoW do DSDM; e
+(3) avaliação do sistema com usuários reais das entidades parceiras, combinando instrumentos
+qualitativos e a escala SUS para verificar usabilidade e adequação ao contexto organizacional.
 
 \subsection{Delimitação do estudo e campo de aplicação}
 
-O estudo de caso foi realizado no CPF Pia do Sul, localizado em Santa Maria/RS, vinculado à 13ª
-Região Tradicionalista (13ª RT). A pesquisa delimita-se ao contexto administrativo da entidade, com
-foco nos processos de cadastro de associados, controle de mensalidades e gestão de eventos sociais
-tradicionais, com ênfase em bailes e fandangos, incluindo reservas de mesas e ingressos. Não estão
-contempladas integrações técnicas com sistemas institucionais do MTG, como o Cartão de Identidade
-Tradicionalista (CIT).
+O estudo de casos múltiplos foi realizado com duas entidades parceiras, ambas localizadas em Santa
+Maria/RS e vinculadas à 13ª Região Tradicionalista (13ª RT): o CPF Pia do Sul e o CTG Sentinela da
+Querência. As duas entidades diferem em porte e estágio de digitalização — a primeira ainda depende
+majoritariamente de controles físicos em papel para reservas e emissão de ingressos, enquanto a
+segunda já opera um sistema de gestão próprio, embora fragmentado entre esse sistema, planilhas
+eletrônicas e controles manuais na portaria dos eventos —, o que permitiu observar o mesmo conjunto de
+processos administrativos em diferentes graus de maturidade tecnológica. A pesquisa delimita-se ao
+contexto administrativo das entidades parceiras, com foco nos processos de cadastro de associados,
+controle de mensalidades e gestão de eventos sociais tradicionais, com ênfase em bailes e fandangos,
+incluindo reservas de mesas e ingressos. Não estão contempladas integrações técnicas com sistemas
+institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
+
+Embora a solução tenha sido desenhada como um produto reutilizável entre entidades tradicionalistas —
+e não como um sistema sob medida para uma única organização —, o trabalho não avalia uma implantação
+multiusuário compartilhada entre entidades: cada entidade parceira opera sua própria instância e base
+de dados, com o mesmo código-base. A generalização discutida neste artigo refere-se, portanto, à
+convergência de processos e requisitos observada entre as duas entidades estudadas, e não a uma prova
+de aplicabilidade universal a toda e qualquer entidade tradicionalista gaúcha.
 
 \subsection{Levantamento de requisitos e coleta de dados}
 
 A coleta de dados para levantamento de requisitos foi realizada por meio de:
 \begin{itemize}
   \item entrevistas semiestruturadas com membros da diretoria e responsáveis administrativos do CPF
-    Pia do Sul;
+    Pia do Sul e do CTG Sentinela da Querência;
   \item análise documental de materiais utilizados na gestão atual (planilhas, fichas cadastrais,
     registros de mensalidades e modelos de controle de eventos);
   \item observação do fluxo operacional de processos-chave (cadastro de associado, controle de
@@ -541,8 +566,8 @@ A coleta de dados para levantamento de requisitos foi realizada por meio de:
 \end{itemize}
 
 Esses instrumentos foram utilizados para identificar funcionalidades necessárias, regras de negócio
-e pontos de dificuldade: retrabalho, inconsistência, falta de rastreabilidade e baixa
-transparência para o associado.
+e pontos de dificuldade comuns às duas entidades: retrabalho, inconsistência, falta de
+rastreabilidade e baixa transparência para o associado.
 
 Considerando que o público atendido pelas entidades tradicionalistas é heterogêneo e inclui
 associados com distintos níveis de familiaridade com tecnologias digitais, especialmente pessoas
@@ -573,13 +598,13 @@ O MVP do ecossistema digital contemplou, prioritariamente, as funcionalidades cl
   \item acesso do associado às suas informações por meio de aplicativo \textit{mobile}.
 \end{itemize}
 
-As entregas foram organizadas em ciclos curtos, com validação periódica junto ao CPF Pia do Sul,
+As entregas foram organizadas em ciclos curtos, com validação periódica junto às entidades parceiras,
 permitindo ajustes progressivos conforme \textit{feedback} de uso e necessidades identificadas ao
 longo do desenvolvimento.
 
 \subsection{Arquitetura do ecossistema digital}
 
-A arquitetura do ecossistema digital foi organizada em dois clientes principais: uma plataforma
+A arquitetura do ecossistema digital, denominado Pampa Gestão, foi organizada em dois clientes principais: uma plataforma
 \textit{web} voltada à administração da entidade e um aplicativo \textit{mobile} voltado aos
 associados, integrados por um \textit{backend} central responsável por expor uma API \textit{RESTful}
 e concentrar as regras de negócio. Essa organização visa separar claramente as responsabilidades
@@ -721,8 +746,8 @@ camada.
 \subsection{Requisitos do sistema}
 
 Os requisitos foram levantados inicialmente com base no conhecimento prévio do contexto das entidades
-tradicionalistas e na parceria estabelecida com o CPF Pia do Sul, sendo refinados e validados por
-meio das entrevistas semiestruturadas conduzidas na fase de campo. A priorização segue a técnica
+tradicionalistas e nas parcerias estabelecidas com o CPF Pia do Sul e o CTG Sentinela da Querência,
+sendo refinados e validados por meio das entrevistas semiestruturadas conduzidas na fase de campo. A priorização segue a técnica
 MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (importante, mas negociável),
 \textbf{Could} (desejável se houver capacidade) e \textbf{Won't} (fora do escopo deste trabalho).
 
@@ -806,10 +831,10 @@ dos bailes e fandangos.
 \subsection{Procedimentos de avaliação}
 
 A avaliação do ecossistema digital foi conduzida por meio de testes funcionais (para verificar se
-as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes do CPF
-Pia do Sul. A avaliação contou com a participação de 6 a 10 pessoas, incluindo membros da diretoria,
-responsáveis pela organização de eventos e associados com diferentes perfis de uso, contemplando
-usuários com menor familiaridade digital.
+as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes das duas
+entidades parceiras. A avaliação contou com a participação de 6 a 10 pessoas por entidade, incluindo
+membros da diretoria, responsáveis pela organização de eventos e associados com diferentes perfis de
+uso, contemplando usuários com menor familiaridade digital.
 
 A avaliação de uso combinou múltiplos instrumentos: aplicação da escala \textit{System Usability
 Scale} (SUS) \parencite{brooke1996}, entrevistas semiestruturadas com gestores e usuários, observação
@@ -828,10 +853,68 @@ analisados de forma qualitativa, com triangulação entre os diferentes instrume
 
 \subsection{Diagnóstico dos processos administrativos atuais}
 
-[Seção a ser desenvolvida após a entrevista com o CPF Pia do Sul. Descreverá como a entidade
-realiza hoje seus processos de gestão de associados, mensalidades e eventos, com base nos dados
-coletados por entrevista semiestruturada e observação. Incluirá exemplos concretos de dificuldades
-identificadas.]
+O diagnóstico foi construído a partir de entrevistas semiestruturadas com representantes da diretoria
+do CPF Pia do Sul e do CTG Sentinela da Querência, ambas entidades vinculadas à 13ª RT, em Santa
+Maria/RS. Apesar de portes distintos — a primeira reúne 1.343 associados e a segunda 822, entre
+categorias como sócios pagantes, remidos, fundadores e patrimoniais —, as respostas convergem para um
+mesmo conjunto de processos e dificuldades, o que reforça a leitura de que tais problemas são
+estruturais ao modelo de gestão das entidades tradicionalistas, e não peculiaridades isoladas de uma
+única organização.
+
+\textbf{Estágio de digitalização.} As duas entidades ocupam pontos distintos da mesma trajetória de
+digitalização. O CPF Pia do Sul relatou possuir um sistema apenas ``em teste'', com reservas de mesas
+e controle de disponibilidade ainda feitos em papel, e o controle de entrada em eventos por meio de
+lista impressa e pulseiras. Já o CTG Sentinela da Querência opera um sistema de gestão consolidado
+para as áreas financeira, cadastral e social, com conciliação bancária por importação de arquivo e
+verificação diária de inadimplência — rotina mais frequente do que a verificação mensal relatada pelo
+CPF Pia do Sul. Ainda assim, mesmo a entidade mais digitalizada mantém processos paralelos em papel:
+a reserva de mesas para bailes é organizada por planilha eletrônica e croqui de mesas numeradas fora
+do sistema, e o fechamento financeiro do evento depende de contagem manual do saldo de portaria contra
+o total lançado. Essa coexistência de sistema informatizado com controles paralelos em planilha e
+papel, mesmo na entidade mais madura digitalmente, é o que caracteriza a digitalização como parcial e
+fragmentada em ambos os casos, e não como um problema resolvido em uma entidade e pendente apenas na
+outra.
+
+\textbf{Gestão de associados e mensalidades.} Em ambas as entidades, o cadastro de associado depende
+de uma ficha ou proposta preenchida e posteriormente lançada ou aprovada pela diretoria, e a
+verificação de inadimplência é feita por consulta a relatórios do sistema utilizado, sem um canal de
+autoatendimento para o associado consultar sua própria situação — em ambos os casos, essa consulta
+passa necessariamente pela secretaria. A cobrança de inadimplentes é feita de forma pessoal, via
+WhatsApp e, quando necessário, ligação telefônica. As duas entidades relataram já ter enfrentado
+problemas de informação perdida ou divergente sobre pagamentos.
+
+\textbf{Gestão de eventos, reservas e ingressos.} Este bloco concentrou as convergências mais
+relevantes para o desenho do sistema. As duas entidades confirmaram já ter enfrentado conflitos de
+reserva ou mesa vendida em duplicidade, validando diretamente a necessidade de um controle de
+disponibilidade em tempo real. A venda de ingresso com valor diferenciado por perfil do comprador
+(sócio, não sócio e criança) está presente nas duas entidades, assim como o atendimento mediado pela
+secretaria para quem compra presencialmente. O volume e a frequência de eventos, no entanto, diferem
+de forma expressiva: o CPF Pia do Sul concentra sua programação em poucos eventos de grande porte —
+dois festivais artísticos que reúnem de 5 a 6 mil participantes, além dos bailes da semana
+farroupilha —, enquanto o CTG Sentinela da Querência promoveu cerca de 60 eventos em 2025, com
+público entre 200 e 800 pessoas por evento. Essa diferença de perfil (poucos eventos massivos versus
+muitos eventos recorrentes de menor porte) reforça a importância de um acompanhamento confiável do
+evento em andamento — quantos ingressos já foram emitidos, quantos já deram entrada e quantos ainda
+são esperados —, útil tanto para a operação de um evento de grande escala quanto para a rotina de uma
+entidade com agenda de eventos constante.
+
+\textbf{Perfil de usuários e adoção.} As entidades relataram perfis de usuário administrador
+distintos: o CPF Pia do Sul descreveu a diretoria como tendo ``dificuldades com a modernidade'', ao
+passo que o CTG Sentinela da Querência espera que o painel seja operado por um colaborador contratado
+e previamente instruído para a função. Quanto aos associados, o CPF Pia do Sul relatou confiança de
+que a maioria conseguiria utilizar um aplicativo, enquanto o CTG Sentinela da Querência antecipou que
+parte dos associados terá dificuldade de acesso ao sistema. Essa divergência indica que o perfil de
+``usuário leigo'' não é único dentro do ecossistema: varia conforme o grau de profissionalização da
+administração de cada entidade, o que reforça a diretriz de projetar fluxos mediados pela entidade
+(RNF01) como alternativa sempre disponível, e não apenas como recurso transitório de adoção.
+
+\textbf{Prioridades.} Questionadas sobre o problema mais urgente a resolver, as entidades apontaram
+ênfases distintas, porém complementares: o CPF Pia do Sul priorizou o controle de regularidade
+financeira e cadastral dos sócios, enquanto o CTG Sentinela da Querência priorizou reservas e compra
+de ingressos, definindo sucesso como um ``trâmite on-line simples, mas eficiente, na administração de
+portaria in loco e no fechamento financeiro''. Essas prioridades, tomadas em conjunto, sustentam a
+decisão de tratar associados, mensalidades e eventos como módulos igualmente necessários do MVP, em
+vez de restringir o escopo a apenas uma dessas frentes.
 
 \subsection{Implementação do MVP}
 
@@ -868,9 +951,10 @@ O MVP do ecossistema digital compreende as seguintes entregas funcionais:
 
 \subsection{Avaliação com usuários e análise dos resultados}
 
-[Seção a ser desenvolvida após a avaliação no CPF Pia do Sul. Apresentará os resultados do SUS, as
-percepções coletadas nas entrevistas, os registros de observação e a análise qualitativa com
-triangulação dos dados. Discutirá as contribuições e limitações do sistema em relação ao contexto
+[Seção a ser desenvolvida após a avaliação junto às entidades parceiras. Apresentará os resultados do
+SUS, as percepções coletadas nas entrevistas, os registros de observação e a análise qualitativa com
+triangulação dos dados, discutindo pontos de convergência e de divergência entre o CPF Pia do Sul e o
+CTG Sentinela da Querência. Discutirá as contribuições e limitações do sistema em relação ao contexto
 identificado.]
 
 % ------------------------------------------------------------------
@@ -884,9 +968,9 @@ e científicas, as limitações da pesquisa e recomendações para trabalhos fut
 Esta pesquisa buscou responder à seguinte questão: como um ecossistema digital integrado pode
 facilitar e qualificar a gestão de associados e eventos sociais em entidades tradicionalistas
 gaúchas, respeitando suas especificidades culturais e organizacionais? A resposta a essa pergunta
-será construída a partir da avaliação empírica conduzida no CPF Pia do Sul, articulada com a
-fundamentação teórica sobre sistemas de informação, ecossistemas digitais e transformação digital em
-organizações culturais.
+será construída a partir da avaliação empírica conduzida junto às duas entidades parceiras, o CPF Pia
+do Sul e o CTG Sentinela da Querência, articulada com a fundamentação teórica sobre sistemas de
+informação, ecossistemas digitais e transformação digital em organizações culturais.
 
 Como contribuição acadêmica, espera-se demonstrar a viabilidade de aplicação de um ecossistema
 digital em contextos culturais tradicionais, evidenciando que modernização administrativa e
