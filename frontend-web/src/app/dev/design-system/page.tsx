@@ -71,7 +71,7 @@ export default function DesignSystemPage() {
     <main className="mx-auto max-w-5xl space-y-12 px-6 py-12">
       <header className="space-y-2">
         <p className="text-sm font-medium text-muted-foreground">
-          Pia do Sul — Painel Administrativo
+          Pampa Gestão — Painel Administrativo
         </p>
         <h1 className="font-heading text-3xl font-semibold text-foreground">
           Design System

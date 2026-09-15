@@ -89,7 +89,7 @@ export default function NovoAdministradorPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="nome@piadosul.org.br"
+                placeholder="nome@suaentidade.org.br"
                 aria-invalid={!!errors.email}
                 autoComplete="off"
                 {...register("email")}

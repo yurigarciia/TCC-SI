@@ -46,7 +46,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="font-heading text-2xl font-semibold text-foreground">Início</h1>
         <p className="text-muted-foreground">
-          Painel de gestão de associados, mensalidades e eventos do Pia do Sul.
+          Painel de gestão de associados, mensalidades e eventos da sua entidade.
         </p>
       </div>
 

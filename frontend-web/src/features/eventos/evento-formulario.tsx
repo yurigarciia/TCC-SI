@@ -378,7 +378,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               <InputComIcone
                 icon={MapPin}
                 id="local"
-                placeholder="Ex.: Sede do CTG Pia do Sul"
+                placeholder="Ex.: Sede da entidade"
                 autoComplete="off"
                 aria-invalid={!!errors.local}
                 {...register("local")}

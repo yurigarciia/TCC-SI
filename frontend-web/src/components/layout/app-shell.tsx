@@ -341,7 +341,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           {!colapsada && (
             <span className="truncate font-heading text-lg font-semibold text-sidebar-foreground">
-              Pia do Sul
+              Pampa Gestão
             </span>
           )}
           <Button
@@ -382,7 +382,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <MenuIcon />
           </Button>
           <span className="truncate font-heading text-lg font-semibold text-foreground">
-            Pia do Sul
+            Pampa Gestão
           </span>
         </header>
 
@@ -392,7 +392,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
         <SheetContent side="left" className="flex flex-col gap-0 bg-sidebar p-0 text-sidebar-foreground">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle className="text-sidebar-foreground">Pia do Sul</SheetTitle>
+            <SheetTitle className="text-sidebar-foreground">Pampa Gestão</SheetTitle>
           </SheetHeader>
           <nav aria-label="Navegação principal" className="flex-1 overflow-y-auto p-4">
             <LinksDeNavegacao pathname={pathname} onNavigate={() => setMenuAberto(false)} />

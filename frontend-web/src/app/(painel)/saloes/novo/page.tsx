@@ -67,7 +67,7 @@ export default function NovoSalaoPage() {
               <Label htmlFor="nome">Nome do salão</Label>
               <Input
                 id="nome"
-                placeholder="Ex.: Salão Social CTG Pia do Sul"
+                placeholder="Ex.: Salão Social da entidade"
                 aria-invalid={!!errors.nome}
                 {...register("nome")}
               />

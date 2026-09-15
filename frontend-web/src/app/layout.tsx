@@ -15,7 +15,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Pia do Sul — Painel Administrativo",
+  title: "Pampa Gestão — Painel Administrativo",
   description: "Gestão de associados, mensalidades e eventos.",
 };
 
