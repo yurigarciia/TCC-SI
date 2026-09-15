@@ -46,7 +46,7 @@ export default function LoginScreen() {
         >
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scroll}>
             <AuthHeader
-              titulo="Pampa Gestão"
+              titulo="Querência ERP"
               subtitulo="Acesse sua conta de associado"
               icone="hand-wave"
             />

@@ -11,14 +11,14 @@
 ## 1. Visão Geral
 
 Construir um ecossistema digital — painel web administrativo + aplicativo mobile para associados,
-com o nome **Pampa Gestão** — que digitalize a gestão de associados, mensalidades e eventos sociais
+com o nome **Querência ERP** (abreviado QERP) — que digitalize a gestão de associados, mensalidades e eventos sociais
 (bailes e fandangos) de entidades tradicionalistas gaúchas. Desde 2026-09-15 (achado de uma segunda
 entrevista, com o CTG Sentinela da Querência, convergindo fortemente com a do Pia do Sul), o produto
 é desenhado como reutilizável entre entidades — não sob medida pra uma única — e validado como
 **estudo de casos múltiplos** com duas entidades parceiras: o **CPF Pia do Sul** e o **CTG Sentinela
 da Querência** (ambos Santa Maria/RS, 13ª RT). Isso não é multi-tenant (ver §2) — cada entidade roda
 sua própria instância/banco no mesmo código-base; o que muda é que a marca do produto na UI é
-genérica ("Pampa Gestão", não o nome de uma entidade específica) e o modelo de dados já era, antes
+genérica ("Querência ERP", não o nome de uma entidade específica) e o modelo de dados já era, antes
 disso, desacoplado o bastante (categorias de sócio configuráveis N×N, por exemplo) pra não exigir
 retrabalho nessa mudança de enquadramento.
 

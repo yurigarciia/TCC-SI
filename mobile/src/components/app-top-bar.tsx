@@ -10,7 +10,7 @@ export function AppTopBar({ titulo }: { titulo: string }) {
     <View style={styles.topBar}>
       <View>
         <Text variant="labelMedium" style={styles.marca}>
-          PAMPA GESTÃO
+          QUERÊNCIA ERP
         </Text>
         <Text variant="titleMedium" style={styles.titulo}>
           {titulo}

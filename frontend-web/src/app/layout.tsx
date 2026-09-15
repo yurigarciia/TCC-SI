@@ -15,7 +15,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Pampa Gestão — Painel Administrativo",
+  title: "Querência ERP — Painel Administrativo",
   description: "Gestão de associados, mensalidades e eventos.",
 };
 
