@@ -1117,6 +1117,22 @@ frentes de frontend-web e mobile.
   e `npm run build`/`npm run lint` (frontend), mais teste manual ponta a ponta headless: criei
   evento, emiti 3 ingressos, fiz check-in de 1, e os 4 cartões bateram exatamente com a tabela
   logo abaixo (3 emitidos, 1 já entrou, 2 aguardando, R$ 90,00).
+- **Adendo (cartão "Receita total" vira medidor de check-in):** pedido do usuário — trocar o
+  cartão "Receita total" por um gráfico de pizza (emitidos x check-in x pendentes). Seguindo a
+  heurística de escolha de forma de gráfico (skill `dataviz`): uma razão contra um total (check-ins
+  feitos sobre total emitido — as duas fatias são complementares, uma decorre da outra) é o caso
+  documentado como anti-padrão pra pizza de 2 fatias (ângulo/área são mais difíceis de comparar
+  entre si do que uma barra preenchida ou um número; com só 2 categorias a pizza não acrescenta
+  nada que a barra já não mostre). Perguntado ao usuário via pergunta direta o motivo do anti-padrão
+  antes de implementar (ele pediu a explicação, não escolheu entre as opções oferecidas) — depois de
+  esclarecido, segui a alternativa recomendada: um medidor (`CartaoMedidor`, novo componente em
+  `src/components/cartao-medidor.tsx`) com barra de progresso (`role="meter"`) mostrando "Check-ins
+  feitos", percentual + "X de Y", usando os mesmos tokens de cor de status já existentes
+  (`bg-success` preenchido sobre `bg-muted` de fundo — sem paleta nova pra validar). Sem mudança de
+  backend — reaproveita os mesmos `totalUsados`/`totalEmitidos` do resumo já existente. Validado com
+  `npx tsc --noEmit`/`npm run lint` e teste manual ponta a ponta headless contra o backend real:
+  evento com 2 ingressos emitidos, fiz check-in de 1 via API e conferi o cartão mostrando "50%" e
+  "1 de 2" com a barra preenchida até a metade.
 
 #### Ticket: T-FE-009 Gestão de Usuários da Plataforma
 - **Priority:** Should

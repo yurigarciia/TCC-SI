@@ -8,6 +8,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { CartaoMedidor } from "@/components/cartao-medidor";
 import { CartaoResumo } from "@/components/cartao-resumo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -270,11 +271,12 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           carregando={carregandoResumo}
           descricao="Emitido, check-in pendente"
         />
-        <CartaoResumo
-          titulo="Receita total"
-          valor={resumo ? formatarMoeda(resumo.receitaTotal) : undefined}
+        <CartaoMedidor
+          titulo="Check-ins feitos"
+          descricao="Proporção de quem já entrou sobre o total emitido"
+          valor={resumo?.totalUsados}
+          total={resumo?.totalEmitidos}
           carregando={carregandoResumo}
-          descricao="Soma de todos os ingressos"
         />
       </div>
 
