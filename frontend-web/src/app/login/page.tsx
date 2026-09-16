@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoMark } from "@/components/logo-mark";
 import { useLogin } from "@/features/auth/use-login";
 import { ApiError } from "@/lib/api-client";
 
@@ -41,6 +42,7 @@ export default function LoginPage() {
     <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
+          <LogoMark size={40} className="mx-auto mb-1" />
           <CardTitle className="font-heading text-2xl">Querência ERP</CardTitle>
           <CardDescription>Painel administrativo — acesso restrito à diretoria.</CardDescription>
         </CardHeader>

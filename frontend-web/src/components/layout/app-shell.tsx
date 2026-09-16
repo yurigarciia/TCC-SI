@@ -23,6 +23,7 @@ import { useLogout } from "@/features/auth/use-logout";
 import type { Perfil } from "@/features/auth/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/logo-mark";
 import {
   Sheet,
   SheetContent,
@@ -33,7 +34,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-const CHAVE_SIDEBAR_COLAPSADA = "pia_do_sul_sidebar_colapsada";
+const CHAVE_SIDEBAR_COLAPSADA = "querencia_erp_sidebar_colapsada";
 
 const ROTULO_PERFIL: Record<Perfil, string> = {
   administrador: "Administrador",
@@ -336,11 +337,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div
           className={cn(
             "flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border px-4",
-            colapsada && "justify-center px-0",
+            colapsada && "justify-center gap-1 px-0",
           )}
         >
-          {!colapsada && (
-            <span className="truncate font-heading text-lg font-semibold text-sidebar-foreground">
+          {colapsada ? (
+            <LogoMark size={22} />
+          ) : (
+            <span className="flex min-w-0 items-center gap-2 truncate font-heading text-lg font-semibold text-sidebar-foreground">
+              <LogoMark size={28} className="shrink-0" />
               Querência ERP
             </span>
           )}
@@ -381,7 +385,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <MenuIcon />
           </Button>
-          <span className="truncate font-heading text-lg font-semibold text-foreground">
+          <span className="flex min-w-0 items-center gap-2 truncate font-heading text-lg font-semibold text-foreground">
+            <LogoMark size={26} className="shrink-0" />
             Querência ERP
           </span>
         </header>
@@ -392,7 +397,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
         <SheetContent side="left" className="flex flex-col gap-0 bg-sidebar p-0 text-sidebar-foreground">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle className="text-sidebar-foreground">Querência ERP</SheetTitle>
+            <SheetTitle className="flex items-center gap-2 text-sidebar-foreground">
+              <LogoMark size={26} className="shrink-0" />
+              Querência ERP
+            </SheetTitle>
           </SheetHeader>
           <nav aria-label="Navegação principal" className="flex-1 overflow-y-auto p-4">
             <LinksDeNavegacao pathname={pathname} onNavigate={() => setMenuAberto(false)} />
