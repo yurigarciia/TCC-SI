@@ -22,7 +22,7 @@ export function LogoMark({ size = 32, className }: { size?: number; className?: 
         strokeLinecap="round"
       />
       <circle cx="23.5" cy="28.5" r="9" fill="none" stroke="#faf7f1" strokeWidth="4.5" />
-      <path d="M29.5 34 L36.5 41" fill="none" stroke="#faf7f1" strokeWidth="4.5" strokeLinecap="round" />
+      <path d="M26.3 31.3 L32.7 37.7" fill="none" stroke="#faf7f1" strokeWidth="4.5" strokeLinecap="round" />
     </svg>
   );
 }
