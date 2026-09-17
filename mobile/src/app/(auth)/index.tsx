@@ -48,7 +48,7 @@ export default function LoginScreen() {
             <AuthHeader
               titulo="Querência ERP"
               subtitulo="Acesse sua conta de associado"
-              icone="hand-wave"
+              logo
             />
 
             <Surface style={styles.card} elevation={2}>

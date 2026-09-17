@@ -4,11 +4,15 @@ import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { gradienteCabecalho } from "@/theme/paper-theme";
+import { LogoMark } from "@/components/logo-mark";
 
 interface AuthHeaderProps {
   titulo: string;
   subtitulo: string;
   icone?: keyof typeof MaterialCommunityIcons.glyphMap;
+  // Tela de login (a "porta de entrada" do app) mostra a marca do Querência ERP em vez de um ícone
+  // genérico — cadastro/vincular-conta seguem com ícones contextuais (icone acima).
+  logo?: boolean;
   mostrarVoltar?: boolean;
 }
 
@@ -20,6 +24,7 @@ export function AuthHeader({
   titulo,
   subtitulo,
   icone = "hand-wave",
+  logo = false,
   mostrarVoltar = false,
 }: AuthHeaderProps) {
   return (
@@ -34,7 +39,11 @@ export function AuthHeader({
         />
       )}
       <View style={styles.iconCircle}>
-        <MaterialCommunityIcons name={icone} size={32} color="#FDF8F3" />
+        {logo ? (
+          <LogoMark size={36} />
+        ) : (
+          <MaterialCommunityIcons name={icone} size={32} color="#FDF8F3" />
+        )}
       </View>
       <Text variant="headlineMedium" style={styles.titulo}>
         {titulo}
