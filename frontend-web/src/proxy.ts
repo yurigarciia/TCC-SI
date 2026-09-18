@@ -24,5 +24,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|dev).*)"],
+  // "brand" (public/brand/*) — achado ao usar a logo real na tela de login: como ela é
+  // renderizada sem cookie (é a própria tela pública), a imagem estática precisa ficar de fora
+  // do guard também, senão o pedido do <img> é redirecionado pra /login e volta HTML em vez de
+  // PNG.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon.png|dev|brand).*)"],
 };

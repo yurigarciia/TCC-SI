@@ -341,10 +341,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         >
           {colapsada ? (
-            <LogoMark size={22} />
+            <span className="flex shrink-0 items-center justify-center rounded-md bg-white p-1">
+              <LogoMark size={18} />
+            </span>
           ) : (
             <span className="flex min-w-0 items-center gap-2 truncate font-heading text-lg font-semibold text-sidebar-foreground">
-              <LogoMark size={28} className="shrink-0" />
+              <span className="flex shrink-0 items-center justify-center rounded-md bg-white p-1">
+                <LogoMark size={22} />
+              </span>
               Querência ERP
             </span>
           )}
@@ -398,7 +402,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SheetContent side="left" className="flex flex-col gap-0 bg-sidebar p-0 text-sidebar-foreground">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle className="flex items-center gap-2 text-sidebar-foreground">
-              <LogoMark size={26} className="shrink-0" />
+              <span className="flex shrink-0 items-center justify-center rounded-md bg-white p-1">
+                <LogoMark size={22} />
+              </span>
               Querência ERP
             </SheetTitle>
           </SheetHeader>

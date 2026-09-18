@@ -38,9 +38,9 @@ export function AuthHeader({
           style={styles.voltar}
         />
       )}
-      <View style={styles.iconCircle}>
+      <View style={[styles.iconCircle, logo && styles.iconCircleLogo]}>
         {logo ? (
-          <LogoMark size={36} />
+          <LogoMark size={40} />
         ) : (
           <MaterialCommunityIcons name={icone} size={32} color="#FDF8F3" />
         )}
@@ -79,6 +79,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
+  },
+  // Chip opaco pra logo real (não um ícone genérico) — o traço verde-escuro do anel perde
+  // contraste no chip translúcido de cima, sobre o gradiente vinho.
+  iconCircleLogo: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#FDF8F3",
   },
   titulo: {
     color: "#FDF8F3",

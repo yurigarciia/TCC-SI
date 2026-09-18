@@ -9,11 +9,10 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogoMark } from "@/components/logo-mark";
 import { useLogin } from "@/features/auth/use-login";
 import { ApiError } from "@/lib/api-client";
 
@@ -42,8 +41,15 @@ export default function LoginPage() {
     <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <LogoMark size={40} className="mx-auto mb-1" />
-          <CardTitle className="font-heading text-2xl">Querência ERP</CardTitle>
+          <Image
+            src="/brand/qerp-lockup.png"
+            alt="Querência ERP"
+            width={1207}
+            height={839}
+            className="mx-auto mb-2 h-28 w-auto"
+            unoptimized
+            priority
+          />
           <CardDescription>Painel administrativo — acesso restrito à diretoria.</CardDescription>
         </CardHeader>
         <CardContent>
