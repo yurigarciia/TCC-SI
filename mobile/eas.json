@@ -13,6 +13,9 @@
       "credentialsSource": "local",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://querencia-erp-backend-810890697148.southamerica-east1.run.app"
       }
     },
     "production": {
