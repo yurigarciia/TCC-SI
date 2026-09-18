@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Pia do Sul — API')
+    .setTitle('Querência ERP — API')
     .setDescription(
       'API do ecossistema digital de gestão de associados e eventos (RNF04).',
     )
