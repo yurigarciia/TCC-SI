@@ -400,6 +400,27 @@ describe('Ingressos (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(403);
 
+    // "Meus Ingressos" — achado numa conversa com o usuário: comprar pelo app não bastava, o
+    // associado precisa conseguir ver o ingresso depois (pra abrir o QR na portaria).
+    const meusIngressos = await request(app.getHttpServer())
+      .get('/ingressos/minhas')
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    const listaIngressos = meusIngressos.body as Array<{
+      id: string;
+      status: string;
+      evento: { id: string; nome: string } | null;
+    }>;
+    expect(listaIngressos).toHaveLength(1);
+    expect(listaIngressos[0].status).toBe('emitido');
+    expect(listaIngressos[0].evento?.id).toBe(eventoAssociadoId);
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .get('/ingressos/minhas')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
+
     await dataSource.query('DELETE FROM ingressos WHERE evento_id = $1', [
       eventoAssociadoId,
     ]);

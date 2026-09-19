@@ -32,6 +32,7 @@ import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-m
 import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/consultar-precos-ingresso.use-case';
 import { ConsultarMeuPrecoIngressoUseCase } from '../../application/use-cases/consultar-meu-preco-ingresso.use-case';
 import { ConsultarResumoIngressosUseCase } from '../../application/use-cases/consultar-resumo-ingressos.use-case';
+import { ListarMeusIngressosUseCase } from '../../application/use-cases/listar-meus-ingressos.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
@@ -52,7 +53,30 @@ export class IngressosController {
     private readonly consultarPrecos: ConsultarPrecosIngressoUseCase,
     private readonly consultarMeuPreco: ConsultarMeuPrecoIngressoUseCase,
     private readonly consultarResumo: ConsultarResumoIngressosUseCase,
+    private readonly listarMeus: ListarMeusIngressosUseCase,
   ) {}
+
+  // Achado numa conversa com o usuário: o app mostrava um Snackbar de sucesso na compra e nada
+  // mais — associado não tinha como reabrir o ingresso depois pra mostrar na portaria. Mesmo
+  // padrão de "reservas/minhas".
+  @Get('ingressos/minhas')
+  @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Lista os ingressos do associado autenticado ("Meus Ingressos")',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de ingressos do associado' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum associado vinculado a este usuário',
+  })
+  meusIngressos(@CurrentUser() usuario: JwtPayload) {
+    return this.listarMeus.execute(usuario.sub);
+  }
 
   // RF12 (T-MOB-004) — associado compra o próprio ingresso pelo app; perfil/canal/forma de
   // pagamento/nome do comprador são sempre resolvidos a partir do usuário autenticado (ver

@@ -24,6 +24,7 @@ export class Ingresso {
     public readonly id: string,
     public readonly eventoId: string,
     public readonly nomeComprador: string,
+    public readonly associadoId: string | null,
     public readonly perfilComprador: PerfilComprador,
     public readonly preco: number,
     public readonly canal: CanalIngresso,

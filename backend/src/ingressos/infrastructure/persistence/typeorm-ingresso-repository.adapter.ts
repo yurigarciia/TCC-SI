@@ -87,11 +87,20 @@ export class TypeOrmIngressoRepositoryAdapter extends IngressoRepositoryPort {
     };
   }
 
+  async listarPorAssociado(associadoId: string): Promise<Ingresso[]> {
+    const encontrados = await this.repo.find({
+      where: { associadoId },
+      order: { criadoEm: 'DESC' },
+    });
+    return encontrados.map((ingresso) => this.paraDominio(ingresso));
+  }
+
   private paraDominio(orm: IngressoOrmEntity): Ingresso {
     return new Ingresso(
       orm.id,
       orm.eventoId,
       orm.nomeComprador,
+      orm.associadoId,
       orm.perfilComprador,
       Number(orm.preco),
       orm.canal,

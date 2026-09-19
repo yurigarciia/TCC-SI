@@ -9,6 +9,7 @@ import {
 export interface NovoIngresso {
   eventoId: string;
   nomeComprador: string;
+  associadoId: string | null;
   perfilComprador: PerfilComprador;
   preco: number;
   canal: CanalIngresso;
@@ -44,4 +45,5 @@ export abstract class IngressoRepositoryPort {
   ): Promise<{ itens: Ingresso[]; total: number }>;
   abstract atualizar(id: string, dados: AtualizacaoIngresso): Promise<Ingresso>;
   abstract resumoPorEvento(eventoId: string): Promise<ResumoIngressosEvento>;
+  abstract listarPorAssociado(associadoId: string): Promise<Ingresso[]>;
 }

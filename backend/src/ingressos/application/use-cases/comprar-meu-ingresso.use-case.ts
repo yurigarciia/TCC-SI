@@ -38,6 +38,7 @@ export class ComprarMeuIngressoUseCase {
     }
     const ingresso = await this.emitirIngresso.execute(eventoId, {
       nomeComprador: associado.nome,
+      associadoId: associado.id,
       perfilComprador: PerfilComprador.SOCIO,
       canal: CanalIngresso.APP,
       formaPagamento: FormaPagamentoIngresso.ONLINE,

@@ -22,6 +22,9 @@ export class IngressoOrmEntity {
   @Column({ name: 'nome_comprador' })
   nomeComprador: string;
 
+  @Column({ name: 'associado_id', type: 'uuid', nullable: true })
+  associadoId: string | null;
+
   @Column({ name: 'perfil_comprador', type: 'varchar' })
   perfilComprador: PerfilComprador;
 

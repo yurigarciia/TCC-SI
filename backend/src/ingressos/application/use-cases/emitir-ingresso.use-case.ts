@@ -20,6 +20,10 @@ import {
 
 export interface DadosEmissaoIngresso {
   nomeComprador: string;
+  // Vínculo com o Associado dono da conta — só preenchido quando quem compra pelo app é um
+  // associado de fato (ComprarMeuIngressoUseCase). Venda presencial pela diretoria
+  // (EmitirIngressoDto) não informa isso: pode ser associado, visitante ou criança sem cadastro.
+  associadoId?: string | null;
   perfilComprador: PerfilComprador;
   canal: CanalIngresso;
   formaPagamento: FormaPagamentoIngresso;
@@ -103,6 +107,7 @@ export class EmitirIngressoUseCase {
     return this.ingressos.salvar({
       eventoId,
       nomeComprador: dados.nomeComprador,
+      associadoId: dados.associadoId ?? null,
       perfilComprador: dados.perfilComprador,
       preco,
       canal: dados.canal,
