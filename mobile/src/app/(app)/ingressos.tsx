@@ -1,26 +1,25 @@
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Button, Surface, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import QRCode from "react-native-qrcode-svg";
 import { AppTopBar } from "@/components/app-top-bar";
-import { StatusReservaBadge } from "@/components/status-reserva-badge";
-import { useMinhasReservas } from "@/features/reservas/use-minhas-reservas";
-import type { ReservaDoAssociado } from "@/features/reservas/types";
+import { StatusIngressoBadge } from "@/components/status-ingresso-badge";
+import { useMeusIngressos } from "@/features/ingressos/use-meus-ingressos";
+import type { IngressoDoAssociado } from "@/features/ingressos/types";
+import { formatarMoeda } from "@/lib/format";
 import { paperTheme } from "@/theme/paper-theme";
 
-const ROTULO_CANAL: Record<ReservaDoAssociado["canal"], string> = {
-  app: "Reservada pelo app",
-  mediado: "Registrada pela diretoria",
-};
-
-// RF13 (T-MOB-003) — leitura simples, sem mutation: valida o padrão de consumo da API antes das
-// telas de reserva/pagamento (T-MOB-002/T-MOB-004). Só mostra reservas de mesa — ingressos têm
-// tela própria (aba "Ingressos", ver ingressos.tsx), com o QR de check-in.
-export default function MinhasReservasScreen() {
-  const { data: reservas, isLoading, isError, refetch, isRefetching } = useMinhasReservas();
+// "Meus Ingressos" — achado numa conversa com o usuário: comprar ingresso pelo app só mostrava
+// um Snackbar de sucesso passageiro, sem nenhum jeito de reabrir depois. O QR mostrado aqui é o
+// próprio id do ingresso (mesmo valor que POST /ingressos/:id/checkin espera, e que o scanner da
+// diretoria no painel web já lê) — não é um código novo, só a forma de apresentar o que já
+// existia. Ingresso "usado" não precisa mais do QR (entrada já validada), então fica recolhido.
+export default function MeusIngressosScreen() {
+  const { data: ingressos, isLoading, isError, refetch, isRefetching } = useMeusIngressos();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <AppTopBar titulo="Minhas Reservas" />
+      <AppTopBar titulo="Meus Ingressos" />
 
       {isLoading && (
         <View style={styles.center}>
@@ -32,7 +31,7 @@ export default function MinhasReservasScreen() {
         <View style={styles.center}>
           <Avatar.Icon icon="alert-circle-outline" size={56} style={styles.avatarErro} />
           <Text variant="titleMedium" style={styles.textoCentralizado}>
-            Não foi possível carregar suas reservas
+            Não foi possível carregar seus ingressos
           </Text>
           <Button mode="contained" onPress={() => refetch()} style={{ marginTop: 16 }}>
             Tentar de novo
@@ -40,33 +39,33 @@ export default function MinhasReservasScreen() {
         </View>
       )}
 
-      {!isLoading && !isError && reservas && reservas.length === 0 && (
+      {!isLoading && !isError && ingressos && ingressos.length === 0 && (
         <ScrollView
           contentContainerStyle={styles.centerScroll}
           refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         >
           <Avatar.Icon
-            icon="ticket-confirmation-outline"
+            icon="qrcode"
             size={56}
             style={styles.avatarVazio}
             color={paperTheme.colors.primary}
           />
           <Text variant="titleMedium" style={styles.textoCentralizado}>
-            Nenhuma reserva ainda
+            Nenhum ingresso ainda
           </Text>
           <Text variant="bodyMedium" style={[styles.textoCentralizado, styles.textoMuted]}>
-            Suas reservas de mesa em bailes e fandangos aparecem aqui.
+            Ingressos comprados pelo app aparecem aqui, com o QR pra mostrar na entrada.
           </Text>
         </ScrollView>
       )}
 
-      {!isLoading && !isError && reservas && reservas.length > 0 && (
+      {!isLoading && !isError && ingressos && ingressos.length > 0 && (
         <ScrollView
           contentContainerStyle={styles.container}
           refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         >
-          {reservas.map((reserva) => (
-            <ReservaCard key={reserva.id} reserva={reserva} />
+          {ingressos.map((ingresso) => (
+            <IngressoCard key={ingresso.id} ingresso={ingresso} />
           ))}
         </ScrollView>
       )}
@@ -74,9 +73,9 @@ export default function MinhasReservasScreen() {
   );
 }
 
-function ReservaCard({ reserva }: { reserva: ReservaDoAssociado }) {
-  const dataFormatada = reserva.evento
-    ? new Date(reserva.evento.data).toLocaleString("pt-BR", {
+function IngressoCard({ ingresso }: { ingresso: IngressoDoAssociado }) {
+  const dataFormatada = ingresso.evento
+    ? new Date(ingresso.evento.data).toLocaleString("pt-BR", {
         dateStyle: "short",
         timeStyle: "short",
       })
@@ -86,37 +85,39 @@ function ReservaCard({ reserva }: { reserva: ReservaDoAssociado }) {
     <Surface style={styles.card} elevation={1}>
       <View style={styles.cardHeader}>
         <Text variant="titleMedium" style={styles.eventoNome}>
-          {reserva.evento?.nome ?? "Evento não encontrado"}
+          {ingresso.evento?.nome ?? "Evento não encontrado"}
         </Text>
-        <StatusReservaBadge status={reserva.status} />
+        <StatusIngressoBadge status={ingresso.status} />
       </View>
 
       {dataFormatada && (
         <Text variant="bodyMedium" style={styles.textoMuted}>
-          {dataFormatada} · {reserva.evento?.local}
+          {dataFormatada} · {ingresso.evento?.local}
         </Text>
       )}
 
-      <View style={styles.detalhes}>
-        <DetalheLinha
-          icone="table-chair"
-          texto={reserva.mesa ? `Mesa ${reserva.mesa.numero}` : "Mesa não encontrada"}
-        />
-        {reserva.nomeTitular && (
-          <DetalheLinha icone="account-outline" texto={`Titular: ${reserva.nomeTitular}`} />
-        )}
-        <DetalheLinha icone="information-outline" texto={ROTULO_CANAL[reserva.canal]} />
-      </View>
-    </Surface>
-  );
-}
+      <Text variant="bodyMedium" style={styles.textoMuted}>
+        {formatarMoeda(ingresso.preco)}
+      </Text>
 
-function DetalheLinha({ icone, texto }: { icone: string; texto: string }) {
-  return (
-    <View style={styles.detalheLinha}>
-      <Avatar.Icon icon={icone} size={28} style={styles.detalheIcone} />
-      <Text variant="bodyMedium">{texto}</Text>
-    </View>
+      {ingresso.status === "emitido" ? (
+        <View style={styles.qrContainer}>
+          <QRCode value={ingresso.id} size={180} />
+          <Text variant="bodySmall" style={[styles.textoCentralizado, styles.textoMuted]}>
+            Mostre esse QR na entrada
+          </Text>
+        </View>
+      ) : (
+        <Text variant="bodySmall" style={styles.textoMuted}>
+          Entrada já validada
+          {ingresso.usadoEm &&
+            ` em ${new Date(ingresso.usadoEm).toLocaleString("pt-BR", {
+              dateStyle: "short",
+              timeStyle: "short",
+            })}`}
+        </Text>
+      )}
+    </Surface>
   );
 }
 
@@ -153,7 +154,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   eventoNome: { flex: 1, fontWeight: "700", color: "#2B241D" },
-  detalhes: { marginTop: 4, gap: 8 },
-  detalheLinha: { flexDirection: "row", alignItems: "center", gap: 10 },
-  detalheIcone: { backgroundColor: "#F1EAE0" },
+  qrContainer: {
+    alignItems: "center",
+    gap: 8,
+    marginTop: 8,
+    paddingVertical: 16,
+    backgroundColor: "#F1EAE0",
+    borderRadius: 16,
+  },
 });

@@ -61,8 +61,12 @@ export function useSolicitarMinhaReserva(eventoId: string) {
 // RF12 (T-MOB-004) — associado compra o próprio ingresso pelo app (sempre sócio, canal app,
 // pagamento online — tudo resolvido no backend, POST .../meu-ingresso não recebe corpo).
 export function useComprarMeuIngresso(eventoId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => apiFetch(`/eventos/${eventoId}/meu-ingresso`, { method: "POST" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ingressos", "minhas"] });
+    },
   });
 }
 

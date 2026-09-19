@@ -56,9 +56,18 @@ export default function AppLayout() {
       <Tabs.Screen
         name="reservas"
         options={{
-          title: "Minhas Reservas",
+          title: "Reservas",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="ticket-confirmation-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ingressos"
+        options={{
+          title: "Ingressos",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="qrcode" color={color} size={size} />
           ),
         }}
       />

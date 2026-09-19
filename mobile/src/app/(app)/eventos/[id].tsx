@@ -217,7 +217,7 @@ function IngressoCard({ eventoId }: { eventoId: string }) {
       </Button>
 
       <Snackbar visible={sucesso} onDismiss={() => setSucesso(false)} duration={4000}>
-        Ingresso comprado! Apresente seu cadastro na entrada.
+        Ingresso comprado! Veja o QR na aba Ingressos pra mostrar na entrada.
       </Snackbar>
       <ErrorSnackbar
         visible={comprar.isError}
