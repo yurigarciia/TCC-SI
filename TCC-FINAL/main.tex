@@ -755,14 +755,14 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Gestão de Associados}
   \label{tab:rf-associados}
-  \begin{tabular}{clc}
+  \begin{tabular}{clcc}
     \toprule
-    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
-    RF01 & Cadastrar associado com dados pessoais e vínculo à entidade & Must \\
-    RF02 & Consultar e editar dados de associado                        & Must \\
-    RF03 & Controlar status do associado (ativo, inativo, suspenso)     & Must \\
-    RF04 & Registrar dependentes vinculados ao titular                  & Should \\
+    RF01 & Cadastrar associado com dados pessoais e vínculo à entidade & Must   & Entregue \\
+    RF02 & Consultar e editar dados de associado                        & Must   & Entregue \\
+    RF03 & Controlar status do associado (ativo, inativo, suspenso)     & Must   & Entregue \\
+    RF04 & Registrar dependentes vinculados ao titular                  & Should & Entregue \\
     \bottomrule
   \end{tabular}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
@@ -772,14 +772,14 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Controle de Mensalidades}
   \label{tab:rf-mensalidades}
-  \begin{tabular}{clc}
+  \begin{tabular}{clcc}
     \toprule
-    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
-    RF05 & Registrar pagamento de mensalidade por associado & Must   \\
-    RF06 & Visualizar histórico de pagamentos por associado & Must   \\
-    RF07 & Gerar relatório de inadimplência                 & Should \\
-    RF08 & Emitir comprovante de pagamento                  & Should \\
+    RF05 & Registrar pagamento de mensalidade por associado & Must   & Entregue \\
+    RF06 & Visualizar histórico de pagamentos por associado & Must   & Entregue \\
+    RF07 & Gerar relatório de inadimplência                 & Should & Entregue \\
+    RF08 & Emitir comprovante de pagamento                  & Should & Parcial (somente API) \\
     \bottomrule
   \end{tabular}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
@@ -789,17 +789,17 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Gestão de Eventos e Reservas}
   \label{tab:rf-eventos}
-  \begin{tabular}{clc}
+  \begin{tabular}{clcc}
     \toprule
-    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
-    RF09 & Cadastrar evento (baile/fandango) com data, local e capacidade   & Must   \\
-    RF10 & Definir configuração de mesas e ingressos por evento             & Must   \\
-    RF11 & Registrar reserva de mesa (fluxo administrativo mediado)         & Must   \\
-    RF12 & Registrar compra/retirada de ingresso                            & Must   \\
-    RF13 & Associado consultar suas reservas pelo aplicativo \textit{mobile}& Must   \\
-    RF14 & Consultar disponibilidade de mesas em tempo real                 & Should \\
-    RF15 & Cancelar ou transferir reserva existente                         & Could  \\
+    RF09 & Cadastrar evento (baile/fandango) com data, local e capacidade   & Must   & Entregue \\
+    RF10 & Definir configuração de mesas e ingressos por evento             & Must   & Entregue \\
+    RF11 & Registrar reserva de mesa (fluxo mediado e pelo aplicativo)      & Must   & Entregue \\
+    RF12 & Registrar compra/retirada de ingresso                            & Must   & Entregue \\
+    RF13 & Associado consultar suas reservas pelo aplicativo \textit{mobile}& Must   & Entregue \\
+    RF14 & Consultar disponibilidade de mesas em tempo real                 & Should & Entregue \\
+    RF15 & Cancelar ou transferir reserva existente                         & Could  & Entregue \\
     \bottomrule
   \end{tabular}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
@@ -809,19 +809,55 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos não-funcionais}
   \label{tab:rnf}
-  \begin{tabular}{clc}
+  \begin{tabular}{clcc}
     \toprule
-    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} \\
+    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
-    RNF01 & Suporte a fluxos mediados pela entidade (registro em nome do associado) & Must   \\
-    RNF02 & Autenticação com controle de perfis (administrador / associado)         & Must   \\
-    RNF03 & Aplicativo \textit{mobile} compatível com Android e iOS via Expo        & Must   \\
-    RNF04 & API documentada via Swagger (integrado ao NestJS)                       & Should \\
-    RNF05 & Tempo de resposta das operações principais inferior a 2 segundos        & Should \\
+    RNF01 & Suporte a fluxos mediados pela entidade (registro em nome do associado) & Must   & Entregue \\
+    RNF02 & Autenticação com controle de perfis (administrador / associado)         & Must   & Entregue \\
+    RNF03 & Aplicativo \textit{mobile} compatível com Android e iOS via Expo        & Must   & Parcial (validado em Android) \\
+    RNF04 & API documentada via Swagger (integrado ao NestJS)                       & Should & Entregue \\
+    RNF05 & Tempo de resposta das operações principais inferior a 2 segundos        & Should & Não aferido \\
     \bottomrule
   \end{tabular}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{table}
+
+Ao longo das iterações de desenvolvimento, a leitura conjunta das entrevistas e o uso dos protótipos
+fizeram emergir requisitos que não constavam da versão inicial e que passaram a integrar o MVP. Entre
+os funcionais, destacam-se a configuração dinâmica de categorias de sócio, com valor de mensalidade e
+isenção (RF16), o croqui do salão com desenho de paredes e portas (RF17), o auto-cadastro e o vínculo
+de conta de associado pelo aplicativo (RF18), o pagamento online de mensalidades, reservas e
+ingressos por meio de uma porta de pagamento (RF19), o acompanhamento do evento em andamento, com
+totais de ingressos emitidos e entradas validadas (RF20), e a exibição, no aplicativo, do ingresso
+com código QR para validação na portaria (RF21). Entre os não funcionais, a implantação do sistema em
+nuvem, com instâncias isoladas por entidade a partir do mesmo código-base (RNF06). Esses itens estão
+consolidados na Tabela~\ref{tab:rf-incorporados}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Requisitos incorporados durante o desenvolvimento}
+  \label{tab:rf-incorporados}
+  \begin{tabular}{clcc}
+    \toprule
+    \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
+    \midrule
+    RF16  & Categorias de sócio configuráveis (valor de mensalidade, isenção)  & Must   & Entregue \\
+    RF17  & Croqui do salão com mesas, paredes e portas                        & Should & Entregue \\
+    RF18  & Auto-cadastro e vínculo de conta do associado pelo aplicativo      & Must   & Entregue \\
+    RF19  & Pagamento online por meio de porta de pagamento                    & Should & Parcial (gateway simulado) \\
+    RF20  & Acompanhamento do evento: ingressos emitidos e entradas validadas  & Should & Entregue \\
+    RF21  & Ingresso do associado no aplicativo, com QR para a portaria        & Must   & Entregue \\
+    RNF06 & Implantação em nuvem, uma instância isolada por entidade           & Should & Entregue \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{table}
+
+A situação ``Parcial'' indica que o requisito foi atendido no que diz respeito à regra de negócio e à
+API, mas não integralmente: o comprovante de pagamento (RF08) não possui interface, e a cobrança online
+(RF19) utiliza uma implementação simulada da porta de pagamento, sem integração com provedor real,
+consistente com a exclusão do processamento de dados financeiros sensíveis do escopo do trabalho.
 
 Ressalta-se que os requisitos classificados como \textit{Won't} neste trabalho incluem a integração
 com sistemas institucionais do MTG (como o CIT), o processamento direto de dados financeiros
@@ -918,36 +954,129 @@ vez de restringir o escopo a apenas uma dessas frentes.
 
 \subsection{Implementação do MVP}
 
-[Seção a ser desenvolvida após a implementação. Descreverá as entregas realizadas em cada módulo do
-ecossistema (painel web administrativo, aplicativo mobile e backend), com prints de telas e
-descrição das principais funcionalidades implementadas.]
+O MVP do Querência ERP foi implementado como um repositório único contendo três aplicações que
+compartilham a mesma linguagem, o TypeScript: a API (\textit{backend}), o painel administrativo
+(\textit{frontend} web) e o aplicativo do associado (\textit{mobile}), conforme a arquitetura
+apresentada na Figura~\ref{fig:arquitetura}. A seguir, descrevem-se as entregas de cada parte,
+a implantação e as limitações identificadas.
 
-O MVP do ecossistema digital compreende as seguintes entregas funcionais:
+\textbf{API (NestJS + PostgreSQL + TypeORM).} A API foi organizada em seis módulos de domínio ---
+identidade (autenticação e perfis), associados, mensalidades, eventos, reservas e ingressos ---,
+além de módulos transversais de paginação, pagamentos e notificações. Cada módulo segue a separação
+entre domínio, casos de uso, portas e adaptadores da Arquitetura Hexagonal: as regras de negócio não
+dependem do \textit{framework} nem do banco, e os serviços externos (porta de pagamento e envio de
+notificações) são acessados por interfaces substituíveis. O esquema do banco é versionado em 16
+\textit{migrations}, e a API é documentada automaticamente via Swagger (RNF04). A autenticação usa
+tokens JWT, e o acesso é controlado por dois perfis, administrador e associado; rotas destinadas ao
+associado (por exemplo, consultar as próprias mensalidades, reservas e ingressos) resolvem a posse a
+partir do token, e nunca a partir de parâmetros informados pelo cliente, o que evita o acesso a dados
+de terceiros. A verificação do comportamento é feita por 65 testes de ponta a ponta, distribuídos em
+oito suítes, executados contra um banco PostgreSQL real, e que cobrem inclusive cenários de
+concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita.
 
-\textbf{Painel web administrativo (Next.js):}
-\begin{itemize}
-  \item tela de autenticação com controle de perfis (administrador / associado);
-  \item módulo de associados: listagem, cadastro, edição e controle de status;
-  \item módulo de mensalidades: lançamento de pagamentos, histórico por associado e relatório de
-    inadimplência;
-  \item módulo de eventos: cadastro de bailes e fandangos, configuração de mesas e ingressos;
-  \item módulo de reservas: registro e acompanhamento de reservas de mesas (fluxo administrativo
-    mediado).
-\end{itemize}
+\textbf{Painel administrativo (Next.js).} O painel concentra a operação da diretoria. Nele, é possível
+cadastrar e aprovar associados, configurar categorias de sócio com valor de mensalidade e isenção,
+lançar cobranças mensais, registrar pagamentos presenciais e consultar a inadimplência, cadastrar
+eventos, desenhar o croqui do salão, configurar preço e disponibilidade de mesas e ingressos, registrar
+reservas e vender ingressos presencialmente. A Figura~\ref{fig:web-dashboard} apresenta a tela
+inicial, com os totais de associados, pendências de validação, inadimplentes e eventos publicados.
+O croqui do salão (Figura~\ref{fig:web-croqui}) é construído pela própria diretoria, sem exposição de
+coordenadas: as mesas são posicionadas por clique e as paredes e portas, desenhadas por arrasto,
+o que responde à dificuldade relatada por usuários com menor familiaridade digital. No dia do evento,
+a tela de ingressos (Figura~\ref{fig:web-ingressos}) exibe os totais de ingressos emitidos, de
+entradas já validadas e de ingressos aguardando entrada, além da leitura de códigos QR pela câmera
+para o registro da entrada na portaria.
 
-\textbf{Aplicativo mobile do associado (React Native + Expo):}
-\begin{itemize}
-  \item tela de autenticação;
-  \item visualização de dados cadastrais e situação de mensalidades;
-  \item consulta de eventos disponíveis e reservas realizadas.
-\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/web-dashboard.png}
+  \caption{Painel administrativo: tela inicial}
+  \label{fig:web-dashboard}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
 
-\textbf{Backend (NestJS + PostgreSQL + TypeORM):}
-\begin{itemize}
-  \item API REST documentada via Swagger, com autenticação JWT e controle de acesso por perfil;
-  \item implementação dos casos de uso correspondentes aos módulos listados;
-  \item banco de dados relacional PostgreSQL com \textit{migrations} versionadas via TypeORM.
-\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/web-salao-croqui.png}
+  \caption{Painel administrativo: croqui do salão com mesas, paredes e portas}
+  \label{fig:web-croqui}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/web-ingressos.png}
+  \caption{Painel administrativo: acompanhamento de ingressos e check-in do evento}
+  \label{fig:web-ingressos}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
+
+\textbf{Aplicativo do associado (React Native + Expo).} O aplicativo oferece cinco áreas, acessadas por
+uma barra de navegação inferior (Figura~\ref{fig:mobile-telas}): o início, com os dados cadastrais e a
+situação do associado; as mensalidades, com o histórico e o pagamento online da cobrança em aberto; as
+reservas de mesa; os ingressos; e os eventos publicados, com o mapa de mesas em tempo real e a
+possibilidade de reservar uma mesa ou comprar o ingresso. O associado também pode criar a própria
+conta ou vincular-se a um cadastro já feito pela diretoria. Na área de ingressos, cada ingresso
+emitido é apresentado com o código QR, que a portaria lê para validar a entrada; uma vez validado,
+o ingresso passa a indicar a entrada já registrada. O conteúdo do código é o identificador do
+próprio ingresso, o mesmo valor aceito pelo painel na leitura por câmera ou na digitação manual, de
+modo que os dois formatos de validação convivem, como previsto no levantamento de requisitos.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.23\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/mobile-inicio.png}\\[2pt]{\small (a) Início}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.23\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/mobile-mensalidade.png}\\[2pt]{\small (b) Mensalidade}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.23\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/mobile-ingressos.png}\\[2pt]{\small (c) Ingressos}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.23\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/mobile-eventos.png}\\[2pt]{\small (d) Eventos}
+  \end{minipage}
+  \caption{Aplicativo do associado: principais telas}
+  \label{fig:mobile-telas}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
+
+\textbf{Identidade visual e reutilização.} Como o sistema foi concebido para atender mais de uma
+entidade, a interface não carrega o nome de nenhuma delas: o produto recebeu a identidade própria
+Querência ERP (QERP), com marca criada especificamente para o projeto, aplicada de forma consistente no
+painel, no aplicativo e nos ícones. As categorias de sócio, os valores de mensalidade e de ingresso
+e o croqui do salão são dados configurados por cada entidade, e não regras fixas no código.
+
+\textbf{Implantação.} A API e o painel web foram publicados como dois serviços em contêineres na
+plataforma de computação em nuvem \textit{Google Cloud Run}, com o banco de dados PostgreSQL mantido em
+um serviço gerenciado externo e os segredos (chave de assinatura dos tokens e cadeia de conexão com o
+banco) armazenados no \textit{Secret Manager}, e não em variáveis de ambiente em texto puro. O
+aplicativo foi empacotado como arquivo APK de distribuição interna por meio do serviço de compilação
+\textit{Expo Application Services} (EAS), apontando para a API em produção, o que permitiu a
+instalação em dispositivos Android para a validação com usuários. Cada entidade parceira poderá
+operar uma instância própria a partir do mesmo código-base, sem compartilhamento de dados entre elas.
+
+\textbf{Achados durante a implementação.} Duas lacunas foram identificadas apenas com o uso dos
+protótipos, o que reforça o caráter iterativo do método. A primeira foi a ausência de vínculo entre o
+ingresso e o associado que o comprou: o registro guardava somente o nome do comprador, o que
+impossibilitava ao aplicativo apresentar ``os ingressos do associado''; a correção exigiu uma nova
+migração do esquema e uma rota específica para o perfil de associado. A segunda foi a ausência, no
+aplicativo, de qualquer forma de reabrir o ingresso após a compra, o que inviabilizava o fluxo de
+validação por código QR na portaria, motivação central do sistema; a área de ingressos descrita
+acima resolveu essa lacuna.
+
+\textbf{Limitações.} Ressalvam-se os seguintes pontos: (i) a cobrança online utiliza uma
+implementação simulada da porta de pagamento, sem integração com um provedor real; (ii) a reserva de
+mesa é registrada para a mesa inteira, sem controle de entrada por pessoa, ao passo que a validação
+na portaria por código QR está implementada apenas para o ingresso avulso, de modo que o controle de
+acesso associado à reserva permanece como trabalho futuro; (iii) o aplicativo foi validado em
+dispositivo Android, sem verificação em iOS; e (iv) não foi realizada aferição sistemática do tempo de
+resposta (RNF05).
+
 
 \subsection{Avaliação com usuários e análise dos resultados}
 
