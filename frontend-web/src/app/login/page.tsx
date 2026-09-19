@@ -50,7 +50,7 @@ export default function LoginPage() {
             unoptimized
             priority
           />
-          <CardDescription>Painel administrativo — acesso restrito à diretoria.</CardDescription>
+          <CardDescription>Painel administrativo</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
