@@ -1429,6 +1429,24 @@ frentes de frontend-web e mobile.
   ou categoria sem preço nem override do evento nem padrão da entidade — mensagem orientando a
   falar com a diretoria, botão de compra desabilitado). Validado com `npx tsc --noEmit` (limpo).
 
+  **Adendo 2026-09-19 (aba "Ingressos" com QR de check-in):** pedido do usuário, ao perceber que o
+  associado não tinha como reabrir o ingresso depois de comprar (só um Snackbar passageiro) — o
+  fluxo da portaria (associado chega com o QR, a diretoria lê) não fechava, e a nota do próprio
+  ticket ("ingressos do associado não têm endpoint equivalente ainda") já registrava a lacuna.
+  Causa mais funda que a tela faltando: `Ingresso` nunca guardou o vínculo com o `Associado` (só
+  `nomeComprador`). Backend: migration `1756500000000-AddAssociadoIdToIngressos` (`associado_id`
+  nullable, FK `ON DELETE SET NULL` — venda presencial pra visitante/criança segue sem vínculo),
+  `ComprarMeuIngressoUseCase` passa a gravar o `associadoId`, novo `ListarMeusIngressosUseCase` e
+  rota `GET /ingressos/minhas` (`@Roles(ASSOCIADO)`, mesmo padrão de `/reservas/minhas`). Mobile:
+  nova aba "Ingressos" (5ª da navbar; rótulo de "Minhas Reservas" encurtado pra "Reservas" pra
+  caber), QR = o próprio `id` do ingresso (mesmo payload que `POST /ingressos/:id/checkin` e o
+  scanner do painel já usam — nada de código novo), ingresso "usado" mostra "entrada validada".
+  Dependência nova: `react-native-qrcode-svg`. Validado com a suíte e2e completa (65/65, asserts
+  novos em `ingressos.e2e-spec.ts`), `tsc`/`lint` limpos e teste manual no emulador Android contra
+  o backend em produção (Cloud Run). **Em aberto (decisão de modelo, não de tela):** `Reserva` de
+  mesa não tem conceito de check-in (é da mesa inteira, sem titular por pessoa) — controle de
+  entrada associado a reserva fica como trabalho futuro.
+
 #### Ticket: T-MOB-005 Notificações (lembrete de inadimplência, confirmações)
 - **Priority:** Should
 - **Status:** Implementado, pendente de push token real (Firebase/FCM)
