@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,25 @@ export default function LoginPage() {
   const onSubmit = handleSubmit((dados) => {
     login.mutate(dados);
   });
+
+  useEffect(() => {
+    if (!login.isError) return;
+    const mensagem =
+      login.error instanceof AcessoNegadoError
+        ? login.error.message
+        : login.error instanceof ApiError
+          ? "E-mail ou senha inválidos."
+          : "Não foi possível conectar ao servidor. Tente novamente.";
+    toast.error(mensagem, {
+      position: "top-right",
+      closeButton: true,
+      classNames: {
+        toast: "!bg-[#fdecea] !border-[#f0b7b2] !text-[#7a1f18]",
+        closeButton:
+          "!bg-[#fdecea] !border-[#f0b7b2] !text-[#7a1f18] !left-auto !right-2 !top-2 !transform-none",
+      },
+    });
+  }, [login.isError, login.error]);
 
   return (
     <main className="grid min-h-dvh bg-background lg:grid-cols-[1.35fr_1fr]">
@@ -81,9 +101,9 @@ export default function LoginPage() {
         <div className="w-full max-w-sm rounded-2xl bg-card p-8 shadow-2xl ring-1 ring-foreground/5 sm:p-10">
           <div className="text-center">
             <LogoMark size={44} className="mx-auto mb-4" />
-            <h1 className="font-heading text-2xl font-semibold text-card-foreground">Acesso ao painel</h1>
+            <h1 className="font-heading text-2xl font-semibold text-card-foreground">Seja bem-vindo!</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Área restrita à diretoria da entidade.
+              Entre para gerenciar associados, mensalidades e eventos da sua entidade.
             </p>
           </div>
 
@@ -136,16 +156,6 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-
-            {login.isError && (
-              <p className="text-sm text-destructive" role="alert">
-                {login.error instanceof AcessoNegadoError
-                  ? login.error.message
-                  : login.error instanceof ApiError
-                    ? "E-mail ou senha inválidos."
-                    : "Não foi possível conectar ao servidor. Tente novamente."}
-              </p>
-            )}
 
             <Button type="submit" size="lg" className="h-11 w-full" disabled={login.isPending}>
               {login.isPending ? "Entrando…" : "Entrar"}
