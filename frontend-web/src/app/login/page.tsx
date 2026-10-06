@@ -97,8 +97,35 @@ export default function LoginPage() {
         </div>
       </aside>
 
-      <section className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm rounded-2xl bg-card p-8 shadow-2xl ring-1 ring-foreground/5 sm:p-10">
+      <section className="relative flex items-center justify-center overflow-hidden px-6 py-12">
+        <svg
+          className="pointer-events-none absolute inset-0 size-full text-primary opacity-[0.07]"
+          aria-hidden="true"
+        >
+          <defs>
+            <pattern id="roseta" width="120" height="120" patternUnits="userSpaceOnUse">
+              <g transform="translate(60 60) scale(0.2)" fill="none" stroke="currentColor" strokeWidth="5">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <ellipse
+                    key={i}
+                    cx="0"
+                    cy="-108"
+                    rx="34"
+                    ry="92"
+                    fill="currentColor"
+                    stroke="none"
+                    transform={`rotate(${i * 45})`}
+                  />
+                ))}
+                <circle r="150" />
+                <circle r="128" />
+                <circle r="46" fill="currentColor" stroke="none" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#roseta)" />
+        </svg>
+        <div className="relative w-full max-w-sm rounded-2xl bg-card p-8 shadow-2xl ring-1 ring-foreground/5 sm:p-10">
           <div className="text-center">
             <LogoMark size={44} className="mx-auto mb-4" />
             <h1 className="font-heading text-2xl font-semibold text-card-foreground">Seja bem-vindo!</h1>
