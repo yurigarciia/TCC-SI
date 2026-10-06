@@ -79,7 +79,19 @@ elsewhere (e.g. old notes), they are stale; the real paths are under `PROJETO-TC
 - **`backend/`, `frontend-web/`, `mobile/`** — implementation code for the system described in
   `TCC-FINAL/main.tex` and planned in `TCC-FINAL/aplicacoes/`. Kept in this same repository
   (deliberate choice — keeps thesis and implementation history together for a single-author TCC).
-  Each has its own README with setup/run instructions once scaffolded.
+  Each has its own README with setup/run instructions.
+
+## Backend Architecture
+
+Each domain module in `backend/src/<modulo>/` follows hexagonal layering:
+`domain/` (pure rules, when the module has a real concept) → `application/{use-cases,ports}` →
+`infrastructure/{adapters,controllers}`.
+Modules: `identidade`, `associados`, `mensalidades`, `eventos`, `reservas`, `ingressos`, `health`.
+`shared/database` (TypeORM + migrations) and `shared/payments` / `shared/notifications` are cross-cutting
+ports with swappable adapters.
+
+Authorization: `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles(Perfil.X)`. On associado-facing routes,
+channel, holder and ownership are resolved from the JWT, never from the request body.
 
 ## Build Commands
 
@@ -89,9 +101,46 @@ cd TCC-FINAL
 ./compile.sh
 # equivalent to: pdflatex main.tex && biber main && pdflatex main.tex && pdflatex main.tex
 ```
-Note: `compile.sh` hardcodes a MiKTeX path (`/c/Users/eidip/AppData/Local/Programs/MiKTeX/miktex/bin/x64`)
-that is specific to the original author's machine — adjust it or invoke `pdflatex.exe`/`biber.exe`
-directly if MiKTeX is installed elsewhere.
+`compile.sh` copies the built PDF to `TCC-FINAL/exports/TCC-GARCIA-vN-MM-AAAA.pdf`, auto-incrementing `N`
+(`exports/` is git-ignored). It hardcodes a MiKTeX path (`/c/Users/eidip/AppData/Local/Programs/MiKTeX/miktex/bin/x64`)
+specific to the original author's machine — adjust it or invoke `pdflatex.exe`/`biber.exe` directly if MiKTeX
+is installed elsewhere.
+
+**Infra local (raiz):**
+```bash
+docker compose up -d   # PostgreSQL 16 em localhost:5433 (não 5432: colisão com Postgres local)
+```
+
+**backend/** (NestJS, API em :3000, Swagger em `/api/docs`):
+```bash
+npm run start:dev          # watch mode
+npm run build
+npm run lint               # eslint com --fix (altera arquivos)
+npm test                   # unit (jest, regex *.spec.ts dentro de src/)
+npm test -- <padrao>       # um arquivo/teste: ex. npm test -- auth.controller
+npm run test:e2e           # test/jest-e2e.json, maxWorkers=1 (banco compartilhado)
+npm run migration:run      # TypeORM migrations (src/shared/database/data-source.ts)
+npm run migration:revert
+npm run seed:admin
+```
+Setup inicial: `cp .env.example .env` (ver `backend/.env.example`).
+
+**frontend-web/** (Next.js, painel em :3010 — porta fixada no package.json):
+```bash
+npm run dev
+npm run build
+npm run lint
+```
+Não há script de testes. Setup: `cp .env.example .env.local`. Antes de escrever código Next, ler
+`node_modules/next/dist/docs/` (ver `frontend-web/AGENTS.md`) — Next 16 tem breaking changes.
+
+**mobile/** (Expo 57, só Android/iOS):
+```bash
+npx expo start
+npm run lint               # expo lint
+```
+Não há script de testes. Setup: `cp .env.example .env.local`. Antes de escrever código, consultar a doc do
+Expo 57 (ver `mobile/AGENTS.md`).
 
 **PROJETO-TCC (delivered pré-projeto, rarely touched):**
 ```bash
@@ -139,8 +188,8 @@ The system is TypeScript end-to-end:
 | API | REST, documented via Swagger |
 
 This describes the *software system the TCC is about*. Implementation code lives in this same repo
-under `backend/`, `frontend-web/`, `mobile/` (see Repository Structure above), scaffolded and built
-incrementally against the backlog in `TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md`.
+under `backend/`, `frontend-web/`, `mobile/` (see Repository Structure above), built incrementally against
+the backlog in `TCC-FINAL/aplicacoes/PLANEJAMENTO-GERAL.md`.
 
 ## Document Status
 
@@ -154,4 +203,5 @@ real data:
 - "Considerações finais" — needs to be finalized once results are in
 - Resumo/Abstract — marked to be completed with evaluation results
 
-Deadline: 2026-06-19 (19h). Expected length: 20–25 pages.
+Original deadline: 2026-06-19 (19h) — already past as of 2026-10-06; confirm the current deadline with the
+orientador before planning. Expected length: 20–25 pages.
