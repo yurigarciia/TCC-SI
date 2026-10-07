@@ -9,6 +9,7 @@ import { ListarHistoricoAssociadoUseCase } from './application/use-cases/listar-
 import { ObterComprovanteUseCase } from './application/use-cases/obter-comprovante.use-case';
 import { ProcessarInadimplenciaUseCase } from './application/use-cases/processar-inadimplencia.use-case';
 import { ListarInadimplentesUseCase } from './application/use-cases/listar-inadimplentes.use-case';
+import { ListarSituacaoPagamentoUseCase } from './application/use-cases/listar-situacao-pagamento.use-case';
 import { ListarMinhasMensalidadesUseCase } from './application/use-cases/listar-minhas-mensalidades.use-case';
 import { ResolverMinhaMensalidadeUseCase } from './application/use-cases/resolver-minha-mensalidade.use-case';
 import { IniciarMeuPagamentoOnlineUseCase } from './application/use-cases/iniciar-meu-pagamento-online.use-case';
@@ -41,6 +42,7 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
     ObterComprovanteUseCase,
     ProcessarInadimplenciaUseCase,
     ListarInadimplentesUseCase,
+    ListarSituacaoPagamentoUseCase,
     ListarMinhasMensalidadesUseCase,
     ResolverMinhaMensalidadeUseCase,
     IniciarMeuPagamentoOnlineUseCase,

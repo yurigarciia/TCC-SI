@@ -23,5 +23,7 @@ export class Associado {
     public readonly origem: OrigemCadastro,
     public readonly status: StatusAssociado,
     public readonly usuarioId: string | null,
+    public readonly criadoEm: Date,
+    public readonly atualizadoEm: Date,
   ) {}
 }

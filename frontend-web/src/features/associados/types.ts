@@ -11,6 +11,8 @@ export interface Associado {
   origem: OrigemCadastro;
   status: StatusAssociado;
   usuarioId: string | null;
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 export interface Dependente {

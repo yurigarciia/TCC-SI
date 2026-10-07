@@ -18,6 +18,20 @@ export function useInadimplentes(pagina: number, busca?: string, limite: number 
   });
 }
 
+export type SituacaoPagamento = "em_dia" | "inadimplente";
+
+export function useSituacaoPagamento(associadoIds: string[]) {
+  const ids = [...associadoIds].sort();
+  return useQuery({
+    queryKey: ["mensalidades", "situacao-pagamento", ids],
+    queryFn: () =>
+      apiFetch<Record<string, SituacaoPagamento>>(
+        `/mensalidades/situacao-pagamento?associadoIds=${ids.join(",")}`,
+      ),
+    enabled: ids.length > 0,
+  });
+}
+
 export function useHistoricoMensalidades(associadoId: string) {
   return useQuery({
     queryKey: chaveHistorico(associadoId),

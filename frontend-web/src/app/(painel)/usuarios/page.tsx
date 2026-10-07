@@ -1,5 +1,7 @@
 "use client";
 
+import { ShieldUser } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +38,7 @@ export default function UsuariosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><ShieldUser aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
           Usuários da plataforma
         </h1>
         <p className="text-sm text-muted-foreground">Contas com acesso ao painel administrativo.</p>

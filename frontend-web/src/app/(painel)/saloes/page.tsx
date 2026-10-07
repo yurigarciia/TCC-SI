@@ -1,5 +1,7 @@
 "use client";
 
+import { Building2 } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,7 @@ export default function SaloesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Croqui de salões</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Building2 aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Croqui de salões</h1>
         <p className="text-sm text-muted-foreground">Croquis de mesas reutilizáveis nos eventos.</p>
       </div>
 

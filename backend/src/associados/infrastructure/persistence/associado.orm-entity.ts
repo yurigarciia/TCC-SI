@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { OrigemCadastro, StatusAssociado } from '../../domain/associado.entity';
 
@@ -37,4 +38,7 @@ export class AssociadoOrmEntity {
 
   @CreateDateColumn({ name: 'criado_em', type: 'timestamptz' })
   criadoEm: Date;
+
+  @UpdateDateColumn({ name: 'atualizado_em', type: 'timestamptz' })
+  atualizadoEm: Date;
 }

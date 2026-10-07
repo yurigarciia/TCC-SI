@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QrCode, TicketPlus } from "lucide-react";
+import { QrCode, TicketPlus, Calendar } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -232,7 +232,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
               { label: "Ingressos" },
             ]}
           />
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
+          <h1 className="font-heading text-2xl font-semibold text-foreground"><Calendar aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
             Emissão e check-in de ingressos
           </h1>
         </div>
@@ -464,7 +464,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 />
                 {precoPrevisto === null ? (
                   <p className="text-sm text-destructive">
-                    Preço não configurado pra esse perfil{perfilSelecionado === "socio" ? " e categoria" : ""}{" "}
+                    Preço não configurado pra esse perfil{perfilSelecionado === "socio" ? " e categoria" : ""}
                     neste evento — informe o valor manualmente pra vender assim mesmo.
                   </p>
                 ) : (

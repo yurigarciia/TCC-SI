@@ -1,5 +1,7 @@
 "use client";
 
+import { Wallet } from "lucide-react";
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -38,7 +40,7 @@ export default function MensalidadesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Wallet aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
           Mensalidades e inadimplência
         </h1>
         <p className="text-sm text-muted-foreground">Relatório de inadimplência e cobranças.</p>

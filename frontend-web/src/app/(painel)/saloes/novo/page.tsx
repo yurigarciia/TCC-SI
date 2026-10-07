@@ -1,5 +1,7 @@
 "use client";
 
+import { Building2 } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,13 +52,13 @@ export default function NovoSalaoPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Salões", href: "/saloes" }, { label: "Novo salão" }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Novo salão</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Building2 aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Novo salão</h1>
         <p className="text-muted-foreground">
           Uma entidade pode ter mais de um salão cadastrado.
         </p>
       </div>
 
-      <Card className="max-w-lg">
+      <Card className="bg-none! bg-card! max-w-lg">
         <CardHeader>
           <CardTitle>Dados do salão</CardTitle>
           <CardDescription>As mesas são adicionadas na próxima tela.</CardDescription>
