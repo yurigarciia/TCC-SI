@@ -12,6 +12,7 @@ export interface Associado {
   status: StatusAssociado;
   usuarioId: string | null;
   criadoEm: string;
+  atualizadoEm: string;
 }
 
 export interface Dependente {

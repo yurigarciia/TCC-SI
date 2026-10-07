@@ -67,7 +67,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
             <p className="py-16 text-center text-sm text-muted-foreground">Nenhuma categoria cadastrada.</p>
           ) : (
             <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" debounce={200}>
                 <BarChart data={dadosCategoria}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="nome" {...ESTILO_EIXO} />
@@ -90,7 +90,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
             <Skeleton className="h-56 w-full" />
           ) : (
             <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" debounce={200}>
                 <BarChart data={meses}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="rotulo" {...ESTILO_EIXO} />
@@ -113,7 +113,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
             <Skeleton className="h-56 w-full" />
           ) : (
             <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" debounce={200}>
                 <BarChart data={dadosAdimplencia}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="nome" {...ESTILO_EIXO} />

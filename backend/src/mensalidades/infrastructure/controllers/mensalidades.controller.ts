@@ -27,6 +27,7 @@ import { ListarHistoricoAssociadoUseCase } from '../../application/use-cases/lis
 import { ObterComprovanteUseCase } from '../../application/use-cases/obter-comprovante.use-case';
 import { ProcessarInadimplenciaUseCase } from '../../application/use-cases/processar-inadimplencia.use-case';
 import { ListarInadimplentesUseCase } from '../../application/use-cases/listar-inadimplentes.use-case';
+import { ListarSituacaoPagamentoUseCase } from '../../application/use-cases/listar-situacao-pagamento.use-case';
 import { ListarMinhasMensalidadesUseCase } from '../../application/use-cases/listar-minhas-mensalidades.use-case';
 import { IniciarMeuPagamentoOnlineUseCase } from '../../application/use-cases/iniciar-meu-pagamento-online.use-case';
 import { ConfirmarMeuPagamentoOnlineUseCase } from '../../application/use-cases/confirmar-meu-pagamento-online.use-case';
@@ -48,6 +49,7 @@ export class MensalidadesController {
     private readonly obterComprovante: ObterComprovanteUseCase,
     private readonly processarInadimplencia: ProcessarInadimplenciaUseCase,
     private readonly listarInadimplentes: ListarInadimplentesUseCase,
+    private readonly listarSituacaoPagamento: ListarSituacaoPagamentoUseCase,
     private readonly listarMinhas: ListarMinhasMensalidadesUseCase,
     private readonly iniciarMeuOnline: IniciarMeuPagamentoOnlineUseCase,
     private readonly confirmarMeuOnline: ConfirmarMeuPagamentoOnlineUseCase,
@@ -303,5 +305,21 @@ export class MensalidadesController {
   })
   relatorioInadimplencia(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
     return this.listarInadimplentes.execute(pagina!, limite!, busca);
+  }
+
+  @Get('situacao-pagamento')
+  @ApiOperation({
+    summary:
+      'Retorna a situação de pagamento (em_dia ou inadimplente) de cada associado informado em associadoIds (separados por vírgula)',
+  })
+  @ApiResponse({ status: 200, description: 'Mapa associadoId → situação' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  situacaoPagamento(@Query('associadoIds') associadoIds: string) {
+    const ids = (associadoIds ?? '').split(',').filter(Boolean);
+    return this.listarSituacaoPagamento.execute(ids);
   }
 }

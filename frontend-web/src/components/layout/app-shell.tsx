@@ -4,6 +4,7 @@ import {
   Building2Icon,
   CalendarIcon,
   ChevronDownIcon,
+  EllipsisVerticalIcon,
   HomeIcon,
   LogOutIcon,
   MenuIcon,
@@ -31,6 +32,12 @@ import {
   SheetTitle,
   SheetFooter,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -226,10 +233,61 @@ function LinksDeNavegacao({
 
 // Bloco com a conta autenticada — fica fixo no rodapé da sidebar (desktop) ou do drawer (mobile),
 // no lugar de header. Colapsada, mostra só o avatar (com o e-mail em `title`) + botão de sair.
+function AcoesDaConta({
+  colapsada,
+  onAlternarColapso,
+  logout,
+}: {
+  colapsada: boolean;
+  onAlternarColapso?: () => void;
+  logout: () => void;
+}) {
+  const classeBotao = "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
+  return (
+    <div className="flex items-center gap-1">
+      {!colapsada && (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className={classeBotao}
+                aria-label="Opções da conta"
+                title="Opções da conta"
+              />
+            }
+          >
+            <EllipsisVerticalIcon />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="end">
+            <DropdownMenuItem onClick={logout}>
+              <LogOutIcon />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className={classeBotao}
+        aria-label={colapsada ? "Expandir menu" : "Encolher menu"}
+        title={colapsada ? "Expandir menu" : "Encolher menu"}
+        onClick={onAlternarColapso}
+      >
+        {colapsada ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
+      </Button>
+    </div>
+  );
+}
+
 function ContaDoUsuario({
   colapsada = false,
+  onAlternarColapso,
 }: {
   colapsada?: boolean;
+  onAlternarColapso?: () => void;
 }) {
   const { data: usuario, isLoading } = useCurrentUser();
   const logout = useLogout();
@@ -251,21 +309,12 @@ function ContaDoUsuario({
   if (colapsada) {
     return (
       <div className="flex flex-col items-center gap-2">
+        <AcoesDaConta colapsada onAlternarColapso={onAlternarColapso} logout={logout} />
         <Avatar size="sm" title={nomeExibido}>
-          <AvatarFallback className="bg-primary text-xs font-medium text-primary-foreground">
+          <AvatarFallback className="bg-sidebar-primary text-xs font-medium text-sidebar-primary-foreground">
             {iniciais}
           </AvatarFallback>
         </Avatar>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          aria-label="Sair"
-          title="Sair"
-          onClick={logout}
-        >
-          <LogOutIcon />
-        </Button>
       </div>
     );
   }
@@ -273,7 +322,7 @@ function ContaDoUsuario({
   return (
     <div className="flex items-center gap-2.5">
       <Avatar size="sm" className="shrink-0">
-        <AvatarFallback className="bg-primary text-xs font-medium text-primary-foreground">
+        <AvatarFallback className="bg-sidebar-primary text-xs font-medium text-sidebar-primary-foreground">
           {iniciais}
         </AvatarFallback>
       </Avatar>
@@ -283,16 +332,9 @@ function ContaDoUsuario({
           {ROTULO_PERFIL[usuario.perfil]}
         </p>
       </div>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        className="shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        aria-label="Sair"
-        title="Sair"
-        onClick={logout}
-      >
-        <LogOutIcon />
-      </Button>
+      <div className="flex shrink-0 items-center">
+        <AcoesDaConta colapsada={false} onAlternarColapso={onAlternarColapso} logout={logout} />
+      </div>
     </div>
   );
 }
@@ -324,13 +366,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen min-w-0">
+    <div className="flex min-h-screen min-w-0 bg-card">
       {/* Sidebar (desktop) — coluna escura de ponta a ponta, com marca e conta próprias (não usa
           mais o header claro compartilhado, ver adendo "Sidebar escura" no PLANEJAMENTO-GERAL.md). */}
       <nav
         aria-label="Navegação principal"
         className={cn(
-          "hidden shrink-0 flex-col bg-sidebar transition-[width] duration-200 sm:flex",
+          "sticky top-3 m-3 hidden h-[calc(100dvh-1.5rem)] shrink-0 flex-col self-start overflow-hidden rounded-2xl bg-sidebar shadow-xl transition-[width] duration-200 sm:flex",
           colapsada ? "w-16" : "w-60",
         )}
       >
@@ -348,19 +390,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Querência ERP
             </span>
           )}
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={cn(
-              "shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              !colapsada && "ml-auto",
-            )}
-            aria-label={colapsada ? "Expandir menu" : "Encolher menu"}
-            title={colapsada ? "Expandir menu" : "Encolher menu"}
-            onClick={alternarColapso}
-          >
-            {colapsada ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
-          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3">
@@ -368,7 +397,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="shrink-0 border-t border-sidebar-border p-3">
-          <ContaDoUsuario colapsada={colapsada} />
+          <ContaDoUsuario colapsada={colapsada} onAlternarColapso={alternarColapso} />
         </div>
       </nav>
 

@@ -77,6 +77,7 @@ export class TypeOrmAssociadoRepositoryAdapter extends AssociadoRepositoryPort {
       orm.status,
       orm.usuarioId,
       orm.criadoEm,
+      orm.atualizadoEm,
     );
   }
 }
