@@ -1,5 +1,7 @@
 "use client";
 
+import { Tag } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -40,7 +42,7 @@ export default function CategoriasSocioPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Categorias de associado" }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Tag aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
           Categorias de associado
         </h1>
         <p className="text-sm text-muted-foreground">

@@ -1,27 +1,20 @@
 "use client";
 
+import { Home, Plus, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CartaoResumo } from "@/components/cartao-resumo";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrentUser } from "@/features/auth/use-current-user";
-import { useAssociados } from "@/features/associados/use-associados";
+import { useAssociados, useCategoriasSocio } from "@/features/associados/use-associados";
 import { useEventos } from "@/features/eventos/use-eventos";
 import { useInadimplentes } from "@/features/mensalidades/use-mensalidades";
+import { GraficosDashboard } from "@/features/dashboard/graficos-dashboard";
 import { formatarDataHora } from "@/lib/format";
 
-function saudacao(timestamp: number): string {
-  const hora = new Date(timestamp).getHours();
-  if (hora < 12) return "Bom dia";
-  if (hora < 18) return "Boa tarde";
-  return "Boa noite";
-}
-
 export default function DashboardPage() {
-  const { data: usuario } = useCurrentUser();
-  const primeiroNome = usuario?.nome?.split(" ")[0];
   // Cartões de resumo somam/filtram no cliente — busca uma página grande o bastante pra cobrir o
   // volume real da entidade (ver DESIGN-SYSTEM/PLANEJAMENTO-GERAL: escala pequena, dezenas de
   // associados). Uma contagem por status direto na API fica pra quando o volume justificar.
@@ -36,6 +29,8 @@ export default function DashboardPage() {
     100,
   );
   const { data: resultadoEventos, isLoading: carregandoEventos } = useEventos(1, undefined, 100);
+  const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
+  const categorias = resultadoCategorias?.itens;
   const associados = resultadoAssociados?.itens;
   const inadimplentes = resultadoInadimplentes?.itens;
   const eventos = resultadoEventos?.itens;
@@ -53,43 +48,31 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8">
-        <svg
-          className="pointer-events-none absolute inset-0 size-full text-primary-foreground opacity-[0.08]"
-          aria-hidden="true"
-        >
-          <defs>
-            <pattern id="roseta-banner" width="90" height="90" patternUnits="userSpaceOnUse">
-              <g transform="translate(45 45) scale(0.18)" fill="none" stroke="currentColor" strokeWidth="6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <ellipse
-                    key={i}
-                    cx="0"
-                    cy="-108"
-                    rx="34"
-                    ry="92"
-                    fill="currentColor"
-                    stroke="none"
-                    transform={`rotate(${i * 45})`}
-                  />
-                ))}
-                <circle r="150" />
-                <circle r="128" />
-              </g>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#roseta-banner)" />
-        </svg>
-        <div className="relative">
-          <p className="text-sm font-medium opacity-80">{saudacao(agora)}</p>
-          <h1 className="font-heading text-3xl font-semibold">
-            {primeiroNome ? `Olá, ${primeiroNome}!` : "Início"}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            <Home aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
+            Início
           </h1>
-          <p className="mt-2 max-w-xl text-primary-foreground/85">
+          <p className="text-muted-foreground">
             Painel de gestão de associados, mensalidades e eventos da sua entidade.
           </p>
         </div>
-      </section>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" render={<Link href="/mensalidades" />}>
+            <Wallet aria-hidden="true" />
+            Mensalidades
+          </Button>
+          <Button variant="outline" render={<Link href="/associados/novo" />}>
+            <Plus aria-hidden="true" />
+            Novo associado
+          </Button>
+          <Button render={<Link href="/eventos/novo" />}>
+            <Plus aria-hidden="true" />
+            Novo evento
+          </Button>
+        </div>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <CartaoResumo
@@ -124,7 +107,14 @@ export default function DashboardPage() {
         />
       </div>
 
-      <Card>
+      <GraficosDashboard
+        associados={associados}
+        categorias={categorias}
+        inadimplentes={inadimplentes?.length}
+        agora={agora}
+      />
+
+      <Card className="bg-none! bg-card!">
         <CardHeader>
           <CardTitle>Próximos eventos</CardTitle>
         </CardHeader>

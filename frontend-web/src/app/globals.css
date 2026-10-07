@@ -69,7 +69,7 @@
   --card-foreground: #2b241d;
   --popover: #ffffff;
   --popover-foreground: #2b241d;
-  --primary: #7a2331; /* Vinho-lenço — ação primária */
+  --primary: #2e5e3e; /* Verde-bandeira escuro — ação primária */
   --primary-foreground: #fdf8f3;
   --secondary: #2e5e3e; /* Verde-bandeira — navegação/estado ativo */
   --secondary-foreground: #fdf8f3;
@@ -79,7 +79,7 @@
   --accent-foreground: #2b241d;
   --destructive: #b3261e; /* Vermelho-alerta */
   --destructive-foreground: #ffffff;
-  --success: #3e7a50; /* Verde-bandeira claro */
+  --success: #2e5e3e; /* Verde-bandeira — mesmo da sidebar e das colinas do login */
   --success-foreground: #ffffff;
   --warning: #b7791f; /* Prata-âmbar */
   --warning-foreground: #2b241d;
@@ -99,14 +99,14 @@
    * PLANEJAMENTO-GERAL.md): texto principal 13.9:1, texto 70% opacidade 7.4:1, pílula ativa
    * (verde-bandeira claro) 4.9:1 — todos acima do mínimo AA (4.5:1) exigido pelo §6.
    */
-  --sidebar: #241a13; /* Couro escuro */
-  --sidebar-foreground: #f1e7d8; /* Pergaminho quente */
-  --sidebar-primary: #c9a15a; /* Prata-âmbar — item de navegação ativo */
-  --sidebar-primary-foreground: #241a13;
-  --sidebar-accent: #38291d; /* Couro escuro, um tom acima — hover de item */
-  --sidebar-accent-foreground: #f1e7d8;
-  --sidebar-border: #4a3726; /* Couro escuro, divisor sutil */
-  --sidebar-ring: #c9a15a; /* Prata-âmbar clareada — anel de foco sobre fundo escuro */
+  --sidebar: #295538; /* Verde da sidebar definido pelo usuário */
+  --sidebar-foreground: #faf7f1; /* Pergaminho do login */
+  --sidebar-primary: #e9c98f; /* Céu do login — item ativo */
+  --sidebar-primary-foreground: #2b241d;
+  --sidebar-accent: #4f7147; /* Colina do meio do login — hover */
+  --sidebar-accent-foreground: #faf7f1;
+  --sidebar-border: #1f4029; /* Sombra do login — divisor */
+  --sidebar-ring: #e9c98f; /* Céu do login — anel de foco */
 }
 
 .dark {
@@ -183,4 +183,9 @@
   [role="combobox"]:not([data-disabled]):not([aria-disabled="true"]) {
     cursor: pointer;
   }
+}
+
+.bg-roseta {
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg transform='translate(24 24) scale(0.1)' opacity='0.04'%3E%3Cg fill='%237a2331'%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(315)'/%3E%3Ccircle r='46'/%3E%3C/g%3E%3Cg fill='none' stroke='%237a2331' stroke-width='15'%3E%3Ccircle r='150'/%3E%3Ccircle r='128'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }

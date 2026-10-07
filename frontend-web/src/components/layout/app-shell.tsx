@@ -391,7 +391,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
         </header>
 
-        <main className="min-w-0 flex-1 p-6">{children}</main>
+        <main className="min-w-0 flex-1 bg-card p-6">{children}</main>
       </div>
 
       <Sheet open={menuAberto} onOpenChange={setMenuAberto}>

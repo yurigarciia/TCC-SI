@@ -1,5 +1,7 @@
 "use client";
 
+import { Users } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -152,7 +154,7 @@ function AssociadoDetalheConteudo({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: associado.nome }]} />
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
+          <h1 className="font-heading text-2xl font-semibold text-foreground"><Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
             {associado.nome}
           </h1>
           <p className="text-muted-foreground">CPF {associado.cpf}</p>
@@ -161,7 +163,7 @@ function AssociadoDetalheConteudo({
       </div>
 
       {associado.status === "pendente_validacao" && (
-        <Card className="border-warning/40 bg-warning/5">
+        <Card className="bg-none! bg-card! border-warning/40 bg-warning/5">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
             <p className="text-sm text-foreground">
               Este cadastro está pendente de validação (auto-cadastro pelo app).
@@ -210,7 +212,7 @@ function AssociadoDetalheConteudo({
         </Card>
       )}
 
-      <Card>
+      <Card className="bg-none! bg-card!">
         <CardHeader>
           <CardTitle>Dados cadastrais</CardTitle>
         </CardHeader>
@@ -272,7 +274,7 @@ function AssociadoDetalheConteudo({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-none! bg-card!">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Dependentes</CardTitle>
           {!adicionandoDependente && (

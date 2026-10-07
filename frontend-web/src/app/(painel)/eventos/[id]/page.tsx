@@ -1,5 +1,7 @@
 "use client";
 
+import { Calendar } from "lucide-react";
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -52,7 +54,7 @@ function EventoDetalheConteudo({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <Breadcrumb items={[{ label: "Eventos", href: "/eventos" }, { label: evento.nome }]} />
-          <h1 className="font-heading text-2xl font-semibold text-foreground">{evento.nome}</h1>
+          <h1 className="font-heading text-2xl font-semibold text-foreground"><Calendar aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />{evento.nome}</h1>
           <StatusEventoBadge status={evento.status} />
         </div>
         <div className="flex items-center gap-2">

@@ -1,5 +1,7 @@
 "use client";
 
+import { Users } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -93,13 +95,13 @@ export default function NovoAssociadoPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Novo associado</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Novo associado</h1>
         <p className="text-muted-foreground">
           Cadastro de novo associado e seus dependentes, com ativação imediata.
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-none! bg-card!">
         <CardHeader>
           <CardTitle>Dados do associado</CardTitle>
           <CardDescription>Campos com rótulo sempre visível.</CardDescription>

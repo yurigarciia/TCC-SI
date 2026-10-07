@@ -1,5 +1,7 @@
 "use client";
 
+import { Users } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +34,7 @@ export default function AssociadosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Associados</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Associados</h1>
         <p className="text-sm text-muted-foreground">Cadastro e situação de cada associado.</p>
       </div>
 

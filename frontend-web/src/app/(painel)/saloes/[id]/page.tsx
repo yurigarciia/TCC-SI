@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Armchair, DoorOpen, Minus, X } from "lucide-react";
+import { Armchair, DoorOpen, Minus, X, Building2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -252,13 +252,13 @@ function SalaoDetalheConteudo({
     <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Salões", href: "/saloes" }, { label: salao.nome }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">{salao.nome}</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Building2 aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />{salao.nome}</h1>
         <p className="text-muted-foreground">
           Capacidade total: {salao.capacidadeTotal} pessoas · {textoContagemMesas(mesas.length)}
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-none! bg-card!">
         <CardHeader>
           <CardTitle>Mapa de mesas</CardTitle>
         </CardHeader>

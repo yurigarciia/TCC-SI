@@ -1,5 +1,7 @@
 "use client";
 
+import { Calendar } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -92,7 +94,7 @@ function MapaMesasConteudo({
             { label: "Mapa de mesas" },
           ]}
         />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Mapa de mesas</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Calendar aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Mapa de mesas</h1>
         <p className="text-muted-foreground">
           Clique numa mesa para registrar, confirmar, cancelar ou transferir uma reserva.
         </p>

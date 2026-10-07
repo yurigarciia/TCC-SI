@@ -1,5 +1,7 @@
 "use client";
 
+import { ShieldUser } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -58,7 +60,7 @@ export default function NovoAdministradorPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <Breadcrumb items={[{ label: "Usuários", href: "/usuarios" }, { label: "Novo administrador" }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><ShieldUser aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
           Novo administrador
         </h1>
         <p className="text-muted-foreground">
@@ -66,7 +68,7 @@ export default function NovoAdministradorPage() {
         </p>
       </div>
 
-      <Card className="max-w-lg">
+      <Card className="bg-none! bg-card! max-w-lg">
         <CardHeader>
           <CardTitle>Dados de acesso</CardTitle>
           <CardDescription>A senha é provisória — comunique por um canal seguro.</CardDescription>

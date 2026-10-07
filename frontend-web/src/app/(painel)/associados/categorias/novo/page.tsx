@@ -1,5 +1,7 @@
 "use client";
 
+import { Tag } from "lucide-react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -82,13 +84,13 @@ export default function NovaCategoriaSocioPage() {
             { label: "Nova categoria" },
           ]}
         />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Nova categoria</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Tag aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Nova categoria</h1>
         <p className="text-muted-foreground">
           Define a categoria e o valor de mensalidade cobrado do associado.
         </p>
       </div>
 
-      <Card className="max-w-lg">
+      <Card className="bg-none! bg-card! max-w-lg">
         <CardHeader>
           <CardTitle>Dados da categoria</CardTitle>
           <CardDescription>

@@ -1,5 +1,7 @@
 "use client";
 
+import { Calendar } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,7 @@ export default function EventosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Eventos</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground"><Calendar aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Eventos</h1>
         <p className="text-sm text-muted-foreground">Bailes e fandangos.</p>
       </div>
 
