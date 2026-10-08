@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Querência ERP",
-    "slug": "querencia-erp",
+    "name": "Querência Associados",
+    "slug": "querencia-associados",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "querenciaerp",
+    "scheme": "querenciaassociados",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon"
