@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MensalidadeRepositoryPort } from './application/ports/mensalidade-repository.port';
 import { GerarCobrancasMensaisUseCase } from './application/use-cases/gerar-cobrancas-mensais.use-case';
@@ -28,7 +28,7 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
   imports: [
     TypeOrmModule.forFeature([MensalidadeOrmEntity]),
     IdentidadeModule,
-    AssociadosModule,
+    forwardRef(() => AssociadosModule),
     PaymentsModule,
     NotificationsModule,
   ],
@@ -54,5 +54,9 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
       useClass: TypeOrmMensalidadeRepositoryAdapter,
     },
   ],
+  // Exportado para o AssociadosModule poder gerar a mensalidade do mês em vigor assim que um
+  // cadastro é aprovado (ver AprovarCadastroPendenteUseCase) — único ponto de uso fora deste
+  // módulo, por isso só esse caso de uso é exportado, não o restante.
+  exports: [GerarCobrancasMensaisUseCase],
 })
 export class MensalidadesModule {}

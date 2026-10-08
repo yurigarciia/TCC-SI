@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssociadoRepositoryPort } from './application/ports/associado-repository.port';
 import { DependenteRepositoryPort } from './application/ports/dependente-repository.port';
@@ -24,6 +24,7 @@ import { TypeOrmCategoriaSocioRepositoryAdapter } from './infrastructure/persist
 import { AssociadosController } from './infrastructure/controllers/associados.controller';
 import { CategoriasSocioController } from './infrastructure/controllers/categorias-socio.controller';
 import { IdentidadeModule } from '../identidade/identidade.module';
+import { MensalidadesModule } from '../mensalidades/mensalidades.module';
 
 @Module({
   imports: [
@@ -33,6 +34,10 @@ import { IdentidadeModule } from '../identidade/identidade.module';
       CategoriaSocioOrmEntity,
     ]),
     IdentidadeModule,
+    // forwardRef: MensalidadesModule importa AssociadosModule (pra ler associados/categorias), e
+    // aqui é o sentido inverso — só pra AprovarCadastroPendenteUseCase gerar a mensalidade do mês
+    // em vigor na hora da aprovação (RF04).
+    forwardRef(() => MensalidadesModule),
   ],
   controllers: [AssociadosController, CategoriasSocioController],
   providers: [

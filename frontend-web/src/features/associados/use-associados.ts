@@ -109,7 +109,11 @@ export function useAdicionarDependente(associadoId: string) {
 export function useAprovarCadastro(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => apiFetch(`/associados/${id}/aprovar`, { method: "POST" }),
+    mutationFn: (categoriaSocioId?: string) =>
+      apiFetch(`/associados/${id}/aprovar`, {
+        method: "POST",
+        body: JSON.stringify({ categoriaSocioId: categoriaSocioId || undefined }),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
       queryClient.invalidateQueries({ queryKey: chaveDetalhe(id) });

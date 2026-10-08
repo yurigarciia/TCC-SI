@@ -29,6 +29,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -44,16 +51,19 @@ import {
   useAprovarCadastro,
   useAssociado,
   useAtualizarAssociado,
+  useCategoriasSocio,
   useRejeitarCadastro,
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { formatarTelefone, pareceEmail } from "@/lib/format";
+import Link from "next/link";
 
 const dadosSchema = z.object({
   nome: z.string().min(3, "Informe o nome completo."),
   contato: z.string().min(8, "Informe um contato válido."),
   vinculoInstitucional: z.string().optional(),
+  categoriaSocioId: z.string().optional(),
 });
 
 type DadosFormValues = z.infer<typeof dadosSchema>;
@@ -102,6 +112,11 @@ function AssociadoDetalheConteudo({
   const rejeitar = useRejeitarCadastro(associadoId);
   const adicionarDependente = useAdicionarDependente(associadoId);
   const [adicionandoDependente, setAdicionandoDependente] = useState(false);
+  const [categoriaAprovacao, setCategoriaAprovacao] = useState<string | undefined>(undefined);
+  // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
+  // cadastradas sem precisar de paginação aqui (mesmo raciocínio de associados/novo).
+  const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
+  const categorias = resultadoCategorias?.itens;
 
   const {
     register,
@@ -115,12 +130,17 @@ function AssociadoDetalheConteudo({
       nome: associado.nome,
       contato: associado.contato,
       vinculoInstitucional: associado.vinculoInstitucional ?? "",
+      categoriaSocioId: associado.categoriaSocioId ?? "",
     },
   });
 
   const onSubmitDados = handleSubmit((dados) => {
     atualizar.mutate(
-      { ...dados, vinculoInstitucional: dados.vinculoInstitucional || null },
+      {
+        ...dados,
+        vinculoInstitucional: dados.vinculoInstitucional || null,
+        categoriaSocioId: dados.categoriaSocioId || null,
+      },
       {
         onSuccess: () => {
           toast.success("Dados atualizados.");
@@ -163,11 +183,37 @@ function AssociadoDetalheConteudo({
       </div>
 
       {associado.status === "pendente_validacao" && (
-        <Card className="bg-none! bg-card! border-warning/40 bg-warning/5">
-          <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
-            <p className="text-sm text-foreground">
-              Este cadastro está pendente de validação (auto-cadastro pelo app).
-            </p>
+        <Card className="border-warning/40 bg-warning/5">
+          <CardContent className="flex flex-wrap items-end justify-between gap-3 pt-6">
+            <div className="space-y-3">
+              <p className="text-sm text-foreground">
+                Este cadastro está pendente de validação (auto-cadastro pelo app) — auto-cadastro
+                não coleta categoria de sócio, então é definida aqui ou depois na edição.
+              </p>
+              <div className="w-full max-w-xs space-y-2">
+                <Label htmlFor="categoriaAprovacao">Categoria de sócio (opcional)</Label>
+                <Select
+                  value={categoriaAprovacao}
+                  onValueChange={(valor) => setCategoriaAprovacao(valor ?? undefined)}
+                >
+                  <SelectTrigger id="categoriaAprovacao" className="w-full">
+                    <SelectValue placeholder="Selecionar categoria">
+                      {(valor: string | undefined) =>
+                        categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                        "Selecionar categoria"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categorias?.map((categoria) => (
+                      <SelectItem key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="flex gap-2">
               <AlertDialog>
                 <AlertDialogTrigger render={<Button variant="outline" />}>
@@ -198,7 +244,7 @@ function AssociadoDetalheConteudo({
               </AlertDialog>
               <Button
                 onClick={() =>
-                  aprovar.mutate(undefined, {
+                  aprovar.mutate(categoriaAprovacao, {
                     onSuccess: () => toast.success("Cadastro aprovado — associado está Ativo."),
                     onError: () => toast.error("Não foi possível aprovar o cadastro."),
                   })
@@ -212,7 +258,7 @@ function AssociadoDetalheConteudo({
         </Card>
       )}
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Dados cadastrais</CardTitle>
         </CardHeader>
@@ -265,6 +311,41 @@ function AssociadoDetalheConteudo({
                 {...register("vinculoInstitucional")}
               />
             </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                <Link
+                  href="/associados/categorias/novo"
+                  target="_blank"
+                  className="text-sm leading-none text-primary underline-offset-4 hover:underline"
+                >
+                  Nova categoria ↗
+                </Link>
+              </div>
+              <Controller
+                control={control}
+                name="categoriaSocioId"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="categoriaSocioId" className="w-full">
+                      <SelectValue placeholder="Selecionar categoria">
+                        {(valor: string | null) =>
+                          categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                          "Selecionar categoria"
+                        }
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categorias?.map((categoria) => (
+                        <SelectItem key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
             <div className="flex justify-end">
               <Button type="submit" disabled={!isDirty || atualizar.isPending}>
                 {atualizar.isPending ? "Salvando…" : "Salvar alterações"}
@@ -274,7 +355,7 @@ function AssociadoDetalheConteudo({
         </CardContent>
       </Card>
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Dependentes</CardTitle>
           {!adicionandoDependente && (

@@ -37,6 +37,7 @@ import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dt
 import { AutoCadastroAssociadoDto } from './dto/auto-cadastro-associado.dto';
 import { CadastrarAssociadoMediadoDto } from './dto/cadastrar-associado-mediado.dto';
 import { AtualizarAssociadoDto } from './dto/atualizar-associado.dto';
+import { AprovarCadastroDto } from './dto/aprovar-cadastro.dto';
 import { DependenteDto } from './dto/dependente.dto';
 import { VincularContaAssociadoDto } from './dto/vincular-conta-associado.dto';
 
@@ -251,8 +252,11 @@ export class AssociadosController {
     description: 'Usuário autenticado não é administrador',
   })
   @ApiResponse({ status: 404, description: 'Associado não encontrado' })
-  aprovarCadastro(@Param('id', ParseUUIDPipe) id: string) {
-    return this.aprovar.execute(id);
+  aprovarCadastro(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AprovarCadastroDto,
+  ) {
+    return this.aprovar.execute(id, dto.categoriaSocioId);
   }
 
   @Post(':id/rejeitar')

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationSenderPort } from './application/ports/notification-sender.port';
 import { PushTokenRepositoryPort } from './application/ports/push-token-repository.port';
@@ -14,7 +14,9 @@ import { AssociadosModule } from '../../associados/associados.module';
   imports: [
     TypeOrmModule.forFeature([PushTokenOrmEntity]),
     IdentidadeModule,
-    AssociadosModule,
+    // forwardRef: fecha o ciclo Associados -> Mensalidades -> Notifications -> Associados que
+    // passou a existir quando AssociadosModule importou MensalidadesModule (ver associados.module.ts).
+    forwardRef(() => AssociadosModule),
   ],
   controllers: [NotificacoesController],
   providers: [

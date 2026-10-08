@@ -26,15 +26,6 @@ export class GerarCobrancasMensaisUseCase {
   // vez com segurança). Segue cadastro-associado.json / mensalidade.json: valor vem da categoria.
   // Categoria isenta (ex.: benemérito, honorário) nunca gera cobrança — nem de valor zero.
   async execute(referencia: Date = new Date()): Promise<Mensalidade[]> {
-    const competencia = `${referencia.getFullYear()}-${String(referencia.getMonth() + 1).padStart(2, '0')}`;
-    const vencimento = new Date(
-      referencia.getFullYear(),
-      referencia.getMonth(),
-      DIA_VENCIMENTO,
-    )
-      .toISOString()
-      .slice(0, 10);
-
     const todosAssociados = await this.associados.listarTodos();
     const associadosAtivos = todosAssociados.filter(
       (associado) =>
@@ -44,32 +35,62 @@ export class GerarCobrancasMensaisUseCase {
 
     const geradas: Mensalidade[] = [];
     for (const associado of associadosAtivos) {
-      const jaExiste = await this.mensalidades.existeParaCompetencia(
-        associado.id,
-        competencia,
-      );
-      if (jaExiste) {
-        continue;
+      const gerada = await this.gerarParaAssociado(associado.id, referencia);
+      if (gerada) {
+        geradas.push(gerada);
       }
-
-      const categoria = await this.categorias.buscarPorId(
-        associado.categoriaSocioId!,
-      );
-      if (!categoria || categoria.isenta) {
-        continue;
-      }
-
-      geradas.push(
-        await this.mensalidades.salvar({
-          associadoId: associado.id,
-          competencia,
-          valor: categoria.valorMensalidade,
-          vencimento,
-          status: StatusMensalidade.PENDENTE,
-        }),
-      );
     }
 
     return geradas;
+  }
+
+  // Mesma regra de `execute`, mas para um único associado — usado na aprovação de cadastro
+  // (RF04), pra que o recém-aprovado já saia com a mensalidade do mês em vigor pendente, em vez
+  // de esperar o próximo disparo do cron mensal. Retorna null quando não há nada a gerar
+  // (associado não ativo/sem categoria, categoria isenta, ou já existe cobrança da competência).
+  async gerarParaAssociado(
+    associadoId: string,
+    referencia: Date = new Date(),
+  ): Promise<Mensalidade | null> {
+    const associado = await this.associados.buscarPorId(associadoId);
+    if (
+      !associado ||
+      associado.status !== StatusAssociado.ATIVO ||
+      !associado.categoriaSocioId
+    ) {
+      return null;
+    }
+
+    const competencia = `${referencia.getFullYear()}-${String(referencia.getMonth() + 1).padStart(2, '0')}`;
+    const jaExiste = await this.mensalidades.existeParaCompetencia(
+      associado.id,
+      competencia,
+    );
+    if (jaExiste) {
+      return null;
+    }
+
+    const categoria = await this.categorias.buscarPorId(
+      associado.categoriaSocioId,
+    );
+    if (!categoria || categoria.isenta) {
+      return null;
+    }
+
+    const vencimento = new Date(
+      referencia.getFullYear(),
+      referencia.getMonth(),
+      DIA_VENCIMENTO,
+    )
+      .toISOString()
+      .slice(0, 10);
+
+    return this.mensalidades.salvar({
+      associadoId: associado.id,
+      competencia,
+      valor: categoria.valorMensalidade,
+      vencimento,
+      status: StatusMensalidade.PENDENTE,
+    });
   }
 }
