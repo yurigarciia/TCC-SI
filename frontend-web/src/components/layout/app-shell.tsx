@@ -19,12 +19,14 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useCurrentUser } from "@/features/auth/use-current-user";
 import { useLogout } from "@/features/auth/use-logout";
 import type { Perfil } from "@/features/auth/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogoMark } from "@/components/logo-mark";
+import { registrarHandler401 } from "@/lib/api-client";
 import {
   Sheet,
   SheetContent,
@@ -344,6 +346,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // Fecha o menu mobile ao tocar num link (ver onNavigate em LinksDeNavegacao) — evita o drawer
   // ficar aberto sobre a próxima tela.
   const [menuAberto, setMenuAberto] = useState(false);
+  const logout = useLogout();
+
+  // Registra o handler de 401 do api-client uma única vez — qualquer chamada autenticada que
+  // voltar 401 (cookie expirado/inválido) desloga de verdade (limpa cookie + /login) em vez de
+  // deixar cada query do React Query falhar sozinha com o painel parecendo quebrado.
+  useEffect(() => {
+    registrarHandler401(() => {
+      toast.error("Sessão expirada. Faça login novamente.");
+      logout();
+    });
+    return () => registrarHandler401(null);
+  }, [logout]);
 
   // Estado de colapso da sidebar (desktop only — o Sheet mobile sempre mostra os rótulos, já é um
   // overlay temporário, não faz sentido encolher). Persistido em localStorage pra não "piscar"

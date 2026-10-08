@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { clearAuthToken, getAuthToken, setAuthToken } from "@/lib/auth-token";
+import { registrarHandler401 } from "@/lib/api-client";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
@@ -30,10 +31,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(true);
   };
 
-  const sair = async () => {
+  const sair = useCallback(async () => {
     await clearAuthToken();
     setIsAuthenticated(false);
-  };
+  }, []);
+
+  // Registra o handler de 401 do api-client uma única vez — qualquer chamada autenticada que
+  // voltar 401 (token expirado, revogado, ou storage de uma instalação antiga) derruba a sessão
+  // de verdade em vez de deixar o app "logado" com um token morto.
+  useEffect(() => {
+    registrarHandler401(() => {
+      void sair();
+    });
+    return () => registrarHandler401(null);
+  }, [sair]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, isLoading, entrar, sair }}>
