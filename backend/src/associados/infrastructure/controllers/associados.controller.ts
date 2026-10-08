@@ -37,9 +37,24 @@ import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dt
 import { AutoCadastroAssociadoDto } from './dto/auto-cadastro-associado.dto';
 import { CadastrarAssociadoMediadoDto } from './dto/cadastrar-associado-mediado.dto';
 import { AtualizarAssociadoDto } from './dto/atualizar-associado.dto';
+import { EnderecoDto } from './dto/endereco.dto';
 import { AprovarCadastroDto } from './dto/aprovar-cadastro.dto';
 import { DependenteDto } from './dto/dependente.dto';
 import { VincularContaAssociadoDto } from './dto/vincular-conta-associado.dto';
+
+// DTO aceita complemento ausente (undefined); o domínio guarda explicitamente null pra "sem
+// complemento" — normaliza aqui pra não vazar esse detalhe de validação pros use cases.
+function mapearEndereco(dto: EnderecoDto) {
+  return {
+    cep: dto.cep,
+    logradouro: dto.logradouro,
+    numero: dto.numero,
+    complemento: dto.complemento ?? null,
+    bairro: dto.bairro,
+    cidade: dto.cidade,
+    uf: dto.uf,
+  };
+}
 
 @ApiTags('associados')
 @Controller('associados')
@@ -75,6 +90,7 @@ export class AssociadosController {
       cpf: dto.cpf,
       contato: dto.contato,
       vinculoInstitucional: dto.vinculoInstitucional ?? null,
+      endereco: mapearEndereco(dto.endereco),
       email: dto.email,
       senha: dto.senha,
     });
@@ -127,6 +143,7 @@ export class AssociadosController {
       contato: dto.contato,
       vinculoInstitucional: dto.vinculoInstitucional ?? null,
       categoriaSocioId: dto.categoriaSocioId ?? null,
+      endereco: mapearEndereco(dto.endereco),
       dependentes: dto.dependentes ?? [],
     });
   }
@@ -209,7 +226,13 @@ export class AssociadosController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AtualizarAssociadoDto,
   ) {
-    return this.atualizar.execute(id, dto);
+    return this.atualizar.execute(id, {
+      nome: dto.nome,
+      contato: dto.contato,
+      vinculoInstitucional: dto.vinculoInstitucional,
+      categoriaSocioId: dto.categoriaSocioId,
+      endereco: dto.endereco ? mapearEndereco(dto.endereco) : undefined,
+    });
   }
 
   @Post(':id/dependentes')

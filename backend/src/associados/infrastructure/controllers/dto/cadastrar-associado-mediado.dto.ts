@@ -9,6 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { DependenteDto } from './dependente.dto';
+import { EnderecoDto } from './endereco.dto';
 
 export class CadastrarAssociadoMediadoDto {
   @ApiProperty({ example: 'João Mediado' })
@@ -35,6 +36,11 @@ export class CadastrarAssociadoMediadoDto {
   @IsOptional()
   @IsUUID()
   categoriaSocioId?: string;
+
+  @ApiProperty({ type: EnderecoDto })
+  @ValidateNested()
+  @Type(() => EnderecoDto)
+  endereco: EnderecoDto;
 
   @ApiPropertyOptional({ type: [DependenteDto] })
   @IsOptional()

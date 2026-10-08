@@ -1,5 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
+import { EnderecoDto } from './endereco.dto';
 
 export class AtualizarAssociadoDto {
   @ApiPropertyOptional({ example: 'João Mediado' })
@@ -23,4 +31,12 @@ export class AtualizarAssociadoDto {
   @IsOptional()
   @IsUUID()
   categoriaSocioId?: string;
+
+  // Tudo ou nada de propósito: quando enviado, precisa vir completo (mesmo EnderecoDto do
+  // cadastro) — evita um endereço meio preenchido salvo por engano numa edição parcial.
+  @ApiPropertyOptional({ type: EnderecoDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => EnderecoDto)
+  endereco?: EnderecoDto;
 }

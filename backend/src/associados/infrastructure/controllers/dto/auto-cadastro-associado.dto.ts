@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
+import { EnderecoDto } from './endereco.dto';
 
 export class AutoCadastroAssociadoDto {
   @ApiProperty({ example: 'Maria Auto' })
@@ -21,6 +29,11 @@ export class AutoCadastroAssociadoDto {
   @IsOptional()
   @IsString()
   vinculoInstitucional?: string;
+
+  @ApiProperty({ type: EnderecoDto })
+  @ValidateNested()
+  @Type(() => EnderecoDto)
+  endereco: EnderecoDto;
 
   @ApiProperty({ example: 'maria.auto@example.com' })
   @IsEmail()

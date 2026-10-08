@@ -2,6 +2,10 @@ import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../ports/associado-repository.port';
 import { DependenteRepositoryPort } from '../ports/dependente-repository.port';
 import {
+  EnderecoRepositoryPort,
+  NovoEndereco,
+} from '../ports/endereco-repository.port';
+import {
   Associado,
   OrigemCadastro,
   StatusAssociado,
@@ -14,6 +18,7 @@ export interface DadosCadastroMediado {
   contato: string;
   vinculoInstitucional: string | null;
   categoriaSocioId: string | null;
+  endereco: Omit<NovoEndereco, 'associadoId'>;
   dependentes: Array<{ nome: string; dataNascimento: string }>;
 }
 
@@ -29,6 +34,8 @@ export class CadastrarAssociadoMediadoUseCase {
     private readonly associados: AssociadoRepositoryPort,
     @Inject(DependenteRepositoryPort)
     private readonly dependentes: DependenteRepositoryPort,
+    @Inject(EnderecoRepositoryPort)
+    private readonly enderecos: EnderecoRepositoryPort,
   ) {}
 
   async execute(
@@ -52,6 +59,11 @@ export class CadastrarAssociadoMediadoUseCase {
       origem: OrigemCadastro.MEDIADO,
       status: StatusAssociado.ATIVO,
       usuarioId: null,
+    });
+
+    await this.enderecos.salvarOuAtualizar({
+      associadoId: associado.id,
+      ...dados.endereco,
     });
 
     const dependentesCriados: Dependente[] = [];

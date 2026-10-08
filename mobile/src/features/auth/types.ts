@@ -7,10 +7,21 @@ export interface LoginResponse {
   accessToken: string;
 }
 
+export interface EnderecoInput {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
 export interface AutoCadastroInput {
   nome: string;
   cpf: string;
   contato: string;
+  endereco: EnderecoInput;
   email: string;
   senha: string;
 }

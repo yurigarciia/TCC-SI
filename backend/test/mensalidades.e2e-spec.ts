@@ -13,6 +13,15 @@ interface MensalidadeResponseBody {
   vencimento: string;
 }
 
+const ENDERECO_TESTE = {
+  cep: '97000-000',
+  logradouro: 'Rua Teste',
+  numero: '100',
+  bairro: 'Centro',
+  cidade: 'Santa Maria',
+  uf: 'RS',
+};
+
 async function loginAdmin(app: INestApplication<App>): Promise<string> {
   const email = process.env.SEED_ADMIN_EMAIL ?? 'diretoria@piadosul.org.br';
   const senha = process.env.SEED_ADMIN_SENHA ?? 'mudar123';
@@ -64,6 +73,7 @@ describe('Mensalidades (e2e)', () => {
         cpf: cpfAssociado,
         contato: '55999990005',
         categoriaSocioId: categoriaId,
+        endereco: ENDERECO_TESTE,
       });
     associadoId = (associado.body as { associado: { id: string } }).associado
       .id;
@@ -149,6 +159,7 @@ describe('Mensalidades (e2e)', () => {
         cpf: cpfIsento,
         contato: '55999990006',
         categoriaSocioId: categoriaIsentaBody.id,
+        endereco: ENDERECO_TESTE,
       })
       .expect(201);
     const associadoIsentoId = (
@@ -259,6 +270,7 @@ describe('Mensalidades (e2e)', () => {
         nome: 'Associado Mensalidade Logado',
         cpf: cpfAssociadoLogado,
         contato: '55999990006',
+        endereco: ENDERECO_TESTE,
         email: emailAssociadoLogado,
         senha: 'senha123',
       })

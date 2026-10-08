@@ -13,6 +13,15 @@ interface AssociadoResponseBody {
   origem: string;
 }
 
+const ENDERECO_TESTE = {
+  cep: '97000-000',
+  logradouro: 'Rua Teste',
+  numero: '100',
+  bairro: 'Centro',
+  cidade: 'Santa Maria',
+  uf: 'RS',
+};
+
 async function loginAdmin(app: INestApplication<App>): Promise<string> {
   const email = process.env.SEED_ADMIN_EMAIL ?? 'diretoria@piadosul.org.br';
   const senha = process.env.SEED_ADMIN_SENHA ?? 'mudar123';
@@ -77,6 +86,7 @@ describe('Associados (e2e)', () => {
         nome: 'Maria Auto',
         cpf: cpfAutoCadastro,
         contato: '55999990000',
+        endereco: ENDERECO_TESTE,
         email: 'maria.auto@e2e.local',
         senha: 'senha123',
       })
@@ -94,6 +104,7 @@ describe('Associados (e2e)', () => {
         nome: 'Maria Auto 2',
         cpf: cpfAutoCadastro,
         contato: '55999990001',
+        endereco: ENDERECO_TESTE,
         email: 'maria.auto2@e2e.local',
         senha: 'senha123',
       })
@@ -138,6 +149,7 @@ describe('Associados (e2e)', () => {
         contato: '55999990003',
         vinculoInstitucional: 'Departamento de Danças',
         categoriaSocioId: categoriaId,
+        endereco: ENDERECO_TESTE,
         dependentes: [{ nome: 'Filho do João', dataNascimento: '2015-04-10' }],
       })
       .expect(201);
@@ -295,6 +307,7 @@ describe('Associados (e2e)', () => {
         nome: 'Pedro Rejeitado',
         cpf: cpfParaRejeitar,
         contato: '55999990004',
+        endereco: ENDERECO_TESTE,
         email: 'pedro.rejeitado@e2e.local',
         senha: 'senha123',
       })

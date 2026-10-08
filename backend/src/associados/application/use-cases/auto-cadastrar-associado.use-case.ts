@@ -1,5 +1,9 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../ports/associado-repository.port';
+import {
+  EnderecoRepositoryPort,
+  NovoEndereco,
+} from '../ports/endereco-repository.port';
 import { UsuarioRepositoryPort } from '../../../identidade/application/ports/usuario-repository.port';
 import { PasswordHasherPort } from '../../../identidade/application/ports/password-hasher.port';
 import { Perfil } from '../../../identidade/domain/usuario.entity';
@@ -14,6 +18,7 @@ export interface DadosAutoCadastro {
   cpf: string;
   contato: string;
   vinculoInstitucional: string | null;
+  endereco: Omit<NovoEndereco, 'associadoId'>;
   email: string;
   senha: string;
 }
@@ -28,6 +33,8 @@ export class AutoCadastrarAssociadoUseCase {
   constructor(
     @Inject(AssociadoRepositoryPort)
     private readonly associados: AssociadoRepositoryPort,
+    @Inject(EnderecoRepositoryPort)
+    private readonly enderecos: EnderecoRepositoryPort,
     @Inject(UsuarioRepositoryPort)
     private readonly usuarios: UsuarioRepositoryPort,
     @Inject(PasswordHasherPort) private readonly hasher: PasswordHasherPort,
@@ -50,7 +57,7 @@ export class AutoCadastrarAssociadoUseCase {
       perfil: Perfil.ASSOCIADO,
     });
 
-    return this.associados.salvar({
+    const associado = await this.associados.salvar({
       nome: dados.nome,
       cpf: dados.cpf,
       contato: dados.contato,
@@ -60,5 +67,12 @@ export class AutoCadastrarAssociadoUseCase {
       status: StatusAssociado.PENDENTE_VALIDACAO,
       usuarioId: usuario.id,
     });
+
+    await this.enderecos.salvarOuAtualizar({
+      associadoId: associado.id,
+      ...dados.endereco,
+    });
+
+    return associado;
   }
 }

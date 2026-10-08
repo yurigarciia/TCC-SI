@@ -43,6 +43,14 @@ describe('Notificações — Push Token (e2e, T-MOB-005)', () => {
         nome: 'Associado Notificações e2e',
         cpf,
         contato: '55999990099',
+        endereco: {
+          cep: '97000-000',
+          logradouro: 'Rua Teste',
+          numero: '100',
+          bairro: 'Centro',
+          cidade: 'Santa Maria',
+          uf: 'RS',
+        },
         email,
         senha: 'senha123',
       })
@@ -59,7 +67,10 @@ describe('Notificações — Push Token (e2e, T-MOB-005)', () => {
       .send({ email, senha: 'senha123' })
       .expect(200);
     associadoToken = (login.body as { accessToken: string }).accessToken;
-  });
+    // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll de
+    // ingressos.e2e-spec.ts: bootstrap do módulo + chamadas sequenciais (agora incluindo a
+    // gravação do endereço no auto-cadastro) contra o Postgres remoto (Neon).
+  }, 20000);
 
   afterAll(async () => {
     await dataSource.query(

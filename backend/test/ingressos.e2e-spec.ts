@@ -323,6 +323,14 @@ describe('Ingressos (e2e)', () => {
         nome: 'Associado Compra Ingresso',
         cpf,
         contato: '55999990011',
+        endereco: {
+          cep: '97000-000',
+          logradouro: 'Rua Teste',
+          numero: '100',
+          bairro: 'Centro',
+          cidade: 'Santa Maria',
+          uf: 'RS',
+        },
         email,
         senha: 'senha123',
       })

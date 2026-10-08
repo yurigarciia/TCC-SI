@@ -45,6 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CamposEndereco, enderecoSchema } from "@/features/associados/campos-endereco";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
 import {
   useAdicionarDependente,
@@ -64,6 +65,7 @@ const dadosSchema = z.object({
   contato: z.string().min(8, "Informe um contato válido."),
   vinculoInstitucional: z.string().optional(),
   categoriaSocioId: z.string().optional(),
+  endereco: enderecoSchema,
 });
 
 type DadosFormValues = z.infer<typeof dadosSchema>;
@@ -123,6 +125,7 @@ function AssociadoDetalheConteudo({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<DadosFormValues>({
     resolver: zodResolver(dadosSchema),
@@ -131,6 +134,15 @@ function AssociadoDetalheConteudo({
       contato: associado.contato,
       vinculoInstitucional: associado.vinculoInstitucional ?? "",
       categoriaSocioId: associado.categoriaSocioId ?? "",
+      endereco: {
+        cep: data.endereco?.cep ?? "",
+        logradouro: data.endereco?.logradouro ?? "",
+        numero: data.endereco?.numero ?? "",
+        complemento: data.endereco?.complemento ?? "",
+        bairro: data.endereco?.bairro ?? "",
+        cidade: data.endereco?.cidade ?? "",
+        uf: data.endereco?.uf ?? "",
+      },
     },
   });
 
@@ -140,6 +152,7 @@ function AssociadoDetalheConteudo({
         ...dados,
         vinculoInstitucional: dados.vinculoInstitucional || null,
         categoriaSocioId: dados.categoriaSocioId || null,
+        endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
       },
       {
         onSuccess: () => {
@@ -345,6 +358,10 @@ function AssociadoDetalheConteudo({
                   </Select>
                 )}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Endereço</Label>
+              <CamposEndereco control={control} errors={errors} setValue={setValue} />
             </div>
             <div className="flex justify-end">
               <Button type="submit" disabled={!isDirty || atualizar.isPending}>

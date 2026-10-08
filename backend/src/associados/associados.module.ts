@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssociadoRepositoryPort } from './application/ports/associado-repository.port';
 import { DependenteRepositoryPort } from './application/ports/dependente-repository.port';
+import { EnderecoRepositoryPort } from './application/ports/endereco-repository.port';
 import { CategoriaSocioRepositoryPort } from './application/ports/categoria-socio-repository.port';
 import { AutoCadastrarAssociadoUseCase } from './application/use-cases/auto-cadastrar-associado.use-case';
 import { CadastrarAssociadoMediadoUseCase } from './application/use-cases/cadastrar-associado-mediado.use-case';
@@ -17,9 +18,11 @@ import { CriarCategoriaSocioUseCase } from './application/use-cases/criar-catego
 import { ListarCategoriasSocioUseCase } from './application/use-cases/listar-categorias-socio.use-case';
 import { AssociadoOrmEntity } from './infrastructure/persistence/associado.orm-entity';
 import { DependenteOrmEntity } from './infrastructure/persistence/dependente.orm-entity';
+import { EnderecoOrmEntity } from './infrastructure/persistence/endereco.orm-entity';
 import { CategoriaSocioOrmEntity } from './infrastructure/persistence/categoria-socio.orm-entity';
 import { TypeOrmAssociadoRepositoryAdapter } from './infrastructure/persistence/typeorm-associado-repository.adapter';
 import { TypeOrmDependenteRepositoryAdapter } from './infrastructure/persistence/typeorm-dependente-repository.adapter';
+import { TypeOrmEnderecoRepositoryAdapter } from './infrastructure/persistence/typeorm-endereco-repository.adapter';
 import { TypeOrmCategoriaSocioRepositoryAdapter } from './infrastructure/persistence/typeorm-categoria-socio-repository.adapter';
 import { AssociadosController } from './infrastructure/controllers/associados.controller';
 import { CategoriasSocioController } from './infrastructure/controllers/categorias-socio.controller';
@@ -31,6 +34,7 @@ import { MensalidadesModule } from '../mensalidades/mensalidades.module';
     TypeOrmModule.forFeature([
       AssociadoOrmEntity,
       DependenteOrmEntity,
+      EnderecoOrmEntity,
       CategoriaSocioOrmEntity,
     ]),
     IdentidadeModule,
@@ -60,6 +64,10 @@ import { MensalidadesModule } from '../mensalidades/mensalidades.module';
     {
       provide: DependenteRepositoryPort,
       useClass: TypeOrmDependenteRepositoryAdapter,
+    },
+    {
+      provide: EnderecoRepositoryPort,
+      useClass: TypeOrmEnderecoRepositoryAdapter,
     },
     {
       provide: CategoriaSocioRepositoryPort,

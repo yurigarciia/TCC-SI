@@ -9,33 +9,76 @@ import { AuthHeader } from "@/components/auth-header";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useAutoCadastro } from "@/features/auth/use-auto-cadastro";
 import { ApiError } from "@/lib/api-client";
+import { buscarEnderecoPorCep } from "@/lib/cep";
+
+const enderecoSchema = z.object({
+  cep: z.string().min(8, "CEP inválido."),
+  logradouro: z.string().min(2, "Informe o logradouro."),
+  numero: z.string().min(1, "Informe o número."),
+  complemento: z.string().optional(),
+  bairro: z.string().min(2, "Informe o bairro."),
+  cidade: z.string().min(2, "Informe a cidade."),
+  uf: z.string().length(2, "Informe a UF (2 letras)."),
+});
 
 const cadastroSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo."),
   cpf: z.string().min(11, "Informe um CPF válido (11 dígitos)."),
   contato: z.string().min(8, "Informe um telefone ou e-mail de contato."),
+  endereco: enderecoSchema,
   email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido."),
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres."),
 });
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
+type EnderecoFormValues = CadastroFormValues["endereco"];
 
 // RF01 (canal associado) — cadastro público, entra "Pendente de validação" até a diretoria
-// aprovar (cadastro-associado.json). Mesmos campos do form de auto-cadastro do painel web
-// (frontend-web/src/app/(painel)/associados/novo), sem categoria/vínculo institucional aqui —
-// isso é preenchido pela diretoria depois, na aprovação.
+// aprovar (cadastro-associado.json). Mesmos campos pessoais/endereço do form de auto-cadastro do
+// painel web (frontend-web/src/app/(painel)/associados/novo), sem categoria/vínculo
+// institucional aqui — isso é preenchido pela diretoria depois, na aprovação.
 export default function CadastroScreen() {
   const autoCadastro = useAutoCadastro();
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CadastroFormValues>({
     resolver: zodResolver(cadastroSchema),
-    defaultValues: { nome: "", cpf: "", contato: "", email: "", senha: "" },
+    defaultValues: {
+      nome: "",
+      cpf: "",
+      contato: "",
+      endereco: {
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        uf: "",
+      },
+      email: "",
+      senha: "",
+    },
   });
 
-  const onSubmit = handleSubmit((dados) => autoCadastro.mutate(dados));
+  const aoSairDoCep = async (cep: string) => {
+    const encontrado = await buscarEnderecoPorCep(cep);
+    if (!encontrado) return;
+    setValue("endereco.logradouro", encontrado.logradouro, { shouldValidate: true });
+    setValue("endereco.bairro", encontrado.bairro, { shouldValidate: true });
+    setValue("endereco.cidade", encontrado.localidade, { shouldValidate: true });
+    setValue("endereco.uf", encontrado.uf, { shouldValidate: true });
+  };
+
+  const onSubmit = handleSubmit((dados) =>
+    autoCadastro.mutate({
+      ...dados,
+      endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
+    }),
+  );
 
   return (
     <View style={styles.flex}>
@@ -53,7 +96,66 @@ export default function CadastroScreen() {
             />
 
             <Surface style={styles.card} elevation={2}>
-              {CAMPOS.map(({ nome, label, placeholder, icone, props }) => (
+              {CAMPOS_PESSOAIS.map(({ nome, label, placeholder, icone, props }) => (
+                <Controller
+                  key={nome}
+                  control={control}
+                  name={nome}
+                  render={({ field }) => (
+                    <View>
+                      <TextInput
+                        mode="outlined"
+                        label={label}
+                        placeholder={placeholder}
+                        left={<TextInput.Icon icon={icone} />}
+                        value={field.value}
+                        onChangeText={field.onChange}
+                        onBlur={field.onBlur}
+                        error={!!errors[nome]}
+                        style={styles.field}
+                        {...props}
+                      />
+                      {errors[nome] && <Text style={styles.erroCampo}>{errors[nome]?.message}</Text>}
+                    </View>
+                  )}
+                />
+              ))}
+
+              <Text variant="labelLarge" style={styles.secao}>
+                Endereço
+              </Text>
+
+              {CAMPOS_ENDERECO.map(({ nome, label, placeholder, icone, props }) => (
+                <Controller
+                  key={nome}
+                  control={control}
+                  name={`endereco.${nome}` as const}
+                  render={({ field }) => (
+                    <View>
+                      <TextInput
+                        mode="outlined"
+                        label={label}
+                        placeholder={placeholder}
+                        left={<TextInput.Icon icon={icone} />}
+                        value={field.value}
+                        onChangeText={field.onChange}
+                        onBlur={() => {
+                          field.onBlur();
+                          if (nome === "cep") void aoSairDoCep(field.value ?? "");
+                        }}
+                        error={!!errors.endereco?.[nome]}
+                        style={styles.field}
+                        {...props}
+                      />
+                      {errors.endereco?.[nome] && (
+                        <Text style={styles.erroCampo}>{errors.endereco[nome]?.message}</Text>
+                      )}
+                    </View>
+                  )}
+                />
+              ))}
+
+              {CAMPOS_CONTA.map(({ nome, label, placeholder, icone, props }) => (
                 <Controller
                   key={nome}
                   control={control}
@@ -107,13 +209,17 @@ export default function CadastroScreen() {
   );
 }
 
-const CAMPOS: {
-  nome: keyof CadastroFormValues;
+interface CampoConfig<T extends string> {
+  nome: T;
   label: string;
   placeholder: string;
   icone: keyof typeof MaterialCommunityIcons.glyphMap;
   props?: React.ComponentProps<typeof TextInput>;
-}[] = [
+}
+
+type CampoSimples = Exclude<keyof CadastroFormValues, "endereco">;
+
+const CAMPOS_PESSOAIS: CampoConfig<CampoSimples>[] = [
   { nome: "nome", label: "Nome completo", placeholder: "Como você é conhecido", icone: "account-outline" },
   {
     nome: "cpf",
@@ -128,6 +234,42 @@ const CAMPOS: {
     placeholder: "(55) 99999-0000",
     icone: "phone-outline",
   },
+];
+
+const CAMPOS_ENDERECO: CampoConfig<keyof EnderecoFormValues>[] = [
+  {
+    nome: "cep",
+    label: "CEP",
+    placeholder: "00000-000",
+    icone: "map-marker-outline",
+    props: { keyboardType: "number-pad" },
+  },
+  { nome: "logradouro", label: "Logradouro", placeholder: "Rua, avenida...", icone: "road-variant" },
+  {
+    nome: "numero",
+    label: "Número",
+    placeholder: "123",
+    icone: "pound",
+    props: { keyboardType: "number-pad" },
+  },
+  {
+    nome: "complemento",
+    label: "Complemento (opcional)",
+    placeholder: "Apto, bloco...",
+    icone: "home-city-outline",
+  },
+  { nome: "bairro", label: "Bairro", placeholder: "Centro", icone: "home-group" },
+  { nome: "cidade", label: "Cidade", placeholder: "Santa Maria", icone: "city-variant-outline" },
+  {
+    nome: "uf",
+    label: "UF",
+    placeholder: "RS",
+    icone: "map-outline",
+    props: { autoCapitalize: "characters", maxLength: 2 },
+  },
+];
+
+const CAMPOS_CONTA: CampoConfig<CampoSimples>[] = [
   {
     nome: "email",
     label: "E-mail (login)",
@@ -158,6 +300,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   field: { backgroundColor: "#FFFFFF" },
+  secao: { marginTop: 8, marginBottom: 4, marginLeft: 4, color: "#7A2331" },
   erroCampo: { color: "#B3261E", fontSize: 12, marginTop: -4, marginBottom: 4, marginLeft: 4 },
   button: { marginTop: 12, borderRadius: 12 },
   buttonContent: { paddingVertical: 6 },

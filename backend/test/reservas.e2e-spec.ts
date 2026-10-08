@@ -369,6 +369,14 @@ describe('Reservas de Mesa (e2e)', () => {
         nome: 'Associado Minhas Reservas',
         cpf: cpfAssociadoMinhasReservas,
         contato: '55999990010',
+        endereco: {
+          cep: '97000-000',
+          logradouro: 'Rua Teste',
+          numero: '100',
+          bairro: 'Centro',
+          cidade: 'Santa Maria',
+          uf: 'RS',
+        },
         email: emailAssociadoMinhasReservas,
         senha: 'senha123',
       })

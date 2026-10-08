@@ -46,6 +46,12 @@ export function pareceEmail(valor: string): boolean {
   return /[a-zA-Z@]/.test(valor);
 }
 
+// Máscara visual de CEP (00000-000) — mesmo raciocínio de formatarCpf.
+export function formatarCep(valor: string): string {
+  const digitos = valor.replace(/\D/g, "").slice(0, 8);
+  return digitos.replace(/(\d{5})(\d)/, "$1-$2");
+}
+
 export function formatarTelefone(valor: string): string {
   const digitos = valor.replace(/\D/g, "").slice(0, 11);
   if (digitos.length === 0) return "";

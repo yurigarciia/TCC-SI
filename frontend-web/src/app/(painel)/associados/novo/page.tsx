@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { CamposEndereco, enderecoSchema } from "@/features/associados/campos-endereco";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
 import { formatarCpf, formatarTelefone, pareceEmail } from "@/lib/format";
@@ -42,6 +43,7 @@ const formSchema = z.object({
   contato: z.string().min(8, "Informe um telefone ou e-mail de contato."),
   vinculoInstitucional: z.string().optional(),
   categoriaSocioId: z.string().optional(),
+  endereco: enderecoSchema,
   dependentes: z.array(dependenteSchema),
 });
 
@@ -59,10 +61,22 @@ export default function NovoAssociadoPage() {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { dependentes: [] },
+    defaultValues: {
+      dependentes: [],
+      endereco: {
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        uf: "",
+      },
+    },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "dependentes" });
@@ -73,6 +87,7 @@ export default function NovoAssociadoPage() {
         ...dados,
         vinculoInstitucional: dados.vinculoInstitucional || undefined,
         categoriaSocioId: dados.categoriaSocioId || undefined,
+        endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
         dependentes: dados.dependentes.length > 0 ? dados.dependentes : undefined,
       },
       {
@@ -220,6 +235,13 @@ export default function NovoAssociadoPage() {
                   )}
                 />
               </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <Label>Endereço</Label>
+              <CamposEndereco control={control} errors={errors} setValue={setValue} />
             </div>
 
             <Separator />

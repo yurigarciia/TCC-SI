@@ -22,9 +22,32 @@ export interface Dependente {
   dataNascimento: string;
 }
 
+export interface Endereco {
+  id: string;
+  associadoId: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string | null;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
+export interface EnderecoInput {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
 export interface AssociadoDetalhado {
   associado: Associado;
   dependentes: Dependente[];
+  endereco: Endereco | null;
 }
 
 export interface CategoriaSocio {
@@ -51,6 +74,7 @@ export interface CadastrarAssociadoMediadoInput {
   contato: string;
   vinculoInstitucional?: string;
   categoriaSocioId?: string;
+  endereco: EnderecoInput;
   dependentes?: Array<{ nome: string; dataNascimento: string }>;
 }
 
@@ -59,4 +83,5 @@ export interface AtualizarAssociadoInput {
   contato?: string;
   vinculoInstitucional?: string | null;
   categoriaSocioId?: string | null;
+  endereco?: EnderecoInput;
 }
