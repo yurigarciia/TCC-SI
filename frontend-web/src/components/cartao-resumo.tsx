@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export type TomCartaoResumo = "default" | "success" | "warning" | "destructive";
 
@@ -18,14 +19,29 @@ interface CartaoResumoProps {
   descricao: string;
   tom?: TomCartaoResumo;
   href?: string;
+  comFlorao?: boolean;
 }
 
 // "Big number" — extraído da tela Início (T-FE-002) pra ser reaproveitado em qualquer lugar que
 // precise de um número em destaque com legenda (achado numa conversa com o usuário: pediu o
 // mesmo tipo de cartão pra acompanhar um evento no dia, na tela de ingressos).
-export function CartaoResumo({ titulo, valor, carregando, descricao, tom = "default", href }: CartaoResumoProps) {
+export function CartaoResumo({
+  titulo,
+  valor,
+  carregando,
+  descricao,
+  tom = "default",
+  href,
+  comFlorao = false,
+}: CartaoResumoProps) {
   const conteudo = (
-    <Card className={href ? "h-full transition-colors hover:border-secondary" : "h-full"}>
+    <Card
+      className={cn(
+        "h-full",
+        href && "transition-colors hover:border-secondary",
+        comFlorao && "bg-roseta",
+      )}
+    >
       <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">{titulo}</CardTitle>
       </CardHeader>

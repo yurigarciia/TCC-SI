@@ -81,6 +81,7 @@ export default function DashboardPage() {
           valor={ativos}
           carregando={carregandoAssociados}
           descricao="Cadastros aprovados"
+          comFlorao
         />
         <CartaoResumo
           href="/associados"
@@ -89,6 +90,7 @@ export default function DashboardPage() {
           carregando={carregandoAssociados}
           descricao="Auto-cadastro pelo app"
           tom={pendentes ? "warning" : "default"}
+          comFlorao
         />
         <CartaoResumo
           href="/mensalidades"
@@ -97,6 +99,7 @@ export default function DashboardPage() {
           carregando={carregandoInadimplentes}
           descricao="Mensalidades em atraso"
           tom={inadimplentes?.length ? "destructive" : "default"}
+          comFlorao
         />
         <CartaoResumo
           href="/eventos"
@@ -104,6 +107,7 @@ export default function DashboardPage() {
           valor={eventos?.filter((e) => e.status === "publicado").length}
           carregando={carregandoEventos}
           descricao="Visíveis para reserva/compra"
+          comFlorao
         />
       </div>
 
@@ -114,7 +118,7 @@ export default function DashboardPage() {
         agora={agora}
       />
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Próximos eventos</CardTitle>
         </CardHeader>

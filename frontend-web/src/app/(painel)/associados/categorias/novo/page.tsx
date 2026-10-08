@@ -90,7 +90,7 @@ export default function NovaCategoriaSocioPage() {
         </p>
       </div>
 
-      <Card className="bg-none! bg-card! max-w-lg">
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados da categoria</CardTitle>
           <CardDescription>

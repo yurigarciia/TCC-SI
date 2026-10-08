@@ -58,7 +58,7 @@ export default function NovoSalaoPage() {
         </p>
       </div>
 
-      <Card className="bg-none! bg-card! max-w-lg">
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados do salão</CardTitle>
           <CardDescription>As mesas são adicionadas na próxima tela.</CardDescription>

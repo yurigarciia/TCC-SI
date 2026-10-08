@@ -56,7 +56,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Associados por categoria</CardTitle>
         </CardHeader>
@@ -81,7 +81,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
         </CardContent>
       </Card>
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Novos associados nos últimos 6 meses</CardTitle>
         </CardHeader>
@@ -104,7 +104,7 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
         </CardContent>
       </Card>
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Associados adimplentes</CardTitle>
         </CardHeader>

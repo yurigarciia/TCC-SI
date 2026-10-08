@@ -101,7 +101,7 @@ export default function NovoAssociadoPage() {
         </p>
       </div>
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Dados do associado</CardTitle>
           <CardDescription>Campos com rótulo sempre visível.</CardDescription>

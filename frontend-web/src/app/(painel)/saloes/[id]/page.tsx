@@ -258,7 +258,7 @@ function SalaoDetalheConteudo({
         </p>
       </div>
 
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <CardTitle>Mapa de mesas</CardTitle>
         </CardHeader>

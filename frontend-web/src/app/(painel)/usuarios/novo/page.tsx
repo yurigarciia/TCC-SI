@@ -68,7 +68,7 @@ export default function NovoAdministradorPage() {
         </p>
       </div>
 
-      <Card className="bg-none! bg-card! max-w-lg">
+      <Card className="max-w-lg">
         <CardHeader>
           <CardTitle>Dados de acesso</CardTitle>
           <CardDescription>A senha é provisória — comunique por um canal seguro.</CardDescription>

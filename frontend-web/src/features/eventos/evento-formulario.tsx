@@ -341,7 +341,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           ingresso, bem mais curto que o de dados do evento, ficava visualmente desbalanceado ao
           lado dele. */}
       <div className="grid gap-6 lg:grid-cols-2">
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <TituloComIcone icon={PartyPopper}>Dados do evento</TituloComIcone>
           <CardDescription>Nome, data, local e descrição aparecem para o associado no app.</CardDescription>
@@ -441,7 +441,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       {/* Um card só pra ingresso avulso — antes quantidade e preço por perfil viviam em cards
           separados, mas são a mesma coisa (o preço configurado aqui é o que se cobra pela
           quantidade configurada aqui do lado), separar só distanciava informação relacionada. */}
-      <Card className="bg-none! bg-card!">
+      <Card>
         <CardHeader>
           <TituloComIcone icon={Ticket}>Ingresso avulso</TituloComIcone>
           <CardDescription>
@@ -536,7 +536,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
       </div>
 
       {salaoIdSelecionado && (
-        <Card className="bg-none! bg-card!">
+        <Card>
           <CardHeader>
             <TituloComIcone icon={Table2}>Mesas do croqui vinculado</TituloComIcone>
             <CardDescription>Preço por mesa e bloqueio individual, se necessário.</CardDescription>
