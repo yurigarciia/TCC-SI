@@ -1,13 +1,11 @@
 "use client";
 
-import { Building2, Phone, Save, Tag, User, Users } from "lucide-react";
+import { Building2, MapPin, Pencil, Phone, Tag, User, Users } from "lucide-react";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import Link from "next/link";
 import { toast } from "sonner";
-import { z } from "zod";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { InputComIcone } from "@/components/input-com-icone";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -46,39 +42,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CamposEndereco, enderecoSchema } from "@/features/associados/campos-endereco";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
 import {
-  useAdicionarDependente,
   useAprovarCadastro,
   useAssociado,
-  useAtualizarAssociado,
   useCategoriasSocio,
   useRejeitarCadastro,
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
-import { formatarTelefone, pareceEmail } from "@/lib/format";
-import Link from "next/link";
+import { formatarCep, formatarData, formatarTelefone, pareceEmail } from "@/lib/format";
 
-const ID_FORM_DADOS = "form-dados-associado";
-
-const dadosSchema = z.object({
-  nome: z.string().min(3, "Informe o nome completo."),
-  contato: z.string().min(8, "Informe um contato válido."),
-  vinculoInstitucional: z.string().optional(),
-  categoriaSocioId: z.string().optional(),
-  endereco: enderecoSchema,
-});
-
-type DadosFormValues = z.infer<typeof dadosSchema>;
-
-const dependenteSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do dependente."),
-  dataNascimento: z.string().min(1, "Informe a data de nascimento."),
-});
-
-type DependenteFormValues = z.infer<typeof dependenteSchema>;
+// Tela só de leitura, sem nenhum campo editável — o que vem da listagem cai aqui por padrão.
+// "Editar associado" leva pra /associados/[id]/editar, que concentra os formulários. Separado de
+// propósito: facilita liberar "ver" sem liberar "editar" quando o RBAC ganhar granularidade por
+// ação (hoje é só administrador/associado — ver CLAUDE.md).
+function Campo({
+  icone: Icone,
+  rotulo,
+  valor,
+}: {
+  icone: React.ComponentType<{ "aria-hidden"?: boolean; className?: string }>;
+  rotulo: string;
+  valor: string;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icone aria-hidden className="size-3.5" />
+        {rotulo}
+      </p>
+      <p className="text-sm font-medium text-foreground">{valor}</p>
+    </div>
+  );
+}
 
 export default function AssociadoDetalhePage() {
   const params = useParams<{ id: string }>();
@@ -111,79 +108,17 @@ function AssociadoDetalheConteudo({
   associadoId: string;
   data: NonNullable<ReturnType<typeof useAssociado>["data"]>;
 }) {
-  const { associado, dependentes } = data;
-  const atualizar = useAtualizarAssociado(associadoId);
+  const { associado, dependentes, endereco } = data;
   const aprovar = useAprovarCadastro(associadoId);
   const rejeitar = useRejeitarCadastro(associadoId);
-  const adicionarDependente = useAdicionarDependente(associadoId);
-  const [adicionandoDependente, setAdicionandoDependente] = useState(false);
   const [categoriaAprovacao, setCategoriaAprovacao] = useState<string | undefined>(undefined);
-  // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
-  // cadastradas sem precisar de paginação aqui (mesmo raciocínio de associados/novo).
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
   const categorias = resultadoCategorias?.itens;
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<DadosFormValues>({
-    resolver: zodResolver(dadosSchema),
-    values: {
-      nome: associado.nome,
-      contato: associado.contato,
-      vinculoInstitucional: associado.vinculoInstitucional ?? "",
-      categoriaSocioId: associado.categoriaSocioId ?? "",
-      endereco: {
-        cep: data.endereco?.cep ?? "",
-        logradouro: data.endereco?.logradouro ?? "",
-        numero: data.endereco?.numero ?? "",
-        complemento: data.endereco?.complemento ?? "",
-        bairro: data.endereco?.bairro ?? "",
-        cidade: data.endereco?.cidade ?? "",
-        uf: data.endereco?.uf ?? "",
-      },
-    },
-  });
-
-  const onSubmitDados = handleSubmit((dados) => {
-    atualizar.mutate(
-      {
-        ...dados,
-        vinculoInstitucional: dados.vinculoInstitucional || null,
-        categoriaSocioId: dados.categoriaSocioId || null,
-        endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Dados atualizados.");
-          reset(dados);
-        },
-        onError: () => toast.error("Não foi possível salvar as alterações."),
-      },
-    );
-  });
-
-  const {
-    register: registerDependente,
-    handleSubmit: handleSubmitDependente,
-    reset: resetDependente,
-    formState: { errors: errosDependente },
-  } = useForm<DependenteFormValues>({ resolver: zodResolver(dependenteSchema) });
-
-  const onSubmitDependente = handleSubmitDependente((dados) => {
-    adicionarDependente.mutate(dados, {
-      onSuccess: () => {
-        toast.success("Dependente adicionado.");
-        resetDependente({ nome: "", dataNascimento: "" });
-        setAdicionandoDependente(false);
-      },
-      onError: () => toast.error("Não foi possível adicionar o dependente."),
-    });
-  });
+  const categoriaAtual = categorias?.find((c) => c.id === associado.categoriaSocioId)?.nome;
+  const contato = pareceEmail(associado.contato)
+    ? associado.contato
+    : formatarTelefone(associado.contato);
 
   return (
     <div className="space-y-6">
@@ -198,9 +133,9 @@ function AssociadoDetalheConteudo({
         </div>
         <div className="flex items-center gap-3">
           <StatusAssociadoBadge status={associado.status} />
-          <Button type="submit" form={ID_FORM_DADOS} disabled={!isDirty || atualizar.isPending}>
-            <Save aria-hidden="true" />
-            {atualizar.isPending ? "Salvando…" : "Salvar alterações"}
+          <Button render={<Link href={`/associados/${associadoId}/editar`} />}>
+            <Pencil aria-hidden="true" />
+            Editar associado
           </Button>
         </div>
       </div>
@@ -281,167 +216,54 @@ function AssociadoDetalheConteudo({
         </Card>
       )}
 
-      <form id={ID_FORM_DADOS} onSubmit={onSubmitDados} className="space-y-6" noValidate>
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados pessoais</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="nome">Nome completo</Label>
-                <InputComIcone
-                  icon={User}
-                  id="nome"
-                  placeholder="Ex.: João da Silva"
-                  aria-invalid={!!errors.nome}
-                  {...register("nome")}
-                />
-                {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="contato">Contato</Label>
-                <Controller
-                  control={control}
-                  name="contato"
-                  render={({ field }) => (
-                    <InputComIcone
-                      icon={Phone}
-                      id="contato"
-                      placeholder="Ex.: (55) 99999-0000"
-                      aria-invalid={!!errors.contato}
-                      value={
-                        pareceEmail(field.value ?? "")
-                          ? field.value
-                          : formatarTelefone(field.value ?? "")
-                      }
-                      onChange={(e) => {
-                        const bruto = e.target.value;
-                        field.onChange(
-                          pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
-                        );
-                      }}
-                      onBlur={field.onBlur}
-                    />
-                  )}
-                />
-                {errors.contato && (
-                  <p className="text-sm text-destructive">{errors.contato.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="vinculoInstitucional">Vínculo institucional</Label>
-                <InputComIcone
-                  icon={Building2}
-                  id="vinculoInstitucional"
-                  placeholder="Ex.: Piquete Laço Firme"
-                  {...register("vinculoInstitucional")}
-                />
-              </div>
-
-              <div className="space-y-1.5 sm:col-span-2">
-                <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
-                  <Link
-                    href="/associados/categorias/novo"
-                    target="_blank"
-                    className="text-sm leading-none text-primary underline-offset-4 hover:underline"
-                  >
-                    Nova categoria ↗
-                  </Link>
-                </div>
-                <Controller
-                  control={control}
-                  name="categoriaSocioId"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="categoriaSocioId" className="w-full">
-                        <Tag aria-hidden="true" className="size-4 text-muted-foreground" />
-                        <SelectValue placeholder="Selecionar categoria">
-                          {(valor: string | null) =>
-                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
-                            "Selecionar categoria"
-                          }
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categorias?.map((categoria) => (
-                          <SelectItem key={categoria.id} value={categoria.id}>
-                            {categoria.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Dados pessoais</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <Campo icone={User} rotulo="Nome completo" valor={associado.nome} />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Endereço</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CamposEndereco control={control} errors={errors} setValue={setValue} />
-          </CardContent>
-        </Card>
-      </form>
+            <Campo icone={Phone} rotulo="Contato" valor={contato} />
+            <Campo
+              icone={Building2}
+              rotulo="Vínculo institucional"
+              valor={associado.vinculoInstitucional ?? "—"}
+            />
+            <Campo icone={Tag} rotulo="Categoria de sócio" valor={categoriaAtual ?? "Sem categoria"} />
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Dependentes</CardTitle>
-          {!adicionandoDependente && (
-            <Button variant="outline" size="sm" onClick={() => setAdicionandoDependente(true)}>
-              Adicionar dependente
-            </Button>
-          )}
+        <CardHeader>
+          <CardTitle>Endereço</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {adicionandoDependente && (
-            <form
-              onSubmit={onSubmitDependente}
-              className="flex flex-wrap items-end gap-3 rounded-lg border p-3"
-              noValidate
-            >
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="dependente-nome">Nome</Label>
-                <Input
-                  id="dependente-nome"
-                  placeholder="Ex.: Maria da Silva"
-                  {...registerDependente("nome")}
-                />
-                {errosDependente.nome && (
-                  <p className="text-sm text-destructive">{errosDependente.nome.message}</p>
-                )}
+        <CardContent>
+          {endereco ? (
+            <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+              <Campo icone={MapPin} rotulo="CEP" valor={formatarCep(endereco.cep)} />
+              <Campo icone={MapPin} rotulo="Número" valor={endereco.numero} />
+              <div className="sm:col-span-2">
+                <Campo icone={MapPin} rotulo="Logradouro" valor={endereco.logradouro} />
               </div>
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="dependente-data">
-                  Data de nascimento
-                </Label>
-                <Input id="dependente-data" type="date" {...registerDependente("dataNascimento")} />
-                {errosDependente.dataNascimento && (
-                  <p className="text-sm text-destructive">
-                    {errosDependente.dataNascimento.message}
-                  </p>
-                )}
-              </div>
-              <Button type="submit" disabled={adicionarDependente.isPending}>
-                Salvar
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setAdicionandoDependente(false)}
-              >
-                Cancelar
-              </Button>
-            </form>
+              <Campo icone={MapPin} rotulo="Complemento" valor={endereco.complemento ?? "—"} />
+              <Campo icone={MapPin} rotulo="Bairro" valor={endereco.bairro} />
+              <Campo icone={MapPin} rotulo="Cidade" valor={endereco.cidade} />
+              <Campo icone={MapPin} rotulo="UF" valor={endereco.uf} />
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Endereço não cadastrado.</p>
           )}
+        </CardContent>
+      </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Dependentes</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
             <Table>
               <TableHeader>
@@ -468,6 +290,11 @@ function AssociadoDetalheConteudo({
       </Card>
 
       {associado.status === "ativo" && <MensalidadesCard associadoId={associadoId} />}
+
+      <p className="text-xs text-muted-foreground">
+        Cadastrado em {formatarData(associado.criadoEm)} · Atualizado em{" "}
+        {formatarData(associado.atualizadoEm)}
+      </p>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ArrowUpRight, Calendar, Clock, Mail, Phone, Tag, Users } from "lucide-react";
+import { Activity, Calendar, Clock, Mail, Pencil, Phone, Tag, Users } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -91,7 +91,7 @@ export default function AssociadosPage() {
               return (
                 <li
                   key={associado.id}
-                  className={`group flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm transition duration-200 hover:scale-[1.01] hover:bg-[#f3e2bf]/60 hover:shadow-md md:grid ${COLUNAS}`}
+                  className={`group relative flex cursor-pointer flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm transition duration-200 hover:scale-[1.01] hover:bg-[#f3e2bf]/60 hover:shadow-md md:grid ${COLUNAS}`}
                 >
                   <div className="flex min-w-0 items-center gap-4">
                     <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
@@ -100,7 +100,7 @@ export default function AssociadosPage() {
                     <div className="min-w-0">
                       <Link
                         href={`/associados/${associado.id}`}
-                        className="block truncate font-semibold text-foreground hover:underline"
+                        className="block truncate font-semibold text-foreground after:absolute after:inset-0 after:content-[''] hover:underline"
                       >
                         {associado.nome}
                       </Link>
@@ -155,10 +155,15 @@ export default function AssociadosPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
-                    render={<Link href={`/associados/${associado.id}`} aria-label={`Abrir ${associado.nome}`} />}
+                    className="relative z-10"
+                    render={
+                      <Link
+                        href={`/associados/${associado.id}/editar`}
+                        aria-label={`Editar ${associado.nome}`}
+                      />
+                    }
                   >
-                    <ArrowUpRight aria-hidden="true" />
+                    <Pencil aria-hidden="true" />
                   </Button>
                 </li>
               );
