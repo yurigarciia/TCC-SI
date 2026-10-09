@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, type DragEvent } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -37,7 +37,7 @@ import {
   MesaCanvas,
   pontoMedioArea,
   pontoMedioElemento,
-  type ModoCroqui,
+  type ItemPaleta,
 } from "@/features/saloes/mesa-canvas";
 import type {
   AreaEstrutural,
@@ -62,8 +62,6 @@ import { ApiError } from "@/lib/api-client";
 const mesaSchema = z.object({
   numero: z.coerce.number().int().positive("Informe um número de mesa válido."),
   capacidade: z.coerce.number().int().positive("Informe a quantidade de lugares."),
-  posicaoX: z.coerce.number().int().min(0),
-  posicaoY: z.coerce.number().int().min(0),
   formato: z.enum(["redonda", "retangular"]),
 });
 
@@ -76,11 +74,16 @@ const areaSchema = z.object({
 
 type AreaFormValues = z.infer<typeof areaSchema>;
 
-const FERRAMENTAS: Array<{ modo: ModoCroqui; rotulo: string; icone: typeof Armchair }> = [
-  { modo: "mesa", rotulo: "Mesas", icone: Armchair },
-  { modo: "parede", rotulo: "Paredes", icone: Minus },
-  { modo: "porta", rotulo: "Portas", icone: DoorOpen },
-  { modo: "area", rotulo: "Áreas", icone: SquareDashed },
+// Itens arrastáveis do menu lateral — arrastar um deles até dentro do croqui cria o item na hora,
+// já com valores padrão, sem formulário de confirmação no meio do caminho. Substitui o fluxo
+// antigo (escolher ferramenta → clicar/arrastar no croqui → confirmar num formulário), achado
+// pouco intuitivo numa conversa com o usuário.
+const ITENS_PALETA: Array<{ item: ItemPaleta; rotulo: string; icone: typeof Armchair }> = [
+  { item: "mesa-redonda", rotulo: "Mesa redonda", icone: Circle },
+  { item: "mesa-retangular", rotulo: "Mesa retangular", icone: RectangleHorizontal },
+  { item: "parede", rotulo: "Parede", icone: Minus },
+  { item: "porta", rotulo: "Porta", icone: DoorOpen },
+  { item: "area", rotulo: "Área", icone: SquareDashed },
 ];
 
 const NOME_TIPO_ELEMENTO: Record<TipoElementoEstrutural, string> = {
@@ -88,18 +91,17 @@ const NOME_TIPO_ELEMENTO: Record<TipoElementoEstrutural, string> = {
   porta: "Porta",
 };
 
+// Comprimento padrão (px) de parede/porta ao serem soltas no croqui — a API ainda não tem
+// endpoint pra reposicionar/redimensionar um traço depois de criado (só mesa e área têm PATCH),
+// então, por ora, errar o lugar ou o tamanho significa excluir e soltar de novo.
+const META_LARGURA_PAREDE = 50;
+const META_LARGURA_PORTA = 25;
+
 function textoContagemMesas(quantidade: number): string {
   if (quantidade === 0) return "Nenhuma mesa cadastrada";
   if (quantidade === 1) return "1 mesa cadastrada";
   return `${quantidade} mesas cadastradas`;
 }
-
-const TEXTO_INSTRUCAO: Record<ModoCroqui, string> = {
-  mesa: "Clique num espaço vazio pra colocar uma mesa nova, arraste uma mesa já colocada pra mudar de lugar, ou clique nela pra editar/excluir.",
-  parede: "Arraste no croqui pra desenhar uma parede. Clique numa parede já desenhada pra excluir ela.",
-  porta: "Arraste no croqui pra desenhar uma porta. Clique numa porta já desenhada pra excluir ela.",
-  area: "Arraste pra marcar uma área nova (ex.: tablado, bar). Arraste uma área existente pra mudar de lugar, ou clique nela pra renomear/excluir.",
-};
 
 export default function SalaoDetalhePage() {
   const params = useParams<{ id: string }>();
@@ -142,25 +144,12 @@ function SalaoDetalheConteudo({
   const atualizarArea = useAtualizarArea(salaoId);
   const removerArea = useRemoverArea(salaoId);
 
-  // Achado numa conversa com o usuário: quem usa essa tela não é técnico — coordenada X/Y não
-  // significa nada pra essa pessoa, e um formulário solto embaixo do croqui (sem nenhuma pista de
-  // que ele se referia ao clique que acabou de dar) obrigava rolar a tela pra digitar a
-  // quantidade de lugares. Os dois campos de posição continuam existindo no formulário (por
-  // baixo, via input hidden) — só nunca aparecem pra ninguém digitar; a posição em si se define
-  // clicando/arrastando no croqui. O formulário em si virou um painel pequeno, flutuando bem ao
-  // lado do ponto clicado — mesma lógica de antes (adicionar/editar/excluir), só que onde a
-  // atenção da pessoa já está.
-  const [modo, setModo] = useState<ModoCroqui>("mesa");
+  // Só um desses três por vez — selecionar um dos outros dois sempre fecha o anterior (ver
+  // selecionarMesaParaEditar/selecionarArea/selecionarElemento), pra nunca abrir dois painéis
+  // flutuando ao mesmo tempo.
   const [mesaEditando, setMesaEditando] = useState<Mesa | null>(null);
-  const [posicaoPendente, setPosicaoPendente] = useState<{ x: number; y: number } | null>(null);
-  const [elementoSelecionado, setElementoSelecionado] = useState<ElementoEstrutural | null>(null);
   const [areaEditando, setAreaEditando] = useState<AreaEstrutural | null>(null);
-  const [areaPendente, setAreaPendente] = useState<{
-    x: number;
-    y: number;
-    largura: number;
-    altura: number;
-  } | null>(null);
+  const [elementoSelecionado, setElementoSelecionado] = useState<ElementoEstrutural | null>(null);
 
   const proximoNumero = mesas.reduce((maior, mesa) => Math.max(maior, mesa.numero), 0) + 1;
 
@@ -173,7 +162,7 @@ function SalaoDetalheConteudo({
     formState: { errors },
   } = useForm<MesaFormInput, unknown, MesaFormValues>({
     resolver: zodResolver(mesaSchema),
-    defaultValues: { numero: proximoNumero, posicaoX: 40, posicaoY: 40, formato: "redonda" },
+    defaultValues: { numero: proximoNumero, capacidade: 4, formato: "redonda" },
   });
   const formatoAtual = watch("formato");
 
@@ -186,41 +175,28 @@ function SalaoDetalheConteudo({
 
   function fecharPainel() {
     setMesaEditando(null);
-    setPosicaoPendente(null);
-    setElementoSelecionado(null);
     setAreaEditando(null);
-    setAreaPendente(null);
-  }
-
-  function trocarFerramenta(novoModo: ModoCroqui) {
-    setModo(novoModo);
-    fecharPainel();
-  }
-
-  function voltarParaModoAdicionar(numeroSugerido: number) {
-    fecharPainel();
-    // "" em vez de undefined — reset() com undefined não limpa um input que já teve valor
-    // digitado pelo usuário (achado em teste manual: excluir uma mesa editada deixava
-    // "Lugares" com o número antigo, mesmo com o formulário voltando pro modo adicionar).
-    reset({
-      numero: numeroSugerido,
-      capacidade: "" as unknown as number,
-      posicaoX: 40,
-      posicaoY: 40,
-      formato: "redonda",
-    });
+    setElementoSelecionado(null);
   }
 
   function selecionarMesaParaEditar(mesa: Mesa) {
+    setAreaEditando(null);
+    setElementoSelecionado(null);
     setMesaEditando(mesa);
-    setPosicaoPendente(null);
-    reset({
-      numero: mesa.numero,
-      capacidade: mesa.capacidade,
-      posicaoX: mesa.posicaoX,
-      posicaoY: mesa.posicaoY,
-      formato: mesa.formato,
-    });
+    reset({ numero: mesa.numero, capacidade: mesa.capacidade, formato: mesa.formato });
+  }
+
+  function selecionarArea(area: AreaEstrutural) {
+    setMesaEditando(null);
+    setElementoSelecionado(null);
+    setAreaEditando(area);
+    resetArea({ nome: area.nome });
+  }
+
+  function selecionarElemento(elemento: ElementoEstrutural) {
+    setMesaEditando(null);
+    setAreaEditando(null);
+    setElementoSelecionado(elemento);
   }
 
   function moverMesa(mesa: Mesa, posicao: { x: number; y: number }) {
@@ -230,47 +206,83 @@ function SalaoDetalheConteudo({
     );
   }
 
-  const onSubmit = handleSubmit((dados) => {
-    if (mesaEditando) {
-      atualizarMesa.mutate(
-        { mesaId: mesaEditando.id, dados },
+  function moverArea(area: AreaEstrutural, posicao: { x: number; y: number }) {
+    atualizarArea.mutate(
+      { areaId: area.id, dados: posicao },
+      { onError: () => toast.error(`Não foi possível mover "${area.nome}".`) },
+    );
+  }
+
+  function aoSoltarItem(item: ItemPaleta, posicao: { x: number; y: number }) {
+    if (item === "mesa-redonda" || item === "mesa-retangular") {
+      const formato: FormatoMesa = item === "mesa-redonda" ? "redonda" : "retangular";
+      adicionarMesa.mutate(
+        { numero: proximoNumero, capacidade: 4, posicaoX: posicao.x, posicaoY: posicao.y, formato },
         {
-          onSuccess: () => {
-            toast.success(`Mesa ${dados.numero} atualizada.`);
-            voltarParaModoAdicionar(proximoNumero);
-          },
-          onError: (erro) => {
+          onSuccess: (mesa) => toast.success(`Mesa ${mesa.numero} adicionada.`),
+          onError: (erro) =>
             toast.error(
               erro instanceof ApiError && erro.status === 409
-                ? `Já existe uma mesa número ${dados.numero} neste salão.`
-                : "Não foi possível salvar as alterações da mesa.",
-            );
-          },
+                ? `Já existe uma mesa número ${proximoNumero} neste salão.`
+                : "Não foi possível adicionar a mesa.",
+            ),
         },
       );
       return;
     }
 
-    adicionarMesa.mutate(dados, {
-      onSuccess: () => {
-        toast.success(`Mesa ${dados.numero} adicionada.`);
-        setPosicaoPendente(null);
-        reset({
-          numero: dados.numero + 1,
-          capacidade: dados.capacidade,
-          posicaoX: 40,
-          posicaoY: 40,
-          formato: dados.formato,
-        });
+    if (item === "parede" || item === "porta") {
+      const metaLargura = item === "parede" ? META_LARGURA_PAREDE : META_LARGURA_PORTA;
+      adicionarElemento.mutate(
+        {
+          tipo: item,
+          x1: posicao.x - metaLargura,
+          y1: posicao.y,
+          x2: posicao.x + metaLargura,
+          y2: posicao.y,
+        },
+        {
+          onSuccess: () => toast.success(`${NOME_TIPO_ELEMENTO[item]} adicionada.`),
+          onError: () => toast.error("Não foi possível salvar o traço no croqui."),
+        },
+      );
+      return;
+    }
+
+    // Abre o painel de renomear na hora — o nome padrão ("Nova área") é só um placeholder, e
+    // quem soltou o item provavelmente já sabe o nome que quer dar (ex.: "Tablado").
+    adicionarArea.mutate(
+      { nome: "Nova área", x: posicao.x, y: posicao.y, largura: 120, altura: 80 },
+      {
+        onSuccess: (area) => {
+          setMesaEditando(null);
+          setElementoSelecionado(null);
+          setAreaEditando(area);
+          resetArea({ nome: area.nome });
+        },
+        onError: () => toast.error("Não foi possível salvar a área no croqui."),
       },
-      onError: (erro) => {
-        toast.error(
-          erro instanceof ApiError && erro.status === 409
-            ? `Já existe uma mesa número ${dados.numero} neste salão.`
-            : "Não foi possível adicionar a mesa.",
-        );
+    );
+  }
+
+  const onSubmit = handleSubmit((dados) => {
+    if (!mesaEditando) return;
+    atualizarMesa.mutate(
+      { mesaId: mesaEditando.id, dados },
+      {
+        onSuccess: () => {
+          toast.success(`Mesa ${dados.numero} atualizada.`);
+          fecharPainel();
+        },
+        onError: (erro) => {
+          toast.error(
+            erro instanceof ApiError && erro.status === 409
+              ? `Já existe uma mesa número ${dados.numero} neste salão.`
+              : "Não foi possível salvar as alterações da mesa.",
+          );
+        },
       },
-    });
+    );
   });
 
   const excluirMesaSelecionada = () => {
@@ -279,7 +291,7 @@ function SalaoDetalheConteudo({
     removerMesa.mutate(mesaEditando.id, {
       onSuccess: () => {
         toast.success(`Mesa ${numero} excluída.`);
-        voltarParaModoAdicionar(proximoNumero - 1 > 0 ? proximoNumero - 1 : 1);
+        fecharPainel();
       },
       onError: (erro) => {
         toast.error(
@@ -291,59 +303,28 @@ function SalaoDetalheConteudo({
     });
   };
 
-  function desenharElemento(segmento: { x1: number; y1: number; x2: number; y2: number }) {
-    adicionarElemento.mutate(
-      { tipo: modo === "porta" ? "porta" : "parede", ...segmento },
-      {
-        onSuccess: () => toast.success(`${NOME_TIPO_ELEMENTO[modo === "porta" ? "porta" : "parede"]} adicionada.`),
-        onError: () => toast.error("Não foi possível salvar o traço no croqui."),
-      },
-    );
-  }
-
   function excluirElementoSelecionado() {
     if (!elementoSelecionado) return;
     const nome = NOME_TIPO_ELEMENTO[elementoSelecionado.tipo];
     removerElemento.mutate(elementoSelecionado.id, {
       onSuccess: () => {
         toast.success(`${nome} excluída.`);
-        setElementoSelecionado(null);
+        fecharPainel();
       },
       onError: () => toast.error(`Não foi possível excluir ${nome === "Porta" ? "a porta" : "a parede"}.`),
     });
   }
 
-  function moverArea(area: AreaEstrutural, posicao: { x: number; y: number }) {
-    atualizarArea.mutate(
-      { areaId: area.id, dados: posicao },
-      { onError: () => toast.error(`Não foi possível mover "${area.nome}".`) },
-    );
-  }
-
   const onSubmitArea = handleSubmitArea((dados) => {
-    if (areaEditando) {
-      atualizarArea.mutate(
-        { areaId: areaEditando.id, dados: { nome: dados.nome } },
-        {
-          onSuccess: () => {
-            toast.success(`"${dados.nome}" atualizada.`);
-            fecharPainel();
-          },
-          onError: () => toast.error("Não foi possível renomear a área."),
-        },
-      );
-      return;
-    }
-
-    if (!areaPendente) return;
-    adicionarArea.mutate(
-      { ...areaPendente, nome: dados.nome },
+    if (!areaEditando) return;
+    atualizarArea.mutate(
+      { areaId: areaEditando.id, dados: { nome: dados.nome } },
       {
         onSuccess: () => {
-          toast.success(`"${dados.nome}" adicionada.`);
+          toast.success(`"${dados.nome}" atualizada.`);
           fecharPainel();
         },
-        onError: () => toast.error("Não foi possível salvar a área no croqui."),
+        onError: () => toast.error("Não foi possível renomear a área."),
       },
     );
   });
@@ -360,9 +341,18 @@ function SalaoDetalheConteudo({
     });
   }
 
-  const salvando = adicionarMesa.isPending || atualizarMesa.isPending;
-  const painelMesaAberto = !!mesaEditando || !!posicaoPendente;
-  const painelAreaAberto = !!areaEditando || !!areaPendente;
+  function aoArrastarItemPaleta(evento: DragEvent<HTMLDivElement>, item: ItemPaleta) {
+    evento.dataTransfer.effectAllowed = "copy";
+    evento.dataTransfer.setData("text/plain", item);
+  }
+
+  const painelPosicao = mesaEditando
+    ? { x: mesaEditando.posicaoX, y: mesaEditando.posicaoY }
+    : areaEditando
+      ? pontoMedioArea(areaEditando)
+      : elementoSelecionado
+        ? pontoMedioElemento(elementoSelecionado)
+        : null;
 
   return (
     <div className="space-y-6">
@@ -379,84 +369,41 @@ function SalaoDetalheConteudo({
           <CardTitle>Mapa de mesas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-1.5 rounded-lg border bg-muted/40 p-1">
-            {FERRAMENTAS.map(({ modo: ferramenta, rotulo, icone: Icone }) => (
-              <Button
-                key={ferramenta}
-                type="button"
-                variant={modo === ferramenta ? "default" : "ghost"}
-                size="sm"
-                className="flex-1"
-                onClick={() => trocarFerramenta(ferramenta)}
-              >
-                <Icone />
-                {rotulo}
-              </Button>
-            ))}
-          </div>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <div className="flex shrink-0 flex-row gap-2 overflow-x-auto sm:w-40 sm:flex-col sm:overflow-visible">
+              {ITENS_PALETA.map(({ item, rotulo, icone: Icone }) => (
+                <div
+                  key={item}
+                  draggable
+                  onDragStart={(evento) => aoArrastarItemPaleta(evento, item)}
+                  className="flex shrink-0 cursor-grab items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-xs font-medium text-foreground active:cursor-grabbing"
+                  title={`Arraste até o croqui para adicionar: ${rotulo}`}
+                >
+                  <Icone className="size-4 text-muted-foreground" />
+                  {rotulo}
+                </div>
+              ))}
+            </div>
 
-          <MesaCanvas
-            mesas={mesas}
-            elementos={elementos}
-            areas={areas}
-            modo={modo}
-            mesaSelecionadaId={mesaEditando?.id}
-            posicaoPendente={posicaoPendente}
-            onCanvasClick={
-              modo === "mesa"
-                ? ({ x, y }) => {
-                    setValue("posicaoX", x, { shouldValidate: true });
-                    setValue("posicaoY", y, { shouldValidate: true });
-                    setPosicaoPendente({ x, y });
-                  }
-                : undefined
-            }
-            onMesaClick={modo === "mesa" ? selecionarMesaParaEditar : undefined}
-            onMesaArrastada={modo === "mesa" ? moverMesa : undefined}
-            onSegmentoDesenhado={modo === "parede" || modo === "porta" ? desenharElemento : undefined}
-            onElementoClick={modo === "parede" || modo === "porta" ? setElementoSelecionado : undefined}
-            elementoSelecionadoId={elementoSelecionado?.id}
-            onAreaDesenhada={
-              modo === "area"
-                ? (retangulo) => {
-                    setAreaPendente(retangulo);
-                    resetArea({ nome: "" });
-                  }
-                : undefined
-            }
-            onAreaClick={
-              modo === "area"
-                ? (area) => {
-                    setAreaEditando(area);
-                    setAreaPendente(null);
-                    resetArea({ nome: area.nome });
-                  }
-                : undefined
-            }
-            onAreaArrastada={modo === "area" ? moverArea : undefined}
-            areaSelecionadaId={areaEditando?.id}
-            painelPosicao={
-              modo === "mesa"
-                ? (posicaoPendente ??
-                  (mesaEditando ? { x: mesaEditando.posicaoX, y: mesaEditando.posicaoY } : null))
-                : modo === "area"
-                  ? (areaPendente
-                      ? { x: areaPendente.x + areaPendente.largura, y: areaPendente.y }
-                      : areaEditando
-                        ? pontoMedioArea(areaEditando)
-                        : null)
-                  : elementoSelecionado
-                    ? pontoMedioElemento(elementoSelecionado)
-                    : null
-            }
-            painel={
-              modo === "mesa" ? (
-                painelMesaAberto ? (
+            <MesaCanvas
+              mesas={mesas}
+              elementos={elementos}
+              areas={areas}
+              onItemSolto={aoSoltarItem}
+              onMesaClick={selecionarMesaParaEditar}
+              onMesaArrastada={moverMesa}
+              mesaSelecionadaId={mesaEditando?.id}
+              onElementoClick={selecionarElemento}
+              elementoSelecionadoId={elementoSelecionado?.id}
+              onAreaClick={selecionarArea}
+              onAreaArrastada={moverArea}
+              areaSelecionadaId={areaEditando?.id}
+              painelPosicao={painelPosicao}
+              painel={
+                mesaEditando ? (
                   <form onSubmit={onSubmit} className="space-y-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-foreground">
-                        {mesaEditando ? `Mesa ${mesaEditando.numero}` : "Nova mesa"}
-                      </p>
+                      <p className="text-sm font-medium text-foreground">Mesa {mesaEditando.numero}</p>
                       <button
                         type="button"
                         onClick={fecharPainel}
@@ -466,9 +413,6 @@ function SalaoDetalheConteudo({
                         <X className="size-4" />
                       </button>
                     </div>
-
-                    <input type="hidden" {...register("posicaoX")} />
-                    <input type="hidden" {...register("posicaoY")} />
 
                     <div className="space-y-1">
                       <Label htmlFor="numero" className="text-xs text-muted-foreground">
@@ -532,55 +476,45 @@ function SalaoDetalheConteudo({
                       </div>
                     </div>
 
-                    {mesaEditando && (
-                      <AlertDialog>
-                        <AlertDialogTrigger
-                          render={
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="w-full"
-                              disabled={removerMesa.isPending}
-                            />
-                          }
-                        >
-                          {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Só é possível se esta mesa nunca foi usada em nenhum evento (reserva
-                              ou preço configurado). Não dá pra desfazer.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={excluirMesaSelecionada}>
-                              Confirmar exclusão
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            disabled={removerMesa.isPending}
+                          />
+                        }
+                      >
+                        {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir mesa {mesaEditando.numero}?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Só é possível se esta mesa nunca foi usada em nenhum evento (reserva ou
+                            preço configurado). Não dá pra desfazer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={excluirMesaSelecionada}>
+                            Confirmar exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
 
-                    <Button type="submit" size="sm" className="w-full" disabled={salvando}>
-                      {salvando
-                        ? "Salvando…"
-                        : mesaEditando
-                          ? "Salvar alterações"
-                          : "Adicionar mesa"}
+                    <Button type="submit" size="sm" className="w-full" disabled={atualizarMesa.isPending}>
+                      {atualizarMesa.isPending ? "Salvando…" : "Salvar alterações"}
                     </Button>
                   </form>
-                ) : null
-              ) : modo === "area" ? (
-                painelAreaAberto ? (
+                ) : areaEditando ? (
                   <form onSubmit={onSubmitArea} className="space-y-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-foreground">
-                        {areaEditando ? "Editar área" : "Nova área"}
-                      </p>
+                      <p className="text-sm font-medium text-foreground">Editar área</p>
                       <button
                         type="button"
                         onClick={fecharPainel}
@@ -606,80 +540,72 @@ function SalaoDetalheConteudo({
                       )}
                     </div>
 
-                    {areaEditando && (
-                      <AlertDialog>
-                        <AlertDialogTrigger
-                          render={
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="w-full"
-                              disabled={removerArea.isPending}
-                            />
-                          }
-                        >
-                          {removerArea.isPending ? "Excluindo…" : "Excluir área"}
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir “{areaEditando.nome}”?</AlertDialogTitle>
-                            <AlertDialogDescription>Não dá pra desfazer.</AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={excluirAreaSelecionada}>
-                              Confirmar exclusão
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            disabled={removerArea.isPending}
+                          />
+                        }
+                      >
+                        {removerArea.isPending ? "Excluindo…" : "Excluir área"}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir “{areaEditando.nome}”?</AlertDialogTitle>
+                          <AlertDialogDescription>Não dá pra desfazer.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={excluirAreaSelecionada}>
+                            Confirmar exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
 
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="w-full"
-                      disabled={adicionarArea.isPending || atualizarArea.isPending}
-                    >
-                      {adicionarArea.isPending || atualizarArea.isPending
-                        ? "Salvando…"
-                        : areaEditando
-                          ? "Salvar nome"
-                          : "Adicionar área"}
+                    <Button type="submit" size="sm" className="w-full" disabled={atualizarArea.isPending}>
+                      {atualizarArea.isPending ? "Salvando…" : "Salvar nome"}
                     </Button>
                   </form>
-                ) : null
-              ) : elementoSelecionado ? (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-foreground">
-                      {NOME_TIPO_ELEMENTO[elementoSelecionado.tipo]}
-                    </p>
-                    <button
+                ) : elementoSelecionado ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-foreground">
+                        {NOME_TIPO_ELEMENTO[elementoSelecionado.tipo]}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={fecharPainel}
+                        aria-label="Fechar"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                    <Button
                       type="button"
-                      onClick={fecharPainel}
-                      aria-label="Fechar"
-                      className="text-muted-foreground hover:text-foreground"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      disabled={removerElemento.isPending}
+                      onClick={excluirElementoSelecionado}
                     >
-                      <X className="size-4" />
-                    </button>
+                      {removerElemento.isPending ? "Excluindo…" : "Excluir"}
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    disabled={removerElemento.isPending}
-                    onClick={excluirElementoSelecionado}
-                  >
-                    {removerElemento.isPending ? "Excluindo…" : "Excluir"}
-                  </Button>
-                </div>
-              ) : null
-            }
-          />
-          <p className="text-xs text-muted-foreground">{TEXTO_INSTRUCAO[modo]}</p>
+                ) : null
+              }
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Arraste um item do menu ao lado até o croqui para adicionar. Arraste um item já
+            colocado para mudar de lugar, ou clique nele para editar/excluir.
+          </p>
         </CardContent>
       </Card>
     </div>

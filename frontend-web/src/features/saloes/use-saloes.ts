@@ -47,6 +47,22 @@ export function useCriarSalao() {
   });
 }
 
+// Grava a resposta da API direto no cache do salão (em vez de só invalidar e esperar um refetch)
+// — achado numa conversa com o usuário: arrastar/adicionar qualquer coisa no croqui fazia o item
+// sumir por um instante e reaparecer, porque a tela ficava esperando a rodada extra de rede do
+// refetch pra mostrar o resultado de novo. Gravando aqui, a mudança aparece assim que a mutação
+// termina; a invalidação continua rodando por baixo, só que sem travar a UI por ela.
+function atualizarCacheSalao(
+  queryClient: ReturnType<typeof useQueryClient>,
+  salaoId: string,
+  atualizar: (atual: SalaoComMesas) => SalaoComMesas,
+) {
+  queryClient.setQueryData<SalaoComMesas>(chaveDetalhe(salaoId), (atual) =>
+    atual ? atualizar(atual) : atual,
+  );
+  queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId), refetchType: "none" });
+}
+
 export function useAdicionarMesa(salaoId: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -55,8 +71,11 @@ export function useAdicionarMesa(salaoId: string) {
         method: "POST",
         body: JSON.stringify(dados),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (mesaCriada) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        mesas: [...atual.mesas, mesaCriada],
+      }));
     },
   });
 }
@@ -72,8 +91,11 @@ export function useAtualizarMesa(salaoId: string) {
         method: "PATCH",
         body: JSON.stringify(dados),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (mesaAtualizada) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        mesas: atual.mesas.map((m) => (m.id === mesaAtualizada.id ? mesaAtualizada : m)),
+      }));
     },
   });
 }
@@ -85,8 +107,11 @@ export function useRemoverMesa(salaoId: string) {
   return useMutation({
     mutationFn: (mesaId: string) =>
       apiFetch<void>(`/saloes/${salaoId}/mesas/${mesaId}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (_dados, mesaId) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        mesas: atual.mesas.filter((m) => m.id !== mesaId),
+      }));
     },
   });
 }
@@ -101,8 +126,11 @@ export function useAdicionarElemento(salaoId: string) {
         method: "POST",
         body: JSON.stringify(dados),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (elementoCriado) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        elementos: [...atual.elementos, elementoCriado],
+      }));
     },
   });
 }
@@ -112,8 +140,11 @@ export function useRemoverElemento(salaoId: string) {
   return useMutation({
     mutationFn: (elementoId: string) =>
       apiFetch<void>(`/saloes/${salaoId}/elementos/${elementoId}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (_dados, elementoId) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        elementos: atual.elementos.filter((e) => e.id !== elementoId),
+      }));
     },
   });
 }
@@ -128,8 +159,11 @@ export function useAdicionarArea(salaoId: string) {
         method: "POST",
         body: JSON.stringify(dados),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (areaCriada) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        areas: [...atual.areas, areaCriada],
+      }));
     },
   });
 }
@@ -143,8 +177,11 @@ export function useAtualizarArea(salaoId: string) {
         method: "PATCH",
         body: JSON.stringify(dados),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (areaAtualizada) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        areas: atual.areas.map((a) => (a.id === areaAtualizada.id ? areaAtualizada : a)),
+      }));
     },
   });
 }
@@ -154,8 +191,11 @@ export function useRemoverArea(salaoId: string) {
   return useMutation({
     mutationFn: (areaId: string) =>
       apiFetch<void>(`/saloes/${salaoId}/areas/${areaId}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    onSuccess: (_dados, areaId) => {
+      atualizarCacheSalao(queryClient, salaoId, (atual) => ({
+        ...atual,
+        areas: atual.areas.filter((a) => a.id !== areaId),
+      }));
     },
   });
 }
