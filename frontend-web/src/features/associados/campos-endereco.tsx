@@ -1,14 +1,10 @@
 "use client";
 
+import { Building2, Flag, Hash, MapPin, Route } from "lucide-react";
 import { useState } from "react";
-import {
-  Controller,
-  type Control,
-  type FieldErrors,
-  type UseFormSetValue,
-} from "react-hook-form";
+import { Controller, type Control, type FieldErrors, type UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
+import { InputComIcone } from "@/components/input-com-icone";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -84,14 +80,15 @@ export function CamposEndereco<T extends FormComEndereco>({
   };
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="space-y-2">
+    <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.cep">CEP</Label>
         <Controller
           control={control}
           name={"endereco.cep" as never}
           render={({ field }) => (
-            <Input
+            <InputComIcone
+              icon={MapPin}
               id="endereco.cep"
               inputMode="numeric"
               placeholder="00000-000"
@@ -109,25 +106,32 @@ export function CamposEndereco<T extends FormComEndereco>({
         {erros?.cep && <p className="text-sm text-destructive">{erros.cep.message as string}</p>}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.numero">Número</Label>
         <Controller
           control={control}
           name={"endereco.numero" as never}
-          render={({ field }) => <Input id="endereco.numero" {...field} value={field.value ?? ""} />}
+          render={({ field }) => (
+            <InputComIcone icon={Hash} id="endereco.numero" {...field} value={field.value ?? ""} />
+          )}
         />
         {erros?.numero && (
           <p className="text-sm text-destructive">{erros.numero.message as string}</p>
         )}
       </div>
 
-      <div className="space-y-2 sm:col-span-2">
+      <div className="space-y-1.5 sm:col-span-2">
         <Label htmlFor="endereco.logradouro">Logradouro</Label>
         <Controller
           control={control}
           name={"endereco.logradouro" as never}
           render={({ field }) => (
-            <Input id="endereco.logradouro" {...field} value={field.value ?? ""} />
+            <InputComIcone
+              icon={Route}
+              id="endereco.logradouro"
+              {...field}
+              value={field.value ?? ""}
+            />
           )}
         />
         {erros?.logradouro && (
@@ -135,42 +139,56 @@ export function CamposEndereco<T extends FormComEndereco>({
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.complemento">Complemento (opcional)</Label>
         <Controller
           control={control}
           name={"endereco.complemento" as never}
           render={({ field }) => (
-            <Input id="endereco.complemento" {...field} value={field.value ?? ""} />
+            <InputComIcone
+              icon={Building2}
+              id="endereco.complemento"
+              {...field}
+              value={field.value ?? ""}
+            />
           )}
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.bairro">Bairro</Label>
         <Controller
           control={control}
           name={"endereco.bairro" as never}
-          render={({ field }) => <Input id="endereco.bairro" {...field} value={field.value ?? ""} />}
+          render={({ field }) => (
+            <InputComIcone icon={MapPin} id="endereco.bairro" {...field} value={field.value ?? ""} />
+          )}
         />
         {erros?.bairro && (
           <p className="text-sm text-destructive">{erros.bairro.message as string}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.cidade">Cidade</Label>
         <Controller
           control={control}
           name={"endereco.cidade" as never}
-          render={({ field }) => <Input id="endereco.cidade" {...field} value={field.value ?? ""} />}
+          render={({ field }) => (
+            <InputComIcone
+              icon={Building2}
+              id="endereco.cidade"
+              {...field}
+              value={field.value ?? ""}
+            />
+          )}
         />
         {erros?.cidade && (
           <p className="text-sm text-destructive">{erros.cidade.message as string}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="endereco.uf">UF</Label>
         <Controller
           control={control}
@@ -178,6 +196,7 @@ export function CamposEndereco<T extends FormComEndereco>({
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger id="endereco.uf" className="w-full">
+                <Flag aria-hidden="true" className="size-4 text-muted-foreground" />
                 <SelectValue placeholder="UF" />
               </SelectTrigger>
               <SelectContent>

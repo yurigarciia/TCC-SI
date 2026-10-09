@@ -1,0 +1,30 @@
+# Deploy automático do painel web no Cloud Run — disparado por um trigger do Cloud Build a cada
+# push na branch main que toque em frontend-web/** (ver gcloud builds triggers describe
+# querencia-erp-web-deploy). O NEXT_PUBLIC_API_URL vem do ARG default do Dockerfile (variáveis
+# NEXT_PUBLIC_* são inlined no build, não em runtime).
+steps:
+  - name: gcr.io/cloud-builders/docker
+    dir: frontend-web
+    args:
+      - build
+      - -t
+      - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-web:$SHORT_SHA
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-web:$SHORT_SHA
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - querencia-erp-web
+      - --image=southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-web:$SHORT_SHA
+      - --region=southamerica-east1
+      - --project=$PROJECT_ID
+      - --quiet
+images:
+  - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-web:$SHORT_SHA
+options:
+  logging: CLOUD_LOGGING_ONLY

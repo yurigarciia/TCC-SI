@@ -1,6 +1,6 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { Building2, Calendar, IdCard, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -13,11 +13,10 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { InputComIcone } from "@/components/input-com-icone";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -26,11 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { CamposEndereco, enderecoSchema } from "@/features/associados/campos-endereco";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
 import { formatarCpf, formatarTelefone, pareceEmail } from "@/lib/format";
+
+const ID_FORM_NOVO = "form-novo-associado";
 
 const dependenteSchema = z.object({
   nome: z.string().min(2, "Informe o nome do dependente."),
@@ -108,25 +108,39 @@ export default function NovoAssociadoPage() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
-        <h1 className="font-heading text-2xl font-semibold text-foreground"><Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />Novo associado</h1>
-        <p className="text-muted-foreground">
-          Cadastro de novo associado e seus dependentes, com ativação imediata.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: "Novo associado" }]} />
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            <Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
+            Novo associado
+          </h1>
+          <p className="text-muted-foreground">
+            Cadastro de novo associado e seus dependentes, com ativação imediata.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" render={<Link href="/associados" />}>
+            Cancelar
+          </Button>
+          <Button type="submit" form={ID_FORM_NOVO} disabled={cadastrar.isPending}>
+            <Save aria-hidden="true" />
+            {cadastrar.isPending ? "Salvando…" : "Salvar"}
+          </Button>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados do associado</CardTitle>
-          <CardDescription>Campos com rótulo sempre visível.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-6" noValidate>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2 sm:col-span-2">
+      <form id={ID_FORM_NOVO} onSubmit={onSubmit} className="space-y-6" noValidate>
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados do associado</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="nome">Nome completo</Label>
-                <Input
+                <InputComIcone
+                  icon={User}
                   id="nome"
                   placeholder="Ex.: João da Silva"
                   autoComplete="off"
@@ -138,13 +152,14 @@ export default function NovoAssociadoPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="cpf">CPF</Label>
                 <Controller
                   control={control}
                   name="cpf"
                   render={({ field }) => (
-                    <Input
+                    <InputComIcone
+                      icon={IdCard}
                       id="cpf"
                       inputMode="numeric"
                       autoComplete="off"
@@ -159,13 +174,14 @@ export default function NovoAssociadoPage() {
                 {errors.cpf && <p className="text-sm text-destructive">{errors.cpf.message}</p>}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="contato">Contato (telefone ou e-mail)</Label>
                 <Controller
                   control={control}
                   name="contato"
                   render={({ field }) => (
-                    <Input
+                    <InputComIcone
+                      icon={Phone}
                       id="contato"
                       autoComplete="new-password"
                       placeholder="Ex.: (55) 99999-0000"
@@ -190,9 +206,10 @@ export default function NovoAssociadoPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="vinculoInstitucional">Vínculo institucional (opcional)</Label>
-                <Input
+                <InputComIcone
+                  icon={Building2}
                   id="vinculoInstitucional"
                   autoComplete="off"
                   placeholder="Ex.: Piquete Laço Firme"
@@ -200,7 +217,7 @@ export default function NovoAssociadoPage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
                   <Link
@@ -217,6 +234,7 @@ export default function NovoAssociadoPage() {
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger id="categoriaSocioId" className="w-full">
+                        <Tag aria-hidden="true" className="size-4 text-muted-foreground" />
                         <SelectValue placeholder="Selecionar categoria">
                           {(valor: string | null) =>
                             categorias?.find((categoria) => categoria.id === valor)?.nome ??
@@ -236,81 +254,76 @@ export default function NovoAssociadoPage() {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <Separator />
+        <Card>
+          <CardHeader>
+            <CardTitle>Endereço</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CamposEndereco control={control} errors={errors} setValue={setValue} />
+          </CardContent>
+        </Card>
 
-            <div className="space-y-3">
-              <Label>Endereço</Label>
-              <CamposEndereco control={control} errors={errors} setValue={setValue} />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Dependentes</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => append({ nome: "", dataNascimento: "" })}
+            >
+              <UserPlus aria-hidden="true" />
+              Adicionar dependente
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {fields.length === 0 && (
+              <p className="text-sm text-muted-foreground">Nenhum dependente adicionado.</p>
+            )}
 
-            <Separator />
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Dependentes</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => append({ nome: "", dataNascimento: "" })}
-                >
-                  Adicionar dependente
+            {fields.map((campo, indice) => (
+              <div key={campo.id} className="flex items-end gap-3 rounded-lg border p-3">
+                <div className="flex-1 space-y-1.5">
+                  <Label htmlFor={`dependentes.${indice}.nome`}>Nome</Label>
+                  <InputComIcone
+                    icon={User}
+                    id={`dependentes.${indice}.nome`}
+                    placeholder="Ex.: Maria da Silva"
+                    {...register(`dependentes.${indice}.nome` as const)}
+                  />
+                  {errors.dependentes?.[indice]?.nome && (
+                    <p className="text-sm text-destructive">
+                      {errors.dependentes[indice]?.nome?.message}
+                    </p>
+                  )}
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  <Label htmlFor={`dependentes.${indice}.dataNascimento`}>
+                    Data de nascimento
+                  </Label>
+                  <InputComIcone
+                    icon={Calendar}
+                    id={`dependentes.${indice}.dataNascimento`}
+                    type="date"
+                    {...register(`dependentes.${indice}.dataNascimento` as const)}
+                  />
+                  {errors.dependentes?.[indice]?.dataNascimento && (
+                    <p className="text-sm text-destructive">
+                      {errors.dependentes[indice]?.dataNascimento?.message}
+                    </p>
+                  )}
+                </div>
+                <Button type="button" variant="ghost" onClick={() => remove(indice)}>
+                  Remover
                 </Button>
               </div>
-
-              {fields.length === 0 && (
-                <p className="text-sm text-muted-foreground">Nenhum dependente adicionado.</p>
-              )}
-
-              {fields.map((campo, indice) => (
-                <div key={campo.id} className="flex items-end gap-3 rounded-lg border p-3">
-                  <div className="flex-1 space-y-2">
-                    <Label htmlFor={`dependentes.${indice}.nome`}>Nome</Label>
-                    <Input
-                      id={`dependentes.${indice}.nome`}
-                      placeholder="Ex.: Maria da Silva"
-                      {...register(`dependentes.${indice}.nome` as const)}
-                    />
-                    {errors.dependentes?.[indice]?.nome && (
-                      <p className="text-sm text-destructive">
-                        {errors.dependentes[indice]?.nome?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <Label htmlFor={`dependentes.${indice}.dataNascimento`}>
-                      Data de nascimento
-                    </Label>
-                    <Input
-                      id={`dependentes.${indice}.dataNascimento`}
-                      type="date"
-                      {...register(`dependentes.${indice}.dataNascimento` as const)}
-                    />
-                    {errors.dependentes?.[indice]?.dataNascimento && (
-                      <p className="text-sm text-destructive">
-                        {errors.dependentes[indice]?.dataNascimento?.message}
-                      </p>
-                    )}
-                  </div>
-                  <Button type="button" variant="ghost" onClick={() => remove(indice)}>
-                    Remover
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" render={<Link href="/associados" />}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={cadastrar.isPending}>
-                {cadastrar.isPending ? "Salvando…" : "Salvar"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </form>
     </div>
   );
 }

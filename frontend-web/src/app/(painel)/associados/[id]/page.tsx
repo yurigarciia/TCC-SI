@@ -1,6 +1,6 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { Building2, Phone, Save, Tag, User, Users } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
@@ -27,6 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { InputComIcone } from "@/components/input-com-icone";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -59,6 +60,8 @@ import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { formatarTelefone, pareceEmail } from "@/lib/format";
 import Link from "next/link";
+
+const ID_FORM_DADOS = "form-dados-associado";
 
 const dadosSchema = z.object({
   nome: z.string().min(3, "Informe o nome completo."),
@@ -187,12 +190,19 @@ function AssociadoDetalheConteudo({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <Breadcrumb items={[{ label: "Associados", href: "/associados" }, { label: associado.nome }]} />
-          <h1 className="font-heading text-2xl font-semibold text-foreground"><Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            <Users aria-hidden="true" className="mr-2 inline size-6 align-[-0.2em]" />
             {associado.nome}
           </h1>
           <p className="text-muted-foreground">CPF {associado.cpf}</p>
         </div>
-        <StatusAssociadoBadge status={associado.status} />
+        <div className="flex items-center gap-3">
+          <StatusAssociadoBadge status={associado.status} />
+          <Button type="submit" form={ID_FORM_DADOS} disabled={!isDirty || atualizar.isPending}>
+            <Save aria-hidden="true" />
+            {atualizar.isPending ? "Salvando…" : "Salvar alterações"}
+          </Button>
+        </div>
       </div>
 
       {associado.status === "pendente_validacao" && (
@@ -271,106 +281,115 @@ function AssociadoDetalheConteudo({
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados cadastrais</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmitDados} className="space-y-4" noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="nome">Nome completo</Label>
-              <Input
-                id="nome"
-                placeholder="Ex.: João da Silva"
-                aria-invalid={!!errors.nome}
-                {...register("nome")}
-              />
-              {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contato">Contato</Label>
-              <Controller
-                control={control}
-                name="contato"
-                render={({ field }) => (
-                  <Input
-                    id="contato"
-                    placeholder="Ex.: (55) 99999-0000"
-                    aria-invalid={!!errors.contato}
-                    value={
-                      pareceEmail(field.value ?? "")
-                        ? field.value
-                        : formatarTelefone(field.value ?? "")
-                    }
-                    onChange={(e) => {
-                      const bruto = e.target.value;
-                      field.onChange(
-                        pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
-                      );
-                    }}
-                    onBlur={field.onBlur}
-                  />
-                )}
-              />
-              {errors.contato && (
-                <p className="text-sm text-destructive">{errors.contato.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="vinculoInstitucional">Vínculo institucional</Label>
-              <Input
-                id="vinculoInstitucional"
-                placeholder="Ex.: Piquete Laço Firme"
-                {...register("vinculoInstitucional")}
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
-                <Link
-                  href="/associados/categorias/novo"
-                  target="_blank"
-                  className="text-sm leading-none text-primary underline-offset-4 hover:underline"
-                >
-                  Nova categoria ↗
-                </Link>
+      <form id={ID_FORM_DADOS} onSubmit={onSubmitDados} className="space-y-6" noValidate>
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados pessoais</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="nome">Nome completo</Label>
+                <InputComIcone
+                  icon={User}
+                  id="nome"
+                  placeholder="Ex.: João da Silva"
+                  aria-invalid={!!errors.nome}
+                  {...register("nome")}
+                />
+                {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
               </div>
-              <Controller
-                control={control}
-                name="categoriaSocioId"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="categoriaSocioId" className="w-full">
-                      <SelectValue placeholder="Selecionar categoria">
-                        {(valor: string | null) =>
-                          categorias?.find((categoria) => categoria.id === valor)?.nome ??
-                          "Selecionar categoria"
-                        }
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categorias?.map((categoria) => (
-                        <SelectItem key={categoria.id} value={categoria.id}>
-                          {categoria.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="contato">Contato</Label>
+                <Controller
+                  control={control}
+                  name="contato"
+                  render={({ field }) => (
+                    <InputComIcone
+                      icon={Phone}
+                      id="contato"
+                      placeholder="Ex.: (55) 99999-0000"
+                      aria-invalid={!!errors.contato}
+                      value={
+                        pareceEmail(field.value ?? "")
+                          ? field.value
+                          : formatarTelefone(field.value ?? "")
+                      }
+                      onChange={(e) => {
+                        const bruto = e.target.value;
+                        field.onChange(
+                          pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
+                        );
+                      }}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
+                {errors.contato && (
+                  <p className="text-sm text-destructive">{errors.contato.message}</p>
                 )}
-              />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="vinculoInstitucional">Vínculo institucional</Label>
+                <InputComIcone
+                  icon={Building2}
+                  id="vinculoInstitucional"
+                  placeholder="Ex.: Piquete Laço Firme"
+                  {...register("vinculoInstitucional")}
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                  <Link
+                    href="/associados/categorias/novo"
+                    target="_blank"
+                    className="text-sm leading-none text-primary underline-offset-4 hover:underline"
+                  >
+                    Nova categoria ↗
+                  </Link>
+                </div>
+                <Controller
+                  control={control}
+                  name="categoriaSocioId"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="categoriaSocioId" className="w-full">
+                        <Tag aria-hidden="true" className="size-4 text-muted-foreground" />
+                        <SelectValue placeholder="Selecionar categoria">
+                          {(valor: string | null) =>
+                            categorias?.find((categoria) => categoria.id === valor)?.nome ??
+                            "Selecionar categoria"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categorias?.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.id}>
+                            {categoria.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Endereço</Label>
-              <CamposEndereco control={control} errors={errors} setValue={setValue} />
-            </div>
-            <div className="flex justify-end">
-              <Button type="submit" disabled={!isDirty || atualizar.isPending}>
-                {atualizar.isPending ? "Salvando…" : "Salvar alterações"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Endereço</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CamposEndereco control={control} errors={errors} setValue={setValue} />
+          </CardContent>
+        </Card>
+      </form>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -400,7 +419,9 @@ function AssociadoDetalheConteudo({
                 )}
               </div>
               <div className="flex-1 space-y-2">
-                <Label htmlFor="dependente-data">Data de nascimento</Label>
+                <Label htmlFor="dependente-data">
+                  Data de nascimento
+                </Label>
                 <Input id="dependente-data" type="date" {...registerDependente("dataNascimento")} />
                 {errosDependente.dataNascimento && (
                   <p className="text-sm text-destructive">

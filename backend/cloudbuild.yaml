@@ -1,0 +1,30 @@
+# Deploy automático do backend no Cloud Run — disparado por um trigger do Cloud Build a cada
+# push na branch main que toque em backend/** (ver gcloud builds triggers describe
+# querencia-erp-backend-deploy). Mesma imagem/repositório Artifact Registry que o deploy manual
+# (`gcloud run deploy --source`) já usava, pra manter o histórico de revisões num lugar só.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    dir: backend
+    args:
+      - build
+      - -t
+      - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-backend:$SHORT_SHA
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-backend:$SHORT_SHA
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - querencia-erp-backend
+      - --image=southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-backend:$SHORT_SHA
+      - --region=southamerica-east1
+      - --project=$PROJECT_ID
+      - --quiet
+images:
+  - southamerica-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/querencia-erp-backend:$SHORT_SHA
+options:
+  logging: CLOUD_LOGGING_ONLY
