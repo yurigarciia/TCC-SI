@@ -77,7 +77,11 @@ describe('Mensalidades (e2e)', () => {
       });
     associadoId = (associado.body as { associado: { id: string } }).associado
       .id;
-  });
+    // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll de
+    // ingressos.e2e-spec.ts: bootstrap do módulo (grafo maior desde o forwardRef entre
+    // associados/mensalidades/notifications) + chamadas sequenciais de setup contra o Postgres
+    // remoto (Neon).
+  }, 20000);
 
   afterAll(async () => {
     await dataSource.query('DELETE FROM mensalidades WHERE associado_id = $1', [

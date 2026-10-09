@@ -11,6 +11,7 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -69,7 +70,14 @@ export class AuthController {
   @Roles(Perfil.ADMINISTRADOR)
   @ApiOperation({
     summary:
-      'Lista os usuários (contas de login) cadastrados, paginado, opcionalmente filtrando por e-mail',
+      'Lista os usuários (contas de login) cadastrados, paginado, opcionalmente filtrando por e-mail/nome e por perfil',
+  })
+  @ApiQuery({
+    name: 'perfil',
+    enum: Perfil,
+    required: false,
+    description:
+      'Filtra por perfil (ex.: administrador) — a tela de usuários do painel só mostra contas administrativas, não associados',
   })
   @ApiResponse({ status: 200, description: 'Página de usuários' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -79,6 +87,7 @@ export class AuthController {
   })
   async listar(
     @Query() { pagina, limite, busca }: PaginacaoQueryDto,
+    @Query('perfil') perfil?: Perfil,
   ): Promise<
     PaginaResultado<{
       id: string;
@@ -91,6 +100,7 @@ export class AuthController {
       pagina!,
       limite!,
       busca,
+      perfil,
     );
     return {
       ...resultado,
@@ -120,9 +130,12 @@ export class AuthController {
     description: 'Usuário autenticado não é administrador',
   })
   @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
-  async criar(
-    @Body() dto: CriarAdministradorDto,
-  ): Promise<{ id: string; nome: string | null; email: string; perfil: Perfil }> {
+  async criar(@Body() dto: CriarAdministradorDto): Promise<{
+    id: string;
+    nome: string | null;
+    email: string;
+    perfil: Perfil;
+  }> {
     const usuario = await this.criarAdministrador.execute(dto);
     return {
       id: usuario.id,

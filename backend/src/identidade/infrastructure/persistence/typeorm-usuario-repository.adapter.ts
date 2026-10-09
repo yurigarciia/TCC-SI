@@ -5,7 +5,7 @@ import {
   NovoUsuario,
   UsuarioRepositoryPort,
 } from '../../application/ports/usuario-repository.port';
-import { Usuario } from '../../domain/usuario.entity';
+import { Perfil, Usuario } from '../../domain/usuario.entity';
 import { UsuarioOrmEntity } from './usuario.orm-entity';
 
 @Injectable()
@@ -36,11 +36,18 @@ export class TypeOrmUsuarioRepositoryAdapter extends UsuarioRepositoryPort {
     pagina: number,
     limite: number,
     busca?: string,
+    perfil?: Perfil,
   ): Promise<{ itens: Usuario[]; total: number }> {
+    const base = perfil ? { perfil } : {};
     const [encontrados, total] = await this.repo.findAndCount({
       where: busca
-        ? [{ email: ILike(`%${busca}%`) }, { nome: ILike(`%${busca}%`) }]
-        : undefined,
+        ? [
+            { ...base, email: ILike(`%${busca}%`) },
+            { ...base, nome: ILike(`%${busca}%`) },
+          ]
+        : perfil
+          ? base
+          : undefined,
       order: { criadoEm: 'DESC' },
       skip: (pagina - 1) * limite,
       take: limite,

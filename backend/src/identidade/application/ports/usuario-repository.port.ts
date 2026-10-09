@@ -15,5 +15,6 @@ export abstract class UsuarioRepositoryPort {
     pagina: number,
     limite: number,
     busca?: string,
+    perfil?: Perfil,
   ): Promise<{ itens: Usuario[]; total: number }>;
 }

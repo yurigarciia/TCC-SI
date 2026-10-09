@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UsuarioRepositoryPort } from '../ports/usuario-repository.port';
-import { Usuario } from '../../domain/usuario.entity';
+import { Perfil, Usuario } from '../../domain/usuario.entity';
 import {
   montarPaginaResultado,
   PaginaResultado,
@@ -17,11 +17,13 @@ export class ListarUsuariosUseCase {
     pagina: number,
     limite: number,
     busca?: string,
+    perfil?: Perfil,
   ): Promise<PaginaResultado<Usuario>> {
     const { itens, total } = await this.usuarios.listarPaginado(
       pagina,
       limite,
       busca,
+      perfil,
     );
     return montarPaginaResultado(itens, total, pagina, limite);
   }
