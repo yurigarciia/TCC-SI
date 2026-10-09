@@ -216,48 +216,54 @@ function AssociadoDetalheConteudo({
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados pessoais</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <Campo icone={User} rotulo="Nome completo" valor={associado.nome} />
-            </div>
-            <Campo icone={Phone} rotulo="Contato" valor={contato} />
-            <Campo
-              icone={Building2}
-              rotulo="Vínculo institucional"
-              valor={associado.vinculoInstitucional ?? "—"}
-            />
-            <Campo icone={Tag} rotulo="Categoria de sócio" valor={categoriaAtual ?? "Sem categoria"} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Endereço</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {endereco ? (
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados pessoais</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
-              <Campo icone={MapPin} rotulo="CEP" valor={formatarCep(endereco.cep)} />
-              <Campo icone={MapPin} rotulo="Número" valor={endereco.numero} />
               <div className="sm:col-span-2">
-                <Campo icone={MapPin} rotulo="Logradouro" valor={endereco.logradouro} />
+                <Campo icone={User} rotulo="Nome completo" valor={associado.nome} />
               </div>
-              <Campo icone={MapPin} rotulo="Complemento" valor={endereco.complemento ?? "—"} />
-              <Campo icone={MapPin} rotulo="Bairro" valor={endereco.bairro} />
-              <Campo icone={MapPin} rotulo="Cidade" valor={endereco.cidade} />
-              <Campo icone={MapPin} rotulo="UF" valor={endereco.uf} />
+              <Campo icone={Phone} rotulo="Contato" valor={contato} />
+              <Campo
+                icone={Building2}
+                rotulo="Vínculo institucional"
+                valor={associado.vinculoInstitucional ?? "—"}
+              />
+              <Campo
+                icone={Tag}
+                rotulo="Categoria de sócio"
+                valor={categoriaAtual ?? "Sem categoria"}
+              />
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Endereço não cadastrado.</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Endereço</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {endereco ? (
+              <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+                <Campo icone={MapPin} rotulo="CEP" valor={formatarCep(endereco.cep)} />
+                <Campo icone={MapPin} rotulo="Número" valor={endereco.numero} />
+                <div className="sm:col-span-2">
+                  <Campo icone={MapPin} rotulo="Logradouro" valor={endereco.logradouro} />
+                </div>
+                <Campo icone={MapPin} rotulo="Complemento" valor={endereco.complemento ?? "—"} />
+                <Campo icone={MapPin} rotulo="Bairro" valor={endereco.bairro} />
+                <Campo icone={MapPin} rotulo="Cidade" valor={endereco.cidade} />
+                <Campo icone={MapPin} rotulo="UF" valor={endereco.uf} />
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Endereço não cadastrado.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>

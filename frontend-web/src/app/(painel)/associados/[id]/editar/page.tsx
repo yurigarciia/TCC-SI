@@ -179,6 +179,7 @@ function EditarAssociadoConteudo({
       </div>
 
       <form id={ID_FORM_DADOS} onSubmit={onSubmitDados} className="space-y-6" noValidate>
+      <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Dados pessoais</CardTitle>
@@ -277,6 +278,7 @@ function EditarAssociadoConteudo({
             <CamposEndereco control={control} errors={errors} setValue={setValue} />
           </CardContent>
         </Card>
+      </div>
       </form>
 
       <Card>
