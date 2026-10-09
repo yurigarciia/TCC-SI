@@ -1,3 +1,8 @@
+export enum FormatoMesa {
+  REDONDA = 'redonda',
+  RETANGULAR = 'retangular',
+}
+
 export class Mesa {
   constructor(
     public readonly id: string,
@@ -6,5 +11,6 @@ export class Mesa {
     public readonly capacidade: number,
     public readonly posicaoX: number,
     public readonly posicaoY: number,
+    public readonly formato: FormatoMesa,
   ) {}
 }

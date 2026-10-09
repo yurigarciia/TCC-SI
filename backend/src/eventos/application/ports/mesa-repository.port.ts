@@ -1,4 +1,4 @@
-import { Mesa } from '../../domain/mesa.entity';
+import { FormatoMesa, Mesa } from '../../domain/mesa.entity';
 
 export interface NovaMesa {
   salaoId: string;
@@ -6,6 +6,7 @@ export interface NovaMesa {
   capacidade: number;
   posicaoX: number;
   posicaoY: number;
+  formato?: FormatoMesa;
 }
 
 export interface AtualizacaoMesa {
@@ -13,6 +14,7 @@ export interface AtualizacaoMesa {
   capacidade?: number;
   posicaoX?: number;
   posicaoY?: number;
+  formato?: FormatoMesa;
 }
 
 export abstract class MesaRepositoryPort {

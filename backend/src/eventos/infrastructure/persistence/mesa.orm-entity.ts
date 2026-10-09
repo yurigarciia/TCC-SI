@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { FormatoMesa } from '../../domain/mesa.entity';
 
 @Entity('mesas')
 export class MesaOrmEntity {
@@ -19,4 +20,7 @@ export class MesaOrmEntity {
 
   @Column({ name: 'posicao_y', type: 'int' })
   posicaoY: number;
+
+  @Column({ type: 'varchar', default: FormatoMesa.REDONDA })
+  formato: FormatoMesa;
 }

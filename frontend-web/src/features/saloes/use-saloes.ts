@@ -4,9 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
 import type {
+  AreaEstrutural,
+  AtualizarAreaEstruturalInput,
   AtualizarMesaInput,
   ElementoEstrutural,
   Mesa,
+  NovaAreaEstruturalInput,
   NovaMesaInput,
   NovoElementoEstruturalInput,
   NovoSalaoInput,
@@ -109,6 +112,48 @@ export function useRemoverElemento(salaoId: string) {
   return useMutation({
     mutationFn: (elementoId: string) =>
       apiFetch<void>(`/saloes/${salaoId}/elementos/${elementoId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    },
+  });
+}
+
+// Área nomeada livremente (tablado, bar, pista de dança...) — mesmo raciocínio de
+// parede/porta, mas como retângulo em vez de traço. Ver AreaEstrutural no backend.
+export function useAdicionarArea(salaoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: NovaAreaEstruturalInput) =>
+      apiFetch<AreaEstrutural>(`/saloes/${salaoId}/areas`, {
+        method: "POST",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    },
+  });
+}
+
+// Usado tanto pra arrastar a área pro croqui (só x/y) quanto pra renomear ela.
+export function useAtualizarArea(salaoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ areaId, dados }: { areaId: string; dados: AtualizarAreaEstruturalInput }) =>
+      apiFetch<AreaEstrutural>(`/saloes/${salaoId}/areas/${areaId}`, {
+        method: "PATCH",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
+    },
+  });
+}
+
+export function useRemoverArea(salaoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (areaId: string) =>
+      apiFetch<void>(`/saloes/${salaoId}/areas/${areaId}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chaveDetalhe(salaoId) });
     },

@@ -5,13 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MesaRepositoryPort } from '../ports/mesa-repository.port';
-import { Mesa } from '../../domain/mesa.entity';
+import { FormatoMesa, Mesa } from '../../domain/mesa.entity';
 
 export interface DadosAtualizarMesa {
   numero?: number;
   capacidade?: number;
   posicaoX?: number;
   posicaoY?: number;
+  formato?: FormatoMesa;
 }
 
 // Corrige um achado de QA (conversa com o usuário): dava pra cadastrar mesa, mas não pra corrigir

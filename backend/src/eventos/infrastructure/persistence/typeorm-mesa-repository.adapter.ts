@@ -82,6 +82,7 @@ export class TypeOrmMesaRepositoryAdapter extends MesaRepositoryPort {
       orm.capacidade,
       orm.posicaoX,
       orm.posicaoY,
+      orm.formato,
     );
   }
 }

@@ -4,6 +4,8 @@ export interface Salao {
   capacidadeTotal: number;
 }
 
+export type FormatoMesa = "redonda" | "retangular";
+
 export interface Mesa {
   id: string;
   salaoId: string;
@@ -11,6 +13,7 @@ export interface Mesa {
   capacidade: number;
   posicaoX: number;
   posicaoY: number;
+  formato: FormatoMesa;
 }
 
 export type TipoElementoEstrutural = "parede" | "porta";
@@ -28,10 +31,23 @@ export interface ElementoEstrutural {
   y2: number;
 }
 
+// Área retangular nomeada livremente (ex.: "Tablado", "Bar", "Pista de dança") — sem enum de
+// tipos fixos de propósito, ver nota em AreaEstrutural no backend.
+export interface AreaEstrutural {
+  id: string;
+  salaoId: string;
+  nome: string;
+  x: number;
+  y: number;
+  largura: number;
+  altura: number;
+}
+
 export interface SalaoComMesas {
   salao: Salao;
   mesas: Mesa[];
   elementos: ElementoEstrutural[];
+  areas: AreaEstrutural[];
 }
 
 export interface NovoSalaoInput {
@@ -44,6 +60,7 @@ export interface NovaMesaInput {
   capacidade: number;
   posicaoX: number;
   posicaoY: number;
+  formato?: FormatoMesa;
 }
 
 export interface AtualizarMesaInput {
@@ -51,6 +68,7 @@ export interface AtualizarMesaInput {
   capacidade?: number;
   posicaoX?: number;
   posicaoY?: number;
+  formato?: FormatoMesa;
 }
 
 export interface NovoElementoEstruturalInput {
@@ -59,4 +77,20 @@ export interface NovoElementoEstruturalInput {
   y1: number;
   x2: number;
   y2: number;
+}
+
+export interface NovaAreaEstruturalInput {
+  nome: string;
+  x: number;
+  y: number;
+  largura: number;
+  altura: number;
+}
+
+export interface AtualizarAreaEstruturalInput {
+  nome?: string;
+  x?: number;
+  y?: number;
+  largura?: number;
+  altura?: number;
 }

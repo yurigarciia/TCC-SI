@@ -30,10 +30,15 @@ import { ListarSaloesUseCase } from '../../application/use-cases/listar-saloes.u
 import { ConsultarSalaoUseCase } from '../../application/use-cases/consultar-salao.use-case';
 import { AdicionarElementoEstruturalUseCase } from '../../application/use-cases/adicionar-elemento-estrutural.use-case';
 import { RemoverElementoEstruturalUseCase } from '../../application/use-cases/remover-elemento-estrutural.use-case';
+import { AdicionarAreaEstruturalUseCase } from '../../application/use-cases/adicionar-area-estrutural.use-case';
+import { AtualizarAreaEstruturalUseCase } from '../../application/use-cases/atualizar-area-estrutural.use-case';
+import { RemoverAreaEstruturalUseCase } from '../../application/use-cases/remover-area-estrutural.use-case';
 import { CriarSalaoDto } from './dto/criar-salao.dto';
 import { AdicionarMesaDto } from './dto/adicionar-mesa.dto';
 import { AtualizarMesaDto } from './dto/atualizar-mesa.dto';
 import { CriarElementoEstruturalDto } from './dto/criar-elemento-estrutural.dto';
+import { CriarAreaEstruturalDto } from './dto/criar-area-estrutural.dto';
+import { AtualizarAreaEstruturalDto } from './dto/atualizar-area-estrutural.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('saloes')
@@ -51,6 +56,9 @@ export class SaloesController {
     private readonly consultar: ConsultarSalaoUseCase,
     private readonly adicionarElemento: AdicionarElementoEstruturalUseCase,
     private readonly removerElemento: RemoverElementoEstruturalUseCase,
+    private readonly adicionarArea: AdicionarAreaEstruturalUseCase,
+    private readonly atualizarArea: AtualizarAreaEstruturalUseCase,
+    private readonly removerArea: RemoverAreaEstruturalUseCase,
   ) {}
 
   @Post()
@@ -69,7 +77,8 @@ export class SaloesController {
 
   @Get()
   @ApiOperation({
-    summary: 'Lista os salões cadastrados, paginado, opcionalmente filtrando por nome',
+    summary:
+      'Lista os salões cadastrados, paginado, opcionalmente filtrando por nome',
   })
   @ApiResponse({ status: 200, description: 'Página de salões' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -190,18 +199,81 @@ export class SaloesController {
 
   @Delete(':id/elementos/:elementoId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Remove um traço de parede ou porta do croqui do salão' })
+  @ApiOperation({
+    summary: 'Remove um traço de parede ou porta do croqui do salão',
+  })
   @ApiResponse({ status: 204, description: 'Elemento removido' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  @ApiResponse({ status: 404, description: 'Salão ou elemento não encontrados' })
+  @ApiResponse({
+    status: 404,
+    description: 'Salão ou elemento não encontrados',
+  })
   removerElementoDoSalao(
     @Param('id', ParseUUIDPipe) id: string,
     @Param('elementoId', ParseUUIDPipe) elementoId: string,
   ) {
     return this.removerElemento.execute(id, elementoId);
+  }
+
+  @Post(':id/areas')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary:
+      'Adiciona uma área retangular nomeada ao croqui do salão (ex.: tablado, bar, pista de dança)',
+  })
+  @ApiResponse({ status: 201, description: 'Área criada' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão não encontrado' })
+  adicionarAreaAoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CriarAreaEstruturalDto,
+  ) {
+    return this.adicionarArea.execute(id, dto);
+  }
+
+  @Patch(':id/areas/:areaId')
+  @ApiOperation({
+    summary: 'Move, redimensiona ou renomeia uma área do croqui do salão',
+  })
+  @ApiResponse({ status: 200, description: 'Área atualizada' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão ou área não encontrados' })
+  atualizarAreaDoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('areaId', ParseUUIDPipe) areaId: string,
+    @Body() dto: AtualizarAreaEstruturalDto,
+  ) {
+    return this.atualizarArea.execute(id, areaId, dto);
+  }
+
+  @Delete(':id/areas/:areaId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove uma área do croqui do salão' })
+  @ApiResponse({ status: 204, description: 'Área removida' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Salão ou área não encontrados' })
+  removerAreaDoSalao(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('areaId', ParseUUIDPipe) areaId: string,
+  ) {
+    return this.removerArea.execute(id, areaId);
   }
 }

@@ -238,6 +238,9 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
   });
 
   it('cria evento vinculado a um croqui, configura mesas e ingresso, e publica', async () => {
+    // Timeout maior que o padrão do Jest (5s) — mesmo motivo do beforeAll de
+    // ingressos.e2e-spec.ts: várias chamadas sequenciais (criar evento, configurar mesas,
+    // configurar ingresso, publicar, consultar) contra o Postgres remoto (Neon).
     const evento = await request(app.getHttpServer())
       .post('/eventos')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -279,7 +282,7 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     expect(body.evento.status).toBe('publicado');
     expect(body.mesas).toHaveLength(1);
     expect(body.ingresso.quantidadeDisponivel).toBe(100);
-  });
+  }, 20000);
 
   it('lista o evento publicado na vitrine pública, sem exigir autenticação', async () => {
     const response = await request(app.getHttpServer())

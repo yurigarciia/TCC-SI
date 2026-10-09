@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsPositive, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, Min } from 'class-validator';
+import { FormatoMesa } from '../../../domain/mesa.entity';
 
 export class AtualizarMesaDto {
   @ApiPropertyOptional({ example: 1 })
@@ -25,4 +26,9 @@ export class AtualizarMesaDto {
   @IsInt()
   @Min(0)
   posicaoY?: number;
+
+  @ApiPropertyOptional({ enum: FormatoMesa, example: FormatoMesa.REDONDA })
+  @IsOptional()
+  @IsEnum(FormatoMesa)
+  formato?: FormatoMesa;
 }

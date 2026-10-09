@@ -6,13 +6,14 @@ import {
 } from '@nestjs/common';
 import { SalaoRepositoryPort } from '../ports/salao-repository.port';
 import { MesaRepositoryPort } from '../ports/mesa-repository.port';
-import { Mesa } from '../../domain/mesa.entity';
+import { FormatoMesa, Mesa } from '../../domain/mesa.entity';
 
 export interface DadosNovaMesa {
   numero: number;
   capacidade: number;
   posicaoX: number;
   posicaoY: number;
+  formato?: FormatoMesa;
 }
 
 // croqui-salao.json: "Valida numeração de mesas" — garante que não há números de mesa duplicados
