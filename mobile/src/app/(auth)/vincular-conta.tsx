@@ -8,6 +8,7 @@ import { AuthHeader } from "@/components/auth-header";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useVincularConta } from "@/features/auth/use-vincular-conta";
 import { ApiError } from "@/lib/api-client";
+import { cores } from "@/theme/paper-theme";
 
 const vincularSchema = z.object({
   cpf: z.string().min(11, "Informe um CPF válido (11 dígitos)."),
@@ -146,7 +147,7 @@ export default function VincularContaScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: "#7A2331" },
+  safeArea: { flex: 1, backgroundColor: cores.sidebar },
   scroll: { flexGrow: 1, backgroundColor: "#FAF7F1" },
   card: {
     marginHorizontal: 20,

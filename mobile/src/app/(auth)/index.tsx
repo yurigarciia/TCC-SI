@@ -10,6 +10,7 @@ import { AuthHeader } from "@/components/auth-header";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useLogin } from "@/features/auth/use-login";
 import { ApiError } from "@/lib/api-client";
+import { cores } from "@/theme/paper-theme";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido."),
@@ -135,7 +136,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: "#7A2331" },
+  safeArea: { flex: 1, backgroundColor: cores.sidebar },
   scroll: { flexGrow: 1, backgroundColor: "#FAF7F1" },
   card: {
     marginHorizontal: 20,

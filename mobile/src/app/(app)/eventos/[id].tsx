@@ -14,7 +14,7 @@ import {
 import type { FormaPagamentoReserva, MesaNoMapa } from "@/features/eventos/types";
 import { formatarDataHora, formatarMoeda } from "@/lib/format";
 import { ApiError } from "@/lib/api-client";
-import { paperTheme } from "@/theme/paper-theme";
+import { cores, paperTheme } from "@/theme/paper-theme";
 
 export default function EventoDetalheScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -248,6 +248,6 @@ const styles = StyleSheet.create({
   descricao: { color: "#2B241D", marginTop: 4 },
   tituloSecao: { color: "#2B241D", fontWeight: "700" },
   legenda: { flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 4 },
-  preco: { color: "#7A2331", fontWeight: "700" },
+  preco: { color: cores.primaria, fontWeight: "700" },
   botaoComprar: { marginTop: 8, borderRadius: 12 },
 });

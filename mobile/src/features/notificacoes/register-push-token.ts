@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
+import { cores } from "@/theme/paper-theme";
 
 // T-MOB-005 — lembrete de inadimplência e confirmações de reserva/compra chegam como push. Padrão
 // oficial da doc do expo-notifications (v57): canal Android dedicado, permissão, depois o token.
@@ -25,7 +26,7 @@ export async function registrarParaPushNotifications(): Promise<string | null> {
       name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#7A2331",
+      lightColor: cores.primaria,
     });
   }
 

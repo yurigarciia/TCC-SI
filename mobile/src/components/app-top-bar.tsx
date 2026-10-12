@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { useAuth } from "@/features/auth/auth-context";
 import { LogoMark } from "@/components/logo-mark";
+import { paperTheme } from "@/theme/paper-theme";
 
 // Barra de topo compartilhada pelas abas de (app) — nome do app + botão "Sair" sempre acessível,
 // não só na aba Início.
@@ -37,6 +38,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#DDD0BC",
   },
   marcaLinha: { flexDirection: "row", alignItems: "center", gap: 10 },
-  marca: { color: "#7A2331", fontWeight: "700", letterSpacing: 0.5 },
+  marca: { color: paperTheme.colors.primary, fontWeight: "700", letterSpacing: 0.5 },
   titulo: { color: "#2B241D", fontWeight: "700" },
 });

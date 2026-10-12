@@ -8,6 +8,7 @@ import { z } from "zod";
 import { AuthHeader } from "@/components/auth-header";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useAutoCadastro } from "@/features/auth/use-auto-cadastro";
+import { cores } from "@/theme/paper-theme";
 import { ApiError } from "@/lib/api-client";
 import { buscarEnderecoPorCep } from "@/lib/cep";
 
@@ -288,8 +289,8 @@ const CAMPOS_CONTA: CampoConfig<CampoSimples>[] = [
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: "#7A2331" },
-  scroll: { flexGrow: 1, backgroundColor: "#FAF7F1" },
+  safeArea: { flex: 1, backgroundColor: cores.sidebar },
+  scroll: { flexGrow: 1, backgroundColor: cores.fundo },
   card: {
     marginHorizontal: 20,
     marginTop: -20,
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   field: { backgroundColor: "#FFFFFF" },
-  secao: { marginTop: 8, marginBottom: 4, marginLeft: 4, color: "#7A2331" },
+  secao: { marginTop: 8, marginBottom: 4, marginLeft: 4, color: cores.primaria },
   erroCampo: { color: "#B3261E", fontSize: 12, marginTop: -4, marginBottom: 4, marginLeft: 4 },
   button: { marginTop: 12, borderRadius: 12 },
   buttonContent: { paddingVertical: 6 },

@@ -8,7 +8,7 @@ import { useMinhasMensalidades, usePagarMinhaMensalidadeOnline } from "@/feature
 import type { Mensalidade } from "@/features/mensalidades/types";
 import { formatarCompetencia, formatarData, formatarMoeda } from "@/lib/format";
 import { ApiError } from "@/lib/api-client";
-import { paperTheme } from "@/theme/paper-theme";
+import { cores, paperTheme } from "@/theme/paper-theme";
 
 // RF05/RF06/RF08 (T-MOB-002) — situação atual em destaque (a mensalidade mais recente que ainda
 // não está paga, se houver) + histórico completo abaixo. "Pagar online" encadeia iniciar+confirmar
@@ -152,11 +152,11 @@ const styles = StyleSheet.create({
   heroCard: { borderRadius: 20, backgroundColor: "#FFFFFF", padding: 20, gap: 6 },
   heroHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   heroTitulo: { color: "#2B241D", fontWeight: "700" },
-  valor: { color: "#7A2331", fontWeight: "700" },
+  valor: { color: cores.primaria, fontWeight: "700" },
   botaoPagar: { marginTop: 12, borderRadius: 12 },
   botaoPagarConteudo: { paddingVertical: 6 },
   emDia: { alignItems: "center", gap: 4, paddingVertical: 8 },
-  avatarEmDia: { backgroundColor: "#F1D9DC", marginBottom: 4 },
+  avatarEmDia: { backgroundColor: cores.primariaClara, marginBottom: 4 },
   tituloHistorico: { color: "#2B241D", fontWeight: "700", marginTop: 8 },
   card: { borderRadius: 16, backgroundColor: "#FFFFFF", padding: 16, gap: 4 },
   cardHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },

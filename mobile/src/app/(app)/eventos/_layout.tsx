@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { cores } from "@/theme/paper-theme";
 
 // Sub-navegação da aba Eventos (lista → detalhe) — usa o header nativo do Stack aqui (diferente
 // das telas de auth), já que é só título + botão de voltar padrão, sem precisar do banner em
@@ -7,7 +8,7 @@ export default function EventosLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#7A2331" },
+        headerStyle: { backgroundColor: cores.sidebar },
         headerTintColor: "#FDF8F3",
         headerTitleStyle: { fontWeight: "700" },
       }}
