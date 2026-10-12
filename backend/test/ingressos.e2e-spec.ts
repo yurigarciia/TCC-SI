@@ -204,7 +204,10 @@ describe('Ingressos (e2e)', () => {
     const outraCategoria = await request(app.getHttpServer())
       .post('/categorias-socio')
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ nome: 'Categoria sem preço — ingressos e2e', valorMensalidade: 30 });
+      .send({
+        nome: 'Categoria sem preço — ingressos e2e',
+        valorMensalidade: 30,
+      });
     const outraCategoriaId = (outraCategoria.body as { id: string }).id;
 
     const resposta = await request(app.getHttpServer())
@@ -377,7 +380,9 @@ describe('Ingressos (e2e)', () => {
       .get(`/eventos/${eventoAssociadoId}/meu-preco-ingresso`)
       .set('Authorization', `Bearer ${associadoToken}`)
       .expect(200);
-    expect(Number((meuPreco.body as { preco: number | string }).preco)).toBe(20); // padrão da entidade pra essa categoria
+    expect(Number((meuPreco.body as { preco: number | string }).preco)).toBe(
+      20,
+    ); // padrão da entidade pra essa categoria
 
     // administrador não deve conseguir usar a rota exclusiva do associado
     await request(app.getHttpServer())
@@ -429,6 +434,55 @@ describe('Ingressos (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(403);
 
+    // Associado leva acompanhante — ingresso pra não-sócio/criança, mesmo canal/pagamento do
+    // ingresso próprio, mas sem precisar de categoria de sócio nem cadastro do acompanhante.
+    const precosAcompanhante = await request(app.getHttpServer())
+      .get(`/eventos/${eventoAssociadoId}/precos-ingresso-acompanhante`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    const precosCorpo = precosAcompanhante.body as {
+      naoSocio: number | string | null;
+      crianca: number | string | null;
+    };
+    expect(Number(precosCorpo.naoSocio)).toBe(40);
+    expect(Number(precosCorpo.crianca)).toBe(5);
+
+    const compraAcompanhante = await request(app.getHttpServer())
+      .post(`/eventos/${eventoAssociadoId}/ingressos-acompanhante`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .send({
+        nomeComprador: 'Amigo do Associado',
+        perfilComprador: 'nao_socio',
+      })
+      .expect(201);
+    const ingressoAcompanhante = compraAcompanhante.body as {
+      nomeComprador: string;
+      perfilComprador: string;
+      preco: number | string;
+      canal: string;
+    };
+    expect(ingressoAcompanhante.nomeComprador).toBe('Amigo do Associado');
+    expect(ingressoAcompanhante.perfilComprador).toBe('nao_socio');
+    expect(Number(ingressoAcompanhante.preco)).toBe(40);
+    expect(ingressoAcompanhante.canal).toBe('app');
+
+    // tentar comprar acompanhante como "sócio" é rejeitado — é o caminho de /meu-ingresso
+    await request(app.getHttpServer())
+      .post(`/eventos/${eventoAssociadoId}/ingressos-acompanhante`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .send({ nomeComprador: 'Tentativa Inválida', perfilComprador: 'socio' })
+      .expect(400);
+
+    // o ingresso do acompanhante aparece em "Meus Ingressos" de quem comprou (agora 2: o
+    // próprio + o do acompanhante)
+    const meusIngressosComAcompanhante = await request(app.getHttpServer())
+      .get('/ingressos/minhas')
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(200);
+    expect((meusIngressosComAcompanhante.body as Array<unknown>).length).toBe(
+      2,
+    );
+
     await dataSource.query('DELETE FROM ingressos WHERE evento_id = $1', [
       eventoAssociadoId,
     ]);
@@ -447,5 +501,5 @@ describe('Ingressos (e2e)', () => {
     if (usuarioId) {
       await dataSource.query('DELETE FROM usuarios WHERE id = $1', [usuarioId]);
     }
-  }, 15000);
+  }, 40000);
 });

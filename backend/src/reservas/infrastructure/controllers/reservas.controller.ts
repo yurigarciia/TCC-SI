@@ -24,6 +24,7 @@ import type { JwtPayload } from '../../../identidade/infrastructure/security/jwt
 import { SolicitarReservaUseCase } from '../../application/use-cases/solicitar-reserva.use-case';
 import { ConfirmarReservaPendenteUseCase } from '../../application/use-cases/confirmar-reserva-pendente.use-case';
 import { CancelarReservaUseCase } from '../../application/use-cases/cancelar-reserva.use-case';
+import { CancelarMinhaReservaUseCase } from '../../application/use-cases/cancelar-minha-reserva.use-case';
 import { ConsultarMapaMesasUseCase } from '../../application/use-cases/consultar-mapa-mesas.use-case';
 import { TransferirMesaReservaUseCase } from '../../application/use-cases/transferir-mesa-reserva.use-case';
 import { TransferirTitularReservaUseCase } from '../../application/use-cases/transferir-titular-reserva.use-case';
@@ -44,6 +45,7 @@ export class ReservasController {
     private readonly solicitar: SolicitarReservaUseCase,
     private readonly confirmar: ConfirmarReservaPendenteUseCase,
     private readonly cancelar: CancelarReservaUseCase,
+    private readonly cancelarMinha: CancelarMinhaReservaUseCase,
     private readonly consultarMapa: ConsultarMapaMesasUseCase,
     private readonly transferirMesa: TransferirMesaReservaUseCase,
     private readonly transferirTitular: TransferirTitularReservaUseCase,
@@ -127,6 +129,31 @@ export class ReservasController {
       mesaId,
       dto.formaPagamento,
     );
+  }
+
+  // Achado numa conversa com o usuário: o associado não tinha como desistir de uma mesa
+  // reservada pelo próprio app — RF15 (cancelar) já existia, mas só pra diretoria. Mesmo
+  // caminho de "solicitar-minha", confere posse antes de cancelar (ver
+  // CancelarMinhaReservaUseCase).
+  @Post('reservas/:id/cancelar-minha')
+  @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary: 'Associado cancela a própria reserva, liberando a mesa',
+  })
+  @ApiResponse({ status: 201, description: 'Reserva cancelada' })
+  @ApiResponse({ status: 400, description: 'Reserva já está cancelada' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Usuário autenticado não é associado, ou a reserva não pertence a ele',
+  })
+  @ApiResponse({ status: 404, description: 'Reserva não encontrada' })
+  cancelarMinhaReserva(
+    @CurrentUser() usuario: JwtPayload,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.cancelarMinha.execute(usuario.sub, id);
   }
 
   @Post('reservas/:id/confirmar')

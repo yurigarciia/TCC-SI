@@ -29,12 +29,14 @@ import { EmitirIngressoUseCase } from '../../application/use-cases/emitir-ingres
 import { RegistrarCheckinUseCase } from '../../application/use-cases/registrar-checkin.use-case';
 import { ListarIngressosEventoUseCase } from '../../application/use-cases/listar-ingressos-evento.use-case';
 import { ComprarMeuIngressoUseCase } from '../../application/use-cases/comprar-meu-ingresso.use-case';
+import { ComprarIngressoAcompanhanteUseCase } from '../../application/use-cases/comprar-ingresso-acompanhante.use-case';
 import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/consultar-precos-ingresso.use-case';
 import { ConsultarMeuPrecoIngressoUseCase } from '../../application/use-cases/consultar-meu-preco-ingresso.use-case';
 import { ConsultarResumoIngressosUseCase } from '../../application/use-cases/consultar-resumo-ingressos.use-case';
 import { ListarMeusIngressosUseCase } from '../../application/use-cases/listar-meus-ingressos.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
+import { ComprarIngressoAcompanhanteDto } from './dto/comprar-ingresso-acompanhante.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 
 @ApiTags('ingressos')
@@ -50,6 +52,7 @@ export class IngressosController {
     private readonly checkin: RegistrarCheckinUseCase,
     private readonly listar: ListarIngressosEventoUseCase,
     private readonly comprarMeu: ComprarMeuIngressoUseCase,
+    private readonly comprarAcompanhante: ComprarIngressoAcompanhanteUseCase,
     private readonly consultarPrecos: ConsultarPrecosIngressoUseCase,
     private readonly consultarMeuPreco: ConsultarMeuPrecoIngressoUseCase,
     private readonly consultarResumo: ConsultarResumoIngressosUseCase,
@@ -125,11 +128,13 @@ export class IngressosController {
   @Get('eventos/:eventoId/meu-preco-ingresso')
   @Roles(Perfil.ASSOCIADO)
   @ApiOperation({
-    summary: 'Consulta o preço de ingresso avulso que o associado logado pagaria neste evento',
+    summary:
+      'Consulta o preço de ingresso avulso que o associado logado pagaria neste evento',
   })
   @ApiResponse({
     status: 200,
-    description: 'Preço efetivo (null se o associado não tem categoria, ou preço não configurado)',
+    description:
+      'Preço efetivo (null se o associado não tem categoria, ou preço não configurado)',
   })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({
@@ -147,6 +152,80 @@ export class IngressosController {
     return this.consultarMeuPreco.execute(usuario.sub, eventoId);
   }
 
+  // Achado numa conversa com o usuário: o app só deixava comprar o próprio ingresso (sócio) —
+  // sem jeito de levar acompanhante (família/amigo sem cadastro) pro mesmo evento sem precisar
+  // procurar a diretoria. Preço de não-sócio/criança é fixo (não varia por categoria, diferente
+  // do sócio) — reaproveita a mesma resolução do painel administrativo
+  // (ConsultarPrecosIngressoUseCase), só expondo os dois campos relevantes pro associado.
+  @Get('eventos/:eventoId/precos-ingresso-acompanhante')
+  @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Consulta os preços de ingresso avulso para não-sócio e criança neste evento (compra de acompanhante)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Preços por perfil (null quando não configurado)',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  async consultarPrecosAcompanhante(
+    @Param('eventoId', ParseUUIDPipe) eventoId: string,
+  ) {
+    const { naoSocio, crianca } = await this.consultarPrecos.execute(eventoId);
+    return { naoSocio, crianca };
+  }
+
+  // RF12 (ampliação) — associado compra ingresso para um acompanhante sem cadastro (não-sócio ou
+  // criança), um por chamada; o app repete a chamada pra comprar mais de um. Sempre canal app,
+  // sempre paga online, mesmo padrão de ComprarMeuIngressoUseCase — só muda o perfil e o nome
+  // impresso no ingresso, que não é o do associado logado.
+  @Post('eventos/:eventoId/ingressos-acompanhante')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(Perfil.ASSOCIADO)
+  @ApiOperation({
+    summary:
+      'Associado compra um ingresso para um acompanhante (não-sócio ou criança) neste evento',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Ingresso emitido e cobrança online iniciada',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é associado',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Perfil inválido (deve ser não-sócio ou criança), ingresso não configurado, ou preço não configurado',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Evento não encontrado, ou nenhum associado vinculado ao usuário',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Ingressos esgotados para este evento',
+  })
+  comprarIngressoAcompanhante(
+    @CurrentUser() usuario: JwtPayload,
+    @Param('eventoId', ParseUUIDPipe) eventoId: string,
+    @Body() dto: ComprarIngressoAcompanhanteDto,
+  ) {
+    return this.comprarAcompanhante.execute(
+      usuario.sub,
+      eventoId,
+      dto.perfilComprador,
+      dto.nomeComprador,
+    );
+  }
+
   @Put('precos-ingresso')
   @ApiOperation({
     summary:
@@ -160,7 +239,11 @@ export class IngressosController {
     description: 'Usuário autenticado não é administrador',
   })
   definirPrecoPadraoDaEntidade(@Body() dto: DefinirPrecoDto) {
-    return this.definirPrecoPadrao.execute(dto.perfil, dto.preco, dto.categoriaSocioId);
+    return this.definirPrecoPadrao.execute(
+      dto.perfil,
+      dto.preco,
+      dto.categoriaSocioId,
+    );
   }
 
   @Put('eventos/:eventoId/precos-ingresso')
@@ -195,7 +278,8 @@ export class IngressosController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Preço por perfil (null quando nenhum preço foi configurado ainda)',
+    description:
+      'Preço por perfil (null quando nenhum preço foi configurado ainda)',
   })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({

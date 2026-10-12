@@ -454,5 +454,25 @@ describe('Reservas de Mesa (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ formaPagamento: 'online' })
       .expect(403);
-  });
+
+    // RF15 pelo associado — desistir da própria mesa sem precisar da diretoria
+    const reservaBody = reserva.body as { id: string };
+
+    // administrador não deve conseguir usar a rota exclusiva do associado
+    await request(app.getHttpServer())
+      .post(`/reservas/${reservaBody.id}/cancelar-minha`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .post(`/reservas/${reservaBody.id}/cancelar-minha`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(201);
+
+    // já cancelada — recusa cancelar de novo
+    await request(app.getHttpServer())
+      .post(`/reservas/${reservaBody.id}/cancelar-minha`)
+      .set('Authorization', `Bearer ${associadoToken}`)
+      .expect(400);
+  }, 20000);
 });

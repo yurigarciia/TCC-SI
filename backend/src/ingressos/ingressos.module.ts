@@ -8,6 +8,7 @@ import { EmitirIngressoUseCase } from './application/use-cases/emitir-ingresso.u
 import { RegistrarCheckinUseCase } from './application/use-cases/registrar-checkin.use-case';
 import { ListarIngressosEventoUseCase } from './application/use-cases/listar-ingressos-evento.use-case';
 import { ComprarMeuIngressoUseCase } from './application/use-cases/comprar-meu-ingresso.use-case';
+import { ComprarIngressoAcompanhanteUseCase } from './application/use-cases/comprar-ingresso-acompanhante.use-case';
 import { ConsultarPrecosIngressoUseCase } from './application/use-cases/consultar-precos-ingresso.use-case';
 import { ConsultarMeuPrecoIngressoUseCase } from './application/use-cases/consultar-meu-preco-ingresso.use-case';
 import { ConsultarResumoIngressosUseCase } from './application/use-cases/consultar-resumo-ingressos.use-case';
@@ -40,6 +41,7 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
     RegistrarCheckinUseCase,
     ListarIngressosEventoUseCase,
     ComprarMeuIngressoUseCase,
+    ComprarIngressoAcompanhanteUseCase,
     ConsultarPrecosIngressoUseCase,
     ConsultarMeuPrecoIngressoUseCase,
     ConsultarResumoIngressosUseCase,

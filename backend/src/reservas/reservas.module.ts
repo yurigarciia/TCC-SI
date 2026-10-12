@@ -4,6 +4,7 @@ import { ReservaRepositoryPort } from './application/ports/reserva-repository.po
 import { SolicitarReservaUseCase } from './application/use-cases/solicitar-reserva.use-case';
 import { ConfirmarReservaPendenteUseCase } from './application/use-cases/confirmar-reserva-pendente.use-case';
 import { CancelarReservaUseCase } from './application/use-cases/cancelar-reserva.use-case';
+import { CancelarMinhaReservaUseCase } from './application/use-cases/cancelar-minha-reserva.use-case';
 import { ConsultarMapaMesasUseCase } from './application/use-cases/consultar-mapa-mesas.use-case';
 import { TransferirMesaReservaUseCase } from './application/use-cases/transferir-mesa-reserva.use-case';
 import { TransferirTitularReservaUseCase } from './application/use-cases/transferir-titular-reserva.use-case';
@@ -32,6 +33,7 @@ import { NotificationsModule } from '../shared/notifications/notifications.modul
     SolicitarReservaUseCase,
     ConfirmarReservaPendenteUseCase,
     CancelarReservaUseCase,
+    CancelarMinhaReservaUseCase,
     ConsultarMapaMesasUseCase,
     TransferirMesaReservaUseCase,
     TransferirTitularReservaUseCase,
