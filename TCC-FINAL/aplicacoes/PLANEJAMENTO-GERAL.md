@@ -1499,6 +1499,40 @@ frentes de frontend-web e mobile.
   renderiza sem erro/crash, nenhum token espúrio registrado no backend (esperado — web não tem
   `projectId` de EAS nem suporte completo de push do `expo-notifications`).
 
+#### Ticket: T-BE-017 / T-MOB-006 Ingresso de acompanhante + fluxo único de compra no app
+- **Priority:** Should
+- **Status:** Done
+- **Owner:** Unassigned
+- **Scope:** Achado numa revisão de usabilidade do app com o usuário: a tela de evento mostrava
+  o mapa de mesas "solto" sem instrução e, embaixo, um cartão de ingresso avulso sem nenhum
+  fluxo guiado — e comprar ingresso avulso só cobria o próprio associado (sócio), sem jeito de
+  levar acompanhante (família/amigo sem cadastro) sem precisar procurar a diretoria.
+- **Acceptance Criteria:** Tela de evento tem um único ponto de entrada ("Comprar ingressos /
+  Reservar mesa") que pergunta mesa x avulso; no caminho avulso, associado monta uma lista (ele
+  mesmo + acompanhantes não-sócio/criança) e compra todos de uma vez; depois da compra, o app
+  leva direto pra aba "Ingressos" (onde o QR de cada ingresso fica disponível).
+- **Validation Steps:** `npm run build`/`npm run lint`/`npm run test:e2e` (backend, 11/11 em
+  `ingressos.e2e-spec.ts`) e `npx tsc --noEmit`/`npm run lint` (mobile).
+- **Notes:** Backend: `ComprarIngressoAcompanhanteUseCase` (reaproveita `EmitirIngressoUseCase`,
+  mesmo canal/pagamento de `ComprarMeuIngressoUseCase`, mas recusa perfil sócio — isso é
+  `/meu-ingresso`), endpoints `POST /eventos/:eventoId/ingressos-acompanhante` e
+  `GET /eventos/:eventoId/precos-ingresso-acompanhante` (ambos `@Roles(ASSOCIADO)`). O ingresso
+  do acompanhante guarda `associadoId` de quem comprou (pra aparecer em "Meus Ingressos" de quem
+  pagou), mas `nomeComprador`/perfil são do acompanhante. Mobile: `eventos/[id].tsx` reescrito —
+  `FluxoIngressoWizard` (passos "opções" → "avulso"/"novo acompanhante") substitui o cartão
+  avulso antigo; croqui ganhou instrução explícita acima do mapa; reserva de mesa agora mostra
+  Snackbar de sucesso (antes só fechava o diálogo, sem nenhuma confirmação visual).
+- **Adendo (RF15 pelo associado + explicação do status "Pendente"):** achado na mesma revisão —
+  RF15 (cancelar reserva) já existia, mas só pela diretoria (rota admin); o associado não tinha
+  como desistir de uma mesa sem ligar pra diretoria, e o selo "Pendente" em "Minhas Reservas" não
+  explicava o que significava (aguardando pagamento presencial). `CancelarMinhaReservaUseCase`
+  (novo) confere posse da reserva antes de cancelar; endpoint
+  `POST /reservas/:id/cancelar-minha` (`@Roles(ASSOCIADO)`). Mobile: `reservas.tsx` ganhou texto
+  explicativo abaixo do selo "Pendente" e botão "Cancelar reserva" com diálogo de confirmação.
+  3 testes novos em `reservas.e2e-spec.ts` (cancelar com sucesso, bloqueio pro admin, recusa
+  cancelar de novo), suíte isolada 8/8; `ingressos.e2e-spec.ts` isolada 11/11 (2 cenários novos:
+  compra de acompanhante, recusa comprar acompanhante como sócio).
+
 ## 8. Perguntas em Aberto
 
 1. **Prazo do lembrete de inadimplência**: quantos dias após o vencimento o sistema dispara o
