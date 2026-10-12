@@ -1,15 +1,25 @@
+import { useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar, Button, Surface, Text } from "react-native-paper";
+import { Avatar, Button, Dialog, Portal, Surface, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppTopBar } from "@/components/app-top-bar";
+import { ErrorSnackbar } from "@/components/error-snackbar";
 import { StatusReservaBadge } from "@/components/status-reserva-badge";
 import { useMinhasReservas } from "@/features/reservas/use-minhas-reservas";
+import { useCancelarMinhaReserva } from "@/features/reservas/use-cancelar-minha-reserva";
 import type { ReservaDoAssociado } from "@/features/reservas/types";
+import { ApiError } from "@/lib/api-client";
 import { paperTheme } from "@/theme/paper-theme";
 
 const ROTULO_CANAL: Record<ReservaDoAssociado["canal"], string> = {
   app: "Reservada pelo app",
   mediado: "Registrada pela diretoria",
+};
+
+const EXPLICACAO_STATUS: Record<ReservaDoAssociado["status"], string | null> = {
+  confirmada: null,
+  pendente: "Aguardando pagamento presencial — leve o valor da mesa no dia do evento.",
+  cancelada: null,
 };
 
 // RF13 (T-MOB-003) — leitura simples, sem mutation: valida o padrão de consumo da API antes das
@@ -75,12 +85,17 @@ export default function MinhasReservasScreen() {
 }
 
 function ReservaCard({ reserva }: { reserva: ReservaDoAssociado }) {
+  const [confirmarCancelamento, setConfirmarCancelamento] = useState(false);
+  const cancelar = useCancelarMinhaReserva();
+
   const dataFormatada = reserva.evento
     ? new Date(reserva.evento.data).toLocaleString("pt-BR", {
         dateStyle: "short",
         timeStyle: "short",
       })
     : null;
+  const explicacao = EXPLICACAO_STATUS[reserva.status];
+  const podeCancelar = reserva.status !== "cancelada";
 
   return (
     <Surface style={styles.card} elevation={1}>
@@ -97,6 +112,12 @@ function ReservaCard({ reserva }: { reserva: ReservaDoAssociado }) {
         </Text>
       )}
 
+      {explicacao && (
+        <Text variant="bodySmall" style={styles.textoExplicacao}>
+          {explicacao}
+        </Text>
+      )}
+
       <View style={styles.detalhes}>
         <DetalheLinha
           icone="table-chair"
@@ -107,6 +128,57 @@ function ReservaCard({ reserva }: { reserva: ReservaDoAssociado }) {
         )}
         <DetalheLinha icone="information-outline" texto={ROTULO_CANAL[reserva.canal]} />
       </View>
+
+      {podeCancelar && (
+        <Button
+          mode="outlined"
+          icon="close-circle-outline"
+          textColor="#B3261E"
+          style={styles.botaoCancelar}
+          onPress={() => setConfirmarCancelamento(true)}
+        >
+          Cancelar reserva
+        </Button>
+      )}
+
+      <Portal>
+        <Dialog visible={confirmarCancelamento} onDismiss={() => setConfirmarCancelamento(false)}>
+          <Dialog.Title>Cancelar reserva?</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              A mesa {reserva.mesa ? `${reserva.mesa.numero} ` : ""}fica livre pra outra pessoa
+              reservar. Essa ação não pode ser desfeita pelo app.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setConfirmarCancelamento(false)} disabled={cancelar.isPending}>
+              Voltar
+            </Button>
+            <Button
+              textColor="#B3261E"
+              loading={cancelar.isPending}
+              disabled={cancelar.isPending}
+              onPress={() =>
+                cancelar.mutate(reserva.id, {
+                  onSuccess: () => setConfirmarCancelamento(false),
+                })
+              }
+            >
+              Cancelar reserva
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      <ErrorSnackbar
+        visible={cancelar.isError}
+        mensagem={
+          cancelar.error instanceof ApiError
+            ? cancelar.error.message
+            : "Não foi possível cancelar a reserva. Tente novamente."
+        }
+        onDismiss={() => cancelar.reset()}
+      />
     </Surface>
   );
 }
@@ -156,4 +228,6 @@ const styles = StyleSheet.create({
   detalhes: { marginTop: 4, gap: 8 },
   detalheLinha: { flexDirection: "row", alignItems: "center", gap: 10 },
   detalheIcone: { backgroundColor: "#F1EAE0" },
+  textoExplicacao: { color: "#8A5A1F", backgroundColor: "#F3E3C8", padding: 8, borderRadius: 8 },
+  botaoCancelar: { marginTop: 8, borderColor: "#B3261E" },
 });
