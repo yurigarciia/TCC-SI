@@ -14,3 +14,13 @@ export interface CriarAdministradorInput {
   email: string;
   senha: string;
 }
+
+export interface AtualizarUsuarioInput {
+  nome?: string;
+  email?: string;
+}
+
+export interface AlterarSenhaInput {
+  senhaAtual: string;
+  senhaNova: string;
+}

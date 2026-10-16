@@ -3,7 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { construirQueryPaginacao, LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
-import type { CriarAdministradorInput, Usuario } from "./types";
+import type {
+  AlterarSenhaInput,
+  AtualizarUsuarioInput,
+  CriarAdministradorInput,
+  Usuario,
+} from "./types";
 
 const CHAVE_LISTA = ["usuarios"] as const;
 
@@ -35,5 +40,40 @@ export function useCriarAdministrador() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
     },
+  });
+}
+
+export function useAtualizarUsuario(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: AtualizarUsuarioInput) =>
+      apiFetch<Usuario>(`/auth/usuarios/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
+    },
+  });
+}
+
+export function useExcluirUsuario() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiFetch(`/auth/usuarios/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_LISTA });
+    },
+  });
+}
+
+// Self-service — não tem chave de cache pra invalidar, não altera nenhuma lista.
+export function useAlterarSenha() {
+  return useMutation({
+    mutationFn: (dados: AlterarSenhaInput) =>
+      apiFetch("/auth/alterar-senha", {
+        method: "POST",
+        body: JSON.stringify(dados),
+      }),
   });
 }
