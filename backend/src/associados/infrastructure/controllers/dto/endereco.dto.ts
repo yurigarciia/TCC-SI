@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, Length, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class EnderecoDto {
   @ApiProperty({ example: '97000-000' })
@@ -10,26 +16,31 @@ export class EnderecoDto {
   @ApiProperty({ example: 'Rua dos Andradas' })
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   logradouro: string;
 
   @ApiProperty({ example: '123' })
   @IsString()
   @MinLength(1)
+  @MaxLength(20)
   numero: string;
 
   @ApiPropertyOptional({ example: 'Apto 101' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   complemento?: string;
 
   @ApiProperty({ example: 'Centro' })
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   bairro: string;
 
   @ApiProperty({ example: 'Santa Maria' })
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   cidade: string;
 
   @ApiProperty({ example: 'RS' })

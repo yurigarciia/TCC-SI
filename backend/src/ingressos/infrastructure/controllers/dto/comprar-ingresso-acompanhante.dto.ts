@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, MinLength } from 'class-validator';
+import { IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
 import { PerfilComprador } from '../../../domain/ingresso.entity';
 
 export class ComprarIngressoAcompanhanteDto {
   @ApiProperty({ example: 'Maria Teste' })
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   nomeComprador: string;
 
   @ApiProperty({

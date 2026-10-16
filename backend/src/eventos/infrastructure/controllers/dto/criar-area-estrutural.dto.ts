@@ -1,10 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsPositive, IsString, Min, MinLength } from 'class-validator';
+import {
+  IsInt,
+  IsPositive,
+  IsString,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class CriarAreaEstruturalDto {
   @ApiProperty({ example: 'Tablado' })
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   nome: string;
 
   @ApiProperty({ example: 40 })

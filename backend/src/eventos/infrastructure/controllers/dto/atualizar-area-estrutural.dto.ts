@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
@@ -13,6 +14,7 @@ export class AtualizarAreaEstruturalDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   nome?: string;
 
   @ApiPropertyOptional({ example: 40 })

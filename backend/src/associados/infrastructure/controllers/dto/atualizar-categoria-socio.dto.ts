@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  MaxLength,
   MinLength,
   ValidateIf,
 } from 'class-validator';
@@ -14,6 +15,7 @@ export class AtualizarCategoriaSocioDto {
   @IsOptional()
   @IsString()
   @MinLength(2)
+  @MaxLength(100)
   nome?: string;
 
   @ApiPropertyOptional({

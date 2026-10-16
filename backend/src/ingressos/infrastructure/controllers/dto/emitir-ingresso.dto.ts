@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
@@ -18,6 +19,7 @@ export class EmitirIngressoDto {
   @ApiProperty({ example: 'Sócio Teste' })
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   nomeComprador: string;
 
   @ApiProperty({ enum: PerfilComprador, example: PerfilComprador.SOCIO })

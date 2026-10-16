@@ -130,9 +130,11 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
       .get(`/saloes/${salaoId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    expect((consulta.body as { mesas: Array<{ id: string }> }).mesas.some(
-      (m) => m.id === mesaEditavelId,
-    )).toBe(false);
+    expect(
+      (consulta.body as { mesas: Array<{ id: string }> }).mesas.some(
+        (m) => m.id === mesaEditavelId,
+      ),
+    ).toBe(false);
   });
 
   it('adiciona e remove parede/porta do croqui, e recusa elemento em salão inexistente (404)', async () => {
@@ -172,7 +174,9 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
       .expect(204);
 
     await request(app.getHttpServer())
-      .delete(`/saloes/${salaoId}/elementos/00000000-0000-0000-0000-000000000000`)
+      .delete(
+        `/saloes/${salaoId}/elementos/00000000-0000-0000-0000-000000000000`,
+      )
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(404);
 
@@ -206,7 +210,10 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
     const atualizado = await request(app.getHttpServer())
       .patch(`/eventos/${eventoSemCroquiId}`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ nome: 'Fandango sem mesa (renomeado) — e2e', local: 'Galpão novo' })
+      .send({
+        nome: 'Fandango sem mesa (renomeado) — e2e',
+        local: 'Galpão novo',
+      })
       .expect(200);
     expect((atualizado.body as { nome: string }).nome).toBe(
       'Fandango sem mesa (renomeado) — e2e',
@@ -315,5 +322,38 @@ describe('Eventos e Croqui de Salão (e2e)', () => {
       .delete(`/saloes/${salaoId}/mesas/${mesaId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(409);
+  });
+
+  it('recusa criar evento com data no passado (400), mas aceita editar pra uma data passada', async () => {
+    await request(app.getHttpServer())
+      .post('/eventos')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nome: 'Baile no Passado — e2e',
+        data: '2020-01-01T20:00:00.000Z',
+        local: 'Galpão do CTG',
+      })
+      .expect(400);
+
+    const criado = await request(app.getHttpServer())
+      .post('/eventos')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nome: 'Baile Editável — e2e',
+        data: new Date(Date.now() + 86400000).toISOString(),
+        local: 'Galpão do CTG',
+      })
+      .expect(201);
+    const eventoId = (criado.body as { id: string }).id;
+
+    // Editar pra uma data passada é permitido de propósito (corrigir registro histórico) —
+    // ver comentário em AtualizarEventoDto.
+    await request(app.getHttpServer())
+      .patch(`/eventos/${eventoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ data: '2020-01-01T20:00:00.000Z' })
+      .expect(200);
+
+    await dataSource.query('DELETE FROM eventos WHERE id = $1', [eventoId]);
   });
 });

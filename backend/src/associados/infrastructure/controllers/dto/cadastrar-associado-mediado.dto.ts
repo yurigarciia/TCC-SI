@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
@@ -15,21 +16,25 @@ export class CadastrarAssociadoMediadoDto {
   @ApiProperty({ example: 'João Mediado' })
   @IsString()
   @MinLength(3)
+  @MaxLength(150)
   nome: string;
 
   @ApiProperty({ example: '22222222222' })
   @IsString()
   @MinLength(11)
+  @MaxLength(14)
   cpf: string;
 
   @ApiProperty({ example: '55999990003' })
   @IsString()
   @MinLength(8)
+  @MaxLength(150)
   contato: string;
 
   @ApiPropertyOptional({ example: 'Departamento de Danças' })
   @IsOptional()
   @IsString()
+  @MaxLength(150)
   vinculoInstitucional?: string;
 
   @ApiPropertyOptional({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })

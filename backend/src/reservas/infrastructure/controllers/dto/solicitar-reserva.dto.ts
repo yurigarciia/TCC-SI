@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import {
@@ -27,6 +28,7 @@ export class SolicitarReservaDto {
   @IsOptional()
   @IsString()
   @MinLength(2)
+  @MaxLength(150)
   nomeTitular?: string;
 
   @ApiPropertyOptional({

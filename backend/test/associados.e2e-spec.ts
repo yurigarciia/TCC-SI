@@ -255,6 +255,37 @@ describe('Associados (e2e)', () => {
     ]);
   });
 
+  it('recusa dependente com data de nascimento no futuro ou idade implausível (400)', async () => {
+    const payloadBase = {
+      nome: 'Associado Data Ruim — e2e',
+      cpf: '44444444444',
+      contato: '55999990099',
+      endereco: ENDERECO_TESTE,
+    };
+
+    await request(app.getHttpServer())
+      .post('/associados')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        ...payloadBase,
+        dependentes: [
+          { nome: 'Dependente do Futuro', dataNascimento: '2099-01-01' },
+        ],
+      })
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .post('/associados')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        ...payloadBase,
+        dependentes: [
+          { nome: 'Dependente Centenário', dataNascimento: '1850-01-01' },
+        ],
+      })
+      .expect(400);
+  });
+
   it('permite editar e excluir dependente de um associado', async () => {
     const consulta = await request(app.getHttpServer())
       .get('/associados')
