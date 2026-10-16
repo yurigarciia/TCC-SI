@@ -92,7 +92,11 @@ function EditarAssociadoConteudo({
   // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
   // cadastradas sem precisar de paginação aqui (mesmo raciocínio de associados/novo).
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
-  const categorias = resultadoCategorias?.itens;
+  // Categoria inativa some do seletor, exceto a que o associado já tem hoje — senão ele some da
+  // lista e o Select mostra em branco mesmo com um valor selecionado.
+  const categorias = resultadoCategorias?.itens.filter(
+    (categoria) => categoria.ativa || categoria.id === associado.categoriaSocioId,
+  );
 
   const {
     register,

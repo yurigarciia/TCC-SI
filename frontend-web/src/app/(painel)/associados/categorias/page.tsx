@@ -35,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  useAlternarStatusCategoriaSocio,
   useAtualizarCategoriaSocio,
   useCategoriasSocio,
   useExcluirCategoriaSocio,
@@ -59,6 +60,7 @@ export default function CategoriasSocioPage() {
   const { data: resultado, isLoading, isError } = useCategoriasSocio(pagina, busca || undefined);
   const categorias = resultado?.itens;
   const excluir = useExcluirCategoriaSocio();
+  const alternarStatus = useAlternarStatusCategoriaSocio();
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
@@ -145,9 +147,33 @@ export default function CategoriasSocioPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={categoria.ativa ? "success" : "outline"}>
-                        {categoria.ativa ? "Ativa" : "Inativa"}
-                      </Badge>
+                      <button
+                        type="button"
+                        className="cursor-pointer"
+                        disabled={alternarStatus.isPending}
+                        title={
+                          categoria.ativa
+                            ? "Desativar — some do seletor de novos cadastros"
+                            : "Reativar categoria"
+                        }
+                        onClick={() =>
+                          alternarStatus.mutate(
+                            { id: categoria.id, ativa: !categoria.ativa },
+                            {
+                              onSuccess: () =>
+                                toast.success(
+                                  categoria.ativa ? "Categoria desativada." : "Categoria reativada.",
+                                ),
+                              onError: () =>
+                                toast.error("Não foi possível alterar o status da categoria."),
+                            },
+                          )
+                        }
+                      >
+                        <Badge variant={categoria.ativa ? "success" : "outline"}>
+                          {categoria.ativa ? "Ativa" : "Inativa"}
+                        </Badge>
+                      </button>
                     </TableCell>
                     <TableCell className="flex justify-end gap-1">
                       <Button

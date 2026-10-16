@@ -79,6 +79,22 @@ export function useAtualizarCategoriaSocio(id: string) {
   });
 }
 
+// Toggle rápido de ativa/inativa direto na listagem — categoria inativa some do Select de
+// cadastro/edição de associado, mas quem já está nela continua normalmente (não é exclusão).
+export function useAlternarStatusCategoriaSocio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ativa }: { id: string; ativa: boolean }) =>
+      apiFetch<CategoriaSocio>(`/categorias-socio/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ ativa }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_CATEGORIAS });
+    },
+  });
+}
+
 // Backend recusa com 409 quando a categoria ainda tem associado vinculado (ver
 // ExcluirCategoriaSocioUseCase) — a tela mostra esse erro, não tenta prevenir client-side.
 export function useExcluirCategoriaSocio() {

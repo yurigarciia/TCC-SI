@@ -125,6 +125,9 @@ function AssociadoDetalheConteudo({
   const [dependenteExcluindo, setDependenteExcluindo] = useState<Dependente | null>(null);
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
   const categorias = resultadoCategorias?.itens;
+  // Só categorias ativas entram no seletor de aprovação (nova atribuição); a resolução do nome
+  // atual acima usa a lista completa, senão uma categoria já inativa apareceria em branco.
+  const categoriasAtivas = categorias?.filter((categoria) => categoria.ativa);
 
   const categoriaAtual = categorias?.find((c) => c.id === associado.categoriaSocioId)?.nome;
   const contato = pareceEmail(associado.contato)
@@ -174,7 +177,7 @@ function AssociadoDetalheConteudo({
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {categorias?.map((categoria) => (
+                    {categoriasAtivas?.map((categoria) => (
                       <SelectItem key={categoria.id} value={categoria.id}>
                         {categoria.nome}
                       </SelectItem>

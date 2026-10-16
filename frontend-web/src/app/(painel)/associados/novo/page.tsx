@@ -54,7 +54,9 @@ export default function NovoAssociadoPage() {
   // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
   // cadastradas sem precisar de paginação aqui (número de categorias tende a ser pequeno).
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
-  const categorias = resultadoCategorias?.itens;
+  // Categoria inativa não entra em cadastro novo — quem já está nela não é afetado, só some do
+  // seletor pra evitar associar alguém a uma categoria descontinuada.
+  const categorias = resultadoCategorias?.itens.filter((categoria) => categoria.ativa);
   const cadastrar = useCadastrarAssociadoMediado();
 
   const {
