@@ -185,6 +185,27 @@
   }
 }
 
+/* Toasts (sonner): cores próprias por tipo — por padrão o sonner não tinge o fundo, mesmo com um
+   ícone colorido por tipo (ver components/ui/sonner.tsx), então um toast de erro ficava visualmente
+   igual a um de sucesso. */
+.cn-toast-error {
+  background-color: color-mix(in srgb, var(--destructive) 12%, var(--popover)) !important;
+  border-color: var(--destructive) !important;
+  color: var(--destructive) !important;
+}
+
+.cn-toast-success {
+  background-color: color-mix(in srgb, var(--success) 12%, var(--popover)) !important;
+  border-color: var(--success) !important;
+  color: var(--success) !important;
+}
+
+.cn-toast-warning {
+  background-color: color-mix(in srgb, var(--warning) 14%, var(--popover)) !important;
+  border-color: var(--warning) !important;
+  color: var(--warning) !important;
+}
+
 .bg-roseta {
   background-color: var(--card);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg transform='translate(24 24) scale(0.1)' opacity='0.04'%3E%3Cg fill='%237a2331'%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-108' rx='34' ry='92' transform='rotate(315)'/%3E%3Ccircle r='46'/%3E%3C/g%3E%3Cg fill='none' stroke='%237a2331' stroke-width='15'%3E%3Ccircle r='150'/%3E%3Ccircle r='128'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
