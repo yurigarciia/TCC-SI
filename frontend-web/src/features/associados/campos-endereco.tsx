@@ -18,11 +18,11 @@ import { formatarCep } from "@/lib/format";
 
 export const enderecoSchema = z.object({
   cep: z.string().min(8, "CEP inválido."),
-  logradouro: z.string().min(2, "Informe o logradouro."),
-  numero: z.string().min(1, "Informe o número."),
-  complemento: z.string().optional(),
-  bairro: z.string().min(2, "Informe o bairro."),
-  cidade: z.string().min(2, "Informe a cidade."),
+  logradouro: z.string().min(2, "Informe o logradouro.").max(150, "Máximo de 150 caracteres."),
+  numero: z.string().min(1, "Informe o número.").max(20, "Máximo de 20 caracteres."),
+  complemento: z.string().max(100, "Máximo de 100 caracteres.").optional(),
+  bairro: z.string().min(2, "Informe o bairro.").max(150, "Máximo de 150 caracteres."),
+  cidade: z.string().min(2, "Informe a cidade.").max(150, "Máximo de 150 caracteres."),
   uf: z.string().length(2, "Selecione a UF."),
 });
 
@@ -112,7 +112,13 @@ export function CamposEndereco<T extends FormComEndereco>({
           control={control}
           name={"endereco.numero" as never}
           render={({ field }) => (
-            <InputComIcone icon={Hash} id="endereco.numero" {...field} value={field.value ?? ""} />
+            <InputComIcone
+              icon={Hash}
+              id="endereco.numero"
+              maxLength={20}
+              {...field}
+              value={field.value ?? ""}
+            />
           )}
         />
         {erros?.numero && (
@@ -129,6 +135,7 @@ export function CamposEndereco<T extends FormComEndereco>({
             <InputComIcone
               icon={Route}
               id="endereco.logradouro"
+              maxLength={150}
               {...field}
               value={field.value ?? ""}
             />
@@ -148,6 +155,7 @@ export function CamposEndereco<T extends FormComEndereco>({
             <InputComIcone
               icon={Building2}
               id="endereco.complemento"
+              maxLength={100}
               {...field}
               value={field.value ?? ""}
             />
@@ -161,7 +169,13 @@ export function CamposEndereco<T extends FormComEndereco>({
           control={control}
           name={"endereco.bairro" as never}
           render={({ field }) => (
-            <InputComIcone icon={MapPin} id="endereco.bairro" {...field} value={field.value ?? ""} />
+            <InputComIcone
+              icon={MapPin}
+              id="endereco.bairro"
+              maxLength={150}
+              {...field}
+              value={field.value ?? ""}
+            />
           )}
         />
         {erros?.bairro && (
@@ -178,6 +192,7 @@ export function CamposEndereco<T extends FormComEndereco>({
             <InputComIcone
               icon={Building2}
               id="endereco.cidade"
+              maxLength={150}
               {...field}
               value={field.value ?? ""}
             />

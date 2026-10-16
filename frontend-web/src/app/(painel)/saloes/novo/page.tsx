@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { useCriarSalao } from "@/features/saloes/use-saloes";
 
 const formSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do salão."),
+  nome: z.string().min(2, "Informe o nome do salão.").max(100, "Máximo de 100 caracteres."),
   capacidadeTotal: z.coerce.number().int().positive("Informe uma capacidade válida."),
 });
 
@@ -70,6 +70,7 @@ export default function NovoSalaoPage() {
               <Input
                 id="nome"
                 placeholder="Ex.: Salão Social da entidade"
+                maxLength={100}
                 aria-invalid={!!errors.nome}
                 {...register("nome")}
               />

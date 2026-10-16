@@ -28,6 +28,27 @@ export function paraInputDatetimeLocal(iso: string): string {
   return `${data.getFullYear()}-${preencher(data.getMonth() + 1)}-${preencher(data.getDate())}T${preencher(data.getHours())}:${preencher(data.getMinutes())}`;
 }
 
+// Guards de "data absurda" — espelham IsNotPastDate/IsPlausibleBirthDate do backend
+// (shared/validators/date-validators.ts), reaproveitados pelos schemas zod dos formulários pra
+// dar o erro já na tela, sem precisar de round-trip até a API.
+const TOLERANCIA_EVENTO_PASSADO_MS = 60 * 60 * 1000;
+
+export function ehDataPassada(iso: string): boolean {
+  const data = new Date(iso);
+  if (Number.isNaN(data.getTime())) return true;
+  return data.getTime() < Date.now() - TOLERANCIA_EVENTO_PASSADO_MS;
+}
+
+export function ehDataNascimentoPlausivel(iso: string, idadeMaximaAnos = 120): boolean {
+  const data = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
+  if (Number.isNaN(data.getTime())) return false;
+  const agora = new Date();
+  if (data.getTime() > agora.getTime()) return false;
+  const dataMinima = new Date(agora);
+  dataMinima.setFullYear(dataMinima.getFullYear() - idadeMaximaAnos);
+  return data.getTime() >= dataMinima.getTime();
+}
+
 // Máscara visual de CPF (000.000.000-00) — puramente de exibição, formata progressivamente
 // enquanto a pessoa digita. Quem chama guarda/envia só os dígitos (ver uso em associados/novo).
 export function formatarCpf(valor: string): string {

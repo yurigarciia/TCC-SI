@@ -59,7 +59,13 @@ import {
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
-import { formatarCep, formatarData, formatarTelefone, pareceEmail } from "@/lib/format";
+import {
+  ehDataNascimentoPlausivel,
+  formatarCep,
+  formatarData,
+  formatarTelefone,
+  pareceEmail,
+} from "@/lib/format";
 
 // Tela só de leitura, sem nenhum campo editável — o que vem da listagem cai aqui por padrão.
 // "Editar associado" leva pra /associados/[id]/editar, que concentra os formulários. Separado de
@@ -384,8 +390,11 @@ function AssociadoDetalheConteudo({
 }
 
 const dependenteFormSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do dependente."),
-  dataNascimento: z.string().min(1, "Informe a data de nascimento."),
+  nome: z.string().min(2, "Informe o nome do dependente.").max(150, "Máximo de 150 caracteres."),
+  dataNascimento: z
+    .string()
+    .min(1, "Informe a data de nascimento.")
+    .refine(ehDataNascimentoPlausivel, "Data de nascimento inválida."),
 });
 
 type DependenteFormValues = z.infer<typeof dependenteFormSchema>;
@@ -435,6 +444,7 @@ function FormularioEditarDependente({
           <Label htmlFor="nome-dependente">Nome</Label>
           <Input
             id="nome-dependente"
+            maxLength={150}
             aria-invalid={!!errors.nome}
             {...register("nome")}
           />
@@ -446,6 +456,7 @@ function FormularioEditarDependente({
           <Input
             id="dataNascimento-dependente"
             type="date"
+            max={new Date().toISOString().slice(0, 10)}
             aria-invalid={!!errors.dataNascimento}
             {...register("dataNascimento")}
           />

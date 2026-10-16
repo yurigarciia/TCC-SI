@@ -305,8 +305,11 @@ function AcoesDaConta({
 
 const trocarSenhaSchema = z
   .object({
-    senhaAtual: z.string().min(1, "Informe a senha atual."),
-    senhaNova: z.string().min(6, "A nova senha precisa ter ao menos 6 caracteres."),
+    senhaAtual: z.string().min(1, "Informe a senha atual.").max(72, "Máximo de 72 caracteres."),
+    senhaNova: z
+      .string()
+      .min(6, "A nova senha precisa ter ao menos 6 caracteres.")
+      .max(72, "Máximo de 72 caracteres."),
     confirmarSenha: z.string(),
   })
   .refine((dados) => dados.senhaNova === dados.confirmarSenha, {
@@ -355,6 +358,7 @@ function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
             id="senhaAtual"
             type="password"
             autoComplete="current-password"
+            maxLength={72}
             aria-invalid={!!errors.senhaAtual}
             {...register("senhaAtual")}
           />
@@ -369,6 +373,7 @@ function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
             id="senhaNova"
             type="password"
             autoComplete="new-password"
+            maxLength={72}
             aria-invalid={!!errors.senhaNova}
             {...register("senhaNova")}
           />
@@ -383,6 +388,7 @@ function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
             id="confirmarSenha"
             type="password"
             autoComplete="new-password"
+            maxLength={72}
             aria-invalid={!!errors.confirmarSenha}
             {...register("confirmarSenha")}
           />

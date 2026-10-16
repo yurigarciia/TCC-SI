@@ -69,7 +69,10 @@ type MesaFormInput = z.input<typeof mesaSchema>;
 type MesaFormValues = z.output<typeof mesaSchema>;
 
 const areaSchema = z.object({
-  nome: z.string().min(1, "Dê um nome pra essa área (ex.: Tablado, Bar)."),
+  nome: z
+    .string()
+    .min(1, "Dê um nome pra essa área (ex.: Tablado, Bar).")
+    .max(100, "Máximo de 100 caracteres."),
 });
 
 type AreaFormValues = z.infer<typeof areaSchema>;
@@ -532,6 +535,7 @@ function SalaoDetalheConteudo({
                         id="area-nome"
                         className="h-8"
                         autoFocus
+                        maxLength={100}
                         aria-invalid={!!errosArea.nome}
                         {...registerArea("nome")}
                       />

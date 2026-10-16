@@ -40,7 +40,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-client";
-import { paraInputDatetimeLocal } from "@/lib/format";
+import { ehDataPassada, paraInputDatetimeLocal } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useCategoriasSocio } from "@/features/associados/use-associados";
 import { useSalao, useSaloes } from "@/features/saloes/use-saloes";
@@ -65,21 +65,32 @@ const precoCategoriaFormSchema = z.object({
   preco: z.string().optional(),
 });
 
-const formSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do evento."),
-  data: z.string().min(1, "Informe a data e horário."),
-  local: z.string().min(2, "Informe o local."),
-  descricao: z.string().optional(),
-  salaoId: z.string().optional(),
-  quantidadeDisponivel: z.string().optional(),
-  precosPorCategoria: z.array(precoCategoriaFormSchema),
-  precoNaoSocio: z.string().optional(),
-  precoCrianca: z.string().optional(),
-  mesas: z.array(mesaFormSchema),
-});
+// Data no passado só é recusada ao CRIAR — editar um evento que já aconteceu (corrigir local/
+// descrição depois do fato) é um caso de uso legítimo, mesmo padrão do backend (ver
+// AtualizarEventoDto, sem @IsNotPastDate de propósito).
+function construirFormSchema(modo: "criar" | "editar") {
+  return z.object({
+    nome: z.string().min(2, "Informe o nome do evento.").max(150, "Máximo de 150 caracteres."),
+    data: z
+      .string()
+      .min(1, "Informe a data e horário.")
+      .refine(
+        (valor) => modo === "editar" || !ehDataPassada(new Date(valor).toISOString()),
+        "A data do evento não pode estar no passado.",
+      ),
+    local: z.string().min(2, "Informe o local.").max(150, "Máximo de 150 caracteres."),
+    descricao: z.string().max(1000, "Máximo de 1000 caracteres.").optional(),
+    salaoId: z.string().optional(),
+    quantidadeDisponivel: z.string().optional(),
+    precosPorCategoria: z.array(precoCategoriaFormSchema),
+    precoNaoSocio: z.string().optional(),
+    precoCrianca: z.string().optional(),
+    mesas: z.array(mesaFormSchema),
+  });
+}
 
-type FormInput = z.input<typeof formSchema>;
-type FormValues = z.output<typeof formSchema>;
+type FormInput = z.input<ReturnType<typeof construirFormSchema>>;
+type FormValues = z.output<ReturnType<typeof construirFormSchema>>;
 
 function paraNumeroOpcional(valor?: string): number | undefined {
   if (!valor || !valor.trim()) return undefined;
@@ -166,7 +177,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormInput, unknown, FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(construirFormSchema(modo)),
     defaultValues: {
       nome: dadosIniciais?.evento.nome ?? "",
       data: dadosIniciais ? paraInputDatetimeLocal(dadosIniciais.evento.data) : "",
@@ -354,6 +365,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               id="nome"
               placeholder="Ex.: Baile da Primavera"
               autoComplete="off"
+              maxLength={150}
               aria-invalid={!!errors.nome}
               {...register("nome")}
             />
@@ -380,6 +392,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
                 id="local"
                 placeholder="Ex.: Sede da entidade"
                 autoComplete="off"
+                maxLength={150}
                 aria-invalid={!!errors.local}
                 {...register("local")}
               />
@@ -393,6 +406,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
               id="descricao"
               placeholder="Ex.: Baile tradicionalista com jantar e sorteios."
               autoComplete="off"
+              maxLength={1000}
               {...register("descricao")}
             />
           </div>

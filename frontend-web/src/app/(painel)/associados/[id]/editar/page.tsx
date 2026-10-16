@@ -33,14 +33,14 @@ import {
   useAtualizarAssociado,
   useCategoriasSocio,
 } from "@/features/associados/use-associados";
-import { formatarTelefone, pareceEmail } from "@/lib/format";
+import { ehDataNascimentoPlausivel, formatarTelefone, pareceEmail } from "@/lib/format";
 
 const ID_FORM_DADOS = "form-dados-associado";
 
 const dadosSchema = z.object({
-  nome: z.string().min(3, "Informe o nome completo."),
-  contato: z.string().min(8, "Informe um contato válido."),
-  vinculoInstitucional: z.string().optional(),
+  nome: z.string().min(3, "Informe o nome completo.").max(150, "Máximo de 150 caracteres."),
+  contato: z.string().min(8, "Informe um contato válido.").max(150, "Máximo de 150 caracteres."),
+  vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
   categoriaSocioId: z.string().optional(),
   endereco: enderecoSchema,
 });
@@ -48,8 +48,11 @@ const dadosSchema = z.object({
 type DadosFormValues = z.infer<typeof dadosSchema>;
 
 const dependenteSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do dependente."),
-  dataNascimento: z.string().min(1, "Informe a data de nascimento."),
+  nome: z.string().min(2, "Informe o nome do dependente.").max(150, "Máximo de 150 caracteres."),
+  dataNascimento: z
+    .string()
+    .min(1, "Informe a data de nascimento.")
+    .refine(ehDataNascimentoPlausivel, "Data de nascimento inválida."),
 });
 
 type DependenteFormValues = z.infer<typeof dependenteSchema>;
@@ -196,6 +199,7 @@ function EditarAssociadoConteudo({
                   icon={User}
                   id="nome"
                   placeholder="Ex.: João da Silva"
+                  maxLength={150}
                   aria-invalid={!!errors.nome}
                   {...register("nome")}
                 />
@@ -212,6 +216,7 @@ function EditarAssociadoConteudo({
                       icon={Phone}
                       id="contato"
                       placeholder="Ex.: (55) 99999-0000"
+                      maxLength={150}
                       aria-invalid={!!errors.contato}
                       value={
                         pareceEmail(field.value ?? "")
@@ -239,6 +244,7 @@ function EditarAssociadoConteudo({
                   icon={Building2}
                   id="vinculoInstitucional"
                   placeholder="Ex.: Piquete Laço Firme"
+                  maxLength={150}
                   {...register("vinculoInstitucional")}
                 />
               </div>
@@ -308,6 +314,7 @@ function EditarAssociadoConteudo({
                   icon={User}
                   id="dependente-nome"
                   placeholder="Ex.: Maria da Silva"
+                  maxLength={150}
                   {...registerDependente("nome")}
                 />
                 {errosDependente.nome && (
@@ -320,6 +327,7 @@ function EditarAssociadoConteudo({
                   icon={Calendar}
                   id="dependente-data"
                   type="date"
+                  max={new Date().toISOString().slice(0, 10)}
                   {...registerDependente("dataNascimento")}
                 />
                 {errosDependente.dataNascimento && (

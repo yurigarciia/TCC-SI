@@ -223,8 +223,8 @@ export default function UsuariosPage() {
 }
 
 const editarUsuarioSchema = z.object({
-  nome: z.string().min(2, "Informe o nome."),
-  email: z.string().email("Informe um e-mail válido."),
+  nome: z.string().min(2, "Informe o nome.").max(150, "Máximo de 150 caracteres."),
+  email: z.string().email("Informe um e-mail válido.").max(255, "Máximo de 255 caracteres."),
 });
 
 type EditarUsuarioValues = z.infer<typeof editarUsuarioSchema>;
@@ -268,7 +268,12 @@ function FormularioEditarUsuario({
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div className="space-y-2">
           <Label htmlFor="nome-usuario">Nome</Label>
-          <Input id="nome-usuario" aria-invalid={!!errors.nome} {...register("nome")} />
+          <Input
+            id="nome-usuario"
+            maxLength={150}
+            aria-invalid={!!errors.nome}
+            {...register("nome")}
+          />
           {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
         </div>
 
@@ -277,6 +282,7 @@ function FormularioEditarUsuario({
           <Input
             id="email-usuario"
             type="email"
+            maxLength={255}
             aria-invalid={!!errors.email}
             {...register("email")}
           />

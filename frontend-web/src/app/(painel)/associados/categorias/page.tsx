@@ -242,7 +242,7 @@ export default function CategoriasSocioPage() {
 
 const formSchema = z
   .object({
-    nome: z.string().min(2, "Informe o nome da categoria."),
+    nome: z.string().min(2, "Informe o nome da categoria.").max(100, "Máximo de 100 caracteres."),
     isenta: z.boolean(),
     valorMensalidade: z.coerce.number().nonnegative().optional(),
   })
@@ -308,7 +308,12 @@ function FormularioEditarCategoria({
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div className="space-y-2">
           <Label htmlFor="nome-editar">Nome</Label>
-          <Input id="nome-editar" aria-invalid={!!errors.nome} {...register("nome")} />
+          <Input
+            id="nome-editar"
+            maxLength={100}
+            aria-invalid={!!errors.nome}
+            {...register("nome")}
+          />
           {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
         </div>
 

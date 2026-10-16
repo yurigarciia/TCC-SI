@@ -23,9 +23,9 @@ import { useCriarAdministrador } from "@/features/usuarios/use-usuarios";
 import { ApiError } from "@/lib/api-client";
 
 const formSchema = z.object({
-  nome: z.string().min(2, "Informe o nome completo."),
-  email: z.string().email("Informe um e-mail válido."),
-  senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  nome: z.string().min(2, "Informe o nome completo.").max(150, "Máximo de 150 caracteres."),
+  email: z.string().email("Informe um e-mail válido.").max(255, "Máximo de 255 caracteres."),
+  senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres.").max(72, "Máximo de 72 caracteres."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -80,6 +80,7 @@ export default function NovoAdministradorPage() {
               <Input
                 id="nome"
                 placeholder="Ex.: Maria da Silva"
+                maxLength={150}
                 aria-invalid={!!errors.nome}
                 autoComplete="off"
                 {...register("nome")}
@@ -92,6 +93,7 @@ export default function NovoAdministradorPage() {
                 id="email"
                 type="email"
                 placeholder="nome@suaentidade.org.br"
+                maxLength={255}
                 aria-invalid={!!errors.email}
                 autoComplete="off"
                 {...register("email")}
@@ -106,6 +108,7 @@ export default function NovoAdministradorPage() {
                 id="senha"
                 type="password"
                 placeholder="Mínimo 6 caracteres"
+                maxLength={72}
                 aria-invalid={!!errors.senha}
                 autoComplete="new-password"
                 {...register("senha")}

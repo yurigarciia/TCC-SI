@@ -54,7 +54,7 @@ import { Pagination } from "@/components/pagination";
 
 const emitirSchema = z
   .object({
-    nomeComprador: z.string().min(2, "Informe o nome do comprador."),
+    nomeComprador: z.string().min(2, "Informe o nome do comprador.").max(150, "Máximo de 150 caracteres."),
     perfilComprador: z.enum(["socio", "nao_socio", "crianca"]),
     categoriaSocioId: z.string().optional(),
     formaPagamento: z.enum(["presencial", "online"]),
@@ -363,6 +363,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
               <Input
                 id="nomeComprador"
                 placeholder="Ex.: Maria da Silva"
+                maxLength={150}
                 aria-invalid={!!errors.nomeComprador}
                 {...register("nomeComprador")}
               />

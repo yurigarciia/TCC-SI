@@ -24,7 +24,7 @@ import { useCriarCategoriaSocio } from "@/features/associados/use-associados";
 
 const formSchema = z
   .object({
-    nome: z.string().min(2, "Informe o nome da categoria."),
+    nome: z.string().min(2, "Informe o nome da categoria.").max(100, "Máximo de 100 caracteres."),
     isenta: z.boolean(),
     valorMensalidade: z.coerce.number().nonnegative().optional(),
   })
@@ -104,6 +104,7 @@ export default function NovaCategoriaSocioPage() {
               <Input
                 id="nome"
                 placeholder="Ex.: Contribuinte"
+                maxLength={100}
                 aria-invalid={!!errors.nome}
                 {...register("nome")}
               />

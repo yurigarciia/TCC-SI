@@ -188,7 +188,7 @@ function PainelAcoesMesa({
 }
 
 const reservaSchema = z.object({
-  nomeTitular: z.string().min(2, "Informe o nome do titular."),
+  nomeTitular: z.string().min(2, "Informe o nome do titular.").max(150, "Máximo de 150 caracteres."),
   formaPagamento: z.enum(["presencial", "online"]),
 });
 
@@ -231,6 +231,7 @@ function FormReservarMesa({
         <Input
           id="nomeTitular"
           placeholder="Ex.: Maria da Silva"
+          maxLength={150}
           aria-invalid={!!errors.nomeTitular}
           {...register("nomeTitular")}
         />
@@ -356,6 +357,7 @@ function AcoesReservaExistente({
           <Input
             id="novo-titular"
             placeholder="Novo nome do titular"
+            maxLength={150}
             value={novoTitular}
             onChange={(evento) => setNovoTitular(evento.target.value)}
           />

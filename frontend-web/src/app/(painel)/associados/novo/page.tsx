@@ -28,20 +28,28 @@ import {
 import { CamposEndereco, enderecoSchema } from "@/features/associados/campos-endereco";
 import { useCategoriasSocio, useCadastrarAssociadoMediado } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
-import { formatarCpf, formatarTelefone, pareceEmail } from "@/lib/format";
+import {
+  ehDataNascimentoPlausivel,
+  formatarCpf,
+  formatarTelefone,
+  pareceEmail,
+} from "@/lib/format";
 
 const ID_FORM_NOVO = "form-novo-associado";
 
 const dependenteSchema = z.object({
-  nome: z.string().min(2, "Informe o nome do dependente."),
-  dataNascimento: z.string().min(1, "Informe a data de nascimento."),
+  nome: z.string().min(2, "Informe o nome do dependente.").max(150, "Máximo de 150 caracteres."),
+  dataNascimento: z
+    .string()
+    .min(1, "Informe a data de nascimento.")
+    .refine(ehDataNascimentoPlausivel, "Data de nascimento inválida."),
 });
 
 const formSchema = z.object({
-  nome: z.string().min(3, "Informe o nome completo."),
+  nome: z.string().min(3, "Informe o nome completo.").max(150, "Máximo de 150 caracteres."),
   cpf: z.string().length(11, "CPF deve ter 11 dígitos."),
-  contato: z.string().min(8, "Informe um telefone ou e-mail de contato."),
-  vinculoInstitucional: z.string().optional(),
+  contato: z.string().min(8, "Informe um telefone ou e-mail de contato.").max(150, "Máximo de 150 caracteres."),
+  vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
   categoriaSocioId: z.string().optional(),
   endereco: enderecoSchema,
   dependentes: z.array(dependenteSchema),
@@ -146,6 +154,7 @@ export default function NovoAssociadoPage() {
                   id="nome"
                   placeholder="Ex.: João da Silva"
                   autoComplete="off"
+                  maxLength={150}
                   aria-invalid={!!errors.nome}
                   {...register("nome")}
                 />
@@ -187,6 +196,7 @@ export default function NovoAssociadoPage() {
                       id="contato"
                       autoComplete="new-password"
                       placeholder="Ex.: (55) 99999-0000"
+                      maxLength={150}
                       aria-invalid={!!errors.contato}
                       value={
                         pareceEmail(field.value ?? "")
@@ -215,6 +225,7 @@ export default function NovoAssociadoPage() {
                   id="vinculoInstitucional"
                   autoComplete="off"
                   placeholder="Ex.: Piquete Laço Firme"
+                  maxLength={150}
                   {...register("vinculoInstitucional")}
                 />
               </div>
@@ -294,6 +305,7 @@ export default function NovoAssociadoPage() {
                     icon={User}
                     id={`dependentes.${indice}.nome`}
                     placeholder="Ex.: Maria da Silva"
+                    maxLength={150}
                     {...register(`dependentes.${indice}.nome` as const)}
                   />
                   {errors.dependentes?.[indice]?.nome && (
@@ -310,6 +322,7 @@ export default function NovoAssociadoPage() {
                     icon={Calendar}
                     id={`dependentes.${indice}.dataNascimento`}
                     type="date"
+                    max={new Date().toISOString().slice(0, 10)}
                     {...register(`dependentes.${indice}.dataNascimento` as const)}
                   />
                   {errors.dependentes?.[indice]?.dataNascimento && (
