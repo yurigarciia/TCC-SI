@@ -1,9 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -19,9 +23,14 @@ import { AutenticarUsuarioUseCase } from '../../application/use-cases/autenticar
 import type { TokenDeAcesso } from '../../application/use-cases/autenticar-usuario.use-case';
 import { ListarUsuariosUseCase } from '../../application/use-cases/listar-usuarios.use-case';
 import { CriarAdministradorUseCase } from '../../application/use-cases/criar-administrador.use-case';
+import { AtualizarUsuarioUseCase } from '../../application/use-cases/atualizar-usuario.use-case';
+import { ExcluirUsuarioUseCase } from '../../application/use-cases/excluir-usuario.use-case';
+import { AlterarSenhaUseCase } from '../../application/use-cases/alterar-senha.use-case';
 import { Perfil } from '../../domain/usuario.entity';
 import { LoginDto } from './dto/login.dto';
 import { CriarAdministradorDto } from './dto/criar-administrador.dto';
+import { AtualizarUsuarioDto } from './dto/atualizar-usuario.dto';
+import { AlterarSenhaDto } from './dto/alterar-senha.dto';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
 import { PaginaResultado } from '../../../shared/pagination/pagina-resultado';
 import { JwtAuthGuard } from '../security/jwt-auth.guard';
@@ -37,6 +46,9 @@ export class AuthController {
     private readonly autenticarUsuario: AutenticarUsuarioUseCase,
     private readonly listarUsuarios: ListarUsuariosUseCase,
     private readonly criarAdministrador: CriarAdministradorUseCase,
+    private readonly atualizarUsuario: AtualizarUsuarioUseCase,
+    private readonly excluirUsuario: ExcluirUsuarioUseCase,
+    private readonly alterarSenha: AlterarSenhaUseCase,
   ) {}
 
   @Post('login')
@@ -62,6 +74,27 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   me(@CurrentUser() usuario: JwtPayload): JwtPayload {
     return usuario;
+  }
+
+  // Self-service, qualquer perfil (administrador ou associado) — por isso só JwtAuthGuard, sem
+  // RolesGuard/@Roles. O id de quem troca a senha vem sempre do token (sub), nunca do body.
+  @Post('alterar-senha')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Troca a própria senha (usuário autenticado)' })
+  @ApiResponse({ status: 204, description: 'Senha alterada' })
+  @ApiResponse({ status: 400, description: 'Nova senha igual à atual' })
+  @ApiResponse({ status: 401, description: 'Senha atual incorreta' })
+  alterarMinhaSenha(
+    @CurrentUser() usuario: JwtPayload,
+    @Body() dto: AlterarSenhaDto,
+  ) {
+    return this.alterarSenha.execute(
+      usuario.sub,
+      dto.senhaAtual,
+      dto.senhaNova,
+    );
   }
 
   @Get('usuarios')
@@ -143,5 +176,61 @@ export class AuthController {
       email: usuario.email,
       perfil: usuario.perfil,
     };
+  }
+
+  @Patch('usuarios/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Atualiza nome/e-mail de uma conta administrador' })
+  @ApiResponse({ status: 200, description: 'Usuário atualizado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
+  async atualizar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AtualizarUsuarioDto,
+  ): Promise<{
+    id: string;
+    nome: string | null;
+    email: string;
+    perfil: Perfil;
+  }> {
+    const usuario = await this.atualizarUsuario.execute(id, dto);
+    return {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      perfil: usuario.perfil,
+    };
+  }
+
+  @Delete('usuarios/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Exclui uma conta administrador' })
+  @ApiResponse({ status: 204, description: 'Usuário excluído' })
+  @ApiResponse({
+    status: 400,
+    description: 'Tentativa de excluir a própria conta',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  excluir(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() usuario: JwtPayload,
+  ) {
+    return this.excluirUsuario.execute(id, usuario.sub);
   }
 }

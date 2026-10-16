@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import {
+  AtualizacaoUsuario,
   NovoUsuario,
   UsuarioRepositoryPort,
 } from '../../application/ports/usuario-repository.port';
@@ -56,6 +57,29 @@ export class TypeOrmUsuarioRepositoryAdapter extends UsuarioRepositoryPort {
       itens: encontrados.map((usuario) => this.paraDominio(usuario)),
       total,
     };
+  }
+
+  async atualizar(id: string, dados: AtualizacaoUsuario): Promise<Usuario> {
+    const encontrado = await this.repo.findOneBy({ id });
+    if (!encontrado) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    if (dados.nome !== undefined) {
+      encontrado.nome = dados.nome;
+    }
+    if (dados.email !== undefined) {
+      encontrado.email = dados.email;
+    }
+    const salvo = await this.repo.save(encontrado);
+    return this.paraDominio(salvo);
+  }
+
+  async atualizarSenha(id: string, senhaHash: string): Promise<void> {
+    await this.repo.update(id, { senhaHash });
+  }
+
+  async excluir(id: string): Promise<void> {
+    await this.repo.delete(id);
   }
 
   private paraDominio(orm: UsuarioOrmEntity): Usuario {

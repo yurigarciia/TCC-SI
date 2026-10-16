@@ -120,7 +120,11 @@ describe('Auth (e2e)', () => {
     const criado = await request(app.getHttpServer())
       .post('/auth/usuarios')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ nome: 'Novo Diretor', email: novoEmail, senha: 'senhaProvisoria123' })
+      .send({
+        nome: 'Novo Diretor',
+        email: novoEmail,
+        senha: 'senhaProvisoria123',
+      })
       .expect(201);
     expect((criado.body as UsuarioResponseBody).perfil).toBe('administrador');
     expect((criado.body as UsuarioResponseBody).nome).toBe('Novo Diretor');
@@ -139,7 +143,11 @@ describe('Auth (e2e)', () => {
     return request(app.getHttpServer())
       .post('/auth/usuarios')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ nome: 'Qualquer Nome', email: adminEmail, senha: 'qualquerSenha123' })
+      .send({
+        nome: 'Qualquer Nome',
+        email: adminEmail,
+        senha: 'qualquerSenha123',
+      })
       .expect(409);
   });
 
@@ -156,5 +164,93 @@ describe('Auth (e2e)', () => {
       .post('/auth/usuarios')
       .send({ email: 'outro@piadosul.org.br', senha: 'qualquerSenha123' })
       .expect(401);
+  });
+
+  it('permite editar e excluir uma conta administrador, mas recusa autoexclusão', async () => {
+    const { accessToken } = await login(app, adminEmail, adminSenha);
+    const email = 'editar.excluir@piadosul.org.br';
+
+    const criado = await request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ nome: 'Para Editar', email, senha: 'senhaProvisoria123' })
+      .expect(201);
+    const id = (criado.body as UsuarioResponseBody).id;
+
+    const atualizado = await request(app.getHttpServer())
+      .patch(`/auth/usuarios/${id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ nome: 'Nome Editado' })
+      .expect(200);
+    expect((atualizado.body as UsuarioResponseBody).nome).toBe('Nome Editado');
+
+    // e-mail duplicado (o do próprio admin logado) é recusado
+    await request(app.getHttpServer())
+      .patch(`/auth/usuarios/${id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ email: adminEmail })
+      .expect(409);
+
+    // administrador não pode excluir a própria conta
+    const meInfo = await request(app.getHttpServer())
+      .get('/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    await request(app.getHttpServer())
+      .delete(`/auth/usuarios/${(meInfo.body as { sub: string }).sub}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .delete(`/auth/usuarios/${id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .delete(`/auth/usuarios/${id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(404);
+  });
+
+  it('permite trocar a própria senha e recusa senha atual errada ou igual à nova', async () => {
+    const email = 'trocar.senha@piadosul.org.br';
+    await request(app.getHttpServer())
+      .post('/auth/usuarios')
+      .set(
+        'Authorization',
+        `Bearer ${(await login(app, adminEmail, adminSenha)).accessToken}`,
+      )
+      .send({ nome: 'Troca Senha', email, senha: 'senhaAntiga123' })
+      .expect(201);
+
+    const { accessToken } = await login(app, email, 'senhaAntiga123');
+
+    await request(app.getHttpServer())
+      .post('/auth/alterar-senha')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ senhaAtual: 'senhaErrada', senhaNova: 'senhaNova123' })
+      .expect(401);
+
+    await request(app.getHttpServer())
+      .post('/auth/alterar-senha')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ senhaAtual: 'senhaAntiga123', senhaNova: 'senhaAntiga123' })
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .post('/auth/alterar-senha')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ senhaAtual: 'senhaAntiga123', senhaNova: 'senhaNova123' })
+      .expect(204);
+
+    // senha antiga não funciona mais, a nova sim
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, senha: 'senhaAntiga123' })
+      .expect(401);
+    const novoLogin = await login(app, email, 'senhaNova123');
+    expect(typeof novoLogin.accessToken).toBe('string');
+
+    await dataSource.query('DELETE FROM usuarios WHERE email = $1', [email]);
   });
 });

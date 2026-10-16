@@ -7,6 +7,11 @@ export interface NovoUsuario {
   nome?: string | null;
 }
 
+export interface AtualizacaoUsuario {
+  nome?: string;
+  email?: string;
+}
+
 export abstract class UsuarioRepositoryPort {
   abstract salvar(dados: NovoUsuario): Promise<Usuario>;
   abstract buscarPorId(id: string): Promise<Usuario | null>;
@@ -17,4 +22,7 @@ export abstract class UsuarioRepositoryPort {
     busca?: string,
     perfil?: Perfil,
   ): Promise<{ itens: Usuario[]; total: number }>;
+  abstract atualizar(id: string, dados: AtualizacaoUsuario): Promise<Usuario>;
+  abstract atualizarSenha(id: string, senhaHash: string): Promise<void>;
+  abstract excluir(id: string): Promise<void>;
 }
