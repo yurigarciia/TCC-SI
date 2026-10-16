@@ -11,9 +11,9 @@ import { ApiError } from "@/lib/api-client";
 import { cores } from "@/theme/paper-theme";
 
 const vincularSchema = z.object({
-  cpf: z.string().min(11, "Informe um CPF válido (11 dígitos)."),
-  email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido."),
-  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres."),
+  cpf: z.string().min(11, "Informe um CPF válido (11 dígitos).").max(11),
+  email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido.").max(255),
+  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres.").max(72),
 });
 
 type VincularFormValues = z.infer<typeof vincularSchema>;
@@ -60,6 +60,7 @@ export default function VincularContaScreen() {
                       placeholder="Somente números"
                       left={<TextInput.Icon icon="card-account-details-outline" />}
                       keyboardType="number-pad"
+                      maxLength={11}
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
@@ -83,6 +84,7 @@ export default function VincularContaScreen() {
                       left={<TextInput.Icon icon="email-outline" />}
                       autoCapitalize="none"
                       keyboardType="email-address"
+                      maxLength={255}
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
@@ -105,6 +107,7 @@ export default function VincularContaScreen() {
                       placeholder="Pelo menos 6 caracteres"
                       left={<TextInput.Icon icon="lock-outline" />}
                       secureTextEntry
+                      maxLength={72}
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}

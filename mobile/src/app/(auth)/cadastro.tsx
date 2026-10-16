@@ -14,21 +14,21 @@ import { buscarEnderecoPorCep } from "@/lib/cep";
 
 const enderecoSchema = z.object({
   cep: z.string().min(8, "CEP inválido."),
-  logradouro: z.string().min(2, "Informe o logradouro."),
-  numero: z.string().min(1, "Informe o número."),
-  complemento: z.string().optional(),
-  bairro: z.string().min(2, "Informe o bairro."),
-  cidade: z.string().min(2, "Informe a cidade."),
+  logradouro: z.string().min(2, "Informe o logradouro.").max(150, "Máximo de 150 caracteres."),
+  numero: z.string().min(1, "Informe o número.").max(20, "Máximo de 20 caracteres."),
+  complemento: z.string().max(100, "Máximo de 100 caracteres.").optional(),
+  bairro: z.string().min(2, "Informe o bairro.").max(150, "Máximo de 150 caracteres."),
+  cidade: z.string().min(2, "Informe a cidade.").max(150, "Máximo de 150 caracteres."),
   uf: z.string().length(2, "Informe a UF (2 letras)."),
 });
 
 const cadastroSchema = z.object({
-  nome: z.string().min(3, "Informe seu nome completo."),
-  cpf: z.string().min(11, "Informe um CPF válido (11 dígitos)."),
-  contato: z.string().min(8, "Informe um telefone ou e-mail de contato."),
+  nome: z.string().min(3, "Informe seu nome completo.").max(150, "Máximo de 150 caracteres."),
+  cpf: z.string().min(11, "Informe um CPF válido (11 dígitos).").max(11),
+  contato: z.string().min(8, "Informe um telefone ou e-mail de contato.").max(150, "Máximo de 150 caracteres."),
   endereco: enderecoSchema,
-  email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido."),
-  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres."),
+  email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido.").max(255, "Máximo de 255 caracteres."),
+  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres.").max(72, "Máximo de 72 caracteres."),
 });
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
@@ -221,19 +221,26 @@ interface CampoConfig<T extends string> {
 type CampoSimples = Exclude<keyof CadastroFormValues, "endereco">;
 
 const CAMPOS_PESSOAIS: CampoConfig<CampoSimples>[] = [
-  { nome: "nome", label: "Nome completo", placeholder: "Como você é conhecido", icone: "account-outline" },
+  {
+    nome: "nome",
+    label: "Nome completo",
+    placeholder: "Como você é conhecido",
+    icone: "account-outline",
+    props: { maxLength: 150 },
+  },
   {
     nome: "cpf",
     label: "CPF",
     placeholder: "Somente números",
     icone: "card-account-details-outline",
-    props: { keyboardType: "number-pad" },
+    props: { keyboardType: "number-pad", maxLength: 11 },
   },
   {
     nome: "contato",
     label: "Telefone ou e-mail de contato",
     placeholder: "(55) 99999-0000",
     icone: "phone-outline",
+    props: { maxLength: 150 },
   },
 ];
 
@@ -243,24 +250,43 @@ const CAMPOS_ENDERECO: CampoConfig<keyof EnderecoFormValues>[] = [
     label: "CEP",
     placeholder: "00000-000",
     icone: "map-marker-outline",
-    props: { keyboardType: "number-pad" },
+    props: { keyboardType: "number-pad", maxLength: 9 },
   },
-  { nome: "logradouro", label: "Logradouro", placeholder: "Rua, avenida...", icone: "road-variant" },
+  {
+    nome: "logradouro",
+    label: "Logradouro",
+    placeholder: "Rua, avenida...",
+    icone: "road-variant",
+    props: { maxLength: 150 },
+  },
   {
     nome: "numero",
     label: "Número",
     placeholder: "123",
     icone: "pound",
-    props: { keyboardType: "number-pad" },
+    props: { keyboardType: "number-pad", maxLength: 20 },
   },
   {
     nome: "complemento",
     label: "Complemento (opcional)",
     placeholder: "Apto, bloco...",
     icone: "home-city-outline",
+    props: { maxLength: 100 },
   },
-  { nome: "bairro", label: "Bairro", placeholder: "Centro", icone: "home-group" },
-  { nome: "cidade", label: "Cidade", placeholder: "Santa Maria", icone: "city-variant-outline" },
+  {
+    nome: "bairro",
+    label: "Bairro",
+    placeholder: "Centro",
+    icone: "home-group",
+    props: { maxLength: 150 },
+  },
+  {
+    nome: "cidade",
+    label: "Cidade",
+    placeholder: "Santa Maria",
+    icone: "city-variant-outline",
+    props: { maxLength: 150 },
+  },
   {
     nome: "uf",
     label: "UF",
@@ -276,14 +302,14 @@ const CAMPOS_CONTA: CampoConfig<CampoSimples>[] = [
     label: "E-mail (login)",
     placeholder: "voce@exemplo.com",
     icone: "email-outline",
-    props: { autoCapitalize: "none", keyboardType: "email-address" },
+    props: { autoCapitalize: "none", keyboardType: "email-address", maxLength: 255 },
   },
   {
     nome: "senha",
     label: "Senha",
     placeholder: "Pelo menos 6 caracteres",
     icone: "lock-outline",
-    props: { secureTextEntry: true },
+    props: { secureTextEntry: true, maxLength: 72 },
   },
 ];
 

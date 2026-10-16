@@ -391,6 +391,7 @@ function FluxoIngressoWizard({
             label="Nome do acompanhante"
             value={novoNome}
             onChangeText={setNovoNome}
+            maxLength={150}
           />
           <RadioButton.Group
             value={novoPerfil}
