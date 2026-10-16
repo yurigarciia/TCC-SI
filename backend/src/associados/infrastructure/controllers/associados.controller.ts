@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -30,6 +31,8 @@ import { ConsultarAssociadoUseCase } from '../../application/use-cases/consultar
 import { ConsultarMeuAssociadoUseCase } from '../../application/use-cases/consultar-meu-associado.use-case';
 import { AtualizarAssociadoUseCase } from '../../application/use-cases/atualizar-associado.use-case';
 import { AdicionarDependenteUseCase } from '../../application/use-cases/adicionar-dependente.use-case';
+import { AtualizarDependenteUseCase } from '../../application/use-cases/atualizar-dependente.use-case';
+import { RemoverDependenteUseCase } from '../../application/use-cases/remover-dependente.use-case';
 import { AprovarCadastroPendenteUseCase } from '../../application/use-cases/aprovar-cadastro-pendente.use-case';
 import { RejeitarCadastroPendenteUseCase } from '../../application/use-cases/rejeitar-cadastro-pendente.use-case';
 import { VincularContaAssociadoUseCase } from '../../application/use-cases/vincular-conta-associado.use-case';
@@ -40,6 +43,7 @@ import { AtualizarAssociadoDto } from './dto/atualizar-associado.dto';
 import { EnderecoDto } from './dto/endereco.dto';
 import { AprovarCadastroDto } from './dto/aprovar-cadastro.dto';
 import { DependenteDto } from './dto/dependente.dto';
+import { AtualizarDependenteDto } from './dto/atualizar-dependente.dto';
 import { VincularContaAssociadoDto } from './dto/vincular-conta-associado.dto';
 
 // DTO aceita complemento ausente (undefined); o domínio guarda explicitamente null pra "sem
@@ -67,6 +71,8 @@ export class AssociadosController {
     private readonly consultarMeu: ConsultarMeuAssociadoUseCase,
     private readonly atualizar: AtualizarAssociadoUseCase,
     private readonly adicionarDependente: AdicionarDependenteUseCase,
+    private readonly atualizarDependente: AtualizarDependenteUseCase,
+    private readonly removerDependente: RemoverDependenteUseCase,
     private readonly aprovar: AprovarCadastroPendenteUseCase,
     private readonly rejeitar: RejeitarCadastroPendenteUseCase,
     private readonly vincularConta: VincularContaAssociadoUseCase,
@@ -254,6 +260,55 @@ export class AssociadosController {
     @Body() dto: DependenteDto,
   ) {
     return this.adicionarDependente.execute(id, dto);
+  }
+
+  @Patch(':id/dependentes/:dependenteId')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @ApiOperation({
+    summary: 'Atualiza nome/data de nascimento de um dependente',
+  })
+  @ApiResponse({ status: 200, description: 'Dependente atualizado' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Dependente não encontrado para este associado',
+  })
+  atualizarDependenteDoAssociado(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('dependenteId', ParseUUIDPipe) dependenteId: string,
+    @Body() dto: AtualizarDependenteDto,
+  ) {
+    return this.atualizarDependente.execute(id, dependenteId, dto);
+  }
+
+  @Delete(':id/dependentes/:dependenteId')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Perfil.ADMINISTRADOR)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove um dependente de um associado' })
+  @ApiResponse({ status: 204, description: 'Dependente removido' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Dependente não encontrado para este associado',
+  })
+  removerDependenteDoAssociado(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('dependenteId', ParseUUIDPipe) dependenteId: string,
+  ) {
+    return this.removerDependente.execute(id, dependenteId);
   }
 
   @Post(':id/aprovar')

@@ -11,11 +11,15 @@ import { ConsultarAssociadoUseCase } from './application/use-cases/consultar-ass
 import { ConsultarMeuAssociadoUseCase } from './application/use-cases/consultar-meu-associado.use-case';
 import { AtualizarAssociadoUseCase } from './application/use-cases/atualizar-associado.use-case';
 import { AdicionarDependenteUseCase } from './application/use-cases/adicionar-dependente.use-case';
+import { AtualizarDependenteUseCase } from './application/use-cases/atualizar-dependente.use-case';
+import { RemoverDependenteUseCase } from './application/use-cases/remover-dependente.use-case';
 import { AprovarCadastroPendenteUseCase } from './application/use-cases/aprovar-cadastro-pendente.use-case';
 import { RejeitarCadastroPendenteUseCase } from './application/use-cases/rejeitar-cadastro-pendente.use-case';
 import { VincularContaAssociadoUseCase } from './application/use-cases/vincular-conta-associado.use-case';
 import { CriarCategoriaSocioUseCase } from './application/use-cases/criar-categoria-socio.use-case';
 import { ListarCategoriasSocioUseCase } from './application/use-cases/listar-categorias-socio.use-case';
+import { AtualizarCategoriaSocioUseCase } from './application/use-cases/atualizar-categoria-socio.use-case';
+import { ExcluirCategoriaSocioUseCase } from './application/use-cases/excluir-categoria-socio.use-case';
 import { AssociadoOrmEntity } from './infrastructure/persistence/associado.orm-entity';
 import { DependenteOrmEntity } from './infrastructure/persistence/dependente.orm-entity';
 import { EnderecoOrmEntity } from './infrastructure/persistence/endereco.orm-entity';
@@ -52,11 +56,15 @@ import { MensalidadesModule } from '../mensalidades/mensalidades.module';
     ConsultarMeuAssociadoUseCase,
     AtualizarAssociadoUseCase,
     AdicionarDependenteUseCase,
+    AtualizarDependenteUseCase,
+    RemoverDependenteUseCase,
     AprovarCadastroPendenteUseCase,
     RejeitarCadastroPendenteUseCase,
     VincularContaAssociadoUseCase,
     CriarCategoriaSocioUseCase,
     ListarCategoriasSocioUseCase,
+    AtualizarCategoriaSocioUseCase,
+    ExcluirCategoriaSocioUseCase,
     {
       provide: AssociadoRepositoryPort,
       useClass: TypeOrmAssociadoRepositoryAdapter,

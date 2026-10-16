@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import {
+  AtualizacaoCategoriaSocio,
   CategoriaSocioRepositoryPort,
   NovaCategoriaSocio,
 } from '../../application/ports/categoria-socio-repository.port';
 import { CategoriaSocio } from '../../domain/categoria-socio.entity';
 import { CategoriaSocioOrmEntity } from './categoria-socio.orm-entity';
+import { AssociadoOrmEntity } from './associado.orm-entity';
 
 @Injectable()
 export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioRepositoryPort {
   constructor(
     @InjectRepository(CategoriaSocioOrmEntity)
     private readonly repo: Repository<CategoriaSocioOrmEntity>,
+    @InjectRepository(AssociadoOrmEntity)
+    private readonly associadosRepo: Repository<AssociadoOrmEntity>,
   ) {
     super();
   }
@@ -48,6 +52,40 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
       itens: encontradas.map((categoria) => this.paraDominio(categoria)),
       total,
     };
+  }
+
+  async atualizar(
+    id: string,
+    dados: AtualizacaoCategoriaSocio,
+  ): Promise<CategoriaSocio> {
+    const encontrada = await this.repo.findOneBy({ id });
+    if (!encontrada) {
+      throw new NotFoundException('Categoria de sócio não encontrada');
+    }
+    if (dados.nome !== undefined) {
+      encontrada.nome = dados.nome;
+    }
+    if (dados.isenta !== undefined) {
+      encontrada.isenta = dados.isenta;
+    }
+    if (dados.valorMensalidade !== undefined) {
+      encontrada.valorMensalidade = String(dados.valorMensalidade);
+    }
+    if (encontrada.isenta) {
+      encontrada.valorMensalidade = '0';
+    }
+    const salva = await this.repo.save(encontrada);
+    return this.paraDominio(salva);
+  }
+
+  async excluir(id: string): Promise<void> {
+    await this.repo.delete(id);
+  }
+
+  async contarAssociadosVinculados(categoriaId: string): Promise<number> {
+    return this.associadosRepo.count({
+      where: { categoriaSocioId: categoriaId },
+    });
   }
 
   private paraDominio(orm: CategoriaSocioOrmEntity): CategoriaSocio {

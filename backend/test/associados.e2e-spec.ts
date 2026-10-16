@@ -163,6 +163,122 @@ describe('Associados (e2e)', () => {
     expect(body.dependentes).toHaveLength(1);
   });
 
+  it('permite editar categoria de sócio e recusa excluir categoria com associado vinculado', async () => {
+    const consulta = await request(app.getHttpServer())
+      .get('/associados')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .query({ busca: 'João Mediado', limite: 5 })
+      .expect(200);
+    const associadoMediado = (
+      consulta.body as {
+        itens: Array<{ id: string; categoriaSocioId: string | null }>;
+      }
+    ).itens.find((a) => a.categoriaSocioId);
+    const categoriaId = associadoMediado!.categoriaSocioId!;
+
+    const atualizada = await request(app.getHttpServer())
+      .patch(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ valorMensalidade: 55 })
+      .expect(200);
+    expect(
+      Number(
+        (atualizada.body as { valorMensalidade: number }).valorMensalidade,
+      ),
+    ).toBe(55);
+
+    await request(app.getHttpServer())
+      .delete(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(409);
+
+    await request(app.getHttpServer())
+      .delete('/categorias-socio/00000000-0000-0000-0000-000000000000')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+  });
+
+  it('permite criar, editar e excluir categoria de sócio sem associado vinculado', async () => {
+    const categoria = await request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Honorário — e2e', valorMensalidade: 10 })
+      .expect(201);
+    const categoriaId = (categoria.body as { id: string }).id;
+
+    await request(app.getHttpServer())
+      .patch(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Honorário Renomeado — e2e' })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .get('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .query({ busca: 'Honorário Renomeado — e2e' })
+      .expect(200)
+      .then((res) => {
+        expect((res.body as { total: number }).total).toBe(0);
+      });
+  });
+
+  it('permite editar e excluir dependente de um associado', async () => {
+    const consulta = await request(app.getHttpServer())
+      .get('/associados')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .query({ busca: 'João Mediado', limite: 5 })
+      .expect(200);
+    const associadoId = (consulta.body as { itens: Array<{ id: string }> })
+      .itens[0].id;
+
+    const detalhe = await request(app.getHttpServer())
+      .get(`/associados/${associadoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const dependenteId = (
+      detalhe.body as { dependentes: Array<{ id: string }> }
+    ).dependentes[0].id;
+
+    const atualizado = await request(app.getHttpServer())
+      .patch(`/associados/${associadoId}/dependentes/${dependenteId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Filho do João Renomeado' })
+      .expect(200);
+    expect((atualizado.body as { nome: string }).nome).toBe(
+      'Filho do João Renomeado',
+    );
+
+    // dependente de outro associado (id aleatório) — não encontrado para este associado
+    await request(app.getHttpServer())
+      .patch(`/associados/${cpfAutoCadastro}/dependentes/${dependenteId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Tentativa inválida' })
+      .expect(400); // cpfAutoCadastro não é um uuid válido — ParseUUIDPipe recusa antes
+
+    await request(app.getHttpServer())
+      .delete(`/associados/${associadoId}/dependentes/${dependenteId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(204);
+
+    const detalheFinal = await request(app.getHttpServer())
+      .get(`/associados/${associadoId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect(
+      (detalheFinal.body as { dependentes: unknown[] }).dependentes,
+    ).toHaveLength(0);
+
+    await request(app.getHttpServer())
+      .delete(`/associados/${associadoId}/dependentes/${dependenteId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+  });
+
   it('permite a um associado mediado vincular a própria conta e depois se autenticar', async () => {
     await request(app.getHttpServer())
       .post('/associados/vincular-conta')
