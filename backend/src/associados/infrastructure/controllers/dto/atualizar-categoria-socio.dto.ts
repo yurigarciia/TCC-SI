@@ -30,4 +30,12 @@ export class AtualizarCategoriaSocioDto {
   @IsNumber()
   @IsPositive()
   valorMensalidade?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Categoria inativa some do seletor de categoria em novo cadastro/edição de associado, mas continua valendo para quem já está nela.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  ativa?: boolean;
 }

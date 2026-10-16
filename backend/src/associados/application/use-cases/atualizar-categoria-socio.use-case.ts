@@ -6,6 +6,7 @@ export interface DadosAtualizacaoCategoriaSocio {
   nome?: string;
   valorMensalidade?: number;
   isenta?: boolean;
+  ativa?: boolean;
 }
 
 @Injectable()

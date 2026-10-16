@@ -68,6 +68,9 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
     if (dados.isenta !== undefined) {
       encontrada.isenta = dados.isenta;
     }
+    if (dados.ativa !== undefined) {
+      encontrada.ativa = dados.ativa;
+    }
     if (dados.valorMensalidade !== undefined) {
       encontrada.valorMensalidade = String(dados.valorMensalidade);
     }

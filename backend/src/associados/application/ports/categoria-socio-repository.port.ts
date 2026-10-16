@@ -10,6 +10,7 @@ export interface AtualizacaoCategoriaSocio {
   nome?: string;
   valorMensalidade?: number;
   isenta?: boolean;
+  ativa?: boolean;
 }
 
 export abstract class CategoriaSocioRepositoryPort {

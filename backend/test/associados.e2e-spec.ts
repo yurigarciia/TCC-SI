@@ -227,6 +227,34 @@ describe('Associados (e2e)', () => {
       });
   });
 
+  it('permite desativar e reativar uma categoria de sócio', async () => {
+    const categoria = await request(app.getHttpServer())
+      .post('/categorias-socio')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ nome: 'Benemérito — e2e', valorMensalidade: 0, isenta: true })
+      .expect(201);
+    const categoriaId = (categoria.body as { id: string; ativa: boolean }).id;
+    expect((categoria.body as { ativa: boolean }).ativa).toBe(true);
+
+    const desativada = await request(app.getHttpServer())
+      .patch(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ativa: false })
+      .expect(200);
+    expect((desativada.body as { ativa: boolean }).ativa).toBe(false);
+
+    const reativada = await request(app.getHttpServer())
+      .patch(`/categorias-socio/${categoriaId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ativa: true })
+      .expect(200);
+    expect((reativada.body as { ativa: boolean }).ativa).toBe(true);
+
+    await dataSource.query('DELETE FROM categorias_socio WHERE id = $1', [
+      categoriaId,
+    ]);
+  });
+
   it('permite editar e excluir dependente de um associado', async () => {
     const consulta = await request(app.getHttpServer())
       .get('/associados')
