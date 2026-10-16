@@ -7,6 +7,8 @@ import type {
   Associado,
   AssociadoDetalhado,
   AtualizarAssociadoInput,
+  AtualizarCategoriaSocioInput,
+  AtualizarDependenteInput,
   CadastrarAssociadoMediadoInput,
   CategoriaSocio,
   CriarCategoriaSocioInput,
@@ -63,6 +65,32 @@ export function useCriarCategoriaSocio() {
   });
 }
 
+export function useAtualizarCategoriaSocio(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dados: AtualizarCategoriaSocioInput) =>
+      apiFetch<CategoriaSocio>(`/categorias-socio/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_CATEGORIAS });
+    },
+  });
+}
+
+// Backend recusa com 409 quando a categoria ainda tem associado vinculado (ver
+// ExcluirCategoriaSocioUseCase) — a tela mostra esse erro, não tenta prevenir client-side.
+export function useExcluirCategoriaSocio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiFetch(`/categorias-socio/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAVE_CATEGORIAS });
+    },
+  });
+}
+
 export function useCadastrarAssociadoMediado() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -100,6 +128,31 @@ export function useAdicionarDependente(associadoId: string) {
         method: "POST",
         body: JSON.stringify(dados),
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(associadoId) });
+    },
+  });
+}
+
+export function useAtualizarDependente(associadoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dados }: { id: string; dados: AtualizarDependenteInput }) =>
+      apiFetch(`/associados/${associadoId}/dependentes/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(dados),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chaveDetalhe(associadoId) });
+    },
+  });
+}
+
+export function useRemoverDependente(associadoId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dependenteId: string) =>
+      apiFetch(`/associados/${associadoId}/dependentes/${dependenteId}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chaveDetalhe(associadoId) });
     },

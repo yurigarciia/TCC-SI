@@ -1,11 +1,14 @@
 "use client";
 
-import { Building2, MapPin, Pencil, Phone, Tag, User, Users } from "lucide-react";
+import { Building2, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +28,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -43,11 +48,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusAssociadoBadge } from "@/features/associados/status-badge";
+import type { Dependente } from "@/features/associados/types";
 import {
   useAprovarCadastro,
   useAssociado,
+  useAtualizarDependente,
   useCategoriasSocio,
   useRejeitarCadastro,
+  useRemoverDependente,
 } from "@/features/associados/use-associados";
 import { MensalidadesCard } from "@/features/mensalidades/mensalidades-card";
 import { TableEmptyRow } from "@/components/table-empty-row";
@@ -111,7 +119,10 @@ function AssociadoDetalheConteudo({
   const { associado, dependentes, endereco } = data;
   const aprovar = useAprovarCadastro(associadoId);
   const rejeitar = useRejeitarCadastro(associadoId);
+  const removerDependente = useRemoverDependente(associadoId);
   const [categoriaAprovacao, setCategoriaAprovacao] = useState<string | undefined>(undefined);
+  const [dependenteEditando, setDependenteEditando] = useState<Dependente | null>(null);
+  const [dependenteExcluindo, setDependenteExcluindo] = useState<Dependente | null>(null);
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
   const categorias = resultadoCategorias?.itens;
 
@@ -276,16 +287,35 @@ function AssociadoDetalheConteudo({
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>Data de nascimento</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {dependentes.length === 0 ? (
-                  <TableEmptyRow colSpan={2}>Nenhum dependente cadastrado.</TableEmptyRow>
+                  <TableEmptyRow colSpan={3}>Nenhum dependente cadastrado.</TableEmptyRow>
                 ) : (
                   dependentes.map((dependente) => (
                     <TableRow key={dependente.id}>
                       <TableCell>{dependente.nome}</TableCell>
                       <TableCell>{dependente.dataNascimento}</TableCell>
+                      <TableCell className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Editar ${dependente.nome}`}
+                          onClick={() => setDependenteEditando(dependente)}
+                        >
+                          <Pencil aria-hidden="true" className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Excluir ${dependente.nome}`}
+                          onClick={() => setDependenteExcluindo(dependente)}
+                        >
+                          <Trash2 aria-hidden="true" className="size-4 text-destructive" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -295,6 +325,51 @@ function AssociadoDetalheConteudo({
         </CardContent>
       </Card>
 
+      <Dialog
+        open={!!dependenteEditando}
+        onOpenChange={(aberto) => !aberto && setDependenteEditando(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          {dependenteEditando && (
+            <FormularioEditarDependente
+              associadoId={associadoId}
+              dependente={dependenteEditando}
+              onFechar={() => setDependenteEditando(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={!!dependenteExcluindo}
+        onOpenChange={(aberto) => !aberto && setDependenteExcluindo(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir “{dependenteExcluindo?.nome}”?</AlertDialogTitle>
+            <AlertDialogDescription>Não dá pra desfazer.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={removerDependente.isPending}
+              onClick={() => {
+                if (!dependenteExcluindo) return;
+                removerDependente.mutate(dependenteExcluindo.id, {
+                  onSuccess: () => {
+                    toast.success("Dependente removido.");
+                    setDependenteExcluindo(null);
+                  },
+                  onError: () => toast.error("Não foi possível remover o dependente."),
+                });
+              }}
+            >
+              {removerDependente.isPending ? "Excluindo…" : "Confirmar exclusão"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {associado.status === "ativo" && <MensalidadesCard associadoId={associadoId} />}
 
       <p className="text-xs text-muted-foreground">
@@ -302,5 +377,89 @@ function AssociadoDetalheConteudo({
         {formatarData(associado.atualizadoEm)}
       </p>
     </div>
+  );
+}
+
+const dependenteFormSchema = z.object({
+  nome: z.string().min(2, "Informe o nome do dependente."),
+  dataNascimento: z.string().min(1, "Informe a data de nascimento."),
+});
+
+type DependenteFormValues = z.infer<typeof dependenteFormSchema>;
+
+function FormularioEditarDependente({
+  associadoId,
+  dependente,
+  onFechar,
+}: {
+  associadoId: string;
+  dependente: Dependente;
+  onFechar: () => void;
+}) {
+  const atualizar = useAtualizarDependente(associadoId);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DependenteFormValues>({
+    resolver: zodResolver(dependenteFormSchema),
+    defaultValues: {
+      nome: dependente.nome,
+      dataNascimento: dependente.dataNascimento,
+    },
+  });
+
+  const onSubmit = handleSubmit((dados) => {
+    atualizar.mutate(
+      { id: dependente.id, dados },
+      {
+        onSuccess: () => {
+          toast.success("Dependente atualizado.");
+          onFechar();
+        },
+        onError: () => toast.error("Não foi possível atualizar o dependente."),
+      },
+    );
+  });
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Editar dependente</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <div className="space-y-2">
+          <Label htmlFor="nome-dependente">Nome</Label>
+          <Input
+            id="nome-dependente"
+            aria-invalid={!!errors.nome}
+            {...register("nome")}
+          />
+          {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dataNascimento-dependente">Data de nascimento</Label>
+          <Input
+            id="dataNascimento-dependente"
+            type="date"
+            aria-invalid={!!errors.dataNascimento}
+            {...register("dataNascimento")}
+          />
+          {errors.dataNascimento && (
+            <p className="text-sm text-destructive">{errors.dataNascimento.message}</p>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onFechar}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={atualizar.isPending}>
+            {atualizar.isPending ? "Salvando…" : "Salvar"}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }

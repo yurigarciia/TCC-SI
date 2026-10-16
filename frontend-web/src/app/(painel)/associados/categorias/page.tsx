@@ -1,12 +1,30 @@
 "use client";
 
-import { Tag } from "lucide-react";
+import { Pencil, Tag, Trash2 } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,7 +34,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCategoriasSocio } from "@/features/associados/use-associados";
+import {
+  useAtualizarCategoriaSocio,
+  useCategoriasSocio,
+  useExcluirCategoriaSocio,
+} from "@/features/associados/use-associados";
+import type { CategoriaSocio } from "@/features/associados/types";
+import { ApiError } from "@/lib/api-client";
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
@@ -30,13 +54,33 @@ import { SearchInput } from "@/components/search-input";
 export default function CategoriasSocioPage() {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
+  const [categoriaEditando, setCategoriaEditando] = useState<CategoriaSocio | null>(null);
+  const [categoriaExcluindo, setCategoriaExcluindo] = useState<CategoriaSocio | null>(null);
   const { data: resultado, isLoading, isError } = useCategoriasSocio(pagina, busca || undefined);
   const categorias = resultado?.itens;
+  const excluir = useExcluirCategoriaSocio();
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
     setPagina(1);
   };
+
+  function confirmarExclusao() {
+    if (!categoriaExcluindo) return;
+    excluir.mutate(categoriaExcluindo.id, {
+      onSuccess: () => {
+        toast.success("Categoria excluída.");
+        setCategoriaExcluindo(null);
+      },
+      onError: (erro) => {
+        toast.error(
+          erro instanceof ApiError
+            ? erro.message
+            : "Não foi possível excluir a categoria.",
+        );
+      },
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -76,11 +120,12 @@ export default function CategoriasSocioPage() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Mensalidade</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categorias.length === 0 ? (
-                <TableEmptyRow colSpan={3}>
+                <TableEmptyRow colSpan={4}>
                   {busca
                     ? "Nenhuma categoria encontrada para esse termo."
                     : "Nenhuma categoria cadastrada ainda."}
@@ -104,6 +149,24 @@ export default function CategoriasSocioPage() {
                         {categoria.ativa ? "Ativa" : "Inativa"}
                       </Badge>
                     </TableCell>
+                    <TableCell className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Editar ${categoria.nome}`}
+                        onClick={() => setCategoriaEditando(categoria)}
+                      >
+                        <Pencil aria-hidden="true" className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Excluir ${categoria.nome}`}
+                        onClick={() => setCategoriaExcluindo(categoria)}
+                      >
+                        <Trash2 aria-hidden="true" className="size-4 text-destructive" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -112,6 +175,159 @@ export default function CategoriasSocioPage() {
           {resultado && <Pagination pagina={resultado} onMudarPagina={setPagina} />}
         </div>
       )}
+
+      <Dialog
+        open={!!categoriaEditando}
+        onOpenChange={(aberto) => !aberto && setCategoriaEditando(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          {categoriaEditando && (
+            <FormularioEditarCategoria
+              categoria={categoriaEditando}
+              onFechar={() => setCategoriaEditando(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={!!categoriaExcluindo}
+        onOpenChange={(aberto) => !aberto && setCategoriaExcluindo(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir “{categoriaExcluindo?.nome}”?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Só é possível se nenhum associado estiver vinculado a esta categoria. Não dá pra
+              desfazer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction disabled={excluir.isPending} onClick={confirmarExclusao}>
+              {excluir.isPending ? "Excluindo…" : "Confirmar exclusão"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+  );
+}
+
+const formSchema = z
+  .object({
+    nome: z.string().min(2, "Informe o nome da categoria."),
+    isenta: z.boolean(),
+    valorMensalidade: z.coerce.number().nonnegative().optional(),
+  })
+  .superRefine((dados, ctx) => {
+    if (!dados.isenta && !(dados.valorMensalidade && dados.valorMensalidade > 0)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["valorMensalidade"],
+        message: "Informe um valor maior que zero.",
+      });
+    }
+  });
+
+type FormInput = z.input<typeof formSchema>;
+type FormValues = z.output<typeof formSchema>;
+
+function FormularioEditarCategoria({
+  categoria,
+  onFechar,
+}: {
+  categoria: CategoriaSocio;
+  onFechar: () => void;
+}) {
+  const atualizar = useAtualizarCategoriaSocio(categoria.id);
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInput, unknown, FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nome: categoria.nome,
+      isenta: categoria.isenta,
+      valorMensalidade: categoria.valorMensalidade,
+    },
+  });
+
+  const isenta = useWatch({ control, name: "isenta" });
+
+  const onSubmit = handleSubmit((dados) => {
+    atualizar.mutate(
+      {
+        nome: dados.nome,
+        isenta: dados.isenta,
+        valorMensalidade: dados.isenta ? undefined : dados.valorMensalidade,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Categoria atualizada.");
+          onFechar();
+        },
+        onError: () => toast.error("Não foi possível atualizar a categoria."),
+      },
+    );
+  });
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Editar categoria</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <div className="space-y-2">
+          <Label htmlFor="nome-editar">Nome</Label>
+          <Input id="nome-editar" aria-invalid={!!errors.nome} {...register("nome")} />
+          {errors.nome && <p className="text-sm text-destructive">{errors.nome.message}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="valorMensalidade-editar">Mensalidade (R$)</Label>
+          <Input
+            id="valorMensalidade-editar"
+            type="number"
+            step="0.01"
+            min="0"
+            disabled={isenta}
+            aria-invalid={!!errors.valorMensalidade}
+            {...register("valorMensalidade")}
+          />
+          {errors.valorMensalidade && (
+            <p className="text-sm text-destructive">{errors.valorMensalidade.message}</p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Controller
+            control={control}
+            name="isenta"
+            render={({ field }) => (
+              <Checkbox
+                id="isenta-editar"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
+          />
+          <Label htmlFor="isenta-editar" className="font-normal">
+            Categoria isenta de mensalidade
+          </Label>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onFechar}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={atualizar.isPending}>
+            {atualizar.isPending ? "Salvando…" : "Salvar"}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }

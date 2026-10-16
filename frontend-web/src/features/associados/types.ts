@@ -68,6 +68,17 @@ export interface CriarCategoriaSocioInput {
   isenta?: boolean;
 }
 
+export interface AtualizarCategoriaSocioInput {
+  nome?: string;
+  valorMensalidade?: number;
+  isenta?: boolean;
+}
+
+export interface AtualizarDependenteInput {
+  nome?: string;
+  dataNascimento?: string;
+}
+
 export interface CadastrarAssociadoMediadoInput {
   nome: string;
   cpf: string;
