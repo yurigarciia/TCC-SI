@@ -6,6 +6,7 @@ import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   HomeIcon,
+  KeyRoundIcon,
   LogOutIcon,
   MenuIcon,
   PanelLeftCloseIcon,
@@ -19,14 +20,21 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { z } from "zod";
 import { useCurrentUser } from "@/features/auth/use-current-user";
 import { useLogout } from "@/features/auth/use-logout";
 import type { Perfil } from "@/features/auth/types";
+import { useAlterarSenha } from "@/features/usuarios/use-usuarios";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LogoMark } from "@/components/logo-mark";
-import { registrarHandler401 } from "@/lib/api-client";
+import { ApiError, registrarHandler401 } from "@/lib/api-client";
 import {
   Sheet,
   SheetContent,
@@ -245,6 +253,7 @@ function AcoesDaConta({
   logout: () => void;
 }) {
   const classeBotao = "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
+  const [trocarSenhaAberto, setTrocarSenhaAberto] = useState(false);
   return (
     <div className="flex items-center gap-1">
       {!colapsada && (
@@ -263,6 +272,10 @@ function AcoesDaConta({
             <EllipsisVerticalIcon />
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="end">
+            <DropdownMenuItem onClick={() => setTrocarSenhaAberto(true)}>
+              <KeyRoundIcon />
+              Trocar senha
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout}>
               <LogOutIcon />
               Sair
@@ -280,7 +293,114 @@ function AcoesDaConta({
       >
         {colapsada ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
       </Button>
+
+      <Dialog open={trocarSenhaAberto} onOpenChange={setTrocarSenhaAberto}>
+        <DialogContent className="sm:max-w-md">
+          <FormularioTrocarSenha onFechar={() => setTrocarSenhaAberto(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+const trocarSenhaSchema = z
+  .object({
+    senhaAtual: z.string().min(1, "Informe a senha atual."),
+    senhaNova: z.string().min(6, "A nova senha precisa ter ao menos 6 caracteres."),
+    confirmarSenha: z.string(),
+  })
+  .refine((dados) => dados.senhaNova === dados.confirmarSenha, {
+    message: "As senhas não coincidem.",
+    path: ["confirmarSenha"],
+  });
+
+type TrocarSenhaValues = z.infer<typeof trocarSenhaSchema>;
+
+function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
+  const alterarSenha = useAlterarSenha();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TrocarSenhaValues>({
+    resolver: zodResolver(trocarSenhaSchema),
+  });
+
+  const onSubmit = handleSubmit((dados) => {
+    alterarSenha.mutate(
+      { senhaAtual: dados.senhaAtual, senhaNova: dados.senhaNova },
+      {
+        onSuccess: () => {
+          toast.success("Senha alterada.");
+          onFechar();
+        },
+        onError: (erro) => {
+          toast.error(
+            erro instanceof ApiError ? erro.message : "Não foi possível trocar a senha.",
+          );
+        },
+      },
+    );
+  });
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Trocar senha</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <div className="space-y-2">
+          <Label htmlFor="senhaAtual">Senha atual</Label>
+          <Input
+            id="senhaAtual"
+            type="password"
+            autoComplete="current-password"
+            aria-invalid={!!errors.senhaAtual}
+            {...register("senhaAtual")}
+          />
+          {errors.senhaAtual && (
+            <p className="text-sm text-destructive">{errors.senhaAtual.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="senhaNova">Nova senha</Label>
+          <Input
+            id="senhaNova"
+            type="password"
+            autoComplete="new-password"
+            aria-invalid={!!errors.senhaNova}
+            {...register("senhaNova")}
+          />
+          {errors.senhaNova && (
+            <p className="text-sm text-destructive">{errors.senhaNova.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmarSenha">Confirmar nova senha</Label>
+          <Input
+            id="confirmarSenha"
+            type="password"
+            autoComplete="new-password"
+            aria-invalid={!!errors.confirmarSenha}
+            {...register("confirmarSenha")}
+          />
+          {errors.confirmarSenha && (
+            <p className="text-sm text-destructive">{errors.confirmarSenha.message}</p>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onFechar}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={alterarSenha.isPending}>
+            {alterarSenha.isPending ? "Salvando…" : "Salvar"}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }
 
