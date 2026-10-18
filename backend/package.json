@@ -21,7 +21,8 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:run": "npm run typeorm -- migration:run -d src/shared/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/shared/database/data-source.ts",
-    "seed:admin": "ts-node -r tsconfig-paths/register src/shared/database/seed-admin.ts"
+    "seed:admin": "ts-node -r tsconfig-paths/register src/shared/database/seed-admin.ts",
+    "seed:demo": "ts-node -r tsconfig-paths/register src/shared/database/seed-demo.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

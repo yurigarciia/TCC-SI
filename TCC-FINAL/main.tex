@@ -890,8 +890,8 @@ diretoria, responsáveis pela organização de eventos e associados com diferent
 contemplando usuários com menor familiaridade digital.
 
 Antes das sessões, o ambiente de avaliação de cada entidade foi povoado com dados fictícios, porém
-plausíveis — associados, eventos, mensalidades e ingressos gerados em volume e variação compatíveis
-com a realidade relatada no diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}) —, de modo que
+plausíveis (associados, eventos, mensalidades e ingressos gerados em volume e variação compatíveis
+com a realidade relatada no diagnóstico de cada entidade, Seção~\ref{sec:diagnostico}), de modo que
 os participantes operassem listas, buscas e históricos já preenchidos, e não um sistema vazio,
 reforçando a sensação de uso real durante a avaliação.
 
@@ -900,13 +900,13 @@ centrais do ecossistema (associados, eventos/ingressos e mensalidades) e por cor
 relatados como prioritários no diagnóstico de ambas as entidades. Cada fluxo foi testado nas duas
 pontas do ecossistema, quando aplicável: participantes da diretoria executaram o passo mediado pelo
 painel administrativo, e participantes associados executaram o passo de autoatendimento pelo
-aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF04, RF18) —
-cadastro mediado pela diretoria no painel e auto-cadastro/vínculo de conta pelo associado no
-aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21) — compra do ingresso e
-exibição do código QR pelo associado no aplicativo, seguida da leitura e validação da entrada pela
-diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06, RF08) — consulta e
-pagamento online pelo associado no aplicativo, seguidos da consulta do histórico e do relatório de
-inadimplência pela diretoria no painel.
+aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF04, RF18),
+compreendendo o cadastro mediado pela diretoria no painel e o auto-cadastro/vínculo de conta pelo
+associado no aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21), compreendendo
+a compra do ingresso e a exibição do código QR pelo associado no aplicativo, seguida da leitura e
+validação da entrada pela diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06,
+RF08), compreendendo a consulta e o pagamento online pelo associado no aplicativo, seguidos da
+consulta do histórico e do relatório de inadimplência pela diretoria no painel.
 
 A coleta de dados combinou três instrumentos complementares. O primeiro foi uma verificação
 automatizada de conclusão: para cada tarefa, uma rotina consultou a API e o banco de dados
@@ -1088,14 +1088,31 @@ associado (por exemplo, consultar as próprias mensalidades, reservas e ingresso
 partir do token, e nunca a partir de parâmetros informados pelo cliente, o que evita o acesso a dados
 de terceiros. A verificação do comportamento é feita por 73 testes de ponta a ponta, distribuídos em
 oito suítes, executados contra um banco PostgreSQL real, e que cobrem inclusive cenários de
-concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita.
+concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita. Para
+ambientar as sessões de avaliação com as entidades parceiras (Seção 3.6), foi desenvolvida uma
+rotina de povoamento de dados (\textit{seed}), executada contra a API já em produção, que gera
+associados, categorias de sócio, um salão com croqui completo, eventos publicados com preços
+configurados e um histórico de mensalidades, ingressos e reservas em volume e variação
+compatíveis com a realidade relatada no diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}),
+reaproveitando as mesmas regras de negócio que a diretoria usa no dia a dia, em vez de inserir
+dados fictícios diretamente no banco.
 
-\textbf{Painel administrativo (Next.js).} O painel concentra a operação da diretoria. Nele, é possível
-cadastrar e aprovar associados, configurar categorias de sócio com valor de mensalidade e isenção,
-lançar cobranças mensais, registrar pagamentos presenciais e consultar a inadimplência, cadastrar
-eventos, desenhar o croqui do salão, configurar preço e disponibilidade de mesas e ingressos, registrar
-reservas e vender ingressos presencialmente. A Figura~\ref{fig:web-dashboard} apresenta a tela
-inicial, com os totais de associados, pendências de validação, inadimplentes e eventos publicados.
+\textbf{Painel administrativo (Next.js).} O acesso ao painel é feito por autenticação com e-mail e
+senha (Figura~\ref{fig:web-login}), restrita a usuários com perfil administrador. O painel concentra
+a operação da diretoria. Nele, é possível cadastrar e aprovar associados, configurar categorias de
+sócio com valor de mensalidade e isenção, lançar cobranças mensais, registrar pagamentos presenciais
+e consultar a inadimplência, cadastrar eventos, desenhar o croqui do salão, configurar preço e
+disponibilidade de mesas e ingressos, registrar reservas e vender ingressos presencialmente. A
+Figura~\ref{fig:web-dashboard} apresenta a tela inicial, com os totais de associados, pendências de
+validação, inadimplentes e eventos publicados.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/web-login.png}
+  \caption{Painel administrativo: tela de autenticação}
+  \label{fig:web-login}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
 O croqui do salão (Figura~\ref{fig:web-croqui}) é construído pela própria diretoria, sem exposição de
 coordenadas: mesas, paredes, portas e áreas (como tablado ou bar) são arrastadas de um menu lateral
 diretamente para dentro do desenho, o que responde à dificuldade relatada por usuários com menor
@@ -1115,7 +1132,7 @@ para o registro da entrada na portaria.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/web-salao-croqui.png}
-  \caption{Painel administrativo: croqui do salão com mesas, paredes e portas}
+  \caption{Painel administrativo: croqui do salão com mesas, paredes, portas e áreas}
   \label{fig:web-croqui}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
@@ -1207,15 +1224,15 @@ portaria.
 O fluxo começa no aplicativo do associado. Na aba ``Eventos'' (Figura~\ref{fig:mobile-telas}d), o
 associado abre um evento publicado e escolhe comprar um ingresso; a API resolve, a partir do perfil
 configurado para esse evento, o valor correspondente (sócio, não sócio ou criança) e registra a
-emissão, vinculando o ingresso ao associado autenticado — nunca a um identificador informado
+emissão, vinculando o ingresso ao associado autenticado, nunca a um identificador informado
 livremente pelo cliente, o que impede que um associado compre ou visualize ingresso de outra pessoa.
 Emitido o ingresso, a aba ``Ingressos'' (Figura~\ref{fig:mobile-telas}c) passa a exibi-lo com um
 código QR, cujo conteúdo é o identificador do próprio ingresso.
 
 No dia do evento, a continuidade do fluxo passa para o painel administrativo. Na tela de ingressos do
 evento (Figura~\ref{fig:web-ingressos}), a diretoria lê, pela câmera, o código QR apresentado na tela
-do associado — ou digita manualmente o mesmo código, caminho alternativo pensado para celulares sem
-câmera disponível na portaria ou para ingressos impressos. A API confere se aquele ingresso já havia
+do associado, ou então digita manualmente o mesmo código, caminho alternativo pensado para celulares
+sem câmera disponível na portaria ou para ingressos impressos. A API confere se aquele ingresso já havia
 sido validado antes de registrar a entrada, evitando que o mesmo código seja aceito duas vezes, e
 atualiza, em tempo real, os totais exibidos no painel: quantos ingressos foram emitidos, quantos já
 deram entrada e quantos ainda são esperados. Do lado do associado, o aplicativo passa a indicar que

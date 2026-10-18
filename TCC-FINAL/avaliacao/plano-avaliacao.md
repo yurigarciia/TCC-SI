@@ -55,9 +55,19 @@ de produção real) com um conjunto de dados fictícios, mas plausíveis:
 - Histórico de mensalidades (pagas, pendentes e inadimplentes) e de ingressos já emitidos/validados,
   pra que o participante não comece a tarefa de uma base vazia.
 
-Implementação: script de seed (Node, reaproveitando os repositórios/TypeORM do backend) a ser escrito
-em `backend/` — ver pendência na Seção 7. Os nomes gerados devem ser claramente fictícios (evitar
-qualquer semelhança com associados reais das entidades).
+**Implementado.** `backend/src/shared/database/seed-demo.ts`, rodado com `npm run seed:demo`
+(requer a API no ar e um usuário administrador já existente). Em vez de inserir direto no banco, a
+rotina chama a própria API (mesmo caminho que a diretoria usa no painel), reaproveitando as regras
+de negócio dos use cases: garante as categorias de sócio (Efetivo, Dançarino, Remido), cria 36
+associados fictícios (nomes gaúchos gerados por combinação de pools, CPFs sintéticos, ~10% nascidos
+por auto-cadastro e ainda pendentes de validação), gera e paga as mensalidades do mês em proporção
+mista (pagas online/presencial, pendentes, inadimplentes após `processar-inadimplencia`), cria um
+salão com croqui completo (16 mesas, paredes, porta e as áreas "Tablado"/"Bar"), publica dois
+eventos com preços configurados por perfil/categoria, e vende ingressos e reserva mesas variados
+(incluindo alguns já com check-in). É idempotente por CPF: rodar de novo reaproveita os associados
+já criados em vez de duplicar. Os nomes gerados são claramente fictícios (sem semelhança com
+associados reais das entidades). Rodado pela primeira vez em 2026-10-18 contra a API em produção
+(Cloud Run), populando o banco real usado pelas duas entidades parceiras nesta fase de preparo.
 
 ## 5. Fluxos avaliados
 
@@ -162,11 +172,12 @@ Perguntas abertas, conduzidas após o SUS:
 
 ## 7. Pendências de implementação (antes da sessão real)
 
-- [ ] Script de seed de dados fictícios realistas (Seção 4) — a escrever em `backend/`.
+- [x] Script de seed de dados fictícios realistas (Seção 4) — `backend/src/shared/database/seed-demo.ts`,
+  rodado em 2026-10-18 contra a API em produção.
+- [x] Atualizar as capturas de tela do sistema usadas no artigo (estavam desatualizadas em relação à
+  interface atual).
 - [ ] Rotina de verificação automatizada de conclusão (Seção 6.1) — a escrever, provavelmente como um
   script Node separado que roda consultas diretas (TypeORM ou SQL) após cada sessão.
 - [ ] Formulário SUS em português pronto para aplicação (papel ou formulário digital simples).
 - [ ] Confirmar com cada entidade a lista de participantes e seus papéis (Seção 3).
 - [ ] Agendar as datas das sessões com CPF Pia do Sul e CTG Sentinela da Querência.
-- [ ] Atualizar as capturas de tela do sistema usadas no artigo (estão desatualizadas em relação à
-  interface atual) — relacionado, mas não bloqueante para este plano.
