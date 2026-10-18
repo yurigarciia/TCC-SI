@@ -991,12 +991,12 @@ identidade (autenticação e perfis), associados, mensalidades, eventos, reserva
 além de módulos transversais de paginação, pagamentos e notificações. Cada módulo segue a separação
 entre domínio, casos de uso, portas e adaptadores da Arquitetura Hexagonal: as regras de negócio não
 dependem do \textit{framework} nem do banco, e os serviços externos (porta de pagamento e envio de
-notificações) são acessados por interfaces substituíveis. O esquema do banco é versionado em 16
+notificações) são acessados por interfaces substituíveis. O esquema do banco é versionado em 19
 \textit{migrations}, e a API é documentada automaticamente via Swagger (RNF04). A autenticação usa
 tokens JWT, e o acesso é controlado por dois perfis, administrador e associado; rotas destinadas ao
 associado (por exemplo, consultar as próprias mensalidades, reservas e ingressos) resolvem a posse a
 partir do token, e nunca a partir de parâmetros informados pelo cliente, o que evita o acesso a dados
-de terceiros. A verificação do comportamento é feita por 65 testes de ponta a ponta, distribuídos em
+de terceiros. A verificação do comportamento é feita por 73 testes de ponta a ponta, distribuídos em
 oito suítes, executados contra um banco PostgreSQL real, e que cobrem inclusive cenários de
 concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita.
 
@@ -1007,8 +1007,9 @@ eventos, desenhar o croqui do salão, configurar preço e disponibilidade de mes
 reservas e vender ingressos presencialmente. A Figura~\ref{fig:web-dashboard} apresenta a tela
 inicial, com os totais de associados, pendências de validação, inadimplentes e eventos publicados.
 O croqui do salão (Figura~\ref{fig:web-croqui}) é construído pela própria diretoria, sem exposição de
-coordenadas: as mesas são posicionadas por clique e as paredes e portas, desenhadas por arrasto,
-o que responde à dificuldade relatada por usuários com menor familiaridade digital. No dia do evento,
+coordenadas: mesas, paredes, portas e áreas (como tablado ou bar) são arrastadas de um menu lateral
+diretamente para dentro do desenho, o que responde à dificuldade relatada por usuários com menor
+familiaridade digital. No dia do evento,
 a tela de ingressos (Figura~\ref{fig:web-ingressos}) exibe os totais de ingressos emitidos, de
 entradas já validadas e de ingressos aguardando entrada, além da leitura de códigos QR pela câmera
 para o registro da entrada na portaria.
