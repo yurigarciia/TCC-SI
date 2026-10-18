@@ -56,18 +56,30 @@ de produção real) com um conjunto de dados fictícios, mas plausíveis:
   pra que o participante não comece a tarefa de uma base vazia.
 
 **Implementado.** `backend/src/shared/database/seed-demo.ts`, rodado com `npm run seed:demo`
-(requer a API no ar e um usuário administrador já existente). Em vez de inserir direto no banco, a
-rotina chama a própria API (mesmo caminho que a diretoria usa no painel), reaproveitando as regras
-de negócio dos use cases: garante as categorias de sócio (Efetivo, Dançarino, Remido), cria 36
-associados fictícios (nomes gaúchos gerados por combinação de pools, CPFs sintéticos, ~10% nascidos
-por auto-cadastro e ainda pendentes de validação), gera e paga as mensalidades do mês em proporção
-mista (pagas online/presencial, pendentes, inadimplentes após `processar-inadimplencia`), cria um
-salão com croqui completo (16 mesas, paredes, porta e as áreas "Tablado"/"Bar"), publica dois
-eventos com preços configurados por perfil/categoria, e vende ingressos e reserva mesas variados
-(incluindo alguns já com check-in). É idempotente por CPF: rodar de novo reaproveita os associados
-já criados em vez de duplicar. Os nomes gerados são claramente fictícios (sem semelhança com
-associados reais das entidades). Rodado pela primeira vez em 2026-10-18 contra a API em produção
-(Cloud Run), populando o banco real usado pelas duas entidades parceiras nesta fase de preparo.
+(requer a API no ar e um usuário administrador já existente). A rotina chama a própria API (mesmo
+caminho que a diretoria usa no painel), reaproveitando as regras de negócio dos use cases: garante
+as categorias de sócio (Efetivo, Dançarino, Remido), cria associados fictícios (nomes gaúchos
+gerados por combinação de pools, CPFs sintéticos, ~10% nascidos por auto-cadastro e ainda pendentes
+de validação), gera e paga as mensalidades do mês em proporção mista (pagas online/presencial,
+pendentes, inadimplentes após `processar-inadimplencia`), cria um salão com croqui completo (mesas,
+paredes, porta e áreas como "Tablado"/"Bar"), publica eventos com preços configurados por
+perfil/categoria, e vende ingressos e reserva mesas variados (incluindo alguns já com check-in). É
+idempotente por CPF: rodar de novo reaproveita os associados já criados em vez de duplicar.
+
+Depois da primeira rodada (36 associados, um evento), uma olhada nas capturas de tela do artigo
+expôs problemas que só ficam visíveis olhando a UI, não só a API: volume baixo demais frente ao
+diagnóstico (1.343 e 822 associados reais), inadimplência em ~45% (bem acima do razoável), todo o
+cadastro concentrado no dia em que o script rodou e ingressos com check-in carimbado antes da data
+do próprio evento. Um segundo script,
+`backend/src/shared/database/ajustar-realismo-demo.ts` (`npm run ajustar-demo`), corrigiu isso:
+escalou o cohort para 90+ associados, rebalanceou a inadimplência para ~10%, moveu os check-ins
+equivocados para um evento já realizado e, por SQL direto (sob confirmação explícita, já que a API
+deliberadamente não aceita retroceder `criado_em`/`pago_em`/`usado_em`), espalhou as datas de
+cadastro ao longo dos últimos 6 meses com tendência crescente e preencheu 2 competências
+retroativas de mensalidade por associado. Os nomes gerados continuam claramente fictícios (sem
+semelhança com associados reais das entidades). Rodado contra a API em produção (Cloud Run),
+populando o banco real usado pelas duas entidades parceiras nesta fase de preparo (2026-10-18 e
+2026-10-19).
 
 ## 5. Fluxos avaliados
 
@@ -76,7 +88,7 @@ ecossistema (associados, ingressos/eventos, mensalidades) e por corresponderem a
 como prioritários no diagnóstico (Seção 4.1 — RF14, por exemplo, nasceu de um problema relatado por
 ambas as entidades).
 
-### Fluxo 1 — Cadastro de associado (RF01, RF04, RF18)
+### Fluxo 1 — Cadastro de associado (RF01, RF18)
 
 **Papel: Diretoria (painel web).**
 1. Acessar `/associados/novo`.
@@ -120,7 +132,7 @@ preenchido) ao registro de associado correspondente.
 *Critério de sucesso objetivo:* o mesmo ingresso do passo anterior passa a `entradaValidada = true`,
 com timestamp de validação populado.
 
-### Fluxo 3 — Pagamento de mensalidade (RF05, RF06, RF08)
+### Fluxo 3 — Pagamento de mensalidade (RF05, RF06, RF07, RF19)
 
 **Papel: Associado (app mobile).**
 1. Na aba "Mensalidade", localizar a cobrança em aberto.
@@ -150,25 +162,46 @@ estado esperado foi atingido. Essa rotina produz uma métrica de **taxa de concl
 (concluiu sozinho / concluiu com ajuda do moderador / não concluiu), complementar — não substituta —
 aos instrumentos subjetivos abaixo. Ver pendência de implementação na Seção 7.
 
-### 6.2 Escala SUS
+### 6.2 Registro de observação do moderador
+
+Durante cada tarefa, o moderador anota tempo gasto, número de erros (ações desfeitas ou refeitas) e
+número de intervenções (vezes em que precisou indicar o próximo passo). É esse registro, não só a
+taxa de conclusão, que sustenta a conclusão sobre se o fluxo mediado (RNF01) funcionou de fato como
+alternativa viável para quem tem menor familiaridade digital.
+
+### 6.3 Escala SUS
 
 Aplicação do formulário padrão de 10 itens da *System Usability Scale* \parencite{brooke1996},
-em português, imediatamente após o bloco de tarefas de cada participante. Resultado por participante
-e, na análise, agregado por entidade e por papel (diretoria vs. associado) para a comparação prevista
-no método (Seção 3.6 do artigo).
+em português (adaptação de Lourenço, Carmona e Lopes, 2022), imediatamente após o bloco de tarefas de
+cada participante. Resultado por participante e, na análise, agregado por entidade e por papel
+(diretoria vs. associado) para a comparação prevista no método (Seção 3.6 do artigo), interpretado
+segundo as faixas de Bangor, Kortum e Miller (2008).
 
-### 6.3 Roteiro de entrevista semiestruturada
+### 6.4 Roteiro de entrevista semiestruturada
 
 Perguntas abertas, conduzidas após o SUS:
 
 1. De forma geral, como foi a experiência de usar o sistema hoje?
 2. Em qual momento das tarefas você se sentiu mais em dúvida ou perdido? O que ajudaria ali?
-3. Alguma tela ou termo usado no sistema não ficou claro?
-4. [Só para quem usou o fluxo mediado] Você confiaria em pedir pra alguém da diretoria fazer isso por
+3. Alguma tela ou termo usado no sistema não ficou claro? O vocabulário (categoria de sócio, cargos
+   da diretoria, tipos de evento) fez sentido pra entidade, ou soou genérico demais?
+4. Comparando com o que vocês já faziam antes (papel, planilha, WhatsApp), esse processo pelo sistema
+   parece mais útil, mais fácil, ou não fez diferença? (inspirada nos construtos de utilidade e
+   facilidade de uso percebidas do TAM, Davis 1989)
+5. (Só para quem usou o fluxo mediado) Você confiaria em pedir pra alguém da diretoria fazer isso por
    você, caso preferisse não usar o sistema diretamente?
-5. [Só para diretoria] Esse processo ficou mais rápido, mais lento ou parecido com o que vocês já
-   faziam antes (planilha/papel)?
-6. Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
+6. (Só para diretoria) As categorias de sócio e o croqui do salão, do jeito que ficaram configurados,
+   correspondem a como a entidade de fato organiza isso hoje?
+7. Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
+
+### 6.5 Amostra e análise
+
+Cada combinação de entidade × papel (diretoria/associado) reúne de 3 a 5 participantes (dentro da
+faixa de 6-10 por entidade já fixada). Isso inviabiliza comparação estatística entre subgrupos: a
+análise é descritiva, com triangulação entre os quatro instrumentos acima, usando análise de
+conteúdo (Gil, 2017) como técnica. Recrutamento por conveniência, com indicação da própria diretoria
+de cada entidade. Uma rodada de teste-piloto interno precede as sessões reais, para calibrar o
+roteiro de tarefas e o tempo estimado por sessão.
 
 ## 7. Pendências de implementação (antes da sessão real)
 

@@ -9,6 +9,15 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{booktabs}
+\usepackage{array}
+% Coluna de texto com largura fixa e quebra de linha, pra descrições/situações longas não
+% estourarem a margem da página (achado numa revisão do artigo: colunas sem largura fixa
+% cortavam palavras como "Parcial (validado em Android)" nas tabelas de requisitos).
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+% Todas as tabelas deste artigo têm conteúdo textual (descrições, prioridade, situação), não dado
+% numérico/estatístico, e pela ABNT isso é "Quadro", não "Tabela". \AtBeginDocument porque o pacote
+% de idioma (babel/biblatex-abnt) também define \tablename, e precisa ser sobrescrito depois dele.
+\AtBeginDocument{\renewcommand{\tablename}{Quadro}}
 \usepackage{enumitem}
 \usepackage{indentfirst}
 \usepackage{titlesec}
@@ -79,7 +88,7 @@
 \setlength{\headheight}{15pt}
 
 % Legendas de ilustrações/tabelas
-\DeclareCaptionLabelSeparator{hifen}{\space-\space}
+\DeclareCaptionLabelSeparator{hifen}{\space--\space}
 \captionsetup{
   font={small,stretch=1},
   labelfont=normalfont,
@@ -227,15 +236,18 @@
 ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais
 tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
 Partindo da identificação de lacunas na literatura e de um diagnóstico dos processos administrativos
-de duas entidades parceiras — o CPF Pia do Sul e o CTG Sentinela da Querência, ambos em Santa
-Maria/RS, vinculados à 13ª Região Tradicionalista —, o estudo propõe uma solução composta por uma
+de duas entidades parceiras (o Centro de Pesquisas Folclóricas, CPF, Pia do Sul e o CTG Sentinela
+da Querência, ambos em Santa Maria/RS, vinculados à 13ª Região Tradicionalista), o estudo propõe
+uma solução composta por uma
 plataforma \textit{web} para administração da entidade e um aplicativo \textit{mobile} para os
-associados, integrados por uma API REST. A convergência de processos e necessidades identificada
+associados, integrados por uma API (\textit{Application Programming Interface}) REST. A
+convergência de processos e necessidades identificada
 entre as duas entidades parceiras orientou o desenho do sistema como um produto reutilizável entre
-entidades tradicionalistas — não acoplado às particularidades de uma única entidade —, ainda que cada
+entidades tradicionalistas, não acoplado às particularidades de uma única entidade, ainda que cada
 implantação permaneça isolada, com instância e base de dados próprias por entidade. A arquitetura
 adota a abordagem Hexagonal combinada com princípios da \textit{Clean Architecture}, e o
-desenvolvimento segue o método DSDM com priorização MoSCoW. [Resumo a ser complementado com os
+desenvolvimento segue o método DSDM (\textit{Dynamic Systems Development Method}) com priorização
+MoSCoW. [Resumo a ser complementado com os
 resultados da avaliação conduzida junto às entidades parceiras.]
 
 \vspace{\baselineskip}
@@ -246,14 +258,16 @@ resultados da avaliação conduzida junto às entidades parceiras.]
 digital ecosystem aimed at managing members and traditional social events, with emphasis on
 \textit{bailes} and \textit{fandangos}, in the context of Gaúcho traditionalist entities. Based on
 identified gaps in the literature and a diagnosis of administrative processes at two partner
-entities — CPF Pia do Sul and CTG Sentinela da Querência, both in Santa Maria/RS —, the study
-proposes a solution composed of a web platform for entity administration and a mobile application
+entities (Centro de Pesquisas Folclóricas, CPF, Pia do Sul and CTG Sentinela da Querência, both in
+Santa Maria/RS), the study proposes a solution composed of a web platform for entity administration
+and a mobile application
 for members, integrated through a REST API. The convergence of processes and needs identified
 between the two partner entities guided the design of the system as a reusable product across
 traditionalist entities, rather than one coupled to a single entity's particularities, although each
 deployment remains isolated, with its own instance and database per entity. The architecture adopts
 the Hexagonal approach combined with Clean Architecture principles, and development follows the DSDM
-method with MoSCoW prioritization. [Abstract to be completed with evaluation results.]
+(\textit{Dynamic Systems Development Method}) method with MoSCoW prioritization. [Abstract to be
+completed with evaluation results.]
 
 \vspace{\baselineskip}
 \noindent\textbf{Keywords:} digital ecosystem; associative management; Gaúcho traditionalist entities; digital transformation; usability.
@@ -371,8 +385,8 @@ Para alcançar esse objetivo, definem-se os seguintes objetivos específicos:
     \textit{mobile} voltado aos associados;
   \item implementar as funcionalidades básicas do sistema, incluindo o controle de associados, o
     gerenciamento de mensalidades e os processos de reserva e compra de ingressos e mesas;
-  \item avaliar o funcionamento do ecossistema a partir de cenários de uso reais, considerando
-    aspectos organizacionais e de usabilidade.
+  \item avaliar o ecossistema junto a usuários reais das entidades parceiras, a partir de cenários de
+    uso realistas, quanto à usabilidade e à utilidade percebida.
 \end{enumerate}
 
 % ------------------------------------------------------------------
@@ -436,12 +450,42 @@ oferecer maior previsibilidade e controle às entidades. Dessa forma, a aplicaç
 voltadas à gestão representa não apenas uma modernização tecnológica, mas um instrumento de suporte
 à sustentabilidade e à continuidade organizacional \parencite{vial2019,verhoef2021}.
 
+Por tratar dados pessoais de associados (nome, CPF, contato, endereço), um sistema desse tipo se
+submete à Lei Geral de Proteção de Dados Pessoais (LGPD) \parencite{lgpd2018}, que no Brasil
+estabelece princípios como minimização e finalidade no tratamento de dados pessoais. Este trabalho
+não realizou uma auditoria formal de conformidade à LGPD, o que permanece como trabalho futuro; a
+decisão de projeto de excluir do escopo o processamento direto de dados financeiros sensíveis
+(Seção~\ref{sec:delimitacao}) e de armazenar segredos de infraestrutura fora do código-fonte
+(Seção~4.2) está alinhada a esses princípios, sem substituir uma avaliação jurídica formal.
+
 É nesse contexto que se insere o ecossistema digital proposto neste trabalho. As funcionalidades
 previstas (cadastro e gestão de associados, controle de mensalidades e organização de eventos)
 correspondem diretamente às lacunas identificadas na literatura quanto à sistematização de processos
 em entidades tradicionalistas. O sistema busca, portanto, operacionalizar os benefícios descritos
 pela teoria dos sistemas de informação em um contexto organizacional específico
 \parencite{laudon2014,delone2003}.
+
+\subsection{Usabilidade e aceitação de tecnologia}
+
+Usabilidade é definida pela norma ISO 9241-11 como a medida em que um sistema pode ser usado por
+usuários específicos para atingir objetivos específicos com eficácia, eficiência e satisfação, num
+contexto de uso definido \parencite{iso9241_2018}. \textcite{nielsen1993} desdobra esse conceito em
+atributos observáveis e avaliáveis (facilidade de aprendizado, eficiência de uso, facilidade de
+memorização, baixa taxa de erros e satisfação subjetiva), que orientam tanto o desenho quanto a
+avaliação de interfaces. A \textit{System Usability Scale} (SUS), instrumento padronizado de dez
+itens para mensurar a usabilidade percebida \parencite{brooke1996}, foi adaptada e validada para o
+português do Brasil por \textcite{lourenco2022}, e seus escores são interpretados, neste trabalho,
+segundo a referência de \textcite{bangor2008}, que associa faixas de pontuação a adjetivos de
+aceitabilidade (de ``pior imaginável'' a ``melhor imaginável'').
+
+Usabilidade, porém, não esgota a questão de por que um usuário passa a adotar, ou a rejeitar, uma
+tecnologia. O \textit{Technology Acceptance Model} (TAM) de \textcite{davis1989} propõe que a
+intenção de uso é explicada, principalmente, por dois construtos: utilidade percebida (o quanto o
+usuário acredita que a tecnologia melhora seu desempenho numa tarefa) e facilidade de uso percebida.
+Este trabalho não aplica o TAM como instrumento psicométrico completo, mas se apoia nesses dois
+construtos para estruturar a entrevista de avaliação (Seção~\ref{sec:avaliacao}), de modo a captar
+não apenas se os participantes conseguiram usar o sistema, mas se o percebem como mais útil do que a
+rotina anterior em papel, planilha ou WhatsApp.
 
 \subsection{Ecossistemas digitais e plataformas integradas}
 
@@ -450,6 +494,20 @@ de centralizar informações, automatizar processos e facilitar a interação en
 públicos. Diferentemente de sistemas isolados, os ecossistemas digitais são estruturados para
 integrar múltiplas funcionalidades em um único ambiente, promovendo maior fluidez no fluxo de dados
 e melhor experiência para os usuários \parencite{gawercusumano2014,jacobides2018}.
+
+Na literatura de estratégia e inovação, de onde vêm as referências citadas acima, ``ecossistema''
+costuma implicar múltiplos atores independentes (plataforma, complementadores, desenvolvedores
+terceiros) coordenados por mecanismos de mercado \parencite{gawercusumano2014,jacobides2018}. Este
+trabalho usa o termo num sentido mais restrito e aplicado: o \textit{ecossistema digital
+entidade-associado} aqui proposto designa a integração, em torno de uma mesma API, de dois clientes
+interdependentes (o painel administrativo da entidade e o aplicativo do associado) que, juntos,
+cobrem o ciclo completo de um processo organizacional (do cadastro à cobrança, do evento ao
+ingresso), e não um mercado multilateral com complementadores externos independentes. Optou-se por
+manter o termo, em vez de substituí-lo por ``plataforma integrada'', porque a arquitetura foi
+deliberadamente desenhada para múltiplas entidades tradicionalistas como adotantes (Seção~2.1 e
+Seção~\ref{sec:delimitacao}), ainda que cada implantação opere isolada; ``ecossistema'' comunica essa
+intenção de produto reutilizável melhor do que ``plataforma integrada'', que sugeriria uma solução
+fechada para uma única organização.
 
 No contexto de organizações associativas e culturais, a adoção de plataformas digitais integradas
 pode contribuir para fortalecer a relação entre entidade e associado, oferecendo acesso simplificado
@@ -480,8 +538,9 @@ organização, a familiaridade dos usuários com ferramentas tecnológicas e a a
 realidade institucional \parencite{verhoef2021}.
 
 Ao propor um ecossistema digital entidade-associado, esta pesquisa insere-se na perspectiva de
-transformação digital aplicada a contextos culturais tradicionais, buscando demonstrar que inovação
-tecnológica e preservação identitária podem coexistir de forma complementar \parencite{hinings2018}.
+transformação digital aplicada a contextos culturais tradicionais, buscando reunir indícios de que
+inovação tecnológica e preservação identitária podem coexistir de forma complementar
+\parencite{hinings2018}.
 Nesse sentido, a atenção ao grau de maturidade digital dos usuários torna-se um requisito de projeto:
 o ecossistema prevê fluxos mediados pela entidade precisamente para assegurar que associados com
 menor familiaridade tecnológica não sejam excluídos do processo de digitalização, preservando a
@@ -514,17 +573,23 @@ adequação às especificidades culturais e organizacionais do contexto tradicio
 
 Esta pesquisa caracterizou-se como aplicada, pois buscou propor e implementar uma solução
 tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas
-\parencite{severino2016}. Quanto à
+\parencite{severino2016}. A condução do trabalho em três etapas sequenciais (diagnóstico, construção
+do artefato e avaliação, detalhadas adiante) segue também a lógica da \textit{Design Science
+Research}, abordagem orientada à construção e avaliação de artefatos (nesse caso, o próprio
+ecossistema digital) como forma de gerar conhecimento sobre um problema organizacional
+\parencite{hevner2004}. Quanto à
 abordagem, caracterizou-se como predominantemente qualitativa, com uma etapa quantitativa
 complementar: o levantamento de requisitos, a observação dos processos e a análise dos resultados
 privilegiaram a percepção de usuários e gestores, enquanto a avaliação de usabilidade também gerou
-uma pontuação por meio da escala SUS, de natureza quantitativa. A combinação dos dois tratamentos
+uma pontuação por meio da escala SUS (\textit{System Usability Scale}) \parencite{brooke1996}, de
+natureza quantitativa. A combinação dos dois tratamentos
 caracteriza uma abordagem de métodos mistos com predominância qualitativa, na qual o dado
 quantitativo é interpretado à luz da análise qualitativa, e não como medida isolada de sucesso
 \parencite{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adotou-se uma combinação de
 pesquisa bibliográfica, para fundamentação teórica e identificação de trabalhos correlatos, e estudo
-de casos múltiplos, considerando a aplicação do ecossistema digital em duas entidades parceiras,
-utilizadas como ambiente real de validação e coleta de informações \parencite{yin2015}. A opção por
+de casos múltiplos, considerando a aplicação do ecossistema digital em duas entidades parceiras
+reais, utilizadas como ambiente organizacional de validação e coleta de informações
+\parencite{yin2015}. A opção por
 duas entidades, em vez de uma única, buscou verificar se os processos administrativos e as
 necessidades levantadas se repetiam entre organizações distintas, e não apenas em uma delas,
 fortalecendo a validade externa das conclusões dentro dos limites de um estudo de casos múltiplos
@@ -532,28 +597,29 @@ fortalecendo a validade externa das conclusões dentro dos limites de um estudo 
 
 O desenvolvimento do trabalho foi organizado em três etapas principais e sequenciais: (1) levantamento
 e validação de requisitos junto às entidades parceiras, por meio de entrevistas semiestruturadas,
-análise documental e observação dos processos atuais \parencite{lakatosMarconi2017}; (2) implementação iterativa do MVP do
-ecossistema digital, priorizando as funcionalidades essenciais conforme a técnica MoSCoW do DSDM; e
-(3) avaliação do sistema com usuários reais das entidades parceiras, combinando instrumentos
-qualitativos e a escala SUS para verificar usabilidade e adequação ao contexto organizacional.
+análise documental e observação dos processos atuais \parencite{lakatosMarconi2017}; (2) implementação
+iterativa do MVP (Produto Mínimo Viável) do ecossistema digital, priorizando as funcionalidades
+essenciais conforme a técnica MoSCoW do DSDM; e (3) avaliação do sistema com usuários reais das
+entidades parceiras, combinando instrumentos qualitativos e a escala SUS para verificar usabilidade
+e adequação ao contexto organizacional.
 
 \subsection{Delimitação do estudo e campo de aplicação}
 \label{sec:delimitacao}
 
 O estudo de casos múltiplos foi realizado com duas entidades parceiras, ambas localizadas em Santa
 Maria/RS e vinculadas à 13ª Região Tradicionalista (13ª RT): o CPF Pia do Sul e o CTG Sentinela da
-Querência. As duas entidades diferem em porte e estágio de digitalização — a primeira ainda depende
+Querência. As duas entidades diferem em porte e estágio de digitalização: a primeira ainda depende
 majoritariamente de controles físicos em papel para reservas e emissão de ingressos, enquanto a
 segunda já opera um sistema de gestão próprio, embora fragmentado entre esse sistema, planilhas
-eletrônicas e controles manuais na portaria dos eventos —, o que permitiu observar o mesmo conjunto de
+eletrônicas e controles manuais na portaria dos eventos, o que permitiu observar o mesmo conjunto de
 processos administrativos em diferentes graus de maturidade tecnológica. A pesquisa delimita-se ao
 contexto administrativo das entidades parceiras, com foco nos processos de cadastro de associados,
 controle de mensalidades e gestão de eventos sociais tradicionais, com ênfase em bailes e fandangos,
 incluindo reservas de mesas e ingressos. Não estão contempladas integrações técnicas com sistemas
 institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
 
-Embora a solução tenha sido desenhada como um produto reutilizável entre entidades tradicionalistas —
-e não como um sistema sob medida para uma única organização —, o trabalho não avalia uma implantação
+Embora a solução tenha sido desenhada como um produto reutilizável entre entidades tradicionalistas,
+e não como um sistema sob medida para uma única organização, o trabalho não avalia uma implantação
 multiusuário compartilhada entre entidades: cada entidade parceira opera sua própria instância e base
 de dados, com o mesmo código-base. A generalização discutida neste artigo refere-se, portanto, à
 convergência de processos e requisitos observada entre as duas entidades estudadas, e não a uma prova
@@ -643,10 +709,11 @@ A estrutura lógica do \textit{backend} é composta por:
     de domínio independente do provedor escolhido \parencite{martin2017}.
 \end{itemize}
 
-A comunicação entre \textit{frontend} e \textit{backend} ocorre por meio de \textit{endpoints} REST,
-possibilitando compatibilidade com múltiplos clientes \parencite{fielding2000}. Foi adotado
-controle de acesso baseado em perfis: administrador (rotinas administrativas) e associado (consulta
-e reservas).
+A comunicação entre \textit{frontend} e \textit{backend} ocorre por meio de \textit{endpoints} REST
+(\textit{Representational State Transfer}), possibilitando compatibilidade com múltiplos clientes
+\parencite{fielding2000}. A autenticação usa tokens JWT (\textit{JSON Web Token}), e o controle de
+acesso segue o modelo RBAC (\textit{Role-Based Access Control}, controle de acesso baseado em
+perfis): administrador (rotinas administrativas) e associado (consulta e reservas).
 
 A Figura~\ref{fig:arquitetura} apresenta o diagrama de componentes do ecossistema digital, ilustrando
 o fluxo de comunicação entre os clientes, a API central e as camadas internas do \textit{backend}.
@@ -713,19 +780,20 @@ O \textit{backend} foi desenvolvido com \textbf{NestJS}, \textit{framework} Node
 padrão uma arquitetura modular baseada em injeção de dependências, alinhando-se diretamente à
 proposta de Arquitetura Hexagonal e \textit{Clean Architecture} \parencite{nestjs2023}. Para a
 persistência de dados, foi utilizado \textbf{PostgreSQL} como sistema gerenciador de banco de dados
-relacional, intermediado pelo \textbf{TypeORM}, ORM com integração nativa ao NestJS que oferece
-suporte a \textit{migrations} versionadas e mapeamento de entidades via decoradores TypeScript
-\parencite{typeorm2023}.
+relacional, intermediado pelo \textbf{TypeORM}, ORM (\textit{Object-Relational Mapping}, mapeamento
+objeto-relacional) com integração nativa ao NestJS que oferece suporte a \textit{migrations}
+versionadas e mapeamento de entidades via decoradores TypeScript \parencite{typeorm2023}.
 
 O \textit{frontend} administrativo foi desenvolvido com \textbf{Next.js}, \textit{framework} React
-que oferece renderização híbrida (SSR/SSG) e otimizações de desempenho nativas \parencite{nextjs2023}.
+que oferece renderização híbrida (SSR, \textit{Server-Side Rendering}, e SSG, \textit{Static Site
+Generation}) e otimizações de desempenho nativas \parencite{nextjs2023}.
 Para o gerenciamento de estado e \textit{cache} de dados remotos, foi utilizado \textbf{React Query}
 (\textit{TanStack Query}). A estilização segue \textbf{Tailwind CSS} combinado com
 \textbf{shadcn/ui}, biblioteca de componentes acessíveis construída sobre Radix UI.
 
 O aplicativo \textit{mobile} foi desenvolvido com \textbf{React Native} e \textbf{Expo}, solução
 multiplataforma que possibilita a entrega simultânea para Android e iOS a partir de uma única base de
-código TypeScript \parencite{expo2023}. A Tabela~\ref{tab:stack} resume as tecnologias adotadas por
+código TypeScript \parencite{expo2023}. O Quadro~\ref{tab:stack} resume as tecnologias adotadas por
 camada.
 
 \begin{table}[htbp]
@@ -761,7 +829,7 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Gestão de Associados}
   \label{tab:rf-associados}
-  \begin{tabular}{clcc}
+  \begin{tabular}{@{}cL{7.4cm}cL{3.2cm}@{}}
     \toprule
     \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
@@ -778,7 +846,7 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Controle de Mensalidades}
   \label{tab:rf-mensalidades}
-  \begin{tabular}{clcc}
+  \begin{tabular}{@{}cL{7.4cm}cL{3.2cm}@{}}
     \toprule
     \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
@@ -795,7 +863,7 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \centering
   \caption{Requisitos funcionais: Gestão de Eventos e Reservas}
   \label{tab:rf-eventos}
-  \begin{tabular}{clcc}
+  \begin{tabular}{@{}cL{7.4cm}cL{3.2cm}@{}}
     \toprule
     \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
@@ -811,10 +879,9 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{table}
 
-O RF14 foi classificado como \textit{Must}, e não \textit{Should} como em uma versão anterior deste
-levantamento, porque a consulta de disponibilidade em tempo real deixou de ser apenas uma
-conveniência de interface ao longo da coleta de dados: as duas entidades parceiras relataram, de
-forma independente, já ter enfrentado conflito de reserva ou mesa vendida em duplicidade (ver
+O RF14 foi classificado como \textit{Must} porque a consulta de disponibilidade de mesas em tempo
+real não é apenas uma conveniência de interface: as duas entidades parceiras relataram, de forma
+independente, já ter enfrentado conflito de reserva ou mesa vendida em duplicidade (ver
 Seção~\ref{sec:diagnostico}), o que caracteriza um problema real e atual, e não hipotético, da
 gestão de eventos dessas entidades.
 
@@ -822,7 +889,7 @@ gestão de eventos dessas entidades.
   \centering
   \caption{Requisitos não-funcionais}
   \label{tab:rnf}
-  \begin{tabular}{clcc}
+  \begin{tabular}{@{}cL{7.4cm}cL{3.2cm}@{}}
     \toprule
     \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
@@ -842,16 +909,18 @@ os funcionais, destacam-se a configuração dinâmica de categorias de sócio, c
 isenção (RF16), o croqui do salão com desenho de paredes e portas (RF17), o auto-cadastro e o vínculo
 de conta de associado pelo aplicativo (RF18), o pagamento online de mensalidades, reservas e
 ingressos por meio de uma porta de pagamento (RF19), o acompanhamento do evento em andamento, com
-totais de ingressos emitidos e entradas validadas (RF20), e a exibição, no aplicativo, do ingresso
-com código QR para validação na portaria (RF21). Entre os não funcionais, a implantação do sistema em
-nuvem, com instâncias isoladas por entidade a partir do mesmo código-base (RNF06). Esses itens estão
-consolidados na Tabela~\ref{tab:rf-incorporados}.
+totais de ingressos emitidos e entradas validadas (RF20), a exibição, no aplicativo, do ingresso com
+código QR para validação na portaria (RF21), e o envio de notificações \textit{push} ao associado
+como lembrete de inadimplência e confirmação de ações, um caminho digital alternativo à cobrança
+pessoal por WhatsApp relatada no diagnóstico (RF22). Entre os não funcionais, a implantação do
+sistema em nuvem, com instâncias isoladas por entidade a partir do mesmo código-base (RNF06). Esses
+itens estão consolidados no Quadro~\ref{tab:rf-incorporados}.
 
 \begin{table}[htbp]
   \centering
   \caption{Requisitos incorporados durante o desenvolvimento}
   \label{tab:rf-incorporados}
-  \begin{tabular}{clcc}
+  \begin{tabular}{@{}cL{7.4cm}cL{3.2cm}@{}}
     \toprule
     \textbf{ID} & \textbf{Descrição} & \textbf{Prioridade} & \textbf{Situação} \\
     \midrule
@@ -861,6 +930,7 @@ consolidados na Tabela~\ref{tab:rf-incorporados}.
     RF19  & Pagamento online por meio de porta de pagamento                    & Should & Parcial (gateway simulado) \\
     RF20  & Acompanhamento do evento: ingressos emitidos e entradas validadas  & Should & Entregue \\
     RF21  & Ingresso do associado no aplicativo, com QR para a portaria        & Must   & Entregue \\
+    RF22  & Notificações \textit{push} (lembrete de inadimplência, confirmações) & Could & Entregue, fora do escopo de avaliação formal desta etapa \\
     RNF06 & Implantação em nuvem, uma instância isolada por entidade           & Should & Entregue \\
     \bottomrule
   \end{tabular}
@@ -880,57 +950,87 @@ dos bailes e fandangos.
 \subsection{Procedimentos de avaliação}
 \label{sec:avaliacao}
 
+Esta pesquisa não mede diretamente o efeito do ecossistema digital sobre a qualidade da gestão
+organizacional das entidades parceiras, o que exigiria um desenho longitudinal, com medição antes e
+depois da adoção, fora do alcance de uma sessão de avaliação de uso. O que a avaliação mede são
+usabilidade e utilidade percebida, instrumentos consolidados que operacionalizam a pergunta de
+pesquisa, apoiados no modelo de sucesso de sistemas de informação de \textcite{delone2003} (qualidade
+do sistema, uso e satisfação do usuário, benefícios líquidos percebidos) e no construto de utilidade
+percebida do TAM, \textit{Technology Acceptance Model} \parencite{davis1989}. Os indícios de
+``qualificação da gestão'' discutidos nos resultados (Seção~\ref{sec:diagnostico} em diante) derivam,
+portanto, da percepção relatada por diretoria e associados sobre o próprio trabalho, não de uma
+medição direta de desempenho organizacional.
+
 A avaliação do ecossistema digital foi conduzida junto às duas entidades parceiras por meio de
-sessões individuais moderadas, cada uma estruturada em quatro blocos sequenciais: uma demonstração
-geral do sistema, sem intervenção do participante, destinada a nivelar a familiaridade com a
-navegação e a terminologia da interface; a execução de tarefas sobre três fluxos principais,
+sessões individuais moderadas, precedidas por um teste-piloto interno para calibrar o roteiro de
+tarefas e o tempo estimado por sessão. Cada sessão foi estruturada em quatro blocos sequenciais: uma
+demonstração geral do sistema, sem intervenção do participante, destinada a nivelar a familiaridade
+com a navegação e a terminologia da interface; a execução de tarefas sobre três fluxos principais,
 selecionados em conjunto com a orientação deste trabalho; a aplicação da escala SUS; e uma entrevista
-semiestruturada breve. Cada sessão contou com 6 a 10 participantes por entidade, incluindo membros da
-diretoria, responsáveis pela organização de eventos e associados com diferentes perfis de uso,
-contemplando usuários com menor familiaridade digital.
+semiestruturada breve. O roteiro de tarefas, os critérios de conclusão por tarefa e o roteiro de
+entrevista constam do Apêndice~\ref{apx:avaliacao}.
+
+Cada sessão contou com 6 a 10 participantes por entidade, recrutados por conveniência e indicação da
+própria diretoria, incluindo membros da diretoria, responsáveis pela organização de eventos e
+associados com diferentes perfis de uso, contemplando usuários com menor familiaridade digital. Como
+cada combinação de entidade e papel (diretoria ou associado) reúne de 3 a 5 participantes, a análise
+dos resultados é descritiva, não estatística: não se buscou comparação com significância entre
+subgrupos, e os achados são tratados como indícios qualitativos, não como generalização estatística.
 
 Antes das sessões, o ambiente de avaliação de cada entidade foi povoado com dados fictícios, porém
-plausíveis (associados, eventos, mensalidades e ingressos gerados em volume e variação compatíveis
-com a realidade relatada no diagnóstico de cada entidade, Seção~\ref{sec:diagnostico}), de modo que
-os participantes operassem listas, buscas e históricos já preenchidos, e não um sistema vazio,
-reforçando a sensação de uso real durante a avaliação.
+plausíveis (associados, eventos, mensalidades e ingressos com variação de perfil, situação e data
+compatível com a realidade relatada no diagnóstico de cada entidade, Seção~\ref{sec:diagnostico},
+ainda que em escala numérica reduzida), de modo que os participantes operassem listas, buscas e
+históricos já preenchidos, e não um sistema vazio, reforçando a sensação de uso realista durante a
+avaliação.
 
 Os três fluxos avaliados foram selecionados por cobrirem, de forma combinada, os três módulos
 centrais do ecossistema (associados, eventos/ingressos e mensalidades) e por corresponderem a pontos
 relatados como prioritários no diagnóstico de ambas as entidades. Cada fluxo foi testado nas duas
 pontas do ecossistema, quando aplicável: participantes da diretoria executaram o passo mediado pelo
 painel administrativo, e participantes associados executaram o passo de autoatendimento pelo
-aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF04, RF18),
+aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF18),
 compreendendo o cadastro mediado pela diretoria no painel e o auto-cadastro/vínculo de conta pelo
 associado no aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21), compreendendo
 a compra do ingresso e a exibição do código QR pelo associado no aplicativo, seguida da leitura e
 validação da entrada pela diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06,
-RF08), compreendendo a consulta e o pagamento online pelo associado no aplicativo, seguidos da
+RF07, RF19), compreendendo a consulta e o pagamento online pelo associado no aplicativo, seguidos da
 consulta do histórico e do relatório de inadimplência pela diretoria no painel.
 
-A coleta de dados combinou três instrumentos complementares. O primeiro foi uma verificação
+A coleta de dados combinou quatro instrumentos complementares. O primeiro foi uma verificação
 automatizada de conclusão: para cada tarefa, uma rotina consultou a API e o banco de dados
 imediatamente após a sessão, conferindo de forma objetiva e independente da percepção do
 participante se o estado esperado havia sido alcançado (por exemplo, associado cadastrado com o
 status correto, ingresso com entrada validada, mensalidade com pagamento registrado), produzindo uma
 medida de taxa de conclusão da tarefa complementar à percepção subjetiva dos demais instrumentos. O
-segundo foi a aplicação da escala \textit{System Usability Scale} (SUS) \parencite{brooke1996},
-respondida por cada participante imediatamente após o bloco de tarefas. O terceiro foi uma
-entrevista semiestruturada breve, abordando a facilidade de localizar as funcionalidades, os pontos
-de maior dificuldade percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes
-com menor familiaridade digital e sugestões de melhoria \parencite{brooke1996,gil2017}.
+segundo foi um registro de observação preenchido pelo moderador durante a execução de cada tarefa,
+contendo o tempo gasto, o número de erros (ações que precisaram ser desfeitas ou refeitas) e o
+número de intervenções do moderador (vezes em que precisou indicar o próximo passo); esse registro
+é o que sustenta, na análise, a conclusão sobre se o fluxo mediado pela entidade (RNF01) funcionou,
+na prática, como alternativa viável para quem tem menor familiaridade digital. O terceiro foi a
+aplicação da escala \textit{System Usability Scale} (SUS) \parencite{brooke1996}, respondida por
+cada participante imediatamente após o bloco de tarefas. O quarto foi uma entrevista semiestruturada
+breve, cobrindo a facilidade de localizar as funcionalidades, os pontos de maior dificuldade
+percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes com menor
+familiaridade digital, sugestões de melhoria e, inspirada nos construtos de utilidade percebida e
+facilidade de uso percebida do TAM \parencite{davis1989}, a comparação espontânea entre o novo fluxo
+digital e a rotina anterior em papel, planilha ou WhatsApp. A entrevista também perguntou,
+especificamente, sobre as especificidades culturais do contexto tradicionalista que a interface
+precisava respeitar: o vocabulário da entidade (nomes de categoria de sócio, de cargos da diretoria e
+de tipos de evento, como baile e fandango, em vez de termos genéricos de sistema), a adequação das
+categorias de sócio configuráveis à realidade de cada entidade e a hierarquia de aprovação da
+diretoria nos fluxos mediados.
 
-A análise dos resultados não se limitou à pontuação final da escala SUS, tratada apenas como um dos
-instrumentos, e não como critério isolado de sucesso. A análise privilegiou a comparação entre os
-dois perfis de entidade parceira e entre os papéis de diretoria e associado, de modo a identificar:
-(i) em quais tarefas cada grupo de participantes apresentou maior dificuldade, segundo a taxa de
-conclusão objetiva e a percepção relatada; (ii) quais pontos do sistema precisaram de ajuste a partir
-do \textit{feedback} observado; e (iii) se o fluxo mediado pela entidade (RNF01) funcionou, na
-prática, como alternativa viável para os usuários com menor familiaridade digital, identificados no
-diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}). Os resultados foram analisados de forma
-predominantemente qualitativa, com triangulação entre os três instrumentos
-\parencite{creswell2014,yin2015}, e a pontuação da escala SUS foi interpretada à luz dessa análise
-comparativa, e não reportada isoladamente.
+A análise seguiu a técnica de análise de conteúdo \parencite{gil2017}, com triangulação entre os
+quatro instrumentos \parencite{creswell2014,yin2015}: a pontuação da escala SUS não foi reportada
+isoladamente, mas interpretada à luz do registro de observação e das falas da entrevista. A análise
+privilegiou a comparação descritiva entre os dois perfis de entidade parceira e entre os papéis de
+diretoria e associado, de modo a identificar: (i) em quais tarefas cada grupo de participantes
+apresentou maior dificuldade, segundo a taxa de conclusão objetiva, o tempo e os erros registrados, e
+a percepção relatada; (ii) quais pontos do sistema precisaram de ajuste a partir do \textit{feedback}
+observado; e (iii) se o fluxo mediado pela entidade (RNF01) funcionou, na prática, como alternativa
+viável para os usuários com menor familiaridade digital, identificados no diagnóstico de cada
+entidade (Seção~\ref{sec:diagnostico}).
 
 % ------------------------------------------------------------------
 \section{Resultados e discussão}
@@ -941,12 +1041,12 @@ comparativa, e não reportada isoladamente.
 
 O diagnóstico foi construído a partir de entrevistas semiestruturadas com representantes da diretoria
 do CPF Pia do Sul e do CTG Sentinela da Querência, ambas entidades vinculadas à 13ª RT, em Santa
-Maria/RS. Apesar de portes distintos — a primeira reúne 1.343 associados e a segunda 822, entre
-categorias como sócios pagantes, remidos, fundadores e patrimoniais —, as respostas convergiram para
+Maria/RS. Apesar de portes distintos (a primeira reúne 1.343 associados e a segunda 822, entre
+categorias como sócios pagantes, remidos, fundadores e patrimoniais), as respostas convergiram para
 um mesmo conjunto de processos e dificuldades, o que indica que tais problemas se repetiram nos dois
 casos analisados, e não se restringiram a peculiaridades isoladas de uma única organização. Não se
 pode, a partir de apenas dois casos, afirmar que esses problemas sejam estruturais a toda e qualquer
-entidade tradicionalista gaúcha — a generalização aqui discutida limita-se à convergência observada
+entidade tradicionalista gaúcha: a generalização aqui discutida limita-se à convergência observada
 entre as duas entidades estudadas (ver também a ressalva de delimitação na
 Seção~\ref{sec:delimitacao}).
 
@@ -955,7 +1055,7 @@ digitalização. O CPF Pia do Sul relatou possuir um sistema apenas ``em teste''
 e controle de disponibilidade ainda feitos em papel, e o controle de entrada em eventos por meio de
 lista impressa e pulseiras. Já o CTG Sentinela da Querência opera um sistema de gestão consolidado
 para as áreas financeira, cadastral e social, com conciliação bancária por importação de arquivo e
-verificação diária de inadimplência — rotina mais frequente do que a verificação mensal relatada pelo
+verificação diária de inadimplência, rotina mais frequente do que a verificação mensal relatada pelo
 CPF Pia do Sul. Ainda assim, mesmo a entidade mais digitalizada mantém processos paralelos em papel:
 a reserva de mesas para bailes é organizada por planilha eletrônica e croqui de mesas numeradas fora
 do sistema, e o fechamento financeiro do evento depende de contagem manual do saldo de portaria contra
@@ -967,7 +1067,7 @@ outra.
 \textbf{Gestão de associados e mensalidades.} Em ambas as entidades, o cadastro de associado depende
 de uma ficha ou proposta preenchida e posteriormente lançada ou aprovada pela diretoria, e a
 verificação de inadimplência é feita por consulta a relatórios do sistema utilizado, sem um canal de
-autoatendimento para o associado consultar sua própria situação — em ambos os casos, essa consulta
+autoatendimento para o associado consultar sua própria situação; em ambos os casos, essa consulta
 passa necessariamente pela secretaria. A cobrança de inadimplentes é feita de forma pessoal, via
 WhatsApp e, quando necessário, ligação telefônica. As duas entidades relataram já ter enfrentado
 problemas de informação perdida ou divergente sobre pagamentos.
@@ -978,13 +1078,13 @@ reserva ou mesa vendida em duplicidade, validando diretamente a necessidade de u
 disponibilidade em tempo real. A venda de ingresso com valor diferenciado por perfil do comprador
 (sócio, não sócio e criança) está presente nas duas entidades, assim como o atendimento mediado pela
 secretaria para quem compra presencialmente. O volume e a frequência de eventos, no entanto, diferem
-de forma expressiva: o CPF Pia do Sul concentra sua programação em poucos eventos de grande porte —
-dois festivais artísticos que reúnem de 5 a 6 mil participantes, além dos bailes da semana
-farroupilha —, enquanto o CTG Sentinela da Querência promoveu cerca de 60 eventos em 2025, com
+de forma expressiva: o CPF Pia do Sul concentra sua programação em poucos eventos de grande porte
+(dois festivais artísticos que reúnem de 5 a 6 mil participantes, além dos bailes da semana
+farroupilha), enquanto o CTG Sentinela da Querência promoveu cerca de 60 eventos em 2025, com
 público entre 200 e 800 pessoas por evento. Essa diferença de perfil (poucos eventos massivos versus
 muitos eventos recorrentes de menor porte) reforça a importância de um acompanhamento confiável do
-evento em andamento — quantos ingressos já foram emitidos, quantos já deram entrada e quantos ainda
-são esperados —, útil tanto para a operação de um evento de grande escala quanto para a rotina de uma
+evento em andamento (quantos ingressos já foram emitidos, quantos já deram entrada e quantos ainda
+são esperados), útil tanto para a operação de um evento de grande escala quanto para a rotina de uma
 entidade com agenda de eventos constante.
 
 \textbf{Perfil de usuários e adoção.} As entidades relataram perfis de usuário administrador
@@ -1011,19 +1111,22 @@ O MVP do Querência ERP foi implementado como um repositório único contendo tr
 compartilham a mesma linguagem, o TypeScript: a API (\textit{backend}), o painel administrativo
 (\textit{frontend} web) e o aplicativo do associado (\textit{mobile}), conforme a arquitetura de
 componentes apresentada na Figura~\ref{fig:arquitetura}. A Figura~\ref{fig:implantacao} complementa
-essa visão interna com a arquitetura de implantação do ecossistema: a distribuição do aplicativo
+essa visão interna com a arquitetura-alvo de implantação do ecossistema, ou seja, o desenho de
+distribuição planejado para quando o produto for publicado: a distribuição do aplicativo
 \textit{mobile} pelas lojas Google Play e App Store, o acesso ao painel pelo navegador, a hospedagem
 da API em contêineres na nuvem e as integrações externas (banco de dados gerenciado, cofre de
-segredos, gateway de pagamento e serviço de notificações). O retângulo pontilhado demarca o conjunto
-de componentes replicado para cada entidade parceira: como o sistema não é multi-\textit{tenant}
-(Seção~\ref{sec:delimitacao}), cada entidade opera sua própria instância da API, seu próprio banco de
-dados e suas próprias credenciais de gateway de pagamento, vinculadas aos dados bancários da própria
-entidade. A seguir, descrevem-se as entregas de cada parte, a implantação e as limitações
-identificadas.
+segredos, gateway de pagamento e serviço de notificações). Para este trabalho, a validação com
+usuários usou apenas a distribuição por arquivo APK interno (ver ``Implantação'' adiante); a
+publicação nas lojas e a validação em iOS permanecem como trabalho futuro. O retângulo pontilhado
+demarca o conjunto de componentes replicado para cada entidade parceira: como o sistema não é
+multi-\textit{tenant} (Seção~\ref{sec:delimitacao}), cada entidade opera sua própria instância da
+API, seu próprio banco de dados e suas próprias credenciais de gateway de pagamento, vinculadas aos
+dados bancários da própria entidade. A seguir, descrevem-se as entregas de cada parte, a implantação
+e as limitações identificadas.
 
 \begin{figure}[H]
 \centering
-\caption{Arquitetura de implantação do ecossistema digital}
+\caption{Arquitetura-alvo de implantação do ecossistema digital}
 \label{fig:implantacao}
 \begin{tikzpicture}[
   node distance=0.6cm and 1.0cm,
@@ -1092,10 +1195,12 @@ concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma 
 ambientar as sessões de avaliação com as entidades parceiras (Seção 3.6), foi desenvolvida uma
 rotina de povoamento de dados (\textit{seed}), executada contra a API já em produção, que gera
 associados, categorias de sócio, um salão com croqui completo, eventos publicados com preços
-configurados e um histórico de mensalidades, ingressos e reservas em volume e variação
-compatíveis com a realidade relatada no diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}),
-reaproveitando as mesmas regras de negócio que a diretoria usa no dia a dia, em vez de inserir
-dados fictícios diretamente no banco.
+configurados e um histórico de mensalidades, ingressos e reservas com a mesma variação de perfil
+e situação relatada no diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}), em escala
+reduzida, reaproveitando as mesmas regras de negócio que a diretoria usa no dia a dia. Só os
+carimbos de data de criação e de pagamento desses registros fictícios, que a API deliberadamente
+não permite retroceder, foram ajustados à parte, para distribuir o volume ao longo de vários meses
+em vez de concentrá-lo no dia em que o ambiente foi provisionado.
 
 \textbf{Painel administrativo (Next.js).} O acesso ao painel é feito por autenticação com e-mail e
 senha (Figura~\ref{fig:web-login}), restrita a usuários com perfil administrador. O painel concentra
@@ -1108,11 +1213,20 @@ validação, inadimplentes e eventos publicados.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.92\textwidth]{figuras/web-login.png}
   \caption{Painel administrativo: tela de autenticação}
   \label{fig:web-login}
+  \includegraphics[width=0.92\textwidth]{figuras/web-login.png}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \caption{Painel administrativo: tela inicial}
+  \label{fig:web-dashboard}
+  \includegraphics[width=0.92\textwidth]{figuras/web-dashboard.png}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
+
 O croqui do salão (Figura~\ref{fig:web-croqui}) é construído pela própria diretoria, sem exposição de
 coordenadas: mesas, paredes, portas e áreas (como tablado ou bar) são arrastadas de um menu lateral
 diretamente para dentro do desenho, o que responde à dificuldade relatada por usuários com menor
@@ -1123,25 +1237,17 @@ para o registro da entrada na portaria.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.92\textwidth]{figuras/web-dashboard.png}
-  \caption{Painel administrativo: tela inicial}
-  \label{fig:web-dashboard}
-  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.92\textwidth]{figuras/web-salao-croqui.png}
   \caption{Painel administrativo: croqui do salão com mesas, paredes, portas e áreas}
   \label{fig:web-croqui}
+  \includegraphics[width=0.92\textwidth]{figuras/web-salao-croqui.png}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.92\textwidth]{figuras/web-ingressos.png}
   \caption{Painel administrativo: acompanhamento de ingressos e check-in do evento}
   \label{fig:web-ingressos}
+  \includegraphics[width=0.92\textwidth]{figuras/web-ingressos.png}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
 
@@ -1158,6 +1264,8 @@ modo que os dois formatos de validação convivem, como previsto no levantamento
 
 \begin{figure}[H]
   \centering
+  \caption{Aplicativo do associado: principais telas}
+  \label{fig:mobile-telas}
   \begin{minipage}[t]{0.23\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figuras/mobile-inicio.png}\\[2pt]{\small (a) Início}
@@ -1174,8 +1282,6 @@ modo que os dois formatos de validação convivem, como previsto no levantamento
     \centering
     \includegraphics[width=\textwidth]{figuras/mobile-eventos.png}\\[2pt]{\small (d) Eventos}
   \end{minipage}
-  \caption{Aplicativo do associado: principais telas}
-  \label{fig:mobile-telas}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
 
@@ -1208,8 +1314,11 @@ implementação simulada da porta de pagamento, sem integração com um provedor
 mesa é registrada para a mesa inteira, sem controle de entrada por pessoa, ao passo que a validação
 na portaria por código QR está implementada apenas para o ingresso avulso, de modo que o controle de
 acesso associado à reserva permanece como trabalho futuro; (iii) o aplicativo foi validado em
-dispositivo Android, sem verificação em iOS; e (iv) não foi realizada aferição sistemática do tempo de
-resposta (RNF05).
+dispositivo Android, sem verificação em iOS; (iv) não foi realizada aferição sistemática do tempo de
+resposta (RNF05); e (v) um evento publicado permanece visível e disponível para reserva ou compra de
+ingresso indefinidamente, mesmo após sua data, porque o sistema não implementa encerramento
+automático nem manual de evento; a mitigação adotada é operacional (a diretoria evita publicar com
+antecedência excessiva), não uma restrição garantida pelo sistema.
 
 \subsubsection{Demonstração de um fluxo completo: compra de ingresso e check-in}
 
@@ -1255,19 +1364,74 @@ identificado.]
 apresentará as conclusões sustentadas pelos resultados, explicitará as contribuições sociais, práticas
 e científicas, as limitações da pesquisa e recomendações para trabalhos futuros.]
 
-Esta pesquisa buscou responder à seguinte questão: como um ecossistema digital integrado pode
-facilitar e qualificar a gestão de associados e eventos sociais em entidades tradicionalistas
-gaúchas, respeitando suas especificidades culturais e organizacionais? A resposta a essa pergunta
-foi construída a partir da avaliação empírica conduzida junto às duas entidades parceiras, o CPF Pia
-do Sul e o CTG Sentinela da Querência, articulada com a fundamentação teórica sobre sistemas de
-informação, ecossistemas digitais e transformação digital em organizações culturais.
+Esta pesquisa buscou responder à seguinte questão: em que medida um ecossistema digital integrado,
+avaliado quanto à usabilidade e à utilidade percebida por associados e diretoria
+(Seção~\ref{sec:avaliacao}), apresenta indícios de viabilidade para apoiar a gestão de associados e
+eventos sociais em entidades tradicionalistas gaúchas, respeitando suas especificidades culturais e
+organizacionais? A resposta a essa pergunta foi construída a partir da avaliação empírica conduzida
+junto às duas entidades parceiras, o CPF Pia do Sul e o CTG Sentinela da Querência, articulada com a
+fundamentação teórica sobre sistemas de informação, ecossistemas digitais e transformação digital em
+organizações culturais.
 
-Como contribuição acadêmica, buscou-se demonstrar a viabilidade de aplicação de um ecossistema
-digital em contextos culturais tradicionais, evidenciando que modernização administrativa e
-preservação das dinâmicas culturais podem coexistir de forma complementar
-\parencite{hinings2018,vial2019}.
+Como contribuição acadêmica, buscou-se reunir indícios de viabilidade da aplicação de um ecossistema
+digital em contextos culturais tradicionais, sugerindo que modernização administrativa e preservação
+das dinâmicas culturais podem coexistir de forma complementar \parencite{hinings2018,vial2019}. Essa
+conclusão apoia-se na percepção relatada por associados e diretoria sobre o próprio uso do sistema,
+não numa medição direta de efeito organizacional, que exigiria desenho de pesquisa longitudinal fora
+do alcance deste trabalho.
 
 % Inclua na bibliografia apenas as obras efetivamente citadas no texto.
 \printbibliography[title={REFERÊNCIAS}]
+
+\clearpage
+\section*{APÊNDICE A -- Roteiro de avaliação}
+\addcontentsline{toc}{section}{APÊNDICE A -- Roteiro de avaliação}
+\label{apx:avaliacao}
+
+Detalhamento operacional da avaliação descrita na Seção~\ref{sec:avaliacao}: o roteiro de tarefas
+por fluxo, o critério objetivo de conclusão de cada uma e o roteiro de entrevista semiestruturada. A
+versão completa, incluindo o script do moderador e os critérios de ambientação com dados fictícios,
+está em \texttt{TCC-FINAL/avaliacao/plano-avaliacao.md}, no repositório do projeto.
+
+\subsection*{A.1 Roteiro de tarefas e critérios de conclusão}
+
+\textbf{Fluxo 1, cadastro de associado (RF01, RF18).} Diretoria: cadastra, pelo painel, um associado
+fictício a partir de uma ficha em papel fornecida pelo moderador. Associado: realiza o auto-cadastro
+no aplicativo com um CPF fictício; ao menos um participante testa também vincular-se a um cadastro já
+feito pela diretoria. \textit{Critério de conclusão:} existe, no banco, um associado com o CPF
+informado e \texttt{status = ativo} (ou \texttt{pendente\_validacao}, se a etapa de aprovação não foi
+exercida).
+
+\textbf{Fluxo 2, compra de ingresso e check-in (RF12, RF20, RF21).} Associado: compra, no aplicativo,
+um ingresso para um evento fictício publicado e localiza o código QR na aba ``Ingressos''. Diretoria:
+lê esse código pela câmera do painel ou o digita manualmente, e confirma a atualização dos totais de
+entrada. \textit{Critério de conclusão:} o ingresso emitido pelo associado passa a
+\texttt{status = usado}, com data e hora de validação preenchidas.
+
+\textbf{Fluxo 3, pagamento de mensalidade (RF05, RF06, RF07, RF19).} Associado: consulta a
+mensalidade em aberto e realiza o pagamento online pelo aplicativo. Diretoria: localiza o mesmo
+associado no relatório de inadimplência do painel e confirma que ele deixou de constar na lista.
+\textit{Critério de conclusão:} a mensalidade indicada muda de \texttt{status = pendente} para
+\texttt{status = paga}, com data de pagamento preenchida.
+
+Em todas as tarefas, o moderador registrou o tempo gasto, o número de erros (ações desfeitas ou
+refeitas) e o número de intervenções (vezes em que precisou indicar o próximo passo ao participante).
+
+\subsection*{A.2 Roteiro de entrevista semiestruturada}
+
+\begin{enumerate}
+  \item De forma geral, como foi a experiência de usar o sistema hoje?
+  \item Em qual momento das tarefas você se sentiu mais em dúvida ou perdido? O que ajudaria ali?
+  \item Alguma tela ou termo usado no sistema não ficou claro? O vocabulário (nomes de categoria de
+    sócio, de cargos da diretoria, de tipos de evento) fez sentido pra entidade, ou soou genérico
+    demais?
+  \item Comparando com o que vocês já faziam antes (papel, planilha, WhatsApp), esse processo pelo
+    sistema parece mais útil, mais fácil, ou não fez diferença?
+  \item \textit{(Só para quem usou o fluxo mediado)} Você confiaria em pedir pra alguém da diretoria
+    fazer isso por você, caso preferisse não usar o sistema diretamente?
+  \item \textit{(Só para diretoria)} As categorias de sócio e o croqui do salão, do jeito que
+    ficaram configurados, correspondem a como a entidade de fato organiza isso hoje?
+  \item Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
+\end{enumerate}
 
 \end{document}
