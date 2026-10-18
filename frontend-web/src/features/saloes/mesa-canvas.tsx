@@ -116,7 +116,7 @@ function LinhaElemento({
   onClick?: () => void;
 }) {
   const corParede = selecionado ? "var(--color-primary)" : "#5b5147";
-  const corPorta = selecionado ? "var(--color-primary)" : "#b08968";
+  const corPorta = selecionado ? "var(--color-primary)" : "#9c5a1f";
   return (
     <g
       onClick={clicavel ? onClick : undefined}
@@ -137,8 +137,8 @@ function LinhaElemento({
         x2={elemento.x2}
         y2={elemento.y2}
         stroke={elemento.tipo === "parede" ? corParede : corPorta}
-        strokeWidth={elemento.tipo === "parede" ? 6 : 4}
-        strokeDasharray={elemento.tipo === "porta" ? "2 6" : undefined}
+        strokeWidth={elemento.tipo === "parede" ? 6 : 5}
+        strokeDasharray={elemento.tipo === "porta" ? "6 3" : undefined}
         strokeLinecap="round"
         pointerEvents="none"
       />
