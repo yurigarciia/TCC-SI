@@ -878,30 +878,57 @@ sensíveis e funcionalidades voltadas a rodeios artísticos ou outros tipos de e
 dos bailes e fandangos.
 
 \subsection{Procedimentos de avaliação}
+\label{sec:avaliacao}
 
-A avaliação do ecossistema digital foi conduzida por meio de testes funcionais (para verificar se
-as funcionalidades atendem aos requisitos levantados) e avaliação de uso com participantes das duas
-entidades parceiras. A avaliação contou com a participação de 6 a 10 pessoas por entidade, incluindo
-membros da diretoria, responsáveis pela organização de eventos e associados com diferentes perfis de
-uso, contemplando usuários com menor familiaridade digital.
+A avaliação do ecossistema digital foi conduzida junto às duas entidades parceiras por meio de
+sessões individuais moderadas, cada uma estruturada em quatro blocos sequenciais: uma demonstração
+geral do sistema, sem intervenção do participante, destinada a nivelar a familiaridade com a
+navegação e a terminologia da interface; a execução de tarefas sobre três fluxos principais,
+selecionados em conjunto com a orientação deste trabalho; a aplicação da escala SUS; e uma entrevista
+semiestruturada breve. Cada sessão contou com 6 a 10 participantes por entidade, incluindo membros da
+diretoria, responsáveis pela organização de eventos e associados com diferentes perfis de uso,
+contemplando usuários com menor familiaridade digital.
 
-A avaliação de uso combinou múltiplos instrumentos: aplicação da escala \textit{System Usability
-Scale} (SUS) \parencite{brooke1996}, entrevistas semiestruturadas com gestores e usuários, observação
-de cenários de uso e registro de percepções em questionário breve
-\parencite{brooke1996,gil2017}.
+Antes das sessões, o ambiente de avaliação de cada entidade foi povoado com dados fictícios, porém
+plausíveis — associados, eventos, mensalidades e ingressos gerados em volume e variação compatíveis
+com a realidade relatada no diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}) —, de modo que
+os participantes operassem listas, buscas e históricos já preenchidos, e não um sistema vazio,
+reforçando a sensação de uso real durante a avaliação.
 
-Os cenários contemplaram tarefas como cadastrar associado, registrar pagamento, reservar mesa e
-emitir ingresso, considerando critérios de facilidade de uso, clareza das informações, tempo
-percebido de execução e adequação às rotinas administrativas da entidade.
+Os três fluxos avaliados foram selecionados por cobrirem, de forma combinada, os três módulos
+centrais do ecossistema (associados, eventos/ingressos e mensalidades) e por corresponderem a pontos
+relatados como prioritários no diagnóstico de ambas as entidades. Cada fluxo foi testado nas duas
+pontas do ecossistema, quando aplicável: participantes da diretoria executaram o passo mediado pelo
+painel administrativo, e participantes associados executaram o passo de autoatendimento pelo
+aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF04, RF18) —
+cadastro mediado pela diretoria no painel e auto-cadastro/vínculo de conta pelo associado no
+aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21) — compra do ingresso e
+exibição do código QR pelo associado no aplicativo, seguida da leitura e validação da entrada pela
+diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06, RF08) — consulta e
+pagamento online pelo associado no aplicativo, seguidos da consulta do histórico e do relatório de
+inadimplência pela diretoria no painel.
+
+A coleta de dados combinou três instrumentos complementares. O primeiro foi uma verificação
+automatizada de conclusão: para cada tarefa, uma rotina consultou a API e o banco de dados
+imediatamente após a sessão, conferindo de forma objetiva e independente da percepção do
+participante se o estado esperado havia sido alcançado (por exemplo, associado cadastrado com o
+status correto, ingresso com entrada validada, mensalidade com pagamento registrado), produzindo uma
+medida de taxa de conclusão da tarefa complementar à percepção subjetiva dos demais instrumentos. O
+segundo foi a aplicação da escala \textit{System Usability Scale} (SUS) \parencite{brooke1996},
+respondida por cada participante imediatamente após o bloco de tarefas. O terceiro foi uma
+entrevista semiestruturada breve, abordando a facilidade de localizar as funcionalidades, os pontos
+de maior dificuldade percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes
+com menor familiaridade digital e sugestões de melhoria \parencite{brooke1996,gil2017}.
 
 A análise dos resultados não se limitou à pontuação final da escala SUS, tratada apenas como um dos
 instrumentos, e não como critério isolado de sucesso. A análise privilegiou a comparação entre os
-dois perfis de entidade parceira, de modo a identificar: (i) em quais tarefas cada grupo de usuários
-apresentou maior dificuldade; (ii) quais pontos do sistema precisaram de ajuste a partir do
-\textit{feedback} observado; e (iii) se o fluxo mediado pela entidade (RNF01) funcionou, na prática,
-como alternativa viável para os usuários com menor familiaridade digital, identificados no
+dois perfis de entidade parceira e entre os papéis de diretoria e associado, de modo a identificar:
+(i) em quais tarefas cada grupo de participantes apresentou maior dificuldade, segundo a taxa de
+conclusão objetiva e a percepção relatada; (ii) quais pontos do sistema precisaram de ajuste a partir
+do \textit{feedback} observado; e (iii) se o fluxo mediado pela entidade (RNF01) funcionou, na
+prática, como alternativa viável para os usuários com menor familiaridade digital, identificados no
 diagnóstico de cada entidade (Seção~\ref{sec:diagnostico}). Os resultados foram analisados de forma
-predominantemente qualitativa, com triangulação entre os diferentes instrumentos
+predominantemente qualitativa, com triangulação entre os três instrumentos
 \parencite{creswell2014,yin2015}, e a pontuação da escala SUS foi interpretada à luz dessa análise
 comparativa, e não reportada isoladamente.
 
@@ -982,9 +1009,72 @@ vez de restringir o escopo a apenas uma dessas frentes.
 
 O MVP do Querência ERP foi implementado como um repositório único contendo três aplicações que
 compartilham a mesma linguagem, o TypeScript: a API (\textit{backend}), o painel administrativo
-(\textit{frontend} web) e o aplicativo do associado (\textit{mobile}), conforme a arquitetura
-apresentada na Figura~\ref{fig:arquitetura}. A seguir, descrevem-se as entregas de cada parte,
-a implantação e as limitações identificadas.
+(\textit{frontend} web) e o aplicativo do associado (\textit{mobile}), conforme a arquitetura de
+componentes apresentada na Figura~\ref{fig:arquitetura}. A Figura~\ref{fig:implantacao} complementa
+essa visão interna com a arquitetura de implantação do ecossistema: a distribuição do aplicativo
+\textit{mobile} pelas lojas Google Play e App Store, o acesso ao painel pelo navegador, a hospedagem
+da API em contêineres na nuvem e as integrações externas (banco de dados gerenciado, cofre de
+segredos, gateway de pagamento e serviço de notificações). O retângulo pontilhado demarca o conjunto
+de componentes replicado para cada entidade parceira: como o sistema não é multi-\textit{tenant}
+(Seção~\ref{sec:delimitacao}), cada entidade opera sua própria instância da API, seu próprio banco de
+dados e suas próprias credenciais de gateway de pagamento, vinculadas aos dados bancários da própria
+entidade. A seguir, descrevem-se as entregas de cada parte, a implantação e as limitações
+identificadas.
+
+\begin{figure}[H]
+\centering
+\caption{Arquitetura de implantação do ecossistema digital}
+\label{fig:implantacao}
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.0cm,
+  every node/.style={font=\small},
+  store/.style={rectangle, rounded corners=4pt, minimum width=2.6cm, minimum height=0.8cm,
+    align=center, draw, thick, fill=gray!10, draw=gray!55},
+  client/.style={rectangle, rounded corners=4pt, minimum width=3.4cm, minimum height=1cm,
+    align=center, draw, thick, fill=blue!15, draw=blue!50!black},
+  api/.style={rectangle, rounded corners=4pt, minimum width=5cm, minimum height=1cm,
+    align=center, draw, thick, fill=orange!20, draw=orange!70!black},
+  infra/.style={rectangle, rounded corners=4pt, minimum width=3cm, minimum height=1cm,
+    align=center, draw, thick, fill=gray!18, draw=gray!60},
+  arrow/.style={-{Stealth[length=6pt]}, thick},
+  lbl/.style={font=\footnotesize\itshape, text=gray!55!black}
+]
+
+\node[store] (play) {Google Play};
+\node[store, right=1cm of play] (apple) {App Store (iOS)};
+\node[client, below=0.6cm of play, xshift=1.3cm] (mobile)
+  {React Native + Expo\\{\footnotesize App Mobile (Associado)}};
+
+\node[client, right=3.4cm of mobile] (web) {Next.js\\{\footnotesize Painel Web (Admin)}};
+\node[lbl, above=0.1cm of web] {navegador};
+
+\node[api, below=1.8cm of mobile, xshift=2.4cm] (api) {\textbf{API NestJS}\\{\footnotesize Google Cloud Run}};
+\node[lbl, above=0.1cm of api] {HTTPS / REST};
+
+\node[infra, below=1.4cm of api, xshift=-5.1cm] (db) {\textbf{PostgreSQL}\\{\footnotesize serviço gerenciado}};
+\node[infra, below=1.4cm of api, xshift=-1.7cm] (secrets) {\textbf{Secret Manager}\\{\footnotesize chaves e segredos}};
+\node[infra, below=1.4cm of api, xshift=1.7cm] (gateway) {\textbf{Gateway de}\\{\footnotesize pagamento}};
+\node[infra, below=1.4cm of api, xshift=5.1cm] (notif) {\textbf{Notificações}\\{\footnotesize push / e-mail}};
+\node[lbl, below=0.1cm of gateway] {credenciais da entidade};
+
+\draw[arrow] (play) -- (mobile);
+\draw[arrow] (apple) -- (mobile);
+\draw[arrow] (mobile.south) -- ++(0,-0.5) -| (api.north west);
+\draw[arrow] (web.south) -- ++(0,-0.5) -| (api.north east);
+\draw[arrow] (api.south) -- ++(0,-0.5) -| (db.north);
+\draw[arrow] (api.south) -- ++(0,-0.5) -| (secrets.north);
+\draw[arrow] (api.south) -- ++(0,-0.5) -| (gateway.north);
+\draw[arrow] (api.south) -- ++(0,-0.5) -| (notif.north);
+
+\begin{pgfonlayer}{background}
+\node[draw=gray!65, dashed, rounded corners=6pt, fit=(api)(db)(secrets)(gateway)(notif),
+  inner sep=12pt,
+  label={[font=\footnotesize\itshape, text=gray!45!black]below:Instância isolada por entidade parceira (mesmo código-base)}] {};
+\end{pgfonlayer}
+
+\end{tikzpicture}
+\caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{figure}
 
 \textbf{API (NestJS + PostgreSQL + TypeORM).} A API foi organizada em seis módulos de domínio ---
 identidade (autenticação e perfis), associados, mensalidades, eventos, reservas e ingressos ---,
@@ -1104,6 +1194,33 @@ acesso associado à reserva permanece como trabalho futuro; (iii) o aplicativo f
 dispositivo Android, sem verificação em iOS; e (iv) não foi realizada aferição sistemática do tempo de
 resposta (RNF05).
 
+\subsubsection{Demonstração de um fluxo completo: compra de ingresso e check-in}
+
+Para ilustrar, de ponta a ponta, como as camadas do ecossistema digital se articulam na prática,
+descreve-se a seguir o fluxo de compra de ingresso e check-in (RF12, RF20, RF21), que atravessa o
+aplicativo \textit{mobile}, a API e o painel administrativo. Esse fluxo foi escolhido por ser o único
+que, isoladamente, exercita as duas pontas do ecossistema (autoatendimento do associado e operação
+mediada pela diretoria) e por corresponder a um dos pontos de maior convergência relatados no
+diagnóstico de ambas as entidades parceiras (Seção~\ref{sec:diagnostico}): o controle de entrada na
+portaria.
+
+O fluxo começa no aplicativo do associado. Na aba ``Eventos'' (Figura~\ref{fig:mobile-telas}d), o
+associado abre um evento publicado e escolhe comprar um ingresso; a API resolve, a partir do perfil
+configurado para esse evento, o valor correspondente (sócio, não sócio ou criança) e registra a
+emissão, vinculando o ingresso ao associado autenticado — nunca a um identificador informado
+livremente pelo cliente, o que impede que um associado compre ou visualize ingresso de outra pessoa.
+Emitido o ingresso, a aba ``Ingressos'' (Figura~\ref{fig:mobile-telas}c) passa a exibi-lo com um
+código QR, cujo conteúdo é o identificador do próprio ingresso.
+
+No dia do evento, a continuidade do fluxo passa para o painel administrativo. Na tela de ingressos do
+evento (Figura~\ref{fig:web-ingressos}), a diretoria lê, pela câmera, o código QR apresentado na tela
+do associado — ou digita manualmente o mesmo código, caminho alternativo pensado para celulares sem
+câmera disponível na portaria ou para ingressos impressos. A API confere se aquele ingresso já havia
+sido validado antes de registrar a entrada, evitando que o mesmo código seja aceito duas vezes, e
+atualiza, em tempo real, os totais exibidos no painel: quantos ingressos foram emitidos, quantos já
+deram entrada e quantos ainda são esperados. Do lado do associado, o aplicativo passa a indicar que
+aquele ingresso já teve a entrada registrada, fechando o ciclo entre os dois clientes do ecossistema
+em torno de um único registro na API.
 
 \subsection{Avaliação com usuários e análise dos resultados}
 
