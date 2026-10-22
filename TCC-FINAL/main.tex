@@ -236,8 +236,9 @@
 ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais
 tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
 Partindo da identificação de lacunas na literatura e de um diagnóstico dos processos administrativos
-de duas entidades parceiras (o Centro de Pesquisas Folclóricas, CPF, Pia do Sul e o CTG Sentinela
-da Querência, ambos em Santa Maria/RS, vinculados à 13ª Região Tradicionalista), o estudo propõe
+de duas entidades parceiras (o Centro de Pesquisas Folclóricas (CPF) Pia do Sul e o Centro de
+Tradições Gaúchas (CTG) Sentinela da Querência, ambos em Santa Maria/RS, vinculados à 13ª Região
+Tradicionalista), o estudo propõe
 uma solução composta por uma
 plataforma \textit{web} para administração da entidade e um aplicativo \textit{mobile} para os
 associados, integrados por uma API (\textit{Application Programming Interface}) REST. A
@@ -258,8 +259,9 @@ resultados da avaliação conduzida junto às entidades parceiras.]
 digital ecosystem aimed at managing members and traditional social events, with emphasis on
 \textit{bailes} and \textit{fandangos}, in the context of Gaúcho traditionalist entities. Based on
 identified gaps in the literature and a diagnosis of administrative processes at two partner
-entities (Centro de Pesquisas Folclóricas, CPF, Pia do Sul and CTG Sentinela da Querência, both in
-Santa Maria/RS), the study proposes a solution composed of a web platform for entity administration
+entities (Centro de Pesquisas Folclóricas (CPF) Pia do Sul and Centro de Tradições Gaúchas (CTG)
+Sentinela da Querência, both in Santa Maria/RS), the study proposes a solution composed of a web
+platform for entity administration
 and a mobile application
 for members, integrated through a REST API. The convergence of processes and needs identified
 between the two partner entities guided the design of the system as a reusable product across
@@ -276,23 +278,24 @@ completed with evaluation results.]
 \section{Introdução}
 % ------------------------------------------------------------------
 
-O Movimento Tradicionalista Gaúcho (MTG) configura-se como uma das mais expressivas manifestações
-culturais organizadas do Brasil, reunindo entidades tradicionalistas responsáveis pela preservação,
-transmissão e vivência cotidiana da identidade gaúcha \parencite{mtg2023,uliana2019}. Essas
+O Movimento Tradicionalista Gaúcho (MTG) reúne, em federação de segundo grau, entidades
+tradicionalistas responsáveis pela preservação, transmissão e vivência cotidiana da identidade
+gaúcha \parencite{mtg2021}. Essas
 entidades, distribuídas por praticamente todos os municípios do Rio Grande do Sul, atuam como
 espaços de convivência social, formação cultural e pertencimento, sustentadas por práticas que vão
 desde eventos sociais até atividades artísticas e educativas desenvolvidas por seus associados.
 
 No Rio Grande do Sul, o tradicionalismo apresenta uma expressiva dimensão organizacional e social.
-Estima-se que o MTG reúna aproximadamente 1.732 entidades tradicionalistas oficialmente filiadas no
-estado, além de mais de 1.200 entidades distribuídas fora do Rio Grande do Sul. Essas entidades são
-responsáveis pela realização de mais de 100 mil eventos ao ano, mobilizando milhões de participantes
-e contribuindo para uma movimentação econômica estimada em cerca de R\$ 1,5 bilhão por ano
-\parencite{savaris2022}.
+Segundo estimativa divulgada pelo próprio MTG, o movimento reúne aproximadamente 1.732 entidades
+tradicionalistas filiadas no estado, além de mais de 1.200 entidades distribuídas fora do Rio Grande
+do Sul, e é responsável pela realização de mais de 100 mil eventos ao ano, mobilizando milhões de
+participantes \parencite{mtg_site2026}. Essa dimensão se reflete também na economia: um levantamento
+conduzido pela Universidade Feevale em parceria com o governo do estado estimou em cerca de R\$ 4,5
+bilhões por ano a movimentação econômica do tradicionalismo gaúcho \parencite{tatsch2024}.
 
 No interior dessas organizações, os departamentos artísticos e grupos de dança assumem papel central,
 concentrando grande parte dos associados ativos, especialmente crianças, jovens e adultos envolvidos
-em invernadas artísticas, ensaios e apresentações culturais \parencite{uliana2019,fabricio2019}.
+em invernadas artísticas, ensaios e apresentações culturais \parencite{vargas2019,fabricio2019}.
 Paralelamente, as entidades mantêm uma intensa agenda social, com destaque para bailes e fandangos,
 que funcionam como espaços de integração e representam uma das principais fontes de sustentação
 financeira dessas organizações \parencite{silvaalbarello2024}.
@@ -308,7 +311,7 @@ participação na entidade.
 
 A produção acadêmica existente abordou a gestão de Centros de Tradições Gaúchas sob diferentes
 perspectivas: profissionalização administrativa, sustentabilidade organizacional e práticas do
-terceiro setor cultural \parencite{uliana2019,martini2019,fabricio2019,silvaalbarello2024}. Existem
+terceiro setor cultural \parencite{vargas2019,martini2019,fabricio2019,silvaalbarello2024}. Existem
 também iniciativas pontuais de informatização aplicadas a contextos tradicionalistas específicos,
 evidenciando a necessidade de organização e centralização de informações \parencite{jardim2022}.
 Contudo, esses estudos concentram-se predominantemente em análises organizacionais, sem avançar para
@@ -322,10 +325,11 @@ contempla integração técnica com estruturas institucionais do MTG, como o Car
 Tradicionalista (CIT), concentrando-se na autonomia administrativa das entidades e em soluções
 viáveis no âmbito organizacional.
 
-Dessa forma, o objeto de análise deste trabalho consiste no desenvolvimento e avaliação de um
+O objeto de análise deste trabalho consiste, portanto, no desenvolvimento e avaliação de um
 ecossistema digital entidade-associado, composto por uma plataforma \textit{web} destinada à gestão
 administrativa e um aplicativo \textit{mobile} voltado aos associados, com aplicação em duas
-entidades parceiras, o CPF Pia do Sul e o CTG Sentinela da Querência, ambas em Santa Maria/RS.
+entidades parceiras, o Centro de Pesquisas Folclóricas (CPF) Pia do Sul e o Centro de Tradições
+Gaúchas (CTG) Sentinela da Querência, ambas em Santa Maria/RS.
 
 O trabalho está estruturado da seguinte forma: após esta introdução, apresentam-se a justificativa e
 os objetivos da pesquisa. Na sequência, é apresentada a fundamentação teórica que sustenta os
@@ -338,10 +342,18 @@ Por fim, são apresentadas as considerações finais.
 A presente pesquisa justifica-se pela relevância social, cultural e organizacional das entidades
 tradicionalistas gaúchas, que atuam como espaços de preservação da cultura regional e de
 convivência comunitária, envolvendo associados, departamentos artísticos e eventos sociais
-tradicionais \parencite{uliana2019,savaris2022}. A continuidade dessas atividades depende
-diretamente da capacidade das entidades em organizar seus processos administrativos e financeiros,
-especialmente em contextos de gestão baseada em trabalho voluntário
-\parencite{fabricio2019,silvaalbarello2024}.
+tradicionais \parencite{vargas2019,tatsch2024}. Essa relevância não é apenas simbólica: entidades
+como o CPF Pia do Sul e o CTG Sentinela da Querência sustentam, na prática, parte considerável da
+vida cultural e social de suas comunidades, funcionando simultaneamente como espaço de lazer, de
+formação artística para crianças e jovens e de identidade regional, papéis que dificilmente seriam
+assumidos por outro tipo de organização local. A continuidade dessas atividades depende diretamente
+da capacidade das entidades em organizar seus processos administrativos e financeiros, especialmente
+em contextos de gestão baseada em trabalho voluntário \parencite{fabricio2019,silvaalbarello2024}.
+Essa dependência cria uma tensão que motiva diretamente este trabalho: a continuidade cultural dessas
+entidades, que é o que de fato importa para seus associados, depende de uma capacidade administrativa
+que, na prática observada nas duas entidades parceiras (Seção~\ref{sec:diagnostico}), é exercida por
+pessoas sem formação em gestão, sem tempo dedicado em período integral e sem ferramentas adequadas ao
+volume de informação que precisam administrar.
 
 Além das motivações de ordem acadêmica e social, a pesquisa possui uma motivação pessoal. Participo
 do movimento tradicionalista desde o nascimento, inserido em um contexto familiar diretamente
@@ -358,16 +370,30 @@ fragmentada, especialmente no que se refere ao cadastro de associados, controle 
 organização de eventos, com uso recorrente de planilhas, documentos físicos e comunicação informal
 \parencite{jardim2022,silvaalbarello2024}. Além disso, grande parte dessas funções é desempenhada
 por gestores voluntários, o que tende a gerar sobrecarga administrativa e dificuldades na
-padronização e continuidade dos processos \parencite{uliana2019,fabricio2019}.
+padronização e continuidade dos processos \parencite{fabricio2019}. Na prática observada nas duas
+entidades parceiras, essa fragmentação se manifesta de um jeito muito concreto: a mesma informação
+(se um associado está em dia, quantas mesas ainda restam para um baile) muitas vezes existe em mais
+de um lugar ao mesmo tempo, planilha, caderno e memória de quem está na secretaria naquele dia, sem
+garantia de que as três versões coincidam. Esse tipo de problema raramente aparece de forma isolada:
+ele se acumula ao longo dos anos e se agrava justamente nos momentos de maior movimento, como a
+preparação de um baile de grande porte, quando o volume de reservas e pagamentos a controlar cresce e
+a margem para erro humano diminui.
 
 A adoção de um ecossistema digital pode ampliar a transparência dos processos, facilitar o acesso
 dos associados às informações e reduzir a sobrecarga operacional dos gestores voluntários
-\parencite{uliana2019,fabricio2019}. Espera-se que a solução proposta auxilie na qualificação das
+\parencite{fabricio2019}. O argumento central deste trabalho é que essa digitalização não precisa, e
+não deveria, significar substituir o papel da diretoria por um sistema autônomo: o ecossistema
+proposto preserva deliberadamente os fluxos mediados pela entidade onde eles já funcionam bem,
+automatizando o registro e a consulta da informação, mas sem retirar da diretoria o julgamento sobre
+quando e como atender cada associado. Espera-se que a solução proposta auxilie na qualificação das
 rotinas administrativas e no fortalecimento da relação entre entidade e associado, respeitando as
 dinâmicas culturais próprias dessas organizações. A contribuição acadêmica esperada está na
 articulação entre transformação digital e especificidades de organizações culturais de base
 comunitária, com ênfase em um contexto ainda pouco explorado na literatura nacional
-\parencite{vial2019,verhoef2021}.
+\parencite{vial2019,verhoef2021}, cuja produção sobre informatização de entidades do terceiro setor
+tende a tratar organizações culturais e esportivas de forma genérica, sem atentar às particularidades
+de uma estrutura como o MTG, hierarquizada por região e fortemente marcada por ritos e vocabulário
+próprios (Seção~\ref{sec:ecossistemas}).
 
 \subsection{Objetivos}
 
@@ -393,14 +419,22 @@ Para alcançar esse objetivo, definem-se os seguintes objetivos específicos:
 \section{Fundamentação teórica}
 % ------------------------------------------------------------------
 
-\subsection{Entidades tradicionalistas e organizações do terceiro setor}
+\subsection{Entidades tradicionalistas como organizações do terceiro setor e sua gestão
+administrativa}
 
 As entidades tradicionalistas gaúchas, como Centros de Tradições Gaúchas (CTGs) e demais
 organizações vinculadas ao MTG, podem ser compreendidas como organizações associativas de natureza
 cultural e sem fins lucrativos. Embora possuam identidade regional própria, compartilham
 características típicas do terceiro setor, especialmente quanto à finalidade social, à gestão
 baseada em participação voluntária e à dependência de contribuições associativas e eventos para sua
-sustentabilidade \parencite{uliana2019}.
+sustentabilidade \parencite{vargas2019}. Enquadrar essas entidades como organizações do terceiro
+setor, e não apenas como clubes sociais ou grupos de hobby, importa porque desloca o problema
+administrativo de uma questão de preferência individual para uma questão estrutural do setor: a
+literatura de terceiro setor já documentou, em contextos muito diferentes do tradicionalismo gaúcho,
+o mesmo padrão de dependência de trabalho voluntário e de dificuldade de profissionalização da
+gestão, o que sugere que as dificuldades relatadas pelas entidades parceiras deste trabalho
+(Seção~\ref{sec:diagnostico}) não são uma peculiaridade isolada do movimento, mas uma manifestação
+local de um desafio mais amplo.
 
 Estudos indicam que essas organizações enfrentam desafios relacionados à profissionalização da
 gestão, à sistematização de informações e ao controle administrativo, especialmente em contextos nos
@@ -410,22 +444,26 @@ perspectiva permite situar o problema investigado dentro de um campo mais amplo 
 organizações culturais e do terceiro setor, no qual questões de gestão e sustentabilidade são
 recorrentes.
 
-\subsection{Gestão administrativa em entidades culturais e associativas}
-
-A gestão administrativa em entidades culturais e associativas apresenta particularidades decorrentes
-de sua estrutura organizacional e de sua finalidade social. Diferentemente de organizações
-empresariais com fins lucrativos, essas entidades dependem majoritariamente de contribuições
-associativas, realização de eventos e trabalho voluntário para sua manutenção. Nesse contexto, a
-organização de informações relacionadas a associados, mensalidades e eventos torna-se elemento
-central para a sustentabilidade institucional \parencite{martini2019}.
+Essa moldura conceitual tem uma consequência prática direta sobre como a gestão administrativa dessas
+entidades deve ser compreendida, e não apenas teorizada. Diferentemente de organizações empresariais
+com fins lucrativos, essas entidades dependem majoritariamente de contribuições associativas,
+realização de eventos e trabalho voluntário para sua manutenção. A organização de informações
+relacionadas a associados, mensalidades e eventos é, por isso, elemento central para a
+sustentabilidade institucional \parencite{martini2019}: não se trata de uma conveniência
+administrativa, mas da condição básica para que a entidade saiba, a qualquer momento, se tem
+condições financeiras de manter sua programação cultural.
 
 Estudos voltados aos Centros de Tradições Gaúchas indicam que processos como cadastro de associados,
 controle financeiro e organização de eventos ainda são frequentemente realizados por meio de
 planilhas, documentos físicos e comunicação informal, o que pode gerar retrabalho, inconsistências e
-dificuldades na continuidade administrativa
-\parencite{jardim2022,silvaalbarello2024}. Esses achados evidenciam que a qualificação da gestão
-administrativa constitui um desafio recorrente nesse tipo de organização, reforçando a necessidade
-de instrumentos que auxiliem na sistematização e integração dos processos internos.
+dificuldades na continuidade administrativa \parencite{jardim2022,silvaalbarello2024}. Esses achados
+evidenciam que a qualificação da gestão administrativa constitui um desafio recorrente nesse tipo de
+organização, reforçando a necessidade de instrumentos que auxiliem na sistematização e integração dos
+processos internos. É justamente nesse ponto, entre o reconhecimento teórico do problema (organização
+do terceiro setor com gestão voluntária e pouco sistematizada) e sua manifestação concreta (planilhas
+dispersas, retrabalho, informação perdida), que este trabalho se posiciona: não como uma reflexão
+adicional sobre as dificuldades do terceiro setor cultural, mas como uma tentativa de endereçar,
+tecnicamente, parte delas.
 
 \subsection{Sistemas de informação como suporte à gestão organizacional}
 
@@ -433,7 +471,7 @@ Sistemas de Informação podem ser compreendidos como conjuntos integrados de co
 por coletar, processar, armazenar e disponibilizar informações com o objetivo de apoiar a tomada de
 decisão e a gestão organizacional. Em diferentes contextos institucionais, esses sistemas contribuem
 para a automação de processos, a redução de retrabalho e a melhoria na confiabilidade das
-informações utilizadas pela administração \parencite{laudon2014,delone2003}.
+informações utilizadas pela administração \parencite{laudon2011,delone2003}.
 
 Além do suporte à tomada de decisão, sistemas de informação desempenham papel estratégico na
 padronização de processos e na redução da dependência de conhecimento tácito concentrado em
@@ -446,8 +484,8 @@ administrativas, favorecendo estabilidade e previsibilidade na gestão
 
 No âmbito das organizações do terceiro setor, a sistematização de informações relacionadas a
 associados, contribuições financeiras e eventos pode fortalecer a organização administrativa e
-oferecer maior previsibilidade e controle às entidades. Dessa forma, a aplicação de soluções digitais
-voltadas à gestão representa não apenas uma modernização tecnológica, mas um instrumento de suporte
+oferecer maior previsibilidade e controle às entidades. A aplicação de soluções digitais voltadas à
+gestão representa, assim, não apenas uma modernização tecnológica, mas um instrumento de suporte
 à sustentabilidade e à continuidade organizacional \parencite{vial2019,verhoef2021}.
 
 Por tratar dados pessoais de associados (nome, CPF, contato, endereço), um sistema desse tipo se
@@ -455,17 +493,24 @@ submete à Lei Geral de Proteção de Dados Pessoais (LGPD) \parencite{lgpd2018}
 estabelece princípios como minimização e finalidade no tratamento de dados pessoais. Este trabalho
 não realizou uma auditoria formal de conformidade à LGPD, o que permanece como trabalho futuro; a
 decisão de projeto de excluir do escopo o processamento direto de dados financeiros sensíveis
-(Seção~\ref{sec:delimitacao}) e de armazenar segredos de infraestrutura fora do código-fonte
-(Seção~4.2) está alinhada a esses princípios, sem substituir uma avaliação jurídica formal.
+(Seção~\ref{sec:requisitos}) e de armazenar segredos de infraestrutura fora do código-fonte
+(Seção~\ref{sec:implementacao-mvp}) está alinhada a esses princípios, sem substituir uma avaliação
+jurídica formal.
 
-É nesse contexto que se insere o ecossistema digital proposto neste trabalho. As funcionalidades
+O ecossistema digital proposto neste trabalho responde diretamente a esse cenário. As funcionalidades
 previstas (cadastro e gestão de associados, controle de mensalidades e organização de eventos)
 correspondem diretamente às lacunas identificadas na literatura quanto à sistematização de processos
 em entidades tradicionalistas. O sistema busca, portanto, operacionalizar os benefícios descritos
 pela teoria dos sistemas de informação em um contexto organizacional específico
-\parencite{laudon2014,delone2003}.
+\parencite{laudon2011,delone2003}.
 
 \subsection{Usabilidade e aceitação de tecnologia}
+\label{sec:usabilidade}
+
+O único questionário efetivamente aplicado aos participantes na avaliação deste trabalho é a escala
+SUS, apresentada a seguir; o TAM, também apresentado nesta subseção, não é aplicado como um segundo
+questionário, mas funciona apenas como lente teórica para interpretar os dados qualitativos da
+entrevista (Seção~\ref{sec:avaliacao}).
 
 Usabilidade é definida pela norma ISO 9241-11 como a medida em que um sistema pode ser usado por
 usuários específicos para atingir objetivos específicos com eficácia, eficiência e satisfação, num
@@ -473,9 +518,9 @@ contexto de uso definido \parencite{iso9241_2018}. \textcite{nielsen1993} desdob
 atributos observáveis e avaliáveis (facilidade de aprendizado, eficiência de uso, facilidade de
 memorização, baixa taxa de erros e satisfação subjetiva), que orientam tanto o desenho quanto a
 avaliação de interfaces. A \textit{System Usability Scale} (SUS), instrumento padronizado de dez
-itens para mensurar a usabilidade percebida \parencite{brooke1996}, foi adaptada e validada para o
+itens para mensurar a usabilidade percebida \parencite{brooke1996}, foi traduzida e adaptada para o
 português do Brasil por \textcite{lourenco2022}, e seus escores são interpretados, neste trabalho,
-segundo a referência de \textcite{bangor2008}, que associa faixas de pontuação a adjetivos de
+segundo a referência de \textcite{bangor2009}, que associa faixas de pontuação a adjetivos de
 aceitabilidade (de ``pior imaginável'' a ``melhor imaginável'').
 
 Usabilidade, porém, não esgota a questão de por que um usuário passa a adotar, ou a rejeitar, uma
@@ -487,13 +532,12 @@ construtos para estruturar a entrevista de avaliação (Seção~\ref{sec:avaliac
 não apenas se os participantes conseguiram usar o sistema, mas se o percebem como mais útil do que a
 rotina anterior em papel, planilha ou WhatsApp.
 
-\subsection{Ecossistemas digitais e plataformas integradas}
+\subsection{Ecossistemas digitais e transformação digital em organizações culturais tradicionais}
+\label{sec:ecossistemas}
 
 O avanço das tecnologias digitais tem favorecido o desenvolvimento de plataformas integradas capazes
 de centralizar informações, automatizar processos e facilitar a interação entre organizações e seus
-públicos. Diferentemente de sistemas isolados, os ecossistemas digitais são estruturados para
-integrar múltiplas funcionalidades em um único ambiente, promovendo maior fluidez no fluxo de dados
-e melhor experiência para os usuários \parencite{gawercusumano2014,jacobides2018}.
+públicos \parencite{gawercusumano2014,jacobides2018}.
 
 Na literatura de estratégia e inovação, de onde vêm as referências citadas acima, ``ecossistema''
 costuma implicar múltiplos atores independentes (plataforma, complementadores, desenvolvedores
@@ -504,10 +548,10 @@ interdependentes (o painel administrativo da entidade e o aplicativo do associad
 cobrem o ciclo completo de um processo organizacional (do cadastro à cobrança, do evento ao
 ingresso), e não um mercado multilateral com complementadores externos independentes. Optou-se por
 manter o termo, em vez de substituí-lo por ``plataforma integrada'', porque a arquitetura foi
-deliberadamente desenhada para múltiplas entidades tradicionalistas como adotantes (Seção~2.1 e
-Seção~\ref{sec:delimitacao}), ainda que cada implantação opere isolada; ``ecossistema'' comunica essa
-intenção de produto reutilizável melhor do que ``plataforma integrada'', que sugeriria uma solução
-fechada para uma única organização.
+deliberadamente desenhada para múltiplas entidades tradicionalistas como adotantes
+(Seção~\ref{sec:delimitacao}), ainda que cada implantação opere isolada; ``ecossistema'' comunica
+essa intenção de produto reutilizável melhor do que ``plataforma integrada'', que sugeriria uma
+solução fechada para uma única organização.
 
 No contexto de organizações associativas e culturais, a adoção de plataformas digitais integradas
 pode contribuir para fortalecer a relação entre entidade e associado, oferecendo acesso simplificado
@@ -516,20 +560,30 @@ por meio de soluções \textit{web} e \textit{mobile}, possibilita maior autonom
 melhor controle organizacional, alinhando práticas tradicionais a recursos tecnológicos
 contemporâneos \parencite{jacobides2018,verhoef2021}.
 
-\subsection{Transformação digital em organizações culturais tradicionais}
-
-A transformação digital pode ser compreendida como o processo de incorporação estratégica de
-tecnologias digitais aos modelos organizacionais, com o objetivo de aprimorar processos, ampliar a
-eficiência administrativa e fortalecer a interação com seus públicos. Diferentemente da simples
-informatização de tarefas isoladas, a transformação digital implica reconfiguração de fluxos de
-trabalho, redefinição de rotinas e adaptação cultural das organizações às novas dinâmicas
-tecnológicas \parencite{vial2019}.
+Essa integração técnica, no entanto, é apenas a metade do problema: ela só cumpre seu propósito se
+acompanhada de uma mudança mais ampla na forma como a entidade organiza seu trabalho, não apenas na
+ferramenta que usa. É nesse ponto que a noção de ecossistema digital se articula com a de
+transformação digital. A transformação digital pode ser compreendida como o processo de incorporação
+estratégica de tecnologias digitais aos modelos organizacionais, com o objetivo de aprimorar
+processos, ampliar a eficiência administrativa e fortalecer a interação com seus públicos.
+Diferentemente da simples informatização de tarefas isoladas, a transformação digital implica
+reconfiguração de fluxos de trabalho, redefinição de rotinas e adaptação cultural das organizações às
+novas dinâmicas tecnológicas \parencite{vial2019}. O ecossistema proposto neste trabalho não é,
+portanto, apenas uma peça de \textit{software}: é o veículo técnico de uma mudança de processo que só
+se sustenta se a diretoria e os associados realmente passarem a usá-lo no lugar da planilha, do
+caderno e do grupo de WhatsApp, o que é precisamente o que a avaliação com usuários
+(Seção~\ref{sec:avaliacao}) busca verificar.
 
 Em organizações culturais tradicionais, como as entidades tradicionalistas gaúchas, esse processo
 apresenta desafios específicos. Tais entidades possuem forte identidade histórica e simbólica, sendo
-estruturadas a partir de práticas consolidadas ao longo do tempo. Nesse contexto, a introdução de
-soluções tecnológicas exige equilíbrio entre modernização administrativa e preservação das dinâmicas
-culturais que caracterizam o movimento \parencite{warnerwager2019}.
+estruturadas a partir de práticas consolidadas ao longo do tempo. A introdução de soluções
+tecnológicas nessas entidades exige, por isso, equilíbrio entre modernização administrativa e
+preservação das dinâmicas culturais que caracterizam o movimento \parencite{warnerwager2019}. Esse equilíbrio não é uma
+abstração teórica neste trabalho: ele aparece, de forma concreta, na divergência relatada pelas duas
+entidades parceiras sobre o próprio perfil de seus usuários (Seção~\ref{sec:diagnostico}), o que
+reforça que ``preservar a dinâmica cultural'' não significa um único ajuste de projeto aplicável a
+qualquer entidade tradicionalista, mas uma diretriz que precisa ser reavaliada para cada contexto de
+implantação.
 
 A literatura aponta que a adoção de tecnologias pode contribuir para ampliar a transparência,
 melhorar a comunicação interna, reduzir custos operacionais e fortalecer o engajamento dos
@@ -540,11 +594,11 @@ realidade institucional \parencite{verhoef2021}.
 Ao propor um ecossistema digital entidade-associado, esta pesquisa insere-se na perspectiva de
 transformação digital aplicada a contextos culturais tradicionais, buscando reunir indícios de que
 inovação tecnológica e preservação identitária podem coexistir de forma complementar
-\parencite{hinings2018}.
-Nesse sentido, a atenção ao grau de maturidade digital dos usuários torna-se um requisito de projeto:
-o ecossistema prevê fluxos mediados pela entidade precisamente para assegurar que associados com
-menor familiaridade tecnológica não sejam excluídos do processo de digitalização, preservando a
-dimensão comunitária e inclusiva que caracteriza o movimento \parencite{vial2019,warnerwager2019}.
+\parencite{hinings2018}. A atenção ao grau de maturidade digital dos usuários é, por isso, um requisito
+de projeto: o ecossistema prevê fluxos mediados pela entidade precisamente para
+assegurar que associados com menor familiaridade tecnológica não sejam excluídos do processo de
+digitalização, preservando a dimensão comunitária e inclusiva que caracteriza o movimento
+\parencite{vial2019,warnerwager2019}.
 
 \subsection{Trabalhos correlatos}
 
@@ -558,7 +612,7 @@ interna, sem contemplar a interface do associado ou a gestão integrada de event
 \textcite{silvaalbarello2024} investigaram a qualificação da gestão em CTGs, evidenciando
 deficiências nos processos administrativos e propondo diretrizes de melhoria com base em práticas de
 gestão do terceiro setor. O estudo aponta a necessidade de instrumentos de controle, mas não avança
-em soluções tecnológicas concretas. \textcite{uliana2019} e \textcite{fabricio2019} abordam,
+em soluções tecnológicas concretas. \textcite{vargas2019} e \textcite{fabricio2019} abordam,
 respectivamente, a empresarização dos CTGs e o comprometimento organizacional no terceiro setor
 cultural, fornecendo embasamento sobre os desafios de profissionalização da gestão voluntária.
 
@@ -571,71 +625,83 @@ adequação às especificidades culturais e organizacionais do contexto tradicio
 \section{Método}
 % ------------------------------------------------------------------
 
-Esta pesquisa caracterizou-se como aplicada, pois buscou propor e implementar uma solução
-tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas
-\parencite{severino2016}. A condução do trabalho em três etapas sequenciais (diagnóstico, construção
-do artefato e avaliação, detalhadas adiante) segue também a lógica da \textit{Design Science
-Research}, abordagem orientada à construção e avaliação de artefatos (nesse caso, o próprio
-ecossistema digital) como forma de gerar conhecimento sobre um problema organizacional
-\parencite{hevner2004}. Quanto à
-abordagem, caracterizou-se como predominantemente qualitativa, com uma etapa quantitativa
-complementar: o levantamento de requisitos, a observação dos processos e a análise dos resultados
-privilegiaram a percepção de usuários e gestores, enquanto a avaliação de usabilidade também gerou
-uma pontuação por meio da escala SUS (\textit{System Usability Scale}) \parencite{brooke1996}, de
-natureza quantitativa. A combinação dos dois tratamentos
-caracteriza uma abordagem de métodos mistos com predominância qualitativa, na qual o dado
-quantitativo é interpretado à luz da análise qualitativa, e não como medida isolada de sucesso
-\parencite{gil2017,creswell2014}. Quanto aos procedimentos técnicos, adotou-se uma combinação de
-pesquisa bibliográfica, para fundamentação teórica e identificação de trabalhos correlatos, e estudo
-de casos múltiplos, considerando a aplicação do ecossistema digital em duas entidades parceiras
-reais, utilizadas como ambiente organizacional de validação e coleta de informações
-\parencite{yin2015}. A opção por
-duas entidades, em vez de uma única, buscou verificar se os processos administrativos e as
-necessidades levantadas se repetiam entre organizações distintas, e não apenas em uma delas,
-fortalecendo a validade externa das conclusões dentro dos limites de um estudo de casos múltiplos
-\parencite{yin2015}.
+Esta pesquisa combina quatro escolhas metodológicas que atuam em níveis distintos e complementares, e
+não como alternativas concorrentes entre si. No nível mais geral, a pesquisa segue a lógica da
+\textit{Design Science Research} (DSR): uma abordagem orientada à construção e avaliação de um
+artefato, aqui o próprio ecossistema digital, como forma de gerar conhecimento sobre um problema
+organizacional \parencite{hevner2004}. Dentro dessa abordagem geral, o estudo de casos múltiplos
+funciona como estratégia de investigação e de validação organizacional: é por meio da aplicação do
+ecossistema nas duas entidades parceiras que o artefato é confrontado com um contexto real
+\parencite{yin2015}. Já o DSDM (\textit{Dynamic Systems Development Method}) é o método usado para
+conduzir especificamente a construção do artefato, isto é, o desenvolvimento de software em si
+(Seção~\ref{sec:dsdm}). Por fim, os métodos mistos descrevem a abordagem de coleta e análise dos
+dados produzidos na etapa de avaliação com usuários (Seção~\ref{sec:avaliacao}), combinando
+instrumentos qualitativos com a pontuação quantitativa da escala SUS. A DSR enquadra o ciclo
+construir-avaliar do artefato; o estudo de casos múltiplos fornece o ambiente organizacional em que
+esse ciclo ocorre; o DSDM organiza a etapa de construção; e os métodos mistos organizam a etapa de
+avaliação.
 
-O desenvolvimento do trabalho foi organizado em três etapas principais e sequenciais: (1) levantamento
-e validação de requisitos junto às entidades parceiras, por meio de entrevistas semiestruturadas,
-análise documental e observação dos processos atuais \parencite{lakatosMarconi2017}; (2) implementação
-iterativa do MVP (Produto Mínimo Viável) do ecossistema digital, priorizando as funcionalidades
-essenciais conforme a técnica MoSCoW do DSDM; e (3) avaliação do sistema com usuários reais das
-entidades parceiras, combinando instrumentos qualitativos e a escala SUS para verificar usabilidade
-e adequação ao contexto organizacional.
+Quanto à natureza, a pesquisa caracteriza-se como aplicada, pois buscou propor e implementar uma
+solução tecnológica voltada à melhoria de processos administrativos em entidades tradicionalistas
+\parencite{severino2016}. Quanto à abordagem, caracteriza-se como predominantemente qualitativa, com
+uma etapa quantitativa complementar: o levantamento de requisitos, a observação dos processos e a
+análise dos resultados privilegiaram a percepção de usuários e gestores, enquanto a avaliação de
+usabilidade também gerou uma pontuação por meio da escala SUS (\textit{System Usability Scale})
+\parencite{brooke1996}, de natureza quantitativa. A combinação dos dois tratamentos caracteriza a
+abordagem de métodos mistos com predominância qualitativa já referida, na qual o dado quantitativo é
+interpretado à luz da análise qualitativa, e não como medida isolada de sucesso
+\parencite{gil2017,creswell2014}.
 
-\subsection{Delimitação do estudo e campo de aplicação}
-\label{sec:delimitacao}
+Quanto aos procedimentos técnicos, adotou-se uma combinação de pesquisa bibliográfica, para
+fundamentação teórica e identificação de trabalhos correlatos, e estudo de casos múltiplos,
+considerando a aplicação do ecossistema digital em duas entidades parceiras reais, utilizadas como
+ambiente organizacional de validação e coleta de informações \parencite{yin2015}. A opção por duas
+entidades, em vez de uma única, buscou verificar se os processos administrativos e as necessidades
+levantadas se repetiam entre organizações distintas, e não apenas em uma delas. Isso não configura uma
+generalização estatística ampla, que exigiria uma amostra probabilística de entidades: o que o estudo
+de casos múltiplos permite, dentro dos limites reconhecidos pela própria literatura do método, é uma
+generalização analítica, restrita ao contexto e aos casos estudados, na qual a convergência observada
+entre as duas entidades fortalece a confiança de que os achados não são uma peculiaridade isolada de
+uma única organização, sem no entanto autorizar extrapolação para toda e qualquer entidade
+tradicionalista gaúcha \parencite{yin2015}.
 
-O estudo de casos múltiplos foi realizado com duas entidades parceiras, ambas localizadas em Santa
-Maria/RS e vinculadas à 13ª Região Tradicionalista (13ª RT): o CPF Pia do Sul e o CTG Sentinela da
-Querência. As duas entidades diferem em porte e estágio de digitalização: a primeira ainda depende
-majoritariamente de controles físicos em papel para reservas e emissão de ingressos, enquanto a
-segunda já opera um sistema de gestão próprio, embora fragmentado entre esse sistema, planilhas
-eletrônicas e controles manuais na portaria dos eventos, o que permitiu observar o mesmo conjunto de
-processos administrativos em diferentes graus de maturidade tecnológica. A pesquisa delimita-se ao
-contexto administrativo das entidades parceiras, com foco nos processos de cadastro de associados,
-controle de mensalidades e gestão de eventos sociais tradicionais, com ênfase em bailes e fandangos,
-incluindo reservas de mesas e ingressos. Não estão contempladas integrações técnicas com sistemas
-institucionais do MTG, como o Cartão de Identidade Tradicionalista (CIT).
-
-Embora a solução tenha sido desenhada como um produto reutilizável entre entidades tradicionalistas,
-e não como um sistema sob medida para uma única organização, o trabalho não avalia uma implantação
-multiusuário compartilhada entre entidades: cada entidade parceira opera sua própria instância e base
-de dados, com o mesmo código-base. A generalização discutida neste artigo refere-se, portanto, à
-convergência de processos e requisitos observada entre as duas entidades estudadas, e não a uma prova
-de aplicabilidade universal a toda e qualquer entidade tradicionalista gaúcha.
+O desenvolvimento do trabalho foi organizado em três etapas principais e sequenciais. A primeira foi o
+levantamento e a validação de requisitos junto às entidades parceiras, por meio de entrevistas
+semiestruturadas, análise documental e observação dos processos atuais \parencite{lakatosMarconi2017}.
+A segunda foi a implementação iterativa do MVP (Produto Mínimo Viável) do ecossistema digital,
+priorizando as funcionalidades essenciais conforme a técnica MoSCoW do DSDM. A terceira é a avaliação
+do sistema com usuários reais das entidades parceiras, combinando instrumentos qualitativos e a escala
+SUS para verificar usabilidade e utilidade percebida. As três etapas são detalhadas nas subseções a
+seguir, com o relato de como cada uma foi efetivamente executada e dos resultados que produziu.
 
 \subsection{Levantamento de requisitos e coleta de dados}
+\label{sec:levantamento}
 
-A coleta de dados para levantamento de requisitos foi realizada por meio de:
-\begin{itemize}
-  \item entrevistas semiestruturadas com membros da diretoria e responsáveis administrativos do CPF
-    Pia do Sul e do CTG Sentinela da Querência;
-  \item análise documental de materiais utilizados na gestão atual (planilhas, fichas cadastrais,
-    registros de mensalidades e modelos de controle de eventos);
-  \item observação do fluxo operacional de processos-chave (cadastro de associado, controle de
-    mensalidade, reserva e compra de ingressos e mesas).
-\end{itemize}
+A coleta de dados para levantamento de requisitos foi realizada por meio de entrevista
+semiestruturada, análise documental e observação do fluxo operacional de processos-chave (cadastro de
+associado, controle de mensalidade, reserva e compra de ingressos e mesas), uma combinação de
+instrumentos recomendada para o levantamento de requisitos em contextos organizacionais pouco
+documentados \parencite{lakatosMarconi2017}. Em cada entidade, a entrevista foi conduzida em uma
+única sessão individual: no CPF Pia do Sul, em 11 de agosto de 2026, com o responsável administrativo
+pela secretaria da entidade; no CTG Sentinela da Querência, em setembro de 2026, com um membro da
+diretoria. A análise documental não constituiu uma coleta formal e separada de arquivos, mas a
+observação direta, durante as próprias entrevistas, dos materiais de gestão então em uso (planilhas de
+controle, fichas de cadastro e registros de mensalidade e de eventos), o que é consistente com o
+caráter ainda pouco sistematizado desses registros relatado pelas duas entidades
+(Seção~\ref{sec:diagnostico}).
+
+As respostas de cada entrevista foram transcritas em notas de campo e organizadas por bloco temático
+(perfil e contexto, gestão de associados, controle de mensalidades, gestão de eventos, perfil de
+usuários, prioridades), o mesmo agrupamento usado no roteiro de entrevista. A partir dessas notas,
+cada necessidade relatada foi convertida num candidato a requisito funcional ou não funcional e
+classificada preliminarmente pela técnica MoSCoW (Seção~\ref{sec:dsdm}); um requisito só permaneceu na
+lista quando correspondia a uma necessidade relatada por pelo menos uma das duas entidades e não
+conflitava com as delimitações de escopo já estabelecidas (Seção~\ref{sec:avaliacao}). Diferentemente
+de um processo com rodadas formais e separadas de validação de requisitos, a confirmação desses
+requisitos junto às entidades ocorreu de forma contínua, ao longo dos ciclos de desenvolvimento do
+MVP (Seção~\ref{sec:dsdm}): o contato periódico com as entidades permitiu confirmar se a interpretação
+de cada necessidade estava correta e identificar necessidades que não haviam sido captadas na
+entrevista inicial, como os dois achados relatados na Seção~\ref{sec:implementacao-mvp}.
 
 Esses instrumentos foram utilizados para identificar funcionalidades necessárias, regras de negócio
 e pontos de dificuldade comuns às duas entidades: retrabalho, inconsistência, falta de
@@ -649,6 +715,7 @@ presencialmente, com posterior validação no sistema). Essa diretriz visa asseg
 continuidade das práticas organizacionais e adoção gradual da solução.
 
 \subsection{Metodologia de desenvolvimento de software}
+\label{sec:dsdm}
 
 O desenvolvimento seguiu uma abordagem iterativa e incremental, orientada pelos princípios do DSDM
 (\textit{Dynamic Systems Development Method}), método ágil originalmente concebido para projetos nos
@@ -670,9 +737,52 @@ O MVP do ecossistema digital contemplou, prioritariamente, as funcionalidades cl
   \item acesso do associado às suas informações por meio de aplicativo \textit{mobile}.
 \end{itemize}
 
-As entregas foram organizadas em ciclos curtos, com validação periódica junto às entidades parceiras,
-permitindo ajustes progressivos conforme \textit{feedback} de uso e necessidades identificadas ao
-longo do desenvolvimento.
+As entregas foram organizadas em quatro ciclos curtos, delimitados pelo histórico real de
+desenvolvimento do repositório e resumidos no Quadro~\ref{tab:ciclos-dsdm}. É importante distinguir o
+que foi efetivamente planejado antes de cada ciclo do que foi entregue dentro dele e do que mudou em
+decorrência de \textit{feedback}: diferentemente de um processo com rodadas periódicas de validação
+formal junto às duas entidades ao longo de todo o desenvolvimento, o contato direto com as entidades
+parceiras ficou concentrado em dois momentos, a entrevista inicial de levantamento de requisitos
+(Seção~\ref{sec:levantamento}) e a sessão de avaliação com usuários ao final do desenvolvimento
+(Seção~\ref{sec:avaliacao}); nos ciclos intermediários, a validação foi predominantemente técnica e
+interna (testes automatizados e verificação manual contra os requisitos levantados na entrevista), e
+os ajustes de escopo decorreram da releitura dos relatos da entrevista e de lacunas identificadas no
+uso dos próprios protótipos, não de novas rodadas de contato com as entidades.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Ciclos de desenvolvimento do MVP}
+  \label{tab:ciclos-dsdm}
+  \begin{tabular}{@{}cL{2.4cm}L{4.0cm}L{4.4cm}@{}}
+    \toprule
+    \textbf{Ciclo} & \textbf{Período} & \textbf{Planejado (MoSCoW)} & \textbf{Entregue e ajustes} \\
+    \midrule
+    1 & 21--31 ago. 2026 &
+      Estrutura inicial dos três projetos e funcionalidades \textit{Must} de associados, mensalidades
+      e eventos/reservas (RF01--RF15) &
+      \textit{Scaffold} completo (\textit{backend}, painel, app); autenticação, cadastro de
+      associado, mensalidades, reserva de mesa, emissão e check-in de ingresso, leitor de QR \\
+    2 & 4--6 set. 2026 &
+      Refinamento do painel administrativo e configuração de eventos &
+      Cadastro/edição de evento numa tela só, preço de ingresso variável por categoria, croqui com
+      paredes e portas (RF17, \textit{Should}, antecipado por ser pré-requisito das reservas) \\
+    3 & 15--19 set. 2026 &
+      Redesenho do produto para reutilização entre entidades, a partir do achado de convergência da
+      segunda entrevista (Seção~\ref{sec:levantamento}) &
+      \textit{Rebranding} de produto; auto-cadastro do associado (RF18); \textit{deploy} em produção.
+      Dois ajustes não previstos, achados apenas no uso dos protótipos: ingresso sem vínculo com o
+      associado comprador (corrigido com nova migração e rota dedicada) e impossibilidade de reabrir
+      o ingresso para validação por QR (corrigido com a aba ``Ingressos'' e RF21) \\
+    4 & 6--16 out. 2026 &
+      Funcionalidades \textit{Could} de manutenção de cadastro e refinamento de usabilidade &
+      \textit{Dashboard} administrativo, edição/exclusão de categoria de sócio e de usuários, compra
+      de ingresso para acompanhante e cancelamento de reserva (RF15), guardas de validação de dados \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir do histórico de \textit{commits} do
+  repositório.}
+\end{table}
 
 \subsection{Arquitetura do ecossistema digital}
 
@@ -796,7 +906,7 @@ multiplataforma que possibilita a entrega simultânea para Android e iOS a parti
 código TypeScript \parencite{expo2023}. O Quadro~\ref{tab:stack} resume as tecnologias adotadas por
 camada.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Stack tecnológica do ecossistema digital}
   \label{tab:stack}
@@ -818,6 +928,7 @@ camada.
 \end{table}
 
 \subsection{Requisitos do sistema}
+\label{sec:requisitos}
 
 Os requisitos foram levantados inicialmente com base no conhecimento prévio do contexto das entidades
 tradicionalistas e nas parcerias estabelecidas com o CPF Pia do Sul e o CTG Sentinela da Querência,
@@ -825,7 +936,7 @@ sendo refinados e validados por meio das entrevistas semiestruturadas conduzidas
 MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (importante, mas negociável),
 \textbf{Could} (desejável se houver capacidade) e \textbf{Won't} (fora do escopo deste trabalho).
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Requisitos funcionais: Gestão de Associados}
   \label{tab:rf-associados}
@@ -842,7 +953,7 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Requisitos funcionais: Controle de Mensalidades}
   \label{tab:rf-mensalidades}
@@ -859,7 +970,7 @@ MoSCoW do DSDM: \textbf{Must} (essencial para o MVP), \textbf{Should} (important
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Requisitos funcionais: Gestão de Eventos e Reservas}
   \label{tab:rf-eventos}
@@ -885,7 +996,7 @@ independente, já ter enfrentado conflito de reserva ou mesa vendida em duplicid
 Seção~\ref{sec:diagnostico}), o que caracteriza um problema real e atual, e não hipotético, da
 gestão de eventos dessas entidades.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Requisitos não-funcionais}
   \label{tab:rnf}
@@ -916,7 +1027,7 @@ pessoal por WhatsApp relatada no diagnóstico (RF22). Entre os não funcionais, 
 sistema em nuvem, com instâncias isoladas por entidade a partir do mesmo código-base (RNF06). Esses
 itens estão consolidados no Quadro~\ref{tab:rf-incorporados}.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Requisitos incorporados durante o desenvolvimento}
   \label{tab:rf-incorporados}
@@ -949,26 +1060,51 @@ dos bailes e fandangos.
 
 \subsection{Procedimentos de avaliação}
 \label{sec:avaliacao}
+\label{sec:delimitacao}
+
+O estudo de casos múltiplos, cujos procedimentos de avaliação são detalhados nesta subseção, foi
+realizado com duas entidades parceiras, ambas localizadas em Santa Maria/RS e vinculadas à 13ª Região
+Tradicionalista (13ª RT): o CPF Pia do Sul e o CTG Sentinela da Querência. As duas entidades diferem
+em porte e estágio de digitalização: a primeira ainda depende majoritariamente de controles físicos
+em papel para reservas e emissão de ingressos, enquanto a segunda já opera um sistema de gestão
+próprio, embora fragmentado entre esse sistema, planilhas eletrônicas e controles manuais na portaria
+dos eventos, o que permitiu observar o mesmo conjunto de processos administrativos em diferentes
+graus de maturidade tecnológica. A pesquisa delimita-se ao contexto administrativo das entidades
+parceiras, com foco nos processos de cadastro de associados, controle de mensalidades e gestão de
+eventos sociais tradicionais, com ênfase em bailes e fandangos, incluindo reservas de mesas e
+ingressos. Não estão contempladas integrações técnicas com sistemas institucionais do MTG, como o
+Cartão de Identidade Tradicionalista (CIT).
+
+Embora a solução tenha sido desenhada como um produto reutilizável entre entidades tradicionalistas,
+e não como um sistema sob medida para uma única organização, o trabalho não avalia uma implantação
+multiusuário compartilhada entre entidades: cada entidade parceira opera sua própria instância e base
+de dados, com o mesmo código-base. A generalização discutida neste artigo refere-se, portanto, à
+convergência de processos e requisitos observada entre as duas entidades estudadas (generalização
+analítica, e não estatística, como já esclarecido no início desta seção), e não a uma prova de
+aplicabilidade universal a toda e qualquer entidade tradicionalista gaúcha.
 
 Esta pesquisa não mede diretamente o efeito do ecossistema digital sobre a qualidade da gestão
 organizacional das entidades parceiras, o que exigiria um desenho longitudinal, com medição antes e
 depois da adoção, fora do alcance de uma sessão de avaliação de uso. O que a avaliação mede são
-usabilidade e utilidade percebida, instrumentos consolidados que operacionalizam a pergunta de
-pesquisa, apoiados no modelo de sucesso de sistemas de informação de \textcite{delone2003} (qualidade
-do sistema, uso e satisfação do usuário, benefícios líquidos percebidos) e no construto de utilidade
-percebida do TAM, \textit{Technology Acceptance Model} \parencite{davis1989}. Os indícios de
-``qualificação da gestão'' discutidos nos resultados (Seção~\ref{sec:diagnostico} em diante) derivam,
-portanto, da percepção relatada por diretoria e associados sobre o próprio trabalho, não de uma
-medição direta de desempenho organizacional.
+usabilidade e utilidade percebida. Na prática, o único questionário efetivamente aplicado aos
+participantes é a escala SUS (Seção~\ref{sec:usabilidade}), que mede usabilidade; a utilidade
+percebida não é medida por um segundo questionário, mas captada qualitativamente na entrevista
+semiestruturada, cujo roteiro foi inspirado nos construtos do TAM (sem aplicá-lo como instrumento
+psicométrico completo) e no modelo de sucesso de sistemas de informação de \textcite{delone2003}.
+Os indícios de ``qualificação da gestão'' discutidos nos resultados (Seção~\ref{sec:diagnostico} em
+diante) derivam, portanto, da percepção relatada por diretoria e associados sobre o próprio trabalho,
+não de uma medição direta de desempenho organizacional.
 
 A avaliação do ecossistema digital foi conduzida junto às duas entidades parceiras por meio de
 sessões individuais moderadas, precedidas por um teste-piloto interno para calibrar o roteiro de
 tarefas e o tempo estimado por sessão. Cada sessão foi estruturada em quatro blocos sequenciais: uma
-demonstração geral do sistema, sem intervenção do participante, destinada a nivelar a familiaridade
-com a navegação e a terminologia da interface; a execução de tarefas sobre três fluxos principais,
-selecionados em conjunto com a orientação deste trabalho; a aplicação da escala SUS; e uma entrevista
-semiestruturada breve. O roteiro de tarefas, os critérios de conclusão por tarefa e o roteiro de
-entrevista constam do Apêndice~\ref{apx:avaliacao}.
+demonstração geral do sistema, padronizada em roteiro e duração (cerca de 5 minutos, cobrindo a
+navegação principal do painel ou do aplicativo e a terminologia da interface, sem executar nenhuma das
+tarefas que seriam avaliadas em seguida, para não antecipar sua resolução), sem intervenção do
+participante, destinada a nivelar a familiaridade com a navegação e a terminologia da interface; a
+execução de tarefas sobre três fluxos principais, selecionados em conjunto com a orientação deste
+trabalho; a aplicação da escala SUS; e uma entrevista semiestruturada breve. O roteiro de tarefas, os
+critérios de conclusão por tarefa e o roteiro de entrevista constam do Apêndice~\ref{apx:avaliacao}.
 
 Cada sessão contou com 6 a 10 participantes por entidade, recrutados por conveniência e indicação da
 própria diretoria, incluindo membros da diretoria, responsáveis pela organização de eventos e
@@ -995,21 +1131,40 @@ associado no aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20
 a compra do ingresso e a exibição do código QR pelo associado no aplicativo, seguida da leitura e
 validação da entrada pela diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06,
 RF07, RF19), compreendendo a consulta e o pagamento online pelo associado no aplicativo, seguidos da
-consulta do histórico e do relatório de inadimplência pela diretoria no painel.
+consulta do histórico e do relatório de inadimplência pela diretoria no painel. Antes da execução do
+fluxo (iii), os participantes foram informados de que a cobrança online utiliza uma implementação
+simulada da porta de pagamento (RF19, Quadro~\ref{tab:rf-incorporados}), sem integração com um
+provedor financeiro real; essa informação também é levada em conta na análise, já que a tarefa valida
+a interação com a interface e o registro da operação no sistema, e não o funcionamento de um
+pagamento financeiro real.
 
 A coleta de dados combinou quatro instrumentos complementares. O primeiro foi uma verificação
 automatizada de conclusão: para cada tarefa, uma rotina consultou a API e o banco de dados
 imediatamente após a sessão, conferindo de forma objetiva e independente da percepção do
 participante se o estado esperado havia sido alcançado (por exemplo, associado cadastrado com o
-status correto, ingresso com entrada validada, mensalidade com pagamento registrado), produzindo uma
-medida de taxa de conclusão da tarefa complementar à percepção subjetiva dos demais instrumentos. O
-segundo foi um registro de observação preenchido pelo moderador durante a execução de cada tarefa,
-contendo o tempo gasto, o número de erros (ações que precisaram ser desfeitas ou refeitas) e o
-número de intervenções do moderador (vezes em que precisou indicar o próximo passo); esse registro
-é o que sustenta, na análise, a conclusão sobre se o fluxo mediado pela entidade (RNF01) funcionou,
-na prática, como alternativa viável para quem tem menor familiaridade digital. O terceiro foi a
-aplicação da escala \textit{System Usability Scale} (SUS) \parencite{brooke1996}, respondida por
-cada participante imediatamente após o bloco de tarefas. O quarto foi uma entrevista semiestruturada
+status correto, ingresso com entrada validada, mensalidade com pagamento registrado). Essa verificação
+isolada, porém, não demonstra se o participante concluiu a tarefa de forma autônoma: um estado final
+correto no banco de dados é compatível tanto com uma execução sem ajuda quanto com uma execução em
+que o moderador precisou intervir. Por isso, cada tarefa foi classificada em uma de três categorias,
+cruzando o resultado da verificação automatizada com o número de intervenções do moderador registrado
+pelo segundo instrumento: \textit{concluída sem ajuda} (estado final correto e nenhuma intervenção),
+\textit{concluída com intervenção} (estado final correto, mas com uma ou mais intervenções do
+moderador) e \textit{não concluída} (estado final incorreto ou tarefa abandonada,
+independentemente do número de intervenções). O segundo instrumento foi um registro de observação
+preenchido pelo moderador durante a execução de cada tarefa, contendo o tempo gasto, o número de erros
+(ações que precisaram ser desfeitas ou refeitas) e o número de intervenções do moderador (vezes em que
+precisou indicar o próximo passo); além de alimentar a classificação acima, esse registro é o que
+sustenta, na análise, a conclusão sobre se o fluxo mediado pela entidade (RNF01) funcionou, na
+prática, como alternativa viável para quem tem menor familiaridade digital.
+
+Os dois instrumentos seguintes têm natureza mais subjetiva: em vez de medir o que o participante fez,
+captam como ele percebeu a experiência. O terceiro foi a aplicação da escala \textit{System Usability
+Scale} (SUS) \parencite{brooke1996}, respondida por cada
+participante imediatamente após o bloco de tarefas e referida apenas à interface que o participante
+efetivamente utilizou na sessão (o painel administrativo, para participantes da diretoria, ou o
+aplicativo \textit{mobile}, para participantes associados): como as duas interfaces têm propósitos e
+públicos distintos, suas pontuações SUS são reportadas e discutidas separadamente, e não combinadas
+numa única pontuação geral do ecossistema. O quarto foi uma entrevista semiestruturada
 breve, cobrindo a facilidade de localizar as funcionalidades, os pontos de maior dificuldade
 percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes com menor
 familiaridade digital, sugestões de melhoria e, inspirada nos construtos de utilidade percebida e
@@ -1039,9 +1194,11 @@ entidade (Seção~\ref{sec:diagnostico}).
 \subsection{Diagnóstico dos processos administrativos atuais}
 \label{sec:diagnostico}
 
-O diagnóstico foi construído a partir de entrevistas semiestruturadas com representantes da diretoria
-do CPF Pia do Sul e do CTG Sentinela da Querência, ambas entidades vinculadas à 13ª RT, em Santa
-Maria/RS. Apesar de portes distintos (a primeira reúne 1.343 associados e a segunda 822, entre
+O diagnóstico foi construído a partir de uma entrevista semiestruturada individual em cada entidade
+(Seção~\ref{sec:levantamento}): com o responsável administrativo pela secretaria do CPF Pia do Sul, em 11 de
+agosto de 2026, e com um membro da diretoria do CTG Sentinela da Querência, em setembro de 2026, ambas
+entidades vinculadas à 13ª RT, em Santa Maria/RS. Apesar de portes distintos (a primeira reúne 1.343
+associados e a segunda 822, entre
 categorias como sócios pagantes, remidos, fundadores e patrimoniais), as respostas convergiram para
 um mesmo conjunto de processos e dificuldades, o que indica que tais problemas se repetiram nos dois
 casos analisados, e não se restringiram a peculiaridades isoladas de uma única organização. Não se
@@ -1106,6 +1263,7 @@ decisão de tratar associados, mensalidades e eventos como módulos igualmente n
 vez de restringir o escopo a apenas uma dessas frentes.
 
 \subsection{Implementação do MVP}
+\label{sec:implementacao-mvp}
 
 O MVP do Querência ERP foi implementado como um repositório único contendo três aplicações que
 compartilham a mesma linguagem, o TypeScript: a API (\textit{backend}), o painel administrativo
@@ -1157,7 +1315,7 @@ e as limitações identificadas.
 \node[infra, below=1.4cm of api, xshift=-5.1cm] (db) {\textbf{PostgreSQL}\\{\footnotesize serviço gerenciado}};
 \node[infra, below=1.4cm of api, xshift=-1.7cm] (secrets) {\textbf{Secret Manager}\\{\footnotesize chaves e segredos}};
 \node[infra, below=1.4cm of api, xshift=1.7cm] (gateway) {\textbf{Gateway de}\\{\footnotesize pagamento}};
-\node[infra, below=1.4cm of api, xshift=5.1cm] (notif) {\textbf{Notificações}\\{\footnotesize push / e-mail}};
+\node[infra, below=1.4cm of api, xshift=5.1cm] (notif) {\textbf{Notificações}\\{\footnotesize push}};
 \node[lbl, below=0.1cm of gateway] {credenciais da entidade};
 
 \draw[arrow] (play) -- (mobile);
@@ -1192,7 +1350,8 @@ partir do token, e nunca a partir de parâmetros informados pelo cliente, o que 
 de terceiros. A verificação do comportamento é feita por 73 testes de ponta a ponta, distribuídos em
 oito suítes, executados contra um banco PostgreSQL real, e que cobrem inclusive cenários de
 concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita. Para
-ambientar as sessões de avaliação com as entidades parceiras (Seção 3.6), foi desenvolvida uma
+ambientar as sessões de avaliação com as entidades parceiras (Seção~\ref{sec:avaliacao}), foi
+desenvolvida uma
 rotina de povoamento de dados (\textit{seed}), executada contra a API já em produção, que gera
 associados, categorias de sócio, um salão com croqui completo, eventos publicados com preços
 configurados e um histórico de mensalidades, ingressos e reservas com a mesma variação de perfil
@@ -1386,6 +1545,9 @@ do alcance deste trabalho.
 \clearpage
 \section*{APÊNDICE A -- Roteiro de avaliação}
 \addcontentsline{toc}{section}{APÊNDICE A -- Roteiro de avaliação}
+\makeatletter
+\renewcommand{\@currentlabel}{A}
+\makeatother
 \label{apx:avaliacao}
 
 Detalhamento operacional da avaliação descrita na Seção~\ref{sec:avaliacao}: o roteiro de tarefas
@@ -1412,8 +1574,8 @@ associado no relatório de inadimplência do painel e confirma que ele deixou de
 \textit{Critério de conclusão:} a mensalidade indicada muda de \texttt{status = pendente} para
 \texttt{status = paga}, com data de pagamento preenchida.
 
-Em todas as tarefas, o moderador registrou o tempo gasto, o número de erros (ações desfeitas ou
-refeitas) e o número de intervenções (vezes em que precisou indicar o próximo passo ao participante).
+Em todas as tarefas, o moderador registra o tempo gasto, o número de erros (ações desfeitas ou
+refeitas) e o número de intervenções (vezes em que precisa indicar o próximo passo ao participante).
 
 \subsection*{A.2 Roteiro de entrevista semiestruturada}
 
@@ -1429,6 +1591,9 @@ refeitas) e o número de intervenções (vezes em que precisou indicar o próxim
     fazer isso por você, caso preferisse não usar o sistema diretamente?
   \item \textit{(Só para diretoria)} As categorias de sócio e o croqui do salão, do jeito que
     ficaram configurados, correspondem a como a entidade de fato organiza isso hoje?
+  \item \textit{(Só para diretoria)} Nos fluxos em que a diretoria age em nome do associado (como o
+    cadastro feito pelo painel), a forma como o sistema trata essa aprovação corresponde a como a
+    entidade decide isso hoje, ou falta algum nível de autorização interna?
   \item Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
 \end{enumerate}
 
