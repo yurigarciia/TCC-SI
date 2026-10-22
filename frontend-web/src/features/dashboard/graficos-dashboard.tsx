@@ -26,6 +26,7 @@ const ESTILO_TOOLTIP = {
     fontSize: 12,
   },
   labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
   separator: ": ",
 };
 
@@ -46,6 +47,7 @@ function ultimosSeisMeses(agora: number) {
     return {
       chave: `${data.getFullYear()}-${data.getMonth()}`,
       rotulo: data.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+      rotuloCompleto: data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
       novos: 0,
     };
   });
@@ -124,7 +126,13 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="rotulo" {...ESTILO_EIXO} />
                   <YAxis allowDecimals={false} width={28} {...ESTILO_EIXO} />
-                  <Tooltip {...ESTILO_TOOLTIP} />
+                  <Tooltip
+                    {...ESTILO_TOOLTIP}
+                    labelFormatter={(_rotulo, payload) =>
+                      (payload?.[0]?.payload as { rotuloCompleto?: string } | undefined)
+                        ?.rotuloCompleto ?? _rotulo
+                    }
+                  />
                   <Bar dataKey="novos" name="Novos associados" fill={VERDE} radius={[6, 6, 0, 0]}>
                     <LabelList dataKey="novos" position="top" style={ESTILO_LABEL} />
                   </Bar>
