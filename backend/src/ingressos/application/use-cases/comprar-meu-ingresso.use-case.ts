@@ -36,6 +36,15 @@ export class ComprarMeuIngressoUseCase {
         'Associado sem categoria de sócio definida — procure a diretoria antes de comprar',
       );
     }
+    const eventoAlvo = await this.eventos.buscarPorId(eventoId);
+    if (!eventoAlvo) {
+      throw new NotFoundException('Evento não encontrado');
+    }
+    if (new Date(eventoAlvo.data).getTime() < Date.now()) {
+      throw new BadRequestException(
+        'Este evento já ocorreu e não aceita mais compra de ingresso',
+      );
+    }
     const ingresso = await this.emitirIngresso.execute(eventoId, {
       nomeComprador: associado.nome,
       associadoId: associado.id,
@@ -45,11 +54,10 @@ export class ComprarMeuIngressoUseCase {
       categoriaSocioId: associado.categoriaSocioId,
     });
 
-    const evento = await this.eventos.buscarPorId(eventoId);
     await this.notificacoes.enviar({
       destinatarioId: associado.id,
       titulo: 'Ingresso comprado',
-      mensagem: `Seu ingresso para "${evento?.nome ?? 'o evento'}" foi emitido. Apresente seu cadastro na entrada.`,
+      mensagem: `Seu ingresso para "${eventoAlvo.nome}" foi emitido. Apresente seu cadastro na entrada.`,
     });
 
     return ingresso;
