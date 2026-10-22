@@ -85,7 +85,7 @@ export default function AssociadosPage() {
 
   const seletorCategoria = (
     <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
-      <SelectTrigger id="filtro-categoria" className="h-8 w-full text-xs">
+      <SelectTrigger id="filtro-categoria" className="h-8 w-40 text-xs">
         <SelectValue placeholder="Categoria">
           {(valor: string | null) =>
             valor === "todas"
@@ -107,7 +107,7 @@ export default function AssociadosPage() {
 
   const seletorStatus = (
     <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
-      <SelectTrigger id="filtro-status" className="h-8 w-full text-xs">
+      <SelectTrigger id="filtro-status" className="h-8 w-36 text-xs">
         <SelectValue placeholder="Status">
           {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
         </SelectValue>
@@ -123,7 +123,7 @@ export default function AssociadosPage() {
 
   const seletorSituacao = (
     <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
-      <SelectTrigger id="filtro-situacao" className="h-8 w-full text-xs">
+      <SelectTrigger id="filtro-situacao" className="h-8 w-36 text-xs">
         <SelectValue placeholder="Situação">
           {(valor: string | null) => ROTULOS_SITUACAO[valor ?? "todas"] ?? "Situação"}
         </SelectValue>
@@ -176,18 +176,13 @@ export default function AssociadosPage() {
 
       {associados && associados.length > 0 && (
         <div className="space-y-3">
-          <div
-            className={`hidden rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
-          >
+          <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
             <span>Associado</span>
-            {seletorCategoria}
-            <div className="flex gap-1.5">
+            <div className="flex items-center gap-2">
+              {seletorCategoria}
               {seletorStatus}
               {seletorSituacao}
             </div>
-            <span className="text-xs font-normal text-muted-foreground">Criado</span>
-            <span className="text-xs font-normal text-muted-foreground">Atualizado</span>
-            <span />
           </div>
           <ul className="space-y-3">
             {associados.map((associado) => {

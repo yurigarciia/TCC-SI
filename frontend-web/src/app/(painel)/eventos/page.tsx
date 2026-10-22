@@ -76,7 +76,7 @@ export default function EventosPage() {
 
   const seletorStatus = (
     <Select value={status} onValueChange={mudarStatus}>
-      <SelectTrigger id="filtro-status" className="h-8 w-full text-xs">
+      <SelectTrigger id="filtro-status" className="h-8 w-36 text-xs">
         <SelectValue placeholder="Status">
           {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
         </SelectValue>
@@ -90,20 +90,24 @@ export default function EventosPage() {
   );
 
   const filtroData = (
-    <div className="flex gap-1.5">
+    <div className="flex items-center gap-2">
+      <label htmlFor="filtro-data-inicio" className="text-xs text-muted-foreground">
+        De
+      </label>
       <Input
         id="filtro-data-inicio"
         type="date"
-        aria-label="Data inicial"
-        className="h-8 w-full text-xs"
+        className="h-8 w-32 text-xs"
         value={dataInicio}
         onChange={(e) => mudarDataInicio(e.target.value)}
       />
+      <label htmlFor="filtro-data-fim" className="text-xs text-muted-foreground">
+        Até
+      </label>
       <Input
         id="filtro-data-fim"
         type="date"
-        aria-label="Data final"
-        className="h-8 w-full text-xs"
+        className="h-8 w-32 text-xs"
         value={dataFim}
         onChange={(e) => mudarDataFim(e.target.value)}
       />
@@ -122,7 +126,7 @@ export default function EventosPage() {
         <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 md:hidden">
+      <div className="flex flex-col gap-2 md:hidden">
         {seletorStatus}
         {filtroData}
       </div>
@@ -149,13 +153,12 @@ export default function EventosPage() {
 
       {eventos && eventos.length > 0 && (
         <div className="space-y-3">
-          <div
-            className={`hidden rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
-          >
+          <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
             <span>Evento</span>
-            {seletorStatus}
-            {filtroData}
-            <span />
+            <div className="flex items-center gap-3">
+              {seletorStatus}
+              {filtroData}
+            </div>
           </div>
           <ul className="space-y-3">
             {eventos.map((evento) => (
