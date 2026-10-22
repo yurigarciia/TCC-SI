@@ -19,10 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 const COLUNAS =
-  "md:grid-cols-[minmax(0,2.4fr)_minmax(0,1.2fr)_minmax(0,1.6fr)_6.5rem_6.5rem_2.5rem] md:items-center md:gap-4";
+  "md:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,2.2fr)_6.5rem_6.5rem_2.5rem] md:items-center md:gap-4";
 
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/);
@@ -52,6 +51,19 @@ export default function AssociadosPage() {
 
   const nomesCategorias = new Map(resultadoCategorias?.itens.map((c) => [c.id, c.nome]));
 
+  const ROTULOS_STATUS: Record<string, string> = {
+    todos: "Todos os status",
+    pendente_validacao: "Pendente validação",
+    ativo: "Ativo",
+    rejeitado: "Rejeitado",
+  };
+
+  const ROTULOS_SITUACAO: Record<string, string> = {
+    todas: "Todas as situações",
+    "em-dia": "Em dia",
+    inadimplente: "Inadimplente",
+  };
+
   const mudarBusca = (valor: string) => {
     setBusca(valor);
     setPagina(1);
@@ -71,6 +83,59 @@ export default function AssociadosPage() {
     setSituacaoFiltro(valor ?? "todas");
   };
 
+  const seletorCategoria = (
+    <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
+      <SelectTrigger id="filtro-categoria" className="h-8 w-full text-xs">
+        <SelectValue placeholder="Categoria">
+          {(valor: string | null) =>
+            valor === "todas"
+              ? "Todas as categorias"
+              : (nomesCategorias.get(valor ?? "") ?? "Categoria")
+          }
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="todas">Todas as categorias</SelectItem>
+        {resultadoCategorias?.itens.map((categoria) => (
+          <SelectItem key={categoria.id} value={categoria.id}>
+            {categoria.nome}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
+  const seletorStatus = (
+    <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
+      <SelectTrigger id="filtro-status" className="h-8 w-full text-xs">
+        <SelectValue placeholder="Status">
+          {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="todos">Todos os status</SelectItem>
+        <SelectItem value="pendente_validacao">Pendente validação</SelectItem>
+        <SelectItem value="ativo">Ativo</SelectItem>
+        <SelectItem value="rejeitado">Rejeitado</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
+  const seletorSituacao = (
+    <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
+      <SelectTrigger id="filtro-situacao" className="h-8 w-full text-xs">
+        <SelectValue placeholder="Situação">
+          {(valor: string | null) => ROTULOS_SITUACAO[valor ?? "todas"] ?? "Situação"}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="todas">Todas as situações</SelectItem>
+        <SelectItem value="em-dia">Em dia</SelectItem>
+        <SelectItem value="inadimplente">Inadimplente</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -78,63 +143,15 @@ export default function AssociadosPage() {
         <p className="text-sm text-muted-foreground">Cadastro e situação de cada associado.</p>
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou CPF" />
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-categoria" className="text-xs text-muted-foreground">
-              Categoria
-            </Label>
-            <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
-              <SelectTrigger id="filtro-categoria" className="w-44">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas</SelectItem>
-                {resultadoCategorias?.itens.map((categoria) => (
-                  <SelectItem key={categoria.id} value={categoria.id}>
-                    {categoria.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-status" className="text-xs text-muted-foreground">
-              Status
-            </Label>
-            <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
-              <SelectTrigger id="filtro-status" className="w-40">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="pendente_validacao">Pendente validação</SelectItem>
-                <SelectItem value="ativo">Ativo</SelectItem>
-                <SelectItem value="rejeitado">Rejeitado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-situacao" className="text-xs text-muted-foreground">
-              Situação
-            </Label>
-            <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
-              <SelectTrigger id="filtro-situacao" className="w-36">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas</SelectItem>
-                <SelectItem value="em-dia">Em dia</SelectItem>
-                <SelectItem value="inadimplente">Inadimplente</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou CPF" />
         <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        {seletorCategoria}
+        {seletorStatus}
+        <div className="col-span-2">{seletorSituacao}</div>
       </div>
 
       {isLoading && (
@@ -160,13 +177,16 @@ export default function AssociadosPage() {
       {associados && associados.length > 0 && (
         <div className="space-y-3">
           <div
-            className={`hidden h-12 rounded-xl border bg-card px-4 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
+            className={`hidden rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
           >
             <span>Associado</span>
-            <span>Categoria</span>
-            <span>Situação</span>
-            <span>Criado</span>
-            <span>Atualizado</span>
+            {seletorCategoria}
+            <div className="flex gap-1.5">
+              {seletorStatus}
+              {seletorSituacao}
+            </div>
+            <span className="text-xs font-normal text-muted-foreground">Criado</span>
+            <span className="text-xs font-normal text-muted-foreground">Atualizado</span>
             <span />
           </div>
           <ul className="space-y-3">

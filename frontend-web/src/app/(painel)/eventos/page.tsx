@@ -19,10 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const COLUNAS =
-  "md:grid-cols-[minmax(0,2.4fr)_minmax(0,1.4fr)_minmax(0,1.8fr)_2.5rem] md:items-center md:gap-4";
+  "md:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,2.2fr)_2.5rem] md:items-center md:gap-4";
 
 function SeloData({ iso }: { iso: string }) {
   const data = new Date(iso);
@@ -69,6 +68,48 @@ export default function EventosPage() {
     setPagina(1);
   };
 
+  const ROTULOS_STATUS: Record<string, string> = {
+    todos: "Todos os status",
+    rascunho: "Rascunho",
+    publicado: "Publicado",
+  };
+
+  const seletorStatus = (
+    <Select value={status} onValueChange={mudarStatus}>
+      <SelectTrigger id="filtro-status" className="h-8 w-full text-xs">
+        <SelectValue placeholder="Status">
+          {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="todos">Todos os status</SelectItem>
+        <SelectItem value="rascunho">Rascunho</SelectItem>
+        <SelectItem value="publicado">Publicado</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
+  const filtroData = (
+    <div className="flex gap-1.5">
+      <Input
+        id="filtro-data-inicio"
+        type="date"
+        aria-label="Data inicial"
+        className="h-8 w-full text-xs"
+        value={dataInicio}
+        onChange={(e) => mudarDataInicio(e.target.value)}
+      />
+      <Input
+        id="filtro-data-fim"
+        type="date"
+        aria-label="Data final"
+        className="h-8 w-full text-xs"
+        value={dataFim}
+        onChange={(e) => mudarDataFim(e.target.value)}
+      />
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -76,53 +117,14 @@ export default function EventosPage() {
         <p className="text-sm text-muted-foreground">Bailes e fandangos.</p>
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-status" className="text-xs text-muted-foreground">
-              Status
-            </Label>
-            <Select value={status} onValueChange={mudarStatus}>
-              <SelectTrigger id="filtro-status" className="w-40">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="rascunho">Rascunho</SelectItem>
-                <SelectItem value="publicado">Publicado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-data-inicio" className="text-xs text-muted-foreground">
-              De
-            </Label>
-            <Input
-              id="filtro-data-inicio"
-              type="date"
-              className="w-40"
-              value={dataInicio}
-              onChange={(e) => mudarDataInicio(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="filtro-data-fim" className="text-xs text-muted-foreground">
-              Até
-            </Label>
-            <Input
-              id="filtro-data-fim"
-              type="date"
-              className="w-40"
-              value={dataFim}
-              onChange={(e) => mudarDataFim(e.target.value)}
-            />
-          </div>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
         <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        {seletorStatus}
+        {filtroData}
       </div>
 
       {isLoading && (
@@ -148,11 +150,11 @@ export default function EventosPage() {
       {eventos && eventos.length > 0 && (
         <div className="space-y-3">
           <div
-            className={`hidden h-12 rounded-xl border bg-card px-4 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
+            className={`hidden rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
           >
             <span>Evento</span>
-            <span>Status</span>
-            <span>Data</span>
+            {seletorStatus}
+            {filtroData}
             <span />
           </div>
           <ul className="space-y-3">
