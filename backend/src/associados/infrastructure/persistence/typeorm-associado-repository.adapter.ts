@@ -4,6 +4,7 @@ import { ILike, Repository } from 'typeorm';
 import {
   AssociadoRepositoryPort,
   AtualizacaoAssociado,
+  FiltrosListaAssociados,
   NovoAssociado,
 } from '../../application/ports/associado-repository.port';
 import { Associado } from '../../domain/associado.entity';
@@ -46,12 +47,23 @@ export class TypeOrmAssociadoRepositoryAdapter extends AssociadoRepositoryPort {
   async listarPaginado(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaAssociados,
   ): Promise<{ itens: Associado[]; total: number }> {
+    const extras: Record<string, unknown> = {};
+    if (filtros?.categoriaSocioId) extras.categoriaSocioId = filtros.categoriaSocioId;
+    if (filtros?.status) extras.status = filtros.status;
+
+    const where = filtros?.busca
+      ? [
+          { nome: ILike(`%${filtros.busca}%`), ...extras },
+          { cpf: ILike(`%${filtros.busca}%`), ...extras },
+        ]
+      : Object.keys(extras).length > 0
+        ? extras
+        : undefined;
+
     const [encontrados, total] = await this.repo.findAndCount({
-      where: busca
-        ? [{ nome: ILike(`%${busca}%`) }, { cpf: ILike(`%${busca}%`) }]
-        : undefined,
+      where,
       order: { criadoEm: 'DESC' },
       skip: (pagina - 1) * limite,
       take: limite,

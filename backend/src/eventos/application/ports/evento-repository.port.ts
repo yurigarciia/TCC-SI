@@ -17,6 +17,13 @@ export interface AtualizacaoEvento {
   salaoId?: string | null;
 }
 
+export interface FiltrosListaEventos {
+  busca?: string;
+  status?: StatusEvento;
+  dataInicio?: string;
+  dataFim?: string;
+}
+
 export abstract class EventoRepositoryPort {
   abstract salvar(dados: NovoEvento): Promise<Evento>;
   abstract buscarPorId(id: string): Promise<Evento | null>;
@@ -24,7 +31,7 @@ export abstract class EventoRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaEventos,
   ): Promise<{ itens: Evento[]; total: number }>;
   // Sem paginação de propósito — usado só pela vitrine pública de eventos publicados
   // (GET /eventos/publicados, consumido pelo app do associado).

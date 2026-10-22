@@ -17,11 +17,27 @@ import type {
 const CHAVE_LISTA = ["eventos"] as const;
 const chaveDetalhe = (id: string) => ["eventos", id] as const;
 
-export function useEventos(pagina: number, busca?: string, limite: number = LIMITE_PADRAO) {
+export interface FiltrosEventos {
+  status?: string;
+  dataInicio?: string;
+  dataFim?: string;
+}
+
+export function useEventos(
+  pagina: number,
+  busca?: string,
+  limite: number = LIMITE_PADRAO,
+  filtros?: FiltrosEventos,
+) {
   return useQuery({
-    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? ""],
-    queryFn: () =>
-      apiFetch<PaginaResultado<Evento>>(`/eventos?${construirQueryPaginacao(pagina, limite, busca)}`),
+    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? "", filtros ?? {}],
+    queryFn: () => {
+      const query = new URLSearchParams(construirQueryPaginacao(pagina, limite, busca));
+      if (filtros?.status) query.set("status", filtros.status);
+      if (filtros?.dataInicio) query.set("dataInicio", filtros.dataInicio);
+      if (filtros?.dataFim) query.set("dataFim", filtros.dataFim);
+      return apiFetch<PaginaResultado<Evento>>(`/eventos?${query.toString()}`);
+    },
   });
 }
 

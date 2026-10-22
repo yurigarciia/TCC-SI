@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Calendar, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
+import { Building2, Calendar, Loader2, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
@@ -180,7 +180,11 @@ function EditarAssociadoConteudo({
           </h1>
         </div>
         <Button type="submit" form={ID_FORM_DADOS} disabled={!isDirty || atualizar.isPending}>
-          <Save aria-hidden="true" />
+          {atualizar.isPending ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <Save aria-hidden="true" />
+          )}
           {atualizar.isPending ? "Salvando…" : "Salvar alterações"}
         </Button>
       </div>

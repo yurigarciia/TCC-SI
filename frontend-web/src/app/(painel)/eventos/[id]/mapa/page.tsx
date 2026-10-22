@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
@@ -263,6 +263,7 @@ function FormReservarMesa({
       </div>
       <div className="flex justify-end">
         <Button type="submit" disabled={solicitar.isPending}>
+          {solicitar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
           {solicitar.isPending ? "Registrando…" : "Registrar reserva"}
         </Button>
       </div>

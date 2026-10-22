@@ -5,6 +5,7 @@ import {
   CalendarClock,
   Hash,
   LayoutGrid,
+  Loader2,
   MapPin,
   PartyPopper,
   Table2,
@@ -605,6 +606,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
           {isSubmitting ? "Salvando…" : "Salvar"}
         </Button>
       </div>

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AssociadoRepositoryPort } from '../ports/associado-repository.port';
+import {
+  AssociadoRepositoryPort,
+  FiltrosListaAssociados,
+} from '../ports/associado-repository.port';
 import { Associado } from '../../domain/associado.entity';
 import {
   montarPaginaResultado,
@@ -16,12 +19,12 @@ export class ListarAssociadosUseCase {
   async execute(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaAssociados,
   ): Promise<PaginaResultado<Associado>> {
     const { itens, total } = await this.associados.listarPaginado(
       pagina,
       limite,
-      busca,
+      filtros,
     );
     return montarPaginaResultado(itens, total, pagina, limite);
   }

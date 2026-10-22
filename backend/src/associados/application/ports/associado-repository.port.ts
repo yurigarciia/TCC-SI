@@ -20,6 +20,12 @@ export interface AtualizacaoAssociado {
   usuarioId?: string | null;
 }
 
+export interface FiltrosListaAssociados {
+  busca?: string;
+  categoriaSocioId?: string;
+  status?: Associado['status'];
+}
+
 export abstract class AssociadoRepositoryPort {
   abstract salvar(dados: NovoAssociado): Promise<Associado>;
   abstract buscarPorId(id: string): Promise<Associado | null>;
@@ -33,7 +39,7 @@ export abstract class AssociadoRepositoryPort {
   abstract listarPaginado(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaAssociados,
   ): Promise<{ itens: Associado[]; total: number }>;
   abstract atualizar(
     id: string,

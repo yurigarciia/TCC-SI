@@ -1,6 +1,6 @@
 "use client";
 
-import { Tag } from "lucide-react";
+import { Loader2, Tag } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -146,6 +146,7 @@ export default function NovaCategoriaSocioPage() {
                 Cancelar
               </Button>
               <Button type="submit" disabled={criar.isPending}>
+                {criar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                 {criar.isPending ? "Salvando…" : "Salvar"}
               </Button>
             </div>

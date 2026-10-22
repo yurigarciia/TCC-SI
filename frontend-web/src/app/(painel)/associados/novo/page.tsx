@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Calendar, IdCard, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
+import { Building2, Calendar, IdCard, Loader2, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -134,13 +134,18 @@ export default function NovoAssociadoPage() {
             Cancelar
           </Button>
           <Button type="submit" form={ID_FORM_NOVO} disabled={cadastrar.isPending}>
-            <Save aria-hidden="true" />
+            {cadastrar.isPending ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Save aria-hidden="true" />
+            )}
             {cadastrar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>
       </div>
 
       <form id={ID_FORM_NOVO} onSubmit={onSubmit} className="space-y-6" noValidate>
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <Card>
           <CardHeader>
             <CardTitle>Dados do associado</CardTitle>
@@ -278,6 +283,7 @@ export default function NovoAssociadoPage() {
             <CamposEndereco control={control} errors={errors} setValue={setValue} />
           </CardContent>
         </Card>
+        </div>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -298,7 +304,7 @@ export default function NovoAssociadoPage() {
             )}
 
             {fields.map((campo, indice) => (
-              <div key={campo.id} className="flex items-end gap-3 rounded-lg border p-3">
+              <div key={campo.id} className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-start">
                 <div className="flex-1 space-y-1.5">
                   <Label htmlFor={`dependentes.${indice}.nome`}>Nome</Label>
                   <InputComIcone
@@ -331,7 +337,12 @@ export default function NovoAssociadoPage() {
                     </p>
                   )}
                 </div>
-                <Button type="button" variant="ghost" onClick={() => remove(indice)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="shrink-0 self-start sm:mt-6"
+                  onClick={() => remove(indice)}
+                >
                   Remover
                 </Button>
               </div>

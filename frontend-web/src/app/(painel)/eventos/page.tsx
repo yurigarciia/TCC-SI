@@ -11,6 +11,15 @@ import { useEventos } from "@/features/eventos/use-eventos";
 import { formatarDataHora } from "@/lib/format";
 import { Pagination } from "@/components/pagination";
 import { SearchInput } from "@/components/search-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const COLUNAS =
   "md:grid-cols-[minmax(0,2.4fr)_minmax(0,1.4fr)_minmax(0,1.8fr)_2.5rem] md:items-center md:gap-4";
@@ -30,11 +39,33 @@ function SeloData({ iso }: { iso: string }) {
 export default function EventosPage() {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
-  const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined);
+  const [status, setStatus] = useState<string>("todos");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
+  const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined, undefined, {
+    status: status === "todos" ? undefined : status,
+    dataInicio: dataInicio || undefined,
+    dataFim: dataFim || undefined,
+  });
   const eventos = resultado?.itens;
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
+    setPagina(1);
+  };
+
+  const mudarStatus = (valor: string | null) => {
+    setStatus(valor ?? "todos");
+    setPagina(1);
+  };
+
+  const mudarDataInicio = (valor: string) => {
+    setDataInicio(valor);
+    setPagina(1);
+  };
+
+  const mudarDataFim = (valor: string) => {
+    setDataFim(valor);
     setPagina(1);
   };
 
@@ -45,8 +76,52 @@ export default function EventosPage() {
         <p className="text-sm text-muted-foreground">Bailes e fandangos.</p>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-status" className="text-xs text-muted-foreground">
+              Status
+            </Label>
+            <Select value={status} onValueChange={mudarStatus}>
+              <SelectTrigger id="filtro-status" className="w-40">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="rascunho">Rascunho</SelectItem>
+                <SelectItem value="publicado">Publicado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-data-inicio" className="text-xs text-muted-foreground">
+              De
+            </Label>
+            <Input
+              id="filtro-data-inicio"
+              type="date"
+              className="w-40"
+              value={dataInicio}
+              onChange={(e) => mudarDataInicio(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-data-fim" className="text-xs text-muted-foreground">
+              Até
+            </Label>
+            <Input
+              id="filtro-data-fim"
+              type="date"
+              className="w-40"
+              value={dataFim}
+              onChange={(e) => mudarDataFim(e.target.value)}
+            />
+          </div>
+        </div>
         <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
       </div>
 
@@ -108,7 +183,7 @@ export default function EventosPage() {
                     Status
                   </p>
                   <div className="mt-1 flex h-6 items-center">
-                    <StatusEventoBadge status={evento.status} />
+                    <StatusEventoBadge status={evento.status} data={evento.data} />
                   </div>
                 </div>
 

@@ -12,6 +12,14 @@ import { useSituacaoPagamento } from "@/features/mensalidades/use-mensalidades";
 import { Pagination } from "@/components/pagination";
 import { SearchInput } from "@/components/search-input";
 import { formatarCpf, formatarData, formatarTelefone, pareceEmail } from "@/lib/format";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 const COLUNAS =
   "md:grid-cols-[minmax(0,2.4fr)_minmax(0,1.2fr)_minmax(0,1.6fr)_6.5rem_6.5rem_2.5rem] md:items-center md:gap-4";
@@ -26,16 +34,41 @@ function iniciais(nome: string): string {
 export default function AssociadosPage() {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
-  const { data: resultado, isLoading, isError } = useAssociados(pagina, busca || undefined);
+  const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
+  const [statusFiltro, setStatusFiltro] = useState("todos");
+  const [situacaoFiltro, setSituacaoFiltro] = useState("todas");
+  const { data: resultado, isLoading, isError } = useAssociados(pagina, busca || undefined, undefined, {
+    categoriaSocioId: categoriaFiltro === "todas" ? undefined : categoriaFiltro,
+    status: statusFiltro === "todos" ? undefined : statusFiltro,
+  });
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
-  const associados = resultado?.itens;
-  const { data: situacoes } = useSituacaoPagamento(associados?.map((a) => a.id) ?? []);
+  const todosItens = resultado?.itens;
+  const { data: situacoes } = useSituacaoPagamento(todosItens?.map((a) => a.id) ?? []);
+  const associados = todosItens?.filter((a) => {
+    if (situacaoFiltro === "todas") return true;
+    const emDia = situacoes?.[a.id] !== "inadimplente";
+    return situacaoFiltro === "em-dia" ? emDia : !emDia;
+  });
 
   const nomesCategorias = new Map(resultadoCategorias?.itens.map((c) => [c.id, c.nome]));
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
     setPagina(1);
+  };
+
+  const mudarCategoriaFiltro = (valor: string | null) => {
+    setCategoriaFiltro(valor ?? "todas");
+    setPagina(1);
+  };
+
+  const mudarStatusFiltro = (valor: string | null) => {
+    setStatusFiltro(valor ?? "todos");
+    setPagina(1);
+  };
+
+  const mudarSituacaoFiltro = (valor: string | null) => {
+    setSituacaoFiltro(valor ?? "todas");
   };
 
   return (
@@ -45,8 +78,62 @@ export default function AssociadosPage() {
         <p className="text-sm text-muted-foreground">Cadastro e situação de cada associado.</p>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou CPF" />
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome ou CPF" />
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-categoria" className="text-xs text-muted-foreground">
+              Categoria
+            </Label>
+            <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
+              <SelectTrigger id="filtro-categoria" className="w-44">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                {resultadoCategorias?.itens.map((categoria) => (
+                  <SelectItem key={categoria.id} value={categoria.id}>
+                    {categoria.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-status" className="text-xs text-muted-foreground">
+              Status
+            </Label>
+            <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
+              <SelectTrigger id="filtro-status" className="w-40">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendente_validacao">Pendente validação</SelectItem>
+                <SelectItem value="ativo">Ativo</SelectItem>
+                <SelectItem value="rejeitado">Rejeitado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-situacao" className="text-xs text-muted-foreground">
+              Situação
+            </Label>
+            <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
+              <SelectTrigger id="filtro-situacao" className="w-36">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                <SelectItem value="em-dia">Em dia</SelectItem>
+                <SelectItem value="inadimplente">Inadimplente</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <Button render={<Link href="/associados/novo" />}>Novo associado</Button>
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Pencil, ShieldUser, Trash2 } from "lucide-react";
+import { Loader2, Mail, Pencil, ShieldUser, Trash2 } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -213,6 +213,7 @@ export default function UsuariosPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction disabled={excluir.isPending} onClick={confirmarExclusao}>
+              {excluir.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               {excluir.isPending ? "Excluindo…" : "Confirmar exclusão"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -294,6 +295,7 @@ function FormularioEditarUsuario({
             Cancelar
           </Button>
           <Button type="submit" disabled={atualizar.isPending}>
+            {atualizar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
             {atualizar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

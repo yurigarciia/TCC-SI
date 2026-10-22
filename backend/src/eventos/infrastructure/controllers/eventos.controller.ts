@@ -28,6 +28,7 @@ import { ConfigurarMesasEventoUseCase } from '../../application/use-cases/config
 import { ConfigurarIngressoEventoUseCase } from '../../application/use-cases/configurar-ingresso-evento.use-case';
 import { PublicarEventoUseCase } from '../../application/use-cases/publicar-evento.use-case';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
+import { ListarEventosQueryDto } from './dto/listar-eventos-query.dto';
 import {
   ListarEventosPublicadosUseCase,
   ListarEventosUseCase,
@@ -129,8 +130,10 @@ export class EventosController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  listarTodos(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
-    return this.listar.execute(pagina!, limite!, busca);
+  listarTodos(
+    @Query() { pagina, limite, busca, status, dataInicio, dataFim }: ListarEventosQueryDto,
+  ) {
+    return this.listar.execute(pagina!, limite!, { busca, status, dataInicio, dataFim });
   }
 
   @Get(':id')

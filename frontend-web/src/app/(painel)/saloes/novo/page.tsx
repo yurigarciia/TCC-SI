@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2 } from "lucide-react";
+import { Building2, Loader2 } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -95,6 +95,7 @@ export default function NovoSalaoPage() {
                 Cancelar
               </Button>
               <Button type="submit" disabled={criar.isPending}>
+                {criar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                 {criar.isPending ? "Salvando…" : "Salvar"}
               </Button>
             </div>

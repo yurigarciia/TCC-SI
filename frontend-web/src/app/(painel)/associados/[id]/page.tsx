@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
+import { Building2, Loader2, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -373,6 +373,9 @@ function AssociadoDetalheConteudo({
                 });
               }}
             >
+              {removerDependente.isPending && (
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              )}
               {removerDependente.isPending ? "Excluindo…" : "Confirmar exclusão"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -470,6 +473,7 @@ function FormularioEditarDependente({
             Cancelar
           </Button>
           <Button type="submit" disabled={atualizar.isPending}>
+            {atualizar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
             {atualizar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>
