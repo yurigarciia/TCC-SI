@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock3, MapPin, Pencil } from "lucide-react";
+import { Calendar, CalendarClock, Clock3, MapPin, Pencil, ShieldCheck } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -18,7 +18,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { InputComIcone } from "@/components/input-com-icone";
+
+// Período padrão do filtro de data: dá uma visão útil sem precisar abrir o seletor — eventos do
+// último mês (pra conferir os que acabaram de acontecer) até daqui a um ano (cobre o planejamento
+// com antecedência típico de bailes e fandangos).
+function periodoPadrao() {
+  const hoje = new Date();
+  const inicio = new Date(hoje);
+  inicio.setMonth(inicio.getMonth() - 1);
+  const fim = new Date(hoje);
+  fim.setFullYear(fim.getFullYear() + 1);
+  const paraIso = (d: Date) => d.toISOString().slice(0, 10);
+  return { inicio: paraIso(inicio), fim: paraIso(fim) };
+}
 
 const COLUNAS =
   "md:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,2.2fr)_2.5rem] md:items-center md:gap-4";
@@ -39,8 +52,9 @@ export default function EventosPage() {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState<string>("todos");
-  const [dataInicio, setDataInicio] = useState("");
-  const [dataFim, setDataFim] = useState("");
+  const [{ inicio: dataInicioPadrao, fim: dataFimPadrao }] = useState(periodoPadrao);
+  const [dataInicio, setDataInicio] = useState(dataInicioPadrao);
+  const [dataFim, setDataFim] = useState(dataFimPadrao);
   const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined, undefined, {
     status: status === "todos" ? undefined : status,
     dataInicio: dataInicio || undefined,
@@ -76,8 +90,12 @@ export default function EventosPage() {
 
   const seletorStatus = (
     <Select value={status} onValueChange={mudarStatus}>
-      <SelectTrigger id="filtro-status" className="h-8 w-36 text-xs">
-        <SelectValue placeholder="Status">
+      <SelectTrigger
+        id="filtro-status"
+        className={`h-8 w-44 gap-1.5 text-xs ${status !== "todos" ? "border-primary text-primary" : "text-muted-foreground"}`}
+      >
+        <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0" />
+        <SelectValue placeholder="Status" className="min-w-0 truncate">
           {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
         </SelectValue>
       </SelectTrigger>
@@ -89,25 +107,29 @@ export default function EventosPage() {
     </Select>
   );
 
+  const dataAlterada = dataInicio !== dataInicioPadrao || dataFim !== dataFimPadrao;
+
   const filtroData = (
     <div className="flex items-center gap-2">
       <label htmlFor="filtro-data-inicio" className="text-xs text-muted-foreground">
         De
       </label>
-      <Input
+      <InputComIcone
+        icon={CalendarClock}
         id="filtro-data-inicio"
         type="date"
-        className="h-8 w-32 text-xs"
+        className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
         value={dataInicio}
         onChange={(e) => mudarDataInicio(e.target.value)}
       />
       <label htmlFor="filtro-data-fim" className="text-xs text-muted-foreground">
         Até
       </label>
-      <Input
+      <InputComIcone
+        icon={CalendarClock}
         id="filtro-data-fim"
         type="date"
-        className="h-8 w-32 text-xs"
+        className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
         value={dataFim}
         onChange={(e) => mudarDataFim(e.target.value)}
       />

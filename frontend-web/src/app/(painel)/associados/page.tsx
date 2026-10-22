@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Calendar, Clock, Mail, Pencil, Phone, Tag, Users } from "lucide-react";
+import { Activity, Calendar, Clock, Mail, Pencil, Phone, ShieldCheck, Tag, Users } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -83,10 +83,14 @@ export default function AssociadosPage() {
     setSituacaoFiltro(valor ?? "todas");
   };
 
+  const classeGatilho = (ativo: boolean) =>
+    `h-8 w-48 gap-1.5 text-xs ${ativo ? "border-primary text-primary" : "text-muted-foreground"}`;
+
   const seletorCategoria = (
     <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
-      <SelectTrigger id="filtro-categoria" className="h-8 w-40 text-xs">
-        <SelectValue placeholder="Categoria">
+      <SelectTrigger id="filtro-categoria" className={classeGatilho(categoriaFiltro !== "todas")}>
+        <Tag aria-hidden="true" className="size-3.5 shrink-0" />
+        <SelectValue placeholder="Categoria" className="truncate min-w-0">
           {(valor: string | null) =>
             valor === "todas"
               ? "Todas as categorias"
@@ -107,8 +111,9 @@ export default function AssociadosPage() {
 
   const seletorStatus = (
     <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
-      <SelectTrigger id="filtro-status" className="h-8 w-36 text-xs">
-        <SelectValue placeholder="Status">
+      <SelectTrigger id="filtro-status" className={classeGatilho(statusFiltro !== "todos")}>
+        <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0" />
+        <SelectValue placeholder="Status" className="truncate min-w-0">
           {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
         </SelectValue>
       </SelectTrigger>
@@ -123,8 +128,9 @@ export default function AssociadosPage() {
 
   const seletorSituacao = (
     <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
-      <SelectTrigger id="filtro-situacao" className="h-8 w-36 text-xs">
-        <SelectValue placeholder="Situação">
+      <SelectTrigger id="filtro-situacao" className={classeGatilho(situacaoFiltro !== "todas")}>
+        <Activity aria-hidden="true" className="size-3.5 shrink-0" />
+        <SelectValue placeholder="Situação" className="truncate min-w-0">
           {(valor: string | null) => ROTULOS_SITUACAO[valor ?? "todas"] ?? "Situação"}
         </SelectValue>
       </SelectTrigger>
