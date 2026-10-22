@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock3, MapPin, Pencil } from "lucide-react";
+import { Calendar, CalendarClock, Clock3, MapPin, Pencil, ShieldCheck } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -11,9 +11,30 @@ import { useEventos } from "@/features/eventos/use-eventos";
 import { formatarDataHora } from "@/lib/format";
 import { Pagination } from "@/components/pagination";
 import { SearchInput } from "@/components/search-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { InputComIcone } from "@/components/input-com-icone";
+
+// Período padrão do filtro de data: dá uma visão útil sem precisar abrir o seletor — eventos do
+// último mês (pra conferir os que acabaram de acontecer) até daqui a um ano (cobre o planejamento
+// com antecedência típico de bailes e fandangos).
+function periodoPadrao() {
+  const hoje = new Date();
+  const inicio = new Date(hoje);
+  inicio.setMonth(inicio.getMonth() - 1);
+  const fim = new Date(hoje);
+  fim.setFullYear(fim.getFullYear() + 1);
+  const paraIso = (d: Date) => d.toISOString().slice(0, 10);
+  return { inicio: paraIso(inicio), fim: paraIso(fim) };
+}
 
 const COLUNAS =
-  "md:grid-cols-[minmax(0,2.4fr)_minmax(0,1.4fr)_minmax(0,1.8fr)_2.5rem] md:items-center md:gap-4";
+  "md:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,2.2fr)_2.5rem] md:items-center md:gap-4";
 
 function SeloData({ iso }: { iso: string }) {
   const data = new Date(iso);
@@ -30,13 +51,90 @@ function SeloData({ iso }: { iso: string }) {
 export default function EventosPage() {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
-  const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined);
+  const [status, setStatus] = useState<string>("todos");
+  const [{ inicio: dataInicioPadrao, fim: dataFimPadrao }] = useState(periodoPadrao);
+  const [dataInicio, setDataInicio] = useState(dataInicioPadrao);
+  const [dataFim, setDataFim] = useState(dataFimPadrao);
+  const { data: resultado, isLoading, isError } = useEventos(pagina, busca || undefined, undefined, {
+    status: status === "todos" ? undefined : status,
+    dataInicio: dataInicio || undefined,
+    dataFim: dataFim || undefined,
+  });
   const eventos = resultado?.itens;
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
     setPagina(1);
   };
+
+  const mudarStatus = (valor: string | null) => {
+    setStatus(valor ?? "todos");
+    setPagina(1);
+  };
+
+  const mudarDataInicio = (valor: string) => {
+    setDataInicio(valor);
+    setPagina(1);
+  };
+
+  const mudarDataFim = (valor: string) => {
+    setDataFim(valor);
+    setPagina(1);
+  };
+
+  const ROTULOS_STATUS: Record<string, string> = {
+    todos: "Todos os status",
+    rascunho: "Rascunho",
+    publicado: "Publicado",
+  };
+
+  const criarSeletorStatus = (idPrefixo: string) => (
+    <Select value={status} onValueChange={mudarStatus}>
+      <SelectTrigger
+        id={`${idPrefixo}-status`}
+        className={`h-8 w-44 gap-1.5 text-xs ${status !== "todos" ? "border-primary text-primary" : "text-muted-foreground"}`}
+      >
+        <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0" />
+        <SelectValue placeholder="Status" className="min-w-0 truncate">
+          {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="todos">Todos os status</SelectItem>
+        <SelectItem value="rascunho">Rascunho</SelectItem>
+        <SelectItem value="publicado">Publicado</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
+  const dataAlterada = dataInicio !== dataInicioPadrao || dataFim !== dataFimPadrao;
+
+  const criarFiltroData = (idPrefixo: string) => (
+    <div className="flex items-center gap-2">
+      <label htmlFor={`${idPrefixo}-data-inicio`} className="text-xs text-muted-foreground">
+        De
+      </label>
+      <InputComIcone
+        icon={CalendarClock}
+        id={`${idPrefixo}-data-inicio`}
+        type="date"
+        className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
+        value={dataInicio}
+        onChange={(e) => mudarDataInicio(e.target.value)}
+      />
+      <label htmlFor={`${idPrefixo}-data-fim`} className="text-xs text-muted-foreground">
+        Até
+      </label>
+      <InputComIcone
+        icon={CalendarClock}
+        id={`${idPrefixo}-data-fim`}
+        type="date"
+        className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
+        value={dataFim}
+        onChange={(e) => mudarDataFim(e.target.value)}
+      />
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -45,9 +143,14 @@ export default function EventosPage() {
         <p className="text-sm text-muted-foreground">Bailes e fandangos.</p>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <SearchInput value={busca} onChange={mudarBusca} placeholder="Buscar por nome" />
         <Button render={<Link href="/eventos/novo" />}>Novo evento</Button>
+      </div>
+
+      <div className="flex flex-col gap-2 md:hidden">
+        {criarSeletorStatus("mobile")}
+        {criarFiltroData("mobile")}
       </div>
 
       {isLoading && (
@@ -72,13 +175,12 @@ export default function EventosPage() {
 
       {eventos && eventos.length > 0 && (
         <div className="space-y-3">
-          <div
-            className={`hidden h-12 rounded-xl border bg-card px-4 text-sm font-semibold text-foreground shadow-sm md:grid ${COLUNAS}`}
-          >
+          <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
             <span>Evento</span>
-            <span>Status</span>
-            <span>Data</span>
-            <span />
+            <div className="flex items-center gap-3">
+              {criarSeletorStatus("desktop")}
+              {criarFiltroData("desktop")}
+            </div>
           </div>
           <ul className="space-y-3">
             {eventos.map((evento) => (
@@ -108,7 +210,7 @@ export default function EventosPage() {
                     Status
                   </p>
                   <div className="mt-1 flex h-6 items-center">
-                    <StatusEventoBadge status={evento.status} />
+                    <StatusEventoBadge status={evento.status} data={evento.data} />
                   </div>
                 </div>
 

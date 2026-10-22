@@ -7,6 +7,7 @@ import {
   EllipsisVerticalIcon,
   HomeIcon,
   KeyRoundIcon,
+  Loader2Icon,
   LogOutIcon,
   MenuIcon,
   PanelLeftCloseIcon,
@@ -402,6 +403,7 @@ function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
             Cancelar
           </Button>
           <Button type="submit" disabled={alterarSenha.isPending}>
+            {alterarSenha.isPending && <Loader2Icon className="size-4 animate-spin" aria-hidden="true" />}
             {alterarSenha.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

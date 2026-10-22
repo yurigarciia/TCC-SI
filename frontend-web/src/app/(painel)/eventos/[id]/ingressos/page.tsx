@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QrCode, TicketPlus, Calendar } from "lucide-react";
+import { QrCode, TicketPlus, Calendar, Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -481,6 +481,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 type="submit"
                 disabled={emitir.isPending || paraNumeroOpcional(precoDigitado) === undefined}
               >
+                {emitir.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                 {emitir.isPending ? "Emitindo…" : "Emitir ingresso"}
               </Button>
             </div>

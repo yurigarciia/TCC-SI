@@ -6,6 +6,7 @@ import {
   Building2,
   Circle,
   DoorOpen,
+  Loader2,
   Minus,
   RectangleHorizontal,
   SquareDashed,
@@ -491,6 +492,9 @@ function SalaoDetalheConteudo({
                           />
                         }
                       >
+                        {removerMesa.isPending && (
+                          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                        )}
                         {removerMesa.isPending ? "Excluindo…" : "Excluir mesa"}
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -511,6 +515,9 @@ function SalaoDetalheConteudo({
                     </AlertDialog>
 
                     <Button type="submit" size="sm" className="w-full" disabled={atualizarMesa.isPending}>
+                      {atualizarMesa.isPending && (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      )}
                       {atualizarMesa.isPending ? "Salvando…" : "Salvar alterações"}
                     </Button>
                   </form>
@@ -556,6 +563,9 @@ function SalaoDetalheConteudo({
                           />
                         }
                       >
+                        {removerArea.isPending && (
+                          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                        )}
                         {removerArea.isPending ? "Excluindo…" : "Excluir área"}
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -573,6 +583,9 @@ function SalaoDetalheConteudo({
                     </AlertDialog>
 
                     <Button type="submit" size="sm" className="w-full" disabled={atualizarArea.isPending}>
+                      {atualizarArea.isPending && (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      )}
                       {atualizarArea.isPending ? "Salvando…" : "Salvar nome"}
                     </Button>
                   </form>
@@ -599,6 +612,9 @@ function SalaoDetalheConteudo({
                       disabled={removerElemento.isPending}
                       onClick={excluirElementoSelecionado}
                     >
+                      {removerElemento.isPending && (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      )}
                       {removerElemento.isPending ? "Excluindo…" : "Excluir"}
                     </Button>
                   </div>

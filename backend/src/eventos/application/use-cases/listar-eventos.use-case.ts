@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EventoRepositoryPort } from '../ports/evento-repository.port';
+import {
+  EventoRepositoryPort,
+  FiltrosListaEventos,
+} from '../ports/evento-repository.port';
 import { Evento, StatusEvento } from '../../domain/evento.entity';
 import {
   montarPaginaResultado,
@@ -16,12 +19,12 @@ export class ListarEventosUseCase {
   async execute(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaEventos,
   ): Promise<PaginaResultado<Evento>> {
     const { itens, total } = await this.eventos.listarPaginado(
       pagina,
       limite,
-      busca,
+      filtros,
     );
     return montarPaginaResultado(itens, total, pagina, limite);
   }

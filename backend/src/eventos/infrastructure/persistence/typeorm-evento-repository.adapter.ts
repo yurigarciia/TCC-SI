@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Between, ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import {
   AtualizacaoEvento,
   EventoRepositoryPort,
+  FiltrosListaEventos,
   NovoEvento,
 } from '../../application/ports/evento-repository.port';
 import { Evento, StatusEvento } from '../../domain/evento.entity';
@@ -40,10 +41,21 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
   async listarPaginado(
     pagina: number,
     limite: number,
-    busca?: string,
+    filtros?: FiltrosListaEventos,
   ): Promise<{ itens: Evento[]; total: number }> {
+    const where: Record<string, unknown> = {};
+    if (filtros?.busca) where.nome = ILike(`%${filtros.busca}%`);
+    if (filtros?.status) where.status = filtros.status;
+    if (filtros?.dataInicio && filtros?.dataFim) {
+      where.data = Between(new Date(filtros.dataInicio), new Date(filtros.dataFim));
+    } else if (filtros?.dataInicio) {
+      where.data = MoreThanOrEqual(new Date(filtros.dataInicio));
+    } else if (filtros?.dataFim) {
+      where.data = LessThanOrEqual(new Date(filtros.dataFim));
+    }
+
     const [encontrados, total] = await this.repo.findAndCount({
-      where: busca ? { nome: ILike(`%${busca}%`) } : undefined,
+      where: Object.keys(where).length > 0 ? where : undefined,
       order: { data: 'ASC' },
       skip: (pagina - 1) * limite,
       take: limite,

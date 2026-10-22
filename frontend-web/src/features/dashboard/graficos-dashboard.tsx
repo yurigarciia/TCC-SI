@@ -1,11 +1,36 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const VERDE = "#2e5e3e";
 const VINHO = "#7a2331";
+const PALETA_CATEGORIAS = ["#2e5e3e", "#7a2331", "#b7791f", "#4f7147", "#a85c68", "#5b5147"];
+
+const ESTILO_TOOLTIP = {
+  contentStyle: {
+    backgroundColor: "var(--popover)",
+    borderColor: "var(--border)",
+    borderRadius: "var(--radius)",
+    fontSize: 12,
+  },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
+  separator: ": ",
+};
+
+const ESTILO_LABEL = { fontSize: 12, fill: "#2b241d" };
 
 interface GraficosDashboardProps {
   associados: { status: string; criadoEm: string; categoriaSocioId: string | null }[] | undefined;
@@ -22,6 +47,7 @@ function ultimosSeisMeses(agora: number) {
     return {
       chave: `${data.getFullYear()}-${data.getMonth()}`,
       rotulo: data.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+      rotuloCompleto: data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
       novos: 0,
     };
   });
@@ -72,8 +98,13 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="nome" {...ESTILO_EIXO} />
                   <YAxis allowDecimals={false} width={28} {...ESTILO_EIXO} />
-                  <Tooltip />
-                  <Bar dataKey="total" name="Associados" fill={VERDE} radius={[6, 6, 0, 0]} />
+                  <Tooltip {...ESTILO_TOOLTIP} />
+                  <Bar dataKey="total" name="Associados" radius={[6, 6, 0, 0]}>
+                    <LabelList dataKey="total" position="top" style={ESTILO_LABEL} />
+                    {dadosCategoria.map((item, indice) => (
+                      <Cell key={item.nome} fill={PALETA_CATEGORIAS[indice % PALETA_CATEGORIAS.length]} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -95,8 +126,16 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="rotulo" {...ESTILO_EIXO} />
                   <YAxis allowDecimals={false} width={28} {...ESTILO_EIXO} />
-                  <Tooltip />
-                  <Bar dataKey="novos" name="Novos associados" fill={VERDE} radius={[6, 6, 0, 0]} />
+                  <Tooltip
+                    {...ESTILO_TOOLTIP}
+                    labelFormatter={(_rotulo, payload) =>
+                      (payload?.[0]?.payload as { rotuloCompleto?: string } | undefined)
+                        ?.rotuloCompleto ?? _rotulo
+                    }
+                  />
+                  <Bar dataKey="novos" name="Novos associados" fill={VERDE} radius={[6, 6, 0, 0]}>
+                    <LabelList dataKey="novos" position="top" style={ESTILO_LABEL} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -118,8 +157,9 @@ export function GraficosDashboard({ associados, categorias, inadimplentes, agora
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd0bc" />
                   <XAxis dataKey="nome" {...ESTILO_EIXO} />
                   <YAxis allowDecimals={false} width={28} {...ESTILO_EIXO} />
-                  <Tooltip />
+                  <Tooltip {...ESTILO_TOOLTIP} />
                   <Bar dataKey="total" name="Associados" radius={[6, 6, 0, 0]}>
+                    <LabelList dataKey="total" position="top" style={ESTILO_LABEL} />
                     {dadosAdimplencia.map((item) => (
                       <Cell key={item.nome} fill={item.cor} />
                     ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Tag, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Tag, Trash2 } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -231,6 +231,7 @@ export default function CategoriasSocioPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction disabled={excluir.isPending} onClick={confirmarExclusao}>
+              {excluir.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               {excluir.isPending ? "Excluindo…" : "Confirmar exclusão"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -355,6 +356,7 @@ function FormularioEditarCategoria({
             Cancelar
           </Button>
           <Button type="submit" disabled={atualizar.isPending}>
+            {atualizar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
             {atualizar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

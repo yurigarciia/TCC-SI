@@ -17,13 +17,25 @@ import type {
 const CHAVE_LISTA = ["associados"] as const;
 const chaveDetalhe = (id: string) => ["associados", id] as const;
 
-export function useAssociados(pagina: number, busca?: string, limite: number = LIMITE_PADRAO) {
+export interface FiltrosAssociados {
+  categoriaSocioId?: string;
+  status?: string;
+}
+
+export function useAssociados(
+  pagina: number,
+  busca?: string,
+  limite: number = LIMITE_PADRAO,
+  filtros?: FiltrosAssociados,
+) {
   return useQuery({
-    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? ""],
-    queryFn: () =>
-      apiFetch<PaginaResultado<Associado>>(
-        `/associados?${construirQueryPaginacao(pagina, limite, busca)}`,
-      ),
+    queryKey: [...CHAVE_LISTA, pagina, limite, busca ?? "", filtros ?? {}],
+    queryFn: () => {
+      const query = new URLSearchParams(construirQueryPaginacao(pagina, limite, busca));
+      if (filtros?.categoriaSocioId) query.set("categoriaSocioId", filtros.categoriaSocioId);
+      if (filtros?.status) query.set("status", filtros.status);
+      return apiFetch<PaginaResultado<Associado>>(`/associados?${query.toString()}`);
+    },
   });
 }
 
