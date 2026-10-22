@@ -88,10 +88,10 @@ export default function EventosPage() {
     publicado: "Publicado",
   };
 
-  const seletorStatus = (
+  const criarSeletorStatus = (idPrefixo: string) => (
     <Select value={status} onValueChange={mudarStatus}>
       <SelectTrigger
-        id="filtro-status"
+        id={`${idPrefixo}-status`}
         className={`h-8 w-44 gap-1.5 text-xs ${status !== "todos" ? "border-primary text-primary" : "text-muted-foreground"}`}
       >
         <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0" />
@@ -109,25 +109,25 @@ export default function EventosPage() {
 
   const dataAlterada = dataInicio !== dataInicioPadrao || dataFim !== dataFimPadrao;
 
-  const filtroData = (
+  const criarFiltroData = (idPrefixo: string) => (
     <div className="flex items-center gap-2">
-      <label htmlFor="filtro-data-inicio" className="text-xs text-muted-foreground">
+      <label htmlFor={`${idPrefixo}-data-inicio`} className="text-xs text-muted-foreground">
         De
       </label>
       <InputComIcone
         icon={CalendarClock}
-        id="filtro-data-inicio"
+        id={`${idPrefixo}-data-inicio`}
         type="date"
         className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
         value={dataInicio}
         onChange={(e) => mudarDataInicio(e.target.value)}
       />
-      <label htmlFor="filtro-data-fim" className="text-xs text-muted-foreground">
+      <label htmlFor={`${idPrefixo}-data-fim`} className="text-xs text-muted-foreground">
         Até
       </label>
       <InputComIcone
         icon={CalendarClock}
-        id="filtro-data-fim"
+        id={`${idPrefixo}-data-fim`}
         type="date"
         className={`h-8 w-40 text-xs ${dataAlterada ? "border-primary text-primary" : ""}`}
         value={dataFim}
@@ -149,8 +149,8 @@ export default function EventosPage() {
       </div>
 
       <div className="flex flex-col gap-2 md:hidden">
-        {seletorStatus}
-        {filtroData}
+        {criarSeletorStatus("mobile")}
+        {criarFiltroData("mobile")}
       </div>
 
       {isLoading && (
@@ -178,8 +178,8 @@ export default function EventosPage() {
           <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
             <span>Evento</span>
             <div className="flex items-center gap-3">
-              {seletorStatus}
-              {filtroData}
+              {criarSeletorStatus("desktop")}
+              {criarFiltroData("desktop")}
             </div>
           </div>
           <ul className="space-y-3">

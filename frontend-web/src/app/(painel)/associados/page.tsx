@@ -86,9 +86,9 @@ export default function AssociadosPage() {
   const classeGatilho = (ativo: boolean) =>
     `h-8 w-48 gap-1.5 text-xs ${ativo ? "border-primary text-primary" : "text-muted-foreground"}`;
 
-  const seletorCategoria = (
+  const criarSeletorCategoria = (idPrefixo: string) => (
     <Select value={categoriaFiltro} onValueChange={mudarCategoriaFiltro}>
-      <SelectTrigger id="filtro-categoria" className={classeGatilho(categoriaFiltro !== "todas")}>
+      <SelectTrigger id={`${idPrefixo}-categoria`} className={classeGatilho(categoriaFiltro !== "todas")}>
         <Tag aria-hidden="true" className="size-3.5 shrink-0" />
         <SelectValue placeholder="Categoria" className="truncate min-w-0">
           {(valor: string | null) =>
@@ -109,9 +109,9 @@ export default function AssociadosPage() {
     </Select>
   );
 
-  const seletorStatus = (
+  const criarSeletorStatus = (idPrefixo: string) => (
     <Select value={statusFiltro} onValueChange={mudarStatusFiltro}>
-      <SelectTrigger id="filtro-status" className={classeGatilho(statusFiltro !== "todos")}>
+      <SelectTrigger id={`${idPrefixo}-status`} className={classeGatilho(statusFiltro !== "todos")}>
         <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0" />
         <SelectValue placeholder="Status" className="truncate min-w-0">
           {(valor: string | null) => ROTULOS_STATUS[valor ?? "todos"] ?? "Status"}
@@ -126,9 +126,9 @@ export default function AssociadosPage() {
     </Select>
   );
 
-  const seletorSituacao = (
+  const criarSeletorSituacao = (idPrefixo: string) => (
     <Select value={situacaoFiltro} onValueChange={mudarSituacaoFiltro}>
-      <SelectTrigger id="filtro-situacao" className={classeGatilho(situacaoFiltro !== "todas")}>
+      <SelectTrigger id={`${idPrefixo}-situacao`} className={classeGatilho(situacaoFiltro !== "todas")}>
         <Activity aria-hidden="true" className="size-3.5 shrink-0" />
         <SelectValue placeholder="Situação" className="truncate min-w-0">
           {(valor: string | null) => ROTULOS_SITUACAO[valor ?? "todas"] ?? "Situação"}
@@ -155,9 +155,9 @@ export default function AssociadosPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 md:hidden">
-        {seletorCategoria}
-        {seletorStatus}
-        <div className="col-span-2">{seletorSituacao}</div>
+        {criarSeletorCategoria("mobile")}
+        {criarSeletorStatus("mobile")}
+        <div className="col-span-2">{criarSeletorSituacao("mobile")}</div>
       </div>
 
       {isLoading && (
@@ -185,9 +185,9 @@ export default function AssociadosPage() {
           <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
             <span>Associado</span>
             <div className="flex items-center gap-2">
-              {seletorCategoria}
-              {seletorStatus}
-              {seletorSituacao}
+              {criarSeletorCategoria("desktop")}
+              {criarSeletorStatus("desktop")}
+              {criarSeletorSituacao("desktop")}
             </div>
           </div>
           <ul className="space-y-3">

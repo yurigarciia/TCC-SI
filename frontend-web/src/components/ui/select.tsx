@@ -63,7 +63,10 @@ function SelectContent({
   sideOffset = 4,
   align = "center",
   alignOffset = 0,
-  alignItemWithTrigger = true,
+  // false por padrão (diferente do default da lib): alinhar o item selecionado exatamente sobre o
+  // trigger faz o menu abrir sobreposto ao próprio campo — pior ainda com ícone/texto truncado no
+  // trigger (ver conversa com o usuário) — em vez de abrir como um dropdown comum logo abaixo dele.
+  alignItemWithTrigger = false,
   ...props
 }: SelectPrimitive.Popup.Props &
   Pick<
