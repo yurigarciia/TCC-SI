@@ -1,19 +1,25 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
-import { Dimensions } from "react-native";
 import { cores } from "@/theme/paper-theme";
 import { useRegistrarPushToken } from "@/features/notificacoes/use-notificacoes";
 
 const MARGEM_HORIZONTAL = 16;
-const LARGURA_TELA = Dimensions.get("window").width;
 
 // Navbar inferior flutuante — prioridade pedida sobre navegação em drawer/hambúrguer. Verde da
 // sidebar + âmbar no item ativo (mesma paleta do painel web, ver cores.sidebar/sidebarAtivo em
 // theme/paper-theme.ts) — achado numa conversa com o usuário: era branca/monocromática, sem
-// nenhuma identidade visual compartilhada com o resto do sistema. `width` explícita (em vez de só
-// `left`/`right`) porque o React Navigation recalcula a largura da tab bar internamente e ignora
-// left/right quando `position: "absolute"` — sem isso a barra ficava colada nas bordas da tela
-// mesmo com left/right configurados.
+// nenhuma identidade visual compartilhada com o resto do sistema.
+//
+// `marginHorizontal` em vez de `left`/`right` — achado em duas rodadas de conversa: a barra
+// continuava colada nas bordas (ou com margem assimétrica) com qualquer combinação de left/right
+// ou width calculada via Dimensions. Causa real (lendo o fonte vendorizado em
+// expo-router/build/react-navigation/bottom-tabs/views/BottomTabBar.js): o estilo base da barra
+// usa `start: 0, end: 0` (propriedades lógicas, cientes de RTL), não `left`/`right` — como são
+// chaves de estilo diferentes, definir `left`/`right` no tabBarStyle nunca sobrescrevia `start`/
+// `end` (RN mescla objetos de estilo por nome de chave, não por efeito visual; as duas acabam
+// coexistindo e o resultado de qual "vence" varia). `marginHorizontal` não tem esse conflito — é
+// aplicado por cima da caixa já posicionada em start:0/end:0, então encolhe os dois lados por
+// igual não importa o que a base use por baixo.
 export default function AppLayout() {
   // T-MOB-005 — pede permissão de notificação e registra o push token uma vez, assim que o
   // associado entra na área autenticada (best-effort, nunca bloqueia a navegação).
@@ -29,9 +35,8 @@ export default function AppLayout() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
         tabBarStyle: {
           position: "absolute",
-          left: MARGEM_HORIZONTAL,
+          marginHorizontal: MARGEM_HORIZONTAL,
           bottom: 16,
-          width: LARGURA_TELA - MARGEM_HORIZONTAL * 2,
           height: 64,
           borderRadius: 24,
           backgroundColor: cores.sidebar,

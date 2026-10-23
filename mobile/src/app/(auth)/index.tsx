@@ -6,7 +6,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "re
 import { Button, Surface, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
-import { AuthHeader } from "@/components/auth-header";
+import { LogoMark } from "@/components/logo-mark";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useLogin } from "@/features/auth/use-login";
 import { ApiError } from "@/lib/api-client";
@@ -39,18 +39,19 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.flex}>
-      <StatusBar style="light" />
-      <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <StatusBar style="dark" />
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scroll}>
-            <AuthHeader
-              titulo="Querência ERP"
-              subtitulo="Acesse sua conta de associado"
-              logo
-            />
+            {/* Achado numa conversa com o usuário: a tela de entrada não precisa do cabeçalho em
+                gradiente com título/subtítulo (esse é o papel do cadastro/vincular-conta, que
+                têm um contexto a explicar) — aqui, só a marca, centralizada. */}
+            <View style={styles.logoContainer}>
+              <LogoMark size={72} />
+            </View>
 
             <Surface style={styles.card} elevation={2}>
               <Controller
@@ -136,11 +137,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: cores.sidebar },
-  scroll: { flexGrow: 1, backgroundColor: "#FAF7F1" },
+  safeArea: { flex: 1, backgroundColor: cores.fundo },
+  scroll: { flexGrow: 1, backgroundColor: cores.fundo },
+  logoContainer: { alignItems: "center", paddingTop: 48, paddingBottom: 24 },
   card: {
     marginHorizontal: 20,
-    marginTop: -20,
     padding: 20,
     borderRadius: 20,
     backgroundColor: "#FFFFFF",
