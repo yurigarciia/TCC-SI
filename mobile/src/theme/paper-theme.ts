@@ -19,6 +19,11 @@ export const cores = {
   // marca" (barra de evento, telas de autenticação), separado do verde de ação acima do mesmo
   // jeito que o painel separa sidebar de botão.
   sidebarEscuro: "#1F4029", // globals.css --sidebar-border
+  sidebarTexto: "#FAF7F1", // globals.css --sidebar-foreground — ícone/rótulo inativo na navbar
+  sidebarAtivo: "#E9C98F", // globals.css --sidebar-primary — ícone/rótulo do item selecionado na
+  // navbar (achado numa conversa com o usuário: navbar branca/monocromática não tinha identidade
+  // visual nenhuma com o resto do sistema; agora replica o mesmo verde+âmbar da sidebar do painel
+  // web, ver (app)/_layout.tsx)
   ambar: "#B7791F", // Prata-âmbar, usado em acentos de aviso
   ambarClaro: "#F3E3C8",
   ambarEscuro: "#4A3410",

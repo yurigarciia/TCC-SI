@@ -1,20 +1,15 @@
 import { Stack } from "expo-router";
-import { cores } from "@/theme/paper-theme";
 
-// Sub-navegação da aba Eventos (lista → detalhe) — usa o header nativo do Stack aqui (diferente
-// das telas de auth), já que é só título + botão de voltar padrão, sem precisar do banner em
-// gradiente. A navbar inferior flutuante de (app)/_layout.tsx continua visível nas duas telas.
+// Sub-navegação da aba Eventos (lista → detalhe). Header nativo do Stack desligado — as duas
+// telas usam o mesmo <AppTopBar> das demais abas (achado numa conversa com o usuário: cada tela
+// tinha um estilo de cabeçalho diferente); a tela de detalhe passa `onVoltar` pro AppTopBar em
+// vez de depender do botão de voltar padrão do Stack. A navbar inferior flutuante de
+// (app)/_layout.tsx continua visível nas duas telas.
 export default function EventosLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: cores.sidebar },
-        headerTintColor: "#FDF8F3",
-        headerTitleStyle: { fontWeight: "700" },
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: "Eventos" }} />
-      <Stack.Screen name="[id]" options={{ title: "" }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="[id]" />
     </Stack>
   );
 }

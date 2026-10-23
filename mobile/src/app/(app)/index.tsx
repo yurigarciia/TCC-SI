@@ -1,19 +1,27 @@
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar, Button, Card, Surface, Text } from "react-native-paper";
+import { router } from "expo-router";
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Avatar, Button, Surface, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppTopBar } from "@/components/app-top-bar";
-import { StatusAssociadoBadge } from "@/components/status-associado-badge";
 import { useAuth } from "@/features/auth/auth-context";
 import { useCurrentAssociado } from "@/features/associado/use-current-associado";
+import { useEventosPublicados } from "@/features/eventos/use-eventos";
+import { formatarData } from "@/lib/format";
 import { paperTheme } from "@/theme/paper-theme";
 
-// Tela inicial — status do associado (RF03). Situação de mensalidade/histórico fica pra
-// T-MOB-002, que ainda não tem endpoint de backend voltado ao associado (mensalidades hoje é
-// 100% @Roles(ADMINISTRADOR) — ver mensalidades.controller.ts); reservas/ingressos e eventos
-// ficam pra T-MOB-003/T-MOB-004.
+// Tela inicial — achado numa conversa com o usuário: a versão anterior (avatar + CPF + "Meus
+// dados") competia pela atenção com o que a pessoa realmente abre o app todo dia pra ver.
+// Identidade/dados cadastrais e "Sair" se mudaram pra aba Perfil (ver (app)/perfil.tsx); aqui fica
+// só a saudação e, pelo menos, os próximos eventos — o resto (avisos de status, outras seções)
+// continua podendo crescer abaixo sem disputar espaço com o cabeçalho.
 export default function InicioScreen() {
   const { sair } = useAuth();
   const { data: associado, isLoading, isError, refetch, isRefetching } = useCurrentAssociado();
+  const { data: eventos } = useEventosPublicados();
+
+  const proximosEventos = [...(eventos ?? [])]
+    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+    .slice(0, 3);
 
   if (isLoading) {
     return (
@@ -43,12 +51,7 @@ export default function InicioScreen() {
     );
   }
 
-  const iniciais = associado.nome
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((parte) => parte[0]?.toUpperCase())
-    .join("");
+  const primeiroNome = associado.nome.split(" ")[0];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -58,86 +61,81 @@ export default function InicioScreen() {
         contentContainerStyle={styles.container}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
       >
-        <Surface style={styles.heroCard} elevation={1}>
-          <Avatar.Text
-            size={56}
-            label={iniciais || "?"}
-            style={{ backgroundColor: paperTheme.colors.primaryContainer }}
-            labelStyle={{ color: paperTheme.colors.primary, fontWeight: "700" }}
-          />
-          <View style={styles.heroInfo}>
-            <Text variant="titleLarge" style={styles.nome}>
-              {associado.nome}
-            </Text>
-            <Text variant="bodyMedium" style={styles.cpf}>
-              CPF {associado.cpf}
-            </Text>
-            <View style={{ marginTop: 6 }}>
-              <StatusAssociadoBadge status={associado.status} />
-            </View>
-          </View>
-        </Surface>
+        <Text variant="headlineSmall" style={styles.saudacao}>
+          Seja bem-vindo(a), {primeiroNome}
+        </Text>
 
         {associado.status === "pendente_validacao" && (
-          <Card style={[styles.card, styles.cardAviso]} mode="contained">
-            <Card.Title
-              title="Aguardando validação"
-              left={(props) => <Avatar.Icon {...props} icon="clock-outline" style={styles.avatarAviso} />}
-              titleStyle={styles.cardAvisoTitulo}
-            />
-            <Card.Content>
-              <Text variant="bodyMedium">
-                Seu cadastro está pendente de validação pela diretoria. Assim que for aprovado,
-                você poderá usar todos os recursos do app.
+          <Surface style={[styles.card, styles.cardAviso]} elevation={1}>
+            <View style={styles.cardTitulo}>
+              <Avatar.Icon icon="clock-outline" size={36} style={styles.avatarAviso} />
+              <Text variant="titleMedium" style={styles.cardAvisoTitulo}>
+                Aguardando validação
               </Text>
-            </Card.Content>
-          </Card>
+            </View>
+            <Text variant="bodyMedium">
+              Seu cadastro está pendente de validação pela diretoria. Assim que for aprovado,
+              você poderá usar todos os recursos do app.
+            </Text>
+          </Surface>
         )}
 
         {associado.status === "rejeitado" && (
-          <Card style={[styles.card, styles.cardErro]} mode="contained">
-            <Card.Title
-              title="Cadastro não aprovado"
-              left={(props) => <Avatar.Icon {...props} icon="close-circle-outline" style={styles.avatarErroCard} />}
-              titleStyle={styles.cardErroTitulo}
-            />
-            <Card.Content>
-              <Text variant="bodyMedium">
-                Entre em contato com a diretoria para mais informações sobre seu cadastro.
+          <Surface style={[styles.card, styles.cardErro]} elevation={1}>
+            <View style={styles.cardTitulo}>
+              <Avatar.Icon icon="close-circle-outline" size={36} style={styles.avatarErroCard} />
+              <Text variant="titleMedium" style={styles.cardErroTitulo}>
+                Cadastro não aprovado
               </Text>
-            </Card.Content>
-          </Card>
+            </View>
+            <Text variant="bodyMedium">
+              Entre em contato com a diretoria para mais informações sobre seu cadastro.
+            </Text>
+          </Surface>
         )}
 
-        <Card style={styles.card} mode="contained">
-          <Card.Title title="Meus dados" left={(props) => <Avatar.Icon {...props} icon="account-details-outline" />} />
-          <Card.Content style={styles.cardContent}>
-            <InfoLinha icone="phone-outline" label="Contato" valor={associado.contato} />
-            {associado.vinculoInstitucional && (
-              <InfoLinha
-                icone="domain"
-                label="Vínculo institucional"
-                valor={associado.vinculoInstitucional}
-              />
-            )}
-          </Card.Content>
-        </Card>
+        <View style={styles.secaoEventos}>
+          <View style={styles.secaoEventosHeader}>
+            <Text variant="titleMedium" style={styles.secaoEventosTitulo}>
+              Próximos eventos
+            </Text>
+            <Button mode="text" compact onPress={() => router.push("/eventos")}>
+              Ver todos
+            </Button>
+          </View>
+
+          {proximosEventos.length === 0 ? (
+            <Surface style={[styles.cardEvento, styles.cardEventoVazio]} elevation={1}>
+              <Text variant="bodyMedium" style={styles.textoMuted}>
+                Nenhum evento publicado no momento. Volte aqui quando a diretoria publicar o
+                próximo baile ou fandango.
+              </Text>
+            </Surface>
+          ) : (
+            proximosEventos.map((evento) => (
+              <Pressable
+                key={evento.id}
+                onPress={() =>
+                  router.push({ pathname: "/eventos/[id]", params: { id: evento.id } })
+                }
+              >
+                <Surface style={styles.cardEvento} elevation={1}>
+                  <Avatar.Icon icon="calendar-star" size={40} style={styles.avatarEvento} />
+                  <View style={{ flex: 1 }}>
+                    <Text variant="bodyMedium" style={styles.eventoNome} numberOfLines={1}>
+                      {evento.nome}
+                    </Text>
+                    <Text variant="bodySmall" style={styles.textoMuted}>
+                      {formatarData(evento.data)} · {evento.local}
+                    </Text>
+                  </View>
+                </Surface>
+              </Pressable>
+            ))
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function InfoLinha({ icone, label, valor }: { icone: string; label: string; valor: string }) {
-  return (
-    <View style={styles.infoLinha}>
-      <Avatar.Icon icon={icone} size={36} style={styles.infoIcone} />
-      <View style={{ flex: 1 }}>
-        <Text variant="labelMedium" style={styles.infoLabel}>
-          {label}
-        </Text>
-        <Text variant="bodyMedium">{valor}</Text>
-      </View>
-    </View>
   );
 }
 
@@ -154,26 +152,32 @@ const styles = StyleSheet.create({
   erroTitulo: { textAlign: "center" },
   erroTexto: { color: "#5B5147", textAlign: "center", marginTop: 4 },
   container: { padding: 20, gap: 16, paddingBottom: 110 },
-  heroCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    padding: 20,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-  },
-  heroInfo: { flex: 1 },
-  nome: { fontWeight: "700", color: "#2B241D" },
-  cpf: { color: "#5B5147" },
-  card: { borderRadius: 20, backgroundColor: "#FFFFFF" },
+  saudacao: { color: "#2B241D", fontWeight: "700" },
+  card: { borderRadius: 20, backgroundColor: "#FFFFFF", padding: 20, gap: 10 },
+  cardTitulo: { flexDirection: "row", alignItems: "center", gap: 10 },
   cardAviso: { backgroundColor: "#FBF3E6" },
   cardAvisoTitulo: { color: "#B7791F", fontWeight: "700" },
   avatarAviso: { backgroundColor: "#F3E3C8" },
   cardErro: { backgroundColor: "#FBEAE9" },
   cardErroTitulo: { color: "#B3261E", fontWeight: "700" },
   avatarErroCard: { backgroundColor: "#F5D3D1" },
-  cardContent: { gap: 12, paddingTop: 4 },
-  infoLinha: { flexDirection: "row", alignItems: "center", gap: 12 },
-  infoIcone: { backgroundColor: "#F1EAE0" },
-  infoLabel: { color: "#5B5147" },
+  textoMuted: { color: "#5B5147" },
+  secaoEventos: { gap: 10 },
+  secaoEventosHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  secaoEventosTitulo: { color: "#2B241D", fontWeight: "700" },
+  cardEvento: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+  },
+  cardEventoVazio: { backgroundColor: "#F1EAE0" },
+  avatarEvento: { backgroundColor: "#DCEADF" },
+  eventoNome: { color: "#2B241D", fontWeight: "600" },
 });

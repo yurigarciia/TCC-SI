@@ -8,6 +8,7 @@ export interface PrecosAcompanhante {
 
 export interface IngressoDoAssociado {
   id: string;
+  nomeComprador: string;
   status: StatusIngresso;
   preco: number;
   usadoEm: string | null;

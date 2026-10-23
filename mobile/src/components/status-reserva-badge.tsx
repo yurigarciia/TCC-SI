@@ -28,8 +28,8 @@ export function StatusReservaBadge({ status }: { status: StatusReserva }) {
   return (
     <Chip
       icon={icone}
-      textStyle={{ color: cor, fontWeight: "600" }}
-      style={{ backgroundColor: fundo, alignSelf: "flex-start", borderRadius: 8 }}
+      textStyle={{ color: cor, fontWeight: "600", fontSize: 12, lineHeight: 14 }}
+      style={{ backgroundColor: fundo, alignSelf: "flex-start", borderRadius: 8, height: 28 }}
       compact
     >
       {texto}

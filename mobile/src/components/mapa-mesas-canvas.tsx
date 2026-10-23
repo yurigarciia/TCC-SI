@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { coresSemanticas } from "@/theme/paper-theme";
+import { cores, coresSemanticas } from "@/theme/paper-theme";
 import type { MesaNoMapa, StatusMesaNoMapa } from "@/features/eventos/types";
 
 const LARGURA = 640;
@@ -25,13 +25,23 @@ export const LEGENDA_MAPA: { status: StatusMesaNoMapa; rotulo: string }[] = [
 interface MapaMesasCanvasProps {
   mesas: MesaNoMapa[];
   onMesaPress: (mesa: MesaNoMapa) => void;
+  // false = só pra consulta (ex.: croqui na tela de detalhe do evento, ver (app)/eventos/[id]/
+  // index.tsx) — nenhuma mesa responde a toque, nem as livres. true (padrão) = seleção real, usada
+  // na tela dedicada de reserva (reservar-mesa.tsx).
+  interativo?: boolean;
+  mesaSelecionadaId?: string | null;
 }
 
 // Mesmo plano cartesiano do croqui do painel web (posicaoX/posicaoY em pixels reais, não
 // proporcionais) — tamanho sempre fixo com rolagem horizontal no wrapper em vez de encolher o
 // canvas, senão mesas com posicaoX maior ficariam cortadas fora da borda em telas estreitas
 // (mesmo motivo documentado no MesaCanvas do frontend-web).
-export function MapaMesasCanvas({ mesas, onMesaPress }: MapaMesasCanvasProps) {
+export function MapaMesasCanvas({
+  mesas,
+  onMesaPress,
+  interativo = true,
+  mesaSelecionadaId = null,
+}: MapaMesasCanvasProps) {
   return (
     <ScrollView horizontal style={styles.scroll} showsHorizontalScrollIndicator>
       <View style={styles.plano}>
@@ -40,17 +50,19 @@ export function MapaMesasCanvas({ mesas, onMesaPress }: MapaMesasCanvasProps) {
         )}
         {mesas.map((mesa) => {
           const estilo = ESTILO_POR_STATUS[mesa.status];
+          const selecionada = mesa.mesaId === mesaSelecionadaId;
           return (
             <Pressable
               key={mesa.mesaId}
-              disabled={mesa.status === "bloqueada"}
+              disabled={!interativo || mesa.status === "bloqueada"}
               onPress={() => onMesaPress(mesa)}
               style={[
                 styles.mesa,
                 {
                   left: mesa.posicaoX,
                   top: mesa.posicaoY,
-                  borderColor: estilo.borda,
+                  borderColor: selecionada ? cores.primaria : estilo.borda,
+                  borderWidth: selecionada ? 3 : 2,
                   backgroundColor: estilo.fundo,
                 },
               ]}
