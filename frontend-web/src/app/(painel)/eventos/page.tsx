@@ -153,6 +153,18 @@ export default function EventosPage() {
         {criarFiltroData("mobile")}
       </div>
 
+      {/* Fora dos ramos de loading/erro/vazio de propósito — achado numa conversa com o usuário:
+          os filtros viviam dentro do bloco "achou resultados", então sumiam durante o
+          carregamento e quando a busca não encontrava nada, exatamente quando a pessoa mais
+          precisa ajustá-los pra tentar de novo. */}
+      <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
+        <span>Evento</span>
+        <div className="flex items-center gap-3">
+          {criarSeletorStatus("desktop")}
+          {criarFiltroData("desktop")}
+        </div>
+      </div>
+
       {isLoading && (
         <div className="space-y-3">
           <Skeleton className="h-20 w-full" />
@@ -175,13 +187,6 @@ export default function EventosPage() {
 
       {eventos && eventos.length > 0 && (
         <div className="space-y-3">
-          <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
-            <span>Evento</span>
-            <div className="flex items-center gap-3">
-              {criarSeletorStatus("desktop")}
-              {criarFiltroData("desktop")}
-            </div>
-          </div>
           <ul className="space-y-3">
             {eventos.map((evento) => (
               <li

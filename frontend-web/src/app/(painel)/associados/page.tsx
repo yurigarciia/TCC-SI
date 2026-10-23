@@ -160,6 +160,19 @@ export default function AssociadosPage() {
         <div className="col-span-2">{criarSeletorSituacao("mobile")}</div>
       </div>
 
+      {/* Fora dos ramos de loading/erro/vazio de propósito — achado numa conversa com o usuário:
+          os filtros viviam dentro do bloco "achou resultados", então sumiam durante o
+          carregamento e quando a busca não encontrava nada, exatamente quando a pessoa mais
+          precisa ajustá-los pra tentar de novo. */}
+      <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
+        <span>Associado</span>
+        <div className="flex items-center gap-2">
+          {criarSeletorCategoria("desktop")}
+          {criarSeletorStatus("desktop")}
+          {criarSeletorSituacao("desktop")}
+        </div>
+      </div>
+
       {isLoading && (
         <div className="space-y-3">
           <Skeleton className="h-20 w-full" />
@@ -182,14 +195,6 @@ export default function AssociadosPage() {
 
       {associados && associados.length > 0 && (
         <div className="space-y-3">
-          <div className="hidden items-center justify-between rounded-xl border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm md:flex">
-            <span>Associado</span>
-            <div className="flex items-center gap-2">
-              {criarSeletorCategoria("desktop")}
-              {criarSeletorStatus("desktop")}
-              {criarSeletorSituacao("desktop")}
-            </div>
-          </div>
           <ul className="space-y-3">
             {associados.map((associado) => {
               const emDia = situacoes?.[associado.id] !== "inadimplente";
