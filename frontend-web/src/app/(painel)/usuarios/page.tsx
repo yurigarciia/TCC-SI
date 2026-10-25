@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Mail, Pencil, ShieldUser, Trash2 } from "lucide-react";
+import { Loader2, Mail, Pencil, Save, ShieldUser, Trash2 } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -295,7 +295,11 @@ function FormularioEditarUsuario({
             Cancelar
           </Button>
           <Button type="submit" disabled={atualizar.isPending}>
-            {atualizar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+            {atualizar.isPending ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Save aria-hidden="true" />
+            )}
             {atualizar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

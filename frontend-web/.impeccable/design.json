@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T17:38:20Z",
+  "title": "Design System: Querência ERP — Painel Administrativo",
+  "extensions": {
+    "colorMeta": {
+      "verde-bandeira": { "role": "primary", "displayName": "Verde-bandeira", "canonical": "#2e5e3e", "tonalRamp": ["#0f2016", "#16331f", "#1f4729", "#275a33", "#2e5e3e", "#4a8560", "#7bab8c", "#c6ddce"] },
+      "pergaminho": { "role": "neutral", "displayName": "Pergaminho", "canonical": "#faf7f1", "tonalRamp": ["#2b2a26", "#52504a", "#7c7970", "#a6a297", "#d2cdc0", "#e9e4d8", "#f4f0e8", "#faf7f1"] },
+      "grafite-couro": { "role": "neutral", "displayName": "Grafite-couro", "canonical": "#2b241d", "tonalRamp": ["#0e0b09", "#1c1711", "#2b241d", "#463b30", "#625347", "#84755f", "#a99a84", "#d4c9b9"] },
+      "branco-campo": { "role": "neutral", "displayName": "Branco-campo", "canonical": "#ffffff", "tonalRamp": ["#1a1a1a", "#3d3d3d", "#666666", "#939393", "#c2c2c2", "#e0e0e0", "#f2f2f2", "#ffffff"] },
+      "areia": { "role": "neutral", "displayName": "Areia", "canonical": "#f1eae0", "tonalRamp": ["#2a251d", "#4c4336", "#726656", "#998b76", "#c0af97", "#dccfbb", "#ecE4d7", "#f1eae0"] },
+      "couro-claro": { "role": "neutral", "displayName": "Couro claro", "canonical": "#e4d3b8", "tonalRamp": ["#352a16", "#5c4a28", "#876c3c", "#b08e55", "#cdb37f", "#ddc7a2", "#e4d3b8", "#efe2cc"] },
+      "couro-linha": { "role": "neutral", "displayName": "Couro-linha", "canonical": "#ddd0bc", "tonalRamp": ["#352c1d", "#5c4c33", "#876f4b", "#b09469", "#cdb595", "#ddd0bc", "#e9ddd0", "#f3ece2"] },
+      "vermelho-alerta": { "role": "semantic-destructive", "displayName": "Vermelho-alerta", "canonical": "#b3261e", "tonalRamp": ["#280807", "#4a0f0d", "#761814", "#941f1a", "#b3261e", "#c85850", "#dd8d88", "#f0c4c1"] },
+      "prata-ambar": { "role": "semantic-warning", "displayName": "Prata-âmbar", "canonical": "#b7791f", "tonalRamp": ["#2b1c07", "#4f330d", "#7a4f14", "#98621a", "#b7791f", "#cc9a4d", "#e0bc87", "#f1ddc3"] },
+      "prata-pilcha": { "role": "neutral-decorative", "displayName": "Prata-pilcha", "canonical": "#c9cdd3", "tonalRamp": ["#2b2d30", "#4d5056", "#737680", "#9a9ea8", "#c0c3cb", "#c9cdd3", "#dadce1", "#eceef0"] },
+      "vinho-lenco-foco": { "role": "focus-ring", "displayName": "Vinho-lenço (anel de foco)", "canonical": "#a85c68", "tonalRamp": ["#2b1115", "#4e1f27", "#782f3b", "#953a49", "#a85c68", "#c08691", "#d6b0b7", "#ecdadd"] },
+      "sidebar-verde-escuro": { "role": "surface-dark", "displayName": "Verde-sidebar", "canonical": "#295538", "tonalRamp": ["#0a160e", "#122518", "#1c3a26", "#234832", "#295538", "#3d7a51", "#6aa37c", "#aed0b9"] },
+      "sidebar-ceu-login": { "role": "surface-dark-accent", "displayName": "Céu-do-login", "canonical": "#e9c98f", "tonalRamp": ["#3a2c0f", "#664e1c", "#99752b", "#c29a3f", "#e9c98f", "#eed6a7", "#f3e3c3", "#f8f0de"] },
+      "sidebar-colina-hover": { "role": "surface-dark-hover", "displayName": "Colina-hover", "canonical": "#4f7147", "tonalRamp": ["#14200f", "#243a1c", "#375929", "#416a32", "#4f7147", "#719468", "#9cb591", "#cbdac5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Fraunces)", "purpose": "Título de tela de entrada (login, nome institucional) — nunca em UI densa." },
+      "body": { "displayName": "Body (Inter)", "purpose": "Corpo de tabela, formulário e texto geral da UI." },
+      "label": { "displayName": "Label (Inter)", "purpose": "Rótulo de badge e legenda de campo." }
+    },
+    "shadows": [
+      { "name": "card", "value": "shadow-md + ring-1 ring-foreground/10", "purpose": "Todo card, painel e modal — elevação tátil, não flat." },
+      { "name": "input", "value": "shadow-xs", "purpose": "Campos de formulário — proporcional ao tamanho do elemento." },
+      { "name": "table-container", "value": "shadow-sm + border + rounded-lg", "purpose": "Container em volta de toda tabela, pra não se confundir com o background." }
+    ],
+    "motion": [
+      { "name": "dialog-transition", "value": "duration-100, fade-in/zoom-in-95 on open, fade-out/zoom-out-95 on close", "purpose": "Entrada/saída de dialogs e popups." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal da tela — uma única por tela/seção.",
+      "html": "<button class=\"ds-btn-primary\">Salvar</button>",
+      "css": ".ds-btn-primary { background: #2e5e3e; color: #fdf8f3; padding: 0 10px; height: 32px; border-radius: 8px; font-size: 14px; font-weight: 500; border: none; transition: opacity 0.15s; } .ds-btn-primary:hover { opacity: 0.8; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(168, 92, 104, 0.5); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Ação secundária — fundo transparente, borda neutra.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline { background: #faf7f1; color: #2b241d; border: 1px solid #ddd0bc; padding: 0 10px; height: 32px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: background 0.15s; } .ds-btn-outline:hover { background: #f1eae0; }"
+    },
+    {
+      "name": "Status Badge (success)",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "Badge semântico 'em dia' — sempre com texto, cor é reforço.",
+      "html": "<span class=\"ds-badge-success\">Em dia</span>",
+      "css": ".ds-badge-success { display: inline-flex; align-items: center; height: 20px; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; background: rgba(46, 94, 62, 0.1); color: #2e5e3e; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Container padrão — fundo branco-campo sobre o pergaminho da página.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Título</div><div class=\"ds-card-body\">Conteúdo</div></div>",
+      "css": ".ds-card { background: #ffffff; border-radius: 11.2px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); box-shadow: 0 0 0 1px rgba(43,36,29,0.1), 0 4px 6px -1px rgba(0,0,0,0.08); padding: 16px; color: #2b241d; font-size: 14px; } .ds-card-title { font-family: Fraunces, Georgia, serif; font-size: 16px; font-weight: 500; margin-bottom: 8px; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de texto padrão — borda couro-linha, fundo branco-campo.",
+      "html": "<input class=\"ds-input\" placeholder=\"Digite...\" />",
+      "css": ".ds-input { height: 32px; width: 100%; border-radius: 8px; border: 1px solid #ddd0bc; background: #ffffff; padding: 4px 10px; font-size: 16px; color: #2b241d; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: border-color 0.15s; } .ds-input::placeholder { color: #5b5147; } .ds-input:focus-visible { outline: none; border-color: #a85c68; box-shadow: 0 0 0 3px rgba(168,92,104,0.5); }"
+    },
+    {
+      "name": "Sidebar Nav Item (active)",
+      "kind": "nav",
+      "refersTo": "sidebar-item-active",
+      "description": "Item de navegação selecionado na sidebar escura.",
+      "html": "<div class=\"ds-nav-item-active\"><span>Associados</span></div>",
+      "css": ".ds-nav-item-active { background: #e9c98f; color: #2b241d; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Lenço Dobrado na Gaveta",
+    "overview": "A identidade tradicionalista gaúcha está presente, mas guardada — não ostentada. O painel é, antes de tudo, um lugar de trabalho sério para uma diretoria que majoritariamente tem menor familiaridade digital: a base é clara, neutra e silenciosa (pergaminho sobre branco-campo), e a cor só aparece quando tem um trabalho semântico específico a fazer. O verde-bandeira é hoje a cor de ação do sistema; o vinho tradicional recuou para um único uso decorativo quase sussurrado. A sidebar escura é a única quebra dessa base clara — de propósito, não por engano.",
+    "keyCharacteristics": [
+      "Base quase inteiramente clara e neutra; cor é sempre acento, nunca bloco de fundo.",
+      "Verde-bandeira é a única cor de ação — nunca compete com outra cor no mesmo elemento.",
+      "Elevação tátil (cards com sombra perceptível + anel sutil), não um visual flat frio.",
+      "Uma única superfície escura (a sidebar), nunca um dark mode do app inteiro.",
+      "Status nunca é só cor — sempre badge com texto."
+    ],
+    "rules": [
+      { "name": "The One Action Rule", "body": "Cada tela ou seção tem exatamente uma ação primária em verde-bandeira; toda ação concorrente usa outline ou secondary.", "section": "colors" },
+      { "name": "The Whisper Wine Rule", "body": "O vinho tradicional nunca volta como bloco de cor nem como botão — só sussurrado na roseta decorativa e no anel de foco.", "section": "colors" },
+      { "name": "The Status-Is-Never-Only-Color Rule", "body": "Todo badge semântico leva texto — a cor reforça, nunca é o único canal de leitura.", "section": "colors" },
+      { "name": "The 14px Floor Rule", "body": "Nenhum texto lido pelo usuário final fica abaixo de 14px.", "section": "typography" },
+      { "name": "The Matching Skeleton Rule", "body": "O estado de carregamento de uma página sempre usa a mesma largura de container do conteúdo real.", "section": "layout" },
+      { "name": "The Never-Loose Table Rule", "body": "Uma tabela nunca fica solta contra o fundo da página — o container sempre leva bg-card + shadow-sm + border + rounded-lg.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar verde-bandeira como única cor de ação por tela.",
+      "Do comunicar todo status com badge semântico + texto, nunca só cor.",
+      "Do manter a mesma largura de container entre o Skeleton de loading e o conteúdo real.",
+      "Do envolver toda tabela em bg-card + shadow-sm + border + rounded-lg.",
+      "Do exigir confirmação explícita para toda ação destrutiva ou de alto impacto."
+    ],
+    "donts": [
+      "Don't reintroduzir o vinho tradicional como cor de ação.",
+      "Don't usar cor hexadecimal solta fora dos tokens deste documento.",
+      "Don't usar bg-transparent em campo de formulário.",
+      "Don't aplicar dark mode ao app inteiro.",
+      "Don't deixar texto de usuário final abaixo de 14px."
+    ]
+  }
+}

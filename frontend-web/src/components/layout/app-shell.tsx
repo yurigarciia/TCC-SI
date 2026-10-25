@@ -12,6 +12,7 @@ import {
   MenuIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
+  SaveIcon,
   ShieldUserIcon,
   TagIcon,
   UsersIcon,
@@ -403,7 +404,11 @@ function FormularioTrocarSenha({ onFechar }: { onFechar: () => void }) {
             Cancelar
           </Button>
           <Button type="submit" disabled={alterarSenha.isPending}>
-            {alterarSenha.isPending && <Loader2Icon className="size-4 animate-spin" aria-hidden="true" />}
+            {alterarSenha.isPending ? (
+              <Loader2Icon className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <SaveIcon aria-hidden="true" />
+            )}
             {alterarSenha.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

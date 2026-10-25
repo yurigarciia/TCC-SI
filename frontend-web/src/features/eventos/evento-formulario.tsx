@@ -8,6 +8,7 @@ import {
   Loader2,
   MapPin,
   PartyPopper,
+  Save,
   Table2,
   Ticket,
   Users,
@@ -629,7 +630,11 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+          {isSubmitting ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <Save aria-hidden="true" />
+          )}
           {isSubmitting ? "Salvando…" : "Salvar"}
         </Button>
       </div>

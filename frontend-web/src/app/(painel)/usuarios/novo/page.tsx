@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, ShieldUser } from "lucide-react";
+import { Loader2, Save, ShieldUser } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -130,7 +130,11 @@ export default function NovoAdministradorPage() {
                 Cancelar
               </Button>
               <Button type="submit" disabled={criar.isPending}>
-                {criar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+                {criar.isPending ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Save aria-hidden="true" />
+                )}
                 {criar.isPending ? "Salvando…" : "Salvar"}
               </Button>
             </div>

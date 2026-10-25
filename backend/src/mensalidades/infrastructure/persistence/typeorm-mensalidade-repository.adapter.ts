@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { In, LessThanOrEqual, Repository } from 'typeorm';
 import {
   AtualizacaoMensalidade,
   MensalidadeRepositoryPort,
@@ -28,6 +28,18 @@ export class TypeOrmMensalidadeRepositoryAdapter extends MensalidadeRepositoryPo
     return this.paraDominio(criada);
   }
 
+  async salvarVarias(dados: NovaMensalidade[]): Promise<Mensalidade[]> {
+    if (dados.length === 0) {
+      return [];
+    }
+    const criadas = await this.repo.save(
+      dados.map((item) =>
+        this.repo.create({ ...item, valor: String(item.valor) }),
+      ),
+    );
+    return criadas.map((criada) => this.paraDominio(criada));
+  }
+
   async buscarPorId(id: string): Promise<Mensalidade | null> {
     const encontrada = await this.repo.findOneBy({ id });
     return encontrada ? this.paraDominio(encontrada) : null;
@@ -39,6 +51,20 @@ export class TypeOrmMensalidadeRepositoryAdapter extends MensalidadeRepositoryPo
   ): Promise<boolean> {
     const encontrada = await this.repo.findOneBy({ associadoId, competencia });
     return !!encontrada;
+  }
+
+  async listarAssociadosComCobrancaNaCompetencia(
+    associadoIds: string[],
+    competencia: string,
+  ): Promise<Set<string>> {
+    if (associadoIds.length === 0) {
+      return new Set();
+    }
+    const encontradas = await this.repo.find({
+      where: { associadoId: In(associadoIds), competencia },
+      select: { associadoId: true },
+    });
+    return new Set(encontradas.map((mensalidade) => mensalidade.associadoId));
   }
 
   async listarPorAssociado(associadoId: string): Promise<Mensalidade[]> {

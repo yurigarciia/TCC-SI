@@ -1,3 +1,4 @@
+import { Save } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -168,7 +169,10 @@ export default function DesignSystemPage() {
               <Label htmlFor="cpf">CPF</Label>
               <Input id="cpf" placeholder="000.000.000-00" />
             </div>
-            <Button className="w-full">Salvar</Button>
+            <Button className="w-full">
+              <Save aria-hidden="true" />
+              Salvar
+            </Button>
           </CardContent>
         </Card>
       </section>

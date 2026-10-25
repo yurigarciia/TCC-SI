@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Loader2, Mail, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
+import { Building2, Loader2, Mail, MapPin, Pencil, Phone, Save, Tag, Trash2, User, Users } from "lucide-react";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -474,7 +474,11 @@ function FormularioEditarDependente({
             Cancelar
           </Button>
           <Button type="submit" disabled={atualizar.isPending}>
-            {atualizar.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+            {atualizar.isPending ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Save aria-hidden="true" />
+            )}
             {atualizar.isPending ? "Salvando…" : "Salvar"}
           </Button>
         </div>

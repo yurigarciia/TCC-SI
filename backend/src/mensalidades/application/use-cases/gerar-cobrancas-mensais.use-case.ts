@@ -25,23 +25,70 @@ export class GerarCobrancasMensaisUseCase {
   // pulando quem já tem cobrança para a competência (idempotente — pode ser chamado mais de uma
   // vez com segurança). Segue cadastro-associado.json / mensalidade.json: valor vem da categoria.
   // Categoria isenta (ex.: benemérito, honorário) nunca gera cobrança — nem de valor zero.
+  //
+  // Otimizado pra um número fixo de queries, não uma por associado (achado numa conversa com o
+  // usuário: com a base de associados crescendo, a versão anterior — que chamava
+  // gerarParaAssociado em loop, cada chamada fazendo buscarPorId + existeParaCompetencia +
+  // buscarPorId da categoria + um INSERT, todos sequenciais — passou a estourar o timeout dos
+  // testes e2e contra o banco remoto). Agora: 1 query pra listar associados, 1 pra descobrir quem
+  // já tem cobrança da competência, 1 pra buscar as categorias envolvidas (as duas em paralelo) e
+  // 1 só INSERT em lote no final.
   async execute(referencia: Date = new Date()): Promise<Mensalidade[]> {
     const todosAssociados = await this.associados.listarTodos();
-    const associadosAtivos = todosAssociados.filter(
+    const candidatos = todosAssociados.filter(
       (associado) =>
         associado.status === StatusAssociado.ATIVO &&
         associado.categoriaSocioId,
     );
-
-    const geradas: Mensalidade[] = [];
-    for (const associado of associadosAtivos) {
-      const gerada = await this.gerarParaAssociado(associado.id, referencia);
-      if (gerada) {
-        geradas.push(gerada);
-      }
+    if (candidatos.length === 0) {
+      return [];
     }
 
-    return geradas;
+    const competencia = `${referencia.getFullYear()}-${String(referencia.getMonth() + 1).padStart(2, '0')}`;
+    const categoriaIds = [
+      ...new Set(candidatos.map((associado) => associado.categoriaSocioId as string)),
+    ];
+
+    const [jaCobrados, categorias] = await Promise.all([
+      this.mensalidades.listarAssociadosComCobrancaNaCompetencia(
+        candidatos.map((associado) => associado.id),
+        competencia,
+      ),
+      this.categorias.listarPorIds(categoriaIds),
+    ]);
+    const categoriaPorId = new Map(
+      categorias.map((categoria) => [categoria.id, categoria]),
+    );
+
+    const vencimento = new Date(
+      referencia.getFullYear(),
+      referencia.getMonth(),
+      DIA_VENCIMENTO,
+    )
+      .toISOString()
+      .slice(0, 10);
+
+    const novasCobrancas = candidatos
+      .filter((associado) => !jaCobrados.has(associado.id))
+      .flatMap((associado) => {
+        const categoria = categoriaPorId.get(
+          associado.categoriaSocioId as string,
+        );
+        if (!categoria || categoria.isenta) {
+          return [];
+        }
+        return [
+          {
+            associadoId: associado.id,
+            competencia,
+            valor: categoria.valorMensalidade,
+            vencimento,
+            status: StatusMensalidade.PENDENTE,
+          },
+        ];
+      });
+
+    return this.mensalidades.salvarVarias(novasCobrancas);
   }
 
   // Mesma regra de `execute`, mas para um único associado — usado na aprovação de cadastro

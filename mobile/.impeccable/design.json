@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T17:38:20Z",
+  "title": "Design System: Querência ERP — App do Associado",
+  "extensions": {
+    "colorMeta": {
+      "verde-bandeira": { "role": "primary", "displayName": "Verde-bandeira", "canonical": "#2E5E3E", "tonalRamp": ["#0f2016", "#16331f", "#1f4729", "#275a33", "#2e5e3e", "#4a8560", "#7bab8c", "#c6ddce"] },
+      "verde-claro": { "role": "primary-container", "displayName": "Verde-claro", "canonical": "#DCEADF", "tonalRamp": ["#1b3b26", "#275a33", "#397a49", "#5a9a6c", "#8cbd9a", "#bcd9c5", "#dceadf", "#eff6f2"] },
+      "sidebar-verde": { "role": "surface-brand", "displayName": "Verde-sidebar", "canonical": "#295538", "tonalRamp": ["#0a160e", "#122518", "#1c3a26", "#234832", "#295538", "#3d7a51", "#6aa37c", "#aed0b9"] },
+      "sidebar-ativo": { "role": "surface-brand-active", "displayName": "Dourado-ativo", "canonical": "#E9C98F", "tonalRamp": ["#3a2c0f", "#664e1c", "#99752b", "#c29a3f", "#e9c98f", "#eed6a7", "#f3e3c3", "#f8f0de"] },
+      "ambar": { "role": "tertiary", "displayName": "Âmbar", "canonical": "#B7791F", "tonalRamp": ["#2b1c07", "#4f330d", "#7a4f14", "#98621a", "#b7791f", "#cc9a4d", "#e0bc87", "#f1ddc3"] },
+      "pergaminho": { "role": "neutral", "displayName": "Pergaminho", "canonical": "#FAF7F1", "tonalRamp": ["#2b2a26", "#52504a", "#7c7970", "#a6a297", "#d2cdc0", "#e9e4d8", "#f4f0e8", "#faf7f1"] },
+      "grafite-couro": { "role": "neutral", "displayName": "Grafite-couro", "canonical": "#2B241D", "tonalRamp": ["#0e0b09", "#1c1711", "#2b241d", "#463b30", "#625347", "#84755f", "#a99a84", "#d4c9b9"] },
+      "branco-campo": { "role": "surface", "displayName": "Branco-campo", "canonical": "#FFFFFF", "tonalRamp": ["#1a1a1a", "#3d3d3d", "#666666", "#939393", "#c2c2c2", "#e0e0e0", "#f2f2f2", "#ffffff"] },
+      "areia": { "role": "surface-variant", "displayName": "Areia", "canonical": "#F1EAE0", "tonalRamp": ["#2a251d", "#4c4336", "#726656", "#998b76", "#c0af97", "#dccfbb", "#ece4d7", "#f1eae0"] },
+      "couro-linha": { "role": "outline", "displayName": "Couro-linha", "canonical": "#DDD0BC", "tonalRamp": ["#352c1d", "#5c4c33", "#876f4b", "#b09469", "#cdb595", "#ddd0bc", "#e9ddd0", "#f3ece2"] },
+      "vermelho-alerta": { "role": "error", "displayName": "Vermelho-alerta", "canonical": "#B3261E", "tonalRamp": ["#280807", "#4a0f0d", "#761814", "#941f1a", "#b3261e", "#c85850", "#dd8d88", "#f0c4c1"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (sistema)", "purpose": "Nome do produto na tela de login." },
+      "title": { "displayName": "Title (sistema)", "purpose": "Título de hero: nome do associado, título de evento em destaque." },
+      "body": { "displayName": "Body (sistema)", "purpose": "Corpo de card, descrição, texto de formulário." },
+      "label": { "displayName": "Label (sistema)", "purpose": "Rótulo de badge, legenda de campo." }
+    },
+    "shadows": [
+      { "name": "elevation-level1", "value": "#FFFDFA", "purpose": "Tonal elevation nível 1 — primeira camada acima do fundo pergaminho." },
+      { "name": "elevation-level3", "value": "#FDF6EC", "purpose": "Tonal elevation nível 3 — card hero, diálogo." }
+    ],
+    "motion": [],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal da tela — uma única por tela/seção, mesma regra do painel web.",
+      "html": "<button class=\"ds-btn-primary\">Criar conta</button>",
+      "css": ".ds-btn-primary { background: #2E5E3E; color: #FDF8F3; padding: 6px 16px; border-radius: 12px; font-size: 16px; font-weight: 500; border: none; }"
+    },
+    {
+      "name": "Hero Card",
+      "kind": "card",
+      "refersTo": "card-hero",
+      "description": "Card de topo com identidade/resumo (ex.: cabeçalho de perfil).",
+      "html": "<div class=\"ds-card-hero\"><div class=\"ds-title\">Nome do Associado</div></div>",
+      "css": ".ds-card-hero { background: #FFFFFF; border-radius: 20px; padding: 20px; color: #2B241D; } .ds-title { font-size: 22px; font-weight: 700; }"
+    },
+    {
+      "name": "Status Badge (sucesso)",
+      "kind": "chip",
+      "refersTo": "badge-sucesso",
+      "description": "Badge 'Em dia'/'Ativo' — sempre com texto, cor é reforço.",
+      "html": "<span class=\"ds-badge-sucesso\">Em dia</span>",
+      "css": ".ds-badge-sucesso { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 500; background: rgba(46,94,62,0.12); color: #2E5E3E; }"
+    },
+    {
+      "name": "Tab Bar Item (active)",
+      "kind": "nav",
+      "refersTo": "tabbar-item-active",
+      "description": "Item ativo da navegação inferior flutuante.",
+      "html": "<div class=\"ds-tab-active\">Início</div>",
+      "css": ".ds-tab-active { color: #E9C98F; font-size: 12px; font-weight: 500; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Carteirinha de Sócio",
+    "overview": "O app é um documento pessoal, simples, sempre à mão — não uma ferramenta de gestão. O associado o abre pra uma tarefa pontual e sai; ele nunca precisa aprender o app antes de usá-lo. A barra de complexidade é deliberadamente mais baixa que a do painel administrativo. A paleta é a mesma do painel web — verde-bandeira como única cor de ação — garantindo que os dois lados do produto sejam reconhecivelmente a mesma marca. Hoje a implementação usa Material 3 uniforme via react-native-paper, sem divergência real por sistema operacional ainda.",
+    "keyCharacteristics": [
+      "Hierarquia mais larga e menos densa que o painel web — uma tarefa por tela.",
+      "Mesma paleta de ação do painel, mesma ausência funcional do vinho tradicional.",
+      "Elevação tonal e quente, nunca sombra dura.",
+      "Cantos generosos (12–20px) — mais arredondados que o painel web.",
+      "Hoje Material-uniforme nas duas plataformas; divergência real por OS ainda não implementada."
+    ],
+    "rules": [
+      { "name": "The Same Family, Different Pace Rule", "body": "A paleta é idêntica à do painel web — a diferença é de densidade e generosidade de espaço, nunca de cor.", "section": "colors" },
+      { "name": "The No Wine Rule", "body": "O vinho tradicional não tem papel funcional neste app, nem como acento residual.", "section": "colors" },
+      { "name": "The System Face Rule", "body": "Nenhuma tela carrega fonte customizada — sempre a fonte padrão do sistema operacional.", "section": "typography" },
+      { "name": "The One Card, One Job Rule", "body": "Cada card representa um único bloco de informação ou ação.", "section": "layout" },
+      { "name": "The Warm Tint Rule", "body": "Elevação nunca usa cinza neutro — cada nível tonal é tingido na família de pergaminho/âmbar.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar verde-bandeira como única cor de ação, igual ao painel web.",
+      "Do manter a tipografia no padrão do sistema.",
+      "Do usar elevação tonal quente em vez de sombra dura manual.",
+      "Do manter uma tarefa por card.",
+      "Do aplicar marginHorizontal simétrico na tab bar flutuante."
+    ],
+    "donts": [
+      "Don't introduzir o vinho tradicional como cor funcional.",
+      "Don't aumentar a densidade de informação por tela.",
+      "Don't assumir divergência visual por iOS/Android que ainda não existe no código.",
+      "Don't usar grid de múltiplas colunas, mesmo em tablet."
+    ]
+  }
+}

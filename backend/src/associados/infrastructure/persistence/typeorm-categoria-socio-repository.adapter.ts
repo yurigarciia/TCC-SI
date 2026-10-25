@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import {
   AtualizacaoCategoriaSocio,
   CategoriaSocioRepositoryPort,
@@ -35,6 +35,14 @@ export class TypeOrmCategoriaSocioRepositoryAdapter extends CategoriaSocioReposi
   async buscarPorId(id: string): Promise<CategoriaSocio | null> {
     const encontrado = await this.repo.findOneBy({ id });
     return encontrado ? this.paraDominio(encontrado) : null;
+  }
+
+  async listarPorIds(ids: string[]): Promise<CategoriaSocio[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const encontradas = await this.repo.find({ where: { id: In(ids) } });
+    return encontradas.map((categoria) => this.paraDominio(categoria));
   }
 
   async listarPaginado(

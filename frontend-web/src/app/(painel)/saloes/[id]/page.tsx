@@ -9,6 +9,7 @@ import {
   Loader2,
   Minus,
   RectangleHorizontal,
+  Save,
   SquareDashed,
   X,
 } from "lucide-react";
@@ -515,8 +516,10 @@ function SalaoDetalheConteudo({
                     </AlertDialog>
 
                     <Button type="submit" size="sm" className="w-full" disabled={atualizarMesa.isPending}>
-                      {atualizarMesa.isPending && (
+                      {atualizarMesa.isPending ? (
                         <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Save aria-hidden="true" />
                       )}
                       {atualizarMesa.isPending ? "Salvando…" : "Salvar alterações"}
                     </Button>
@@ -583,8 +586,10 @@ function SalaoDetalheConteudo({
                     </AlertDialog>
 
                     <Button type="submit" size="sm" className="w-full" disabled={atualizarArea.isPending}>
-                      {atualizarArea.isPending && (
+                      {atualizarArea.isPending ? (
                         <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Save aria-hidden="true" />
                       )}
                       {atualizarArea.isPending ? "Salvando…" : "Salvar nome"}
                     </Button>

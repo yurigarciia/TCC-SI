@@ -16,6 +16,9 @@ export interface AtualizacaoCategoriaSocio {
 export abstract class CategoriaSocioRepositoryPort {
   abstract salvar(dados: NovaCategoriaSocio): Promise<CategoriaSocio>;
   abstract buscarPorId(id: string): Promise<CategoriaSocio | null>;
+  // Versão em lote de buscarPorId — uma query pra buscar várias categorias de uma vez. Usado por
+  // GerarCobrancasMensaisUseCase.execute() pra não fazer uma query de categoria por associado.
+  abstract listarPorIds(ids: string[]): Promise<CategoriaSocio[]>;
   abstract listarPaginado(
     pagina: number,
     limite: number,
