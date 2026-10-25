@@ -16,6 +16,19 @@ export interface Ingresso {
   usadoEm: string | null;
 }
 
+// Detalhe de um ingresso (tela de conferência do check-in por QR) — inclui o nome do evento e a
+// categoria de sócio (quando aplicável), que a listagem paginada não traz.
+export interface IngressoDetalhado {
+  id: string;
+  nomeComprador: string;
+  perfilComprador: PerfilComprador;
+  preco: number;
+  status: StatusIngresso;
+  usadoEm: string | null;
+  evento: { id: string; nome: string } | null;
+  categoriaSocioNome: string | null;
+}
+
 // Números pra acompanhar o evento no dia — agregado no backend, cobre o evento inteiro, não só
 // a página atual da listagem.
 export interface ResumoIngressosEvento {

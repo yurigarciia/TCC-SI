@@ -9,6 +9,11 @@ interface QrCodeScannerProps {
   onScan: (codigo: string) => void;
   /** Evita reagir de novo ao mesmo código enquanto ele continua no quadro da câmera. */
   cooldownMs?: number;
+  /** Controlado pelo pai quando informado (ex.: desligar a câmera sozinha após uma leitura, pra
+   * abrir a tela de conferência do ingresso) — sem isso, o componente controla seu próprio
+   * estado de ligado/desligado via o botão abaixo. */
+  ativo?: boolean;
+  onAtivoChange?: (ativo: boolean) => void;
 }
 
 // Leitor de QR via câmera (emissao-ingresso.json: "QR code no app para quem tem, busca manual por
@@ -16,12 +21,22 @@ interface QrCodeScannerProps {
 // diretoria clica em "Ativar câmera" — nunca pede permissão sozinho ao abrir a tela. O campo de
 // texto (colar/digitar o código) continua funcionando em paralelo, como fallback sempre disponível
 // se o dispositivo não tiver câmera ou a permissão for negada.
-export function QrCodeScanner({ onScan, cooldownMs = 2000 }: QrCodeScannerProps) {
+export function QrCodeScanner({
+  onScan,
+  cooldownMs = 2000,
+  ativo: ativoControlado,
+  onAtivoChange,
+}: QrCodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const scannerRef = useRef<QrScanner | null>(null);
   const ultimoCodigoRef = useRef<{ codigo: string; em: number } | null>(null);
 
-  const [ativo, setAtivo] = useState(false);
+  const [ativoInterno, setAtivoInterno] = useState(false);
+  const ativo = ativoControlado ?? ativoInterno;
+  const setAtivo = (valor: boolean) => {
+    setAtivoInterno(valor);
+    onAtivoChange?.(valor);
+  };
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,7 +77,7 @@ export function QrCodeScanner({ onScan, cooldownMs = 2000 }: QrCodeScannerProps)
 
   return (
     <div className="space-y-2">
-      <Button type="button" variant="outline" size="sm" onClick={() => setAtivo((a) => !a)}>
+      <Button type="button" variant="outline" size="sm" onClick={() => setAtivo(!ativo)}>
         {ativo ? (
           <>
             <CameraOffIcon /> Desligar câmera

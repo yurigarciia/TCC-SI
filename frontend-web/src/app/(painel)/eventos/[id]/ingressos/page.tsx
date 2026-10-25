@@ -7,6 +7,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AvatarIniciais } from "@/components/avatar-iniciais";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CartaoMedidor } from "@/components/cartao-medidor";
 import { CartaoResumo } from "@/components/cartao-resumo";
@@ -44,6 +45,7 @@ import { QrCodeScanner } from "@/features/ingressos/qr-code-scanner";
 import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos/status-badge";
 import {
   useEmitirIngresso,
+  useIngresso,
   useIngressosEvento,
   useRegistrarCheckin,
   useResumoIngressosEvento,
@@ -129,6 +131,11 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const [filtroNome, setFiltroNome] = useState("");
   const [pagina, setPagina] = useState(1);
   const [codigoCheckin, setCodigoCheckin] = useState("");
+  // Achado numa conversa com o usuário: ler o QR confirmava a entrada na hora, sem nenhuma tela
+  // de conferência antes. Agora a leitura só carrega o detalhe (useIngresso, abaixo) — o
+  // check-in de verdade só acontece quando a diretoria confirma na tela de conferência.
+  const [codigoConferencia, setCodigoConferencia] = useState<string | null>(null);
+  const [cameraAtiva, setCameraAtiva] = useState(false);
   // Achado numa conversa com o usuário: os cards de "Vender ingresso" e "Check-in" ficavam sempre
   // abertos, competindo com a listagem (o foco de verdade da tela — é o que a diretoria mais
   // consulta) por espaço. Viraram botões de ação que abrem um modal cada, deixando a listagem
@@ -144,6 +151,11 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const ingressos = resultado?.itens;
   const emitir = useEmitirIngresso(eventoId);
   const checkin = useRegistrarCheckin(eventoId);
+  const {
+    data: ingressoConferencia,
+    isLoading: carregandoConferencia,
+    isError: erroConferencia,
+  } = useIngresso(codigoConferencia);
   const { data: resumo, isLoading: carregandoResumo } = useResumoIngressosEvento(eventoId);
 
   // Dropdown de seleção — busca uma página grande o bastante pra cobrir todas as categorias
@@ -197,6 +209,8 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     );
   });
 
+  // Fluxo direto, a partir da linha do ingresso na listagem: aqui não tem QR nenhum pra ler, já
+  // se sabe exatamente qual ingresso é — mantido como confirmação imediata de propósito.
   const fazerCheckin = (ingressoId: string) => {
     checkin.mutate(ingressoId, {
       onSuccess: () => toast.success("Entrada validada."),
@@ -204,21 +218,32 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     });
   };
 
-  const processarCheckinPorCodigo = (codigo: string) => {
-    checkin.mutate(codigo, {
+  // Ler o QR (ou digitar o código) só abre a conferência — não confirma nada ainda.
+  const abrirConferencia = (codigo: string) => {
+    setCodigoConferencia(codigo);
+    setCameraAtiva(false);
+  };
+
+  const fecharConferencia = () => {
+    setCodigoConferencia(null);
+    setCodigoCheckin("");
+  };
+
+  const confirmarCheckinConferencia = () => {
+    if (!codigoConferencia) return;
+    checkin.mutate(codigoConferencia, {
       onSuccess: () => {
         toast.success("Entrada validada.");
-        setCodigoCheckin("");
+        fecharConferencia();
       },
-      onError: (erro) =>
-        toast.error(erro.message || "Código não encontrado, ou o ingresso já foi utilizado."),
+      onError: (erro) => toast.error(erro.message || "Não foi possível registrar o check-in."),
     });
   };
 
   const onSubmitCheckinPorCodigo = (evento: FormEvent) => {
     evento.preventDefault();
     if (!codigoCheckin.trim()) return;
-    processarCheckinPorCodigo(codigoCheckin.trim());
+    abrirConferencia(codigoCheckin.trim());
   };
 
   return (
@@ -489,25 +514,129 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
         </DialogContent>
       </Dialog>
 
-      <Dialog open={modalCheckin} onOpenChange={setModalCheckin}>
+      <Dialog
+        open={modalCheckin}
+        onOpenChange={(aberto) => {
+          setModalCheckin(aberto);
+          if (!aberto) {
+            fecharConferencia();
+            setCameraAtiva(false);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Check-in por código (QR)</DialogTitle>
-            <DialogDescription>Aponte a câmera pro QR do ingresso, ou digite o código na mão.</DialogDescription>
+            <DialogDescription>
+              {codigoConferencia
+                ? "Confira os dados antes de validar a entrada."
+                : "Aponte a câmera pro QR do ingresso, ou digite o código na mão."}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <QrCodeScanner onScan={processarCheckinPorCodigo} />
-            <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
-              <Input
-                placeholder="Ou cole/digite o código do ingresso"
-                value={codigoCheckin}
-                onChange={(e) => setCodigoCheckin(e.target.value)}
-              />
-              <Button type="submit" disabled={!codigoCheckin.trim() || checkin.isPending}>
-                Validar entrada
-              </Button>
-            </form>
-          </div>
+
+          {!codigoConferencia && (
+            <div className="space-y-4">
+              <QrCodeScanner ativo={cameraAtiva} onAtivoChange={setCameraAtiva} onScan={abrirConferencia} />
+              <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
+                <Input
+                  placeholder="Ou cole/digite o código do ingresso"
+                  value={codigoCheckin}
+                  onChange={(e) => setCodigoCheckin(e.target.value)}
+                />
+                <Button type="submit" disabled={!codigoCheckin.trim()}>
+                  Buscar
+                </Button>
+              </form>
+            </div>
+          )}
+
+          {codigoConferencia && (
+            <div className="space-y-4">
+              {carregandoConferencia && <Skeleton className="h-32 w-full" />}
+
+              {erroConferencia && (
+                <div className="space-y-3">
+                  <p className="text-sm text-destructive">Código não encontrado.</p>
+                  <Button variant="outline" onClick={fecharConferencia}>
+                    Tentar outro código
+                  </Button>
+                </div>
+              )}
+
+              {ingressoConferencia && (
+                <>
+                  <div className="flex items-center gap-3">
+                    <AvatarIniciais
+                      nome={ingressoConferencia.nomeComprador}
+                      tamanho="size-14 text-base"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">
+                        {ingressoConferencia.nomeComprador}
+                      </p>
+                      <p className="truncate text-sm text-muted-foreground">
+                        {ingressoConferencia.evento?.nome ?? "Evento não encontrado"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {ingressoConferencia.status === "usado" && (
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                      Este ingresso já foi utilizado
+                      {ingressoConferencia.usadoEm
+                        ? ` em ${formatarDataHora(ingressoConferencia.usadoEm)}`
+                        : ""}
+                      .
+                    </div>
+                  )}
+
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border p-3 text-sm">
+                    <div>
+                      <dt className="text-xs text-muted-foreground">Perfil</dt>
+                      <dd className="font-medium">
+                        {rotuloPerfilComprador(ingressoConferencia.perfilComprador)}
+                      </dd>
+                    </div>
+                    {ingressoConferencia.categoriaSocioNome && (
+                      <div>
+                        <dt className="text-xs text-muted-foreground">Categoria</dt>
+                        <dd className="font-medium">{ingressoConferencia.categoriaSocioNome}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt className="text-xs text-muted-foreground">Valor pago</dt>
+                      <dd className="font-medium">{formatarMoeda(ingressoConferencia.preco)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-muted-foreground">Status</dt>
+                      <dd>
+                        <StatusIngressoBadge status={ingressoConferencia.status} />
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={fecharConferencia}
+                      disabled={checkin.isPending}
+                    >
+                      Ler outro código
+                    </Button>
+                    <Button
+                      onClick={confirmarCheckinConferencia}
+                      disabled={ingressoConferencia.status === "usado" || checkin.isPending}
+                    >
+                      {checkin.isPending && (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      )}
+                      {checkin.isPending ? "Confirmando…" : "Confirmar entrada"}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

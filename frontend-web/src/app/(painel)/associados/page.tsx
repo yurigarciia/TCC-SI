@@ -3,6 +3,7 @@
 import { Activity, Calendar, Clock, Mail, Pencil, Phone, ShieldCheck, Tag, Users } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { AvatarIniciais } from "@/components/avatar-iniciais";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,13 +23,6 @@ import {
 
 const COLUNAS =
   "md:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,2.2fr)_6.5rem_6.5rem_2.5rem] md:items-center md:gap-4";
-
-function iniciais(nome: string): string {
-  const partes = nome.trim().split(/\s+/);
-  const primeira = partes[0]?.[0] ?? "";
-  const ultima = partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? "") : "";
-  return (primeira + ultima).toUpperCase();
-}
 
 export default function AssociadosPage() {
   const [pagina, setPagina] = useState(1);
@@ -207,9 +201,7 @@ export default function AssociadosPage() {
                   className={`group relative flex cursor-pointer flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm transition duration-200 hover:scale-[1.01] hover:bg-[#f3e2bf]/60 hover:shadow-md md:grid ${COLUNAS}`}
                 >
                   <div className="flex min-w-0 items-center gap-4">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
-                      {iniciais(associado.nome)}
-                    </div>
+                    <AvatarIniciais nome={associado.nome} tamanho="size-11 text-sm" />
                     <div className="min-w-0">
                       <Link
                         href={`/associados/${associado.id}`}

@@ -34,6 +34,7 @@ import { ConsultarPrecosIngressoUseCase } from '../../application/use-cases/cons
 import { ConsultarMeuPrecoIngressoUseCase } from '../../application/use-cases/consultar-meu-preco-ingresso.use-case';
 import { ConsultarResumoIngressosUseCase } from '../../application/use-cases/consultar-resumo-ingressos.use-case';
 import { ListarMeusIngressosUseCase } from '../../application/use-cases/listar-meus-ingressos.use-case';
+import { ConsultarIngressoUseCase } from '../../application/use-cases/consultar-ingresso.use-case';
 import { DefinirPrecoDto } from './dto/definir-preco.dto';
 import { EmitirIngressoDto } from './dto/emitir-ingresso.dto';
 import { ComprarIngressoAcompanhanteDto } from './dto/comprar-ingresso-acompanhante.dto';
@@ -57,6 +58,7 @@ export class IngressosController {
     private readonly consultarMeuPreco: ConsultarMeuPrecoIngressoUseCase,
     private readonly consultarResumo: ConsultarResumoIngressosUseCase,
     private readonly listarMeus: ListarMeusIngressosUseCase,
+    private readonly consultarIngresso: ConsultarIngressoUseCase,
   ) {}
 
   // Achado numa conversa com o usuário: o app mostrava um Snackbar de sucesso na compra e nada
@@ -335,6 +337,25 @@ export class IngressosController {
     @Query('nome') nome?: string,
   ) {
     return this.listar.execute(eventoId, pagina!, limite!, nome);
+  }
+
+  // Achado numa conversa com o usuário — o check-in por QR confirmava a entrada na hora, sem
+  // nenhuma tela de conferência antes. Esse endpoint alimenta a tela de conferência que abre ao
+  // ler o QR (nome, evento, status, valor, categoria), antes de a diretoria confirmar ou não via
+  // POST .../checkin.
+  @Get('ingressos/:id')
+  @ApiOperation({
+    summary: 'Consulta o detalhe de um ingresso (tela de conferência do check-in por QR)',
+  })
+  @ApiResponse({ status: 200, description: 'Detalhe do ingresso' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Ingresso não encontrado' })
+  consultarIngressoPorId(@Param('id', ParseUUIDPipe) id: string) {
+    return this.consultarIngresso.execute(id);
   }
 
   // Achado numa conversa com o usuário — "big numbers" pra acompanhar o evento no dia (emitidos,

@@ -3,7 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { LIMITE_PADRAO, type PaginaResultado } from "@/lib/pagination";
-import type { CanalIngresso, EmitirIngressoInput, Ingresso, ResumoIngressosEvento } from "./types";
+import type {
+  CanalIngresso,
+  EmitirIngressoInput,
+  Ingresso,
+  IngressoDetalhado,
+  ResumoIngressosEvento,
+} from "./types";
 
 const chaveIngressos = (eventoId: string, pagina: number, nome?: string) =>
   ["eventos", eventoId, "ingressos", pagina, nome ?? ""] as const;
@@ -52,6 +58,18 @@ export function useEmitirIngresso(eventoId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["eventos", eventoId, "ingressos"] });
     },
+  });
+}
+
+// Detalhe de um ingresso lido por QR (ou código digitado) — alimenta a tela de conferência antes
+// do check-in de verdade (ver useRegistrarCheckin, abaixo). `enabled: !!id` porque o id só existe
+// depois de uma leitura — a query fica ociosa enquanto a câmera ainda não achou nada.
+export function useIngresso(id: string | null) {
+  return useQuery({
+    queryKey: ["ingressos", id] as const,
+    queryFn: () => apiFetch<IngressoDetalhado>(`/ingressos/${id}`),
+    enabled: !!id,
+    retry: false,
   });
 }
 
