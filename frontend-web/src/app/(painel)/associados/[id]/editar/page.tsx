@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Calendar, Loader2, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
+import { Building2, Calendar, Loader2, Mail, Phone, Save, Tag, User, UserPlus, Users } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
@@ -35,17 +35,37 @@ import {
   useCategoriasSocio,
 } from "@/features/associados/use-associados";
 import { ApiError } from "@/lib/api-client";
-import { ehDataNascimentoPlausivel, formatarTelefone, pareceEmail } from "@/lib/format";
+import { ehDataNascimentoPlausivel, formatarTelefone } from "@/lib/format";
 
 const ID_FORM_DADOS = "form-dados-associado";
 
-const dadosSchema = z.object({
-  nome: z.string().min(3, "Informe o nome completo.").max(150, "Máximo de 150 caracteres."),
-  contato: z.string().min(8, "Informe um contato válido.").max(150, "Máximo de 150 caracteres."),
-  vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
-  categoriaSocioId: z.string().optional(),
-  endereco: enderecoSchema,
-});
+// Mesma regra do cadastro (associados/novo): e-mail e telefone opcionais individualmente, mas
+// precisa ter ao menos um dos dois.
+const dadosSchema = z
+  .object({
+    nome: z.string().min(3, "Informe o nome completo.").max(150, "Máximo de 150 caracteres."),
+    email: z.string().max(255, "Máximo de 255 caracteres.").optional(),
+    telefone: z.string().max(20, "Máximo de 20 caracteres.").optional(),
+    vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
+    categoriaSocioId: z.string().optional(),
+    endereco: enderecoSchema,
+  })
+  .superRefine((dados, ctx) => {
+    const email = dados.email?.trim();
+    const telefone = dados.telefone?.trim();
+    if (!email && !telefone) {
+      const mensagem = "Informe um e-mail ou telefone de contato.";
+      ctx.addIssue({ code: "custom", path: ["email"], message: mensagem });
+      ctx.addIssue({ code: "custom", path: ["telefone"], message: mensagem });
+      return;
+    }
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+      ctx.addIssue({ code: "custom", path: ["email"], message: "E-mail inválido." });
+    }
+    if (telefone && telefone.replace(/\D/g, "").length < 8) {
+      ctx.addIssue({ code: "custom", path: ["telefone"], message: "Telefone inválido." });
+    }
+  });
 
 type DadosFormValues = z.infer<typeof dadosSchema>;
 
@@ -116,7 +136,8 @@ function EditarAssociadoConteudo({
     resolver: zodResolver(dadosSchema),
     values: {
       nome: associado.nome,
-      contato: associado.contato,
+      email: associado.email ?? "",
+      telefone: associado.telefone ?? "",
       vinculoInstitucional: associado.vinculoInstitucional ?? "",
       categoriaSocioId: associado.categoriaSocioId ?? "",
       endereco: {
@@ -136,6 +157,8 @@ function EditarAssociadoConteudo({
     atualizar.mutate(
       {
         ...dados,
+        email: dados.email?.trim() || undefined,
+        telefone: dados.telefone?.trim() || undefined,
         vinculoInstitucional: dados.vinculoInstitucional || null,
         categoriaSocioId: dados.categoriaSocioId || null,
         endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
@@ -228,34 +251,43 @@ function EditarAssociadoConteudo({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="contato">Contato</Label>
+                <Label htmlFor="telefone">Telefone</Label>
                 <Controller
                   control={control}
-                  name="contato"
+                  name="telefone"
                   render={({ field }) => (
                     <InputComIcone
                       icon={Phone}
-                      id="contato"
+                      id="telefone"
                       placeholder="Ex.: (55) 99999-0000"
-                      maxLength={150}
-                      aria-invalid={!!errors.contato}
-                      value={
-                        pareceEmail(field.value ?? "")
-                          ? field.value
-                          : formatarTelefone(field.value ?? "")
+                      maxLength={16}
+                      aria-invalid={!!errors.telefone}
+                      value={formatarTelefone(field.value ?? "")}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.replace(/\D/g, "").slice(0, 11))
                       }
-                      onChange={(e) => {
-                        const bruto = e.target.value;
-                        field.onChange(
-                          pareceEmail(bruto) ? bruto : bruto.replace(/\D/g, "").slice(0, 11),
-                        );
-                      }}
                       onBlur={field.onBlur}
                     />
                   )}
                 />
-                {errors.contato && (
-                  <p className="text-sm text-destructive">{errors.contato.message}</p>
+                {errors.telefone && (
+                  <p className="text-sm text-destructive">{errors.telefone.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="email">E-mail</Label>
+                <InputComIcone
+                  icon={Mail}
+                  id="email"
+                  type="email"
+                  placeholder="Ex.: joao@exemplo.com"
+                  maxLength={255}
+                  aria-invalid={!!errors.email}
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
                 )}
               </div>
 

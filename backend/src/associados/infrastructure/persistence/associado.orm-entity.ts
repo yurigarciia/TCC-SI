@@ -18,8 +18,11 @@ export class AssociadoOrmEntity {
   @Column({ unique: true })
   cpf: string;
 
-  @Column()
-  contato: string;
+  @Column({ type: 'varchar', nullable: true })
+  email: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  telefone: string | null;
 
   @Column({ name: 'vinculo_institucional', type: 'varchar', nullable: true })
   vinculoInstitucional: string | null;

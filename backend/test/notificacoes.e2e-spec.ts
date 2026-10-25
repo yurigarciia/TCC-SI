@@ -42,7 +42,7 @@ describe('Notificações — Push Token (e2e, T-MOB-005)', () => {
       .send({
         nome: 'Associado Notificações e2e',
         cpf,
-        contato: '55999990099',
+        telefone: '55999990099',
         endereco: {
           cep: '97000-000',
           logradouro: 'Rua Teste',

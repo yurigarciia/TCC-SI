@@ -368,7 +368,7 @@ describe('Reservas de Mesa (e2e)', () => {
       .send({
         nome: 'Associado Minhas Reservas',
         cpf: cpfAssociadoMinhasReservas,
-        contato: '55999990010',
+        telefone: '55999990010',
         endereco: {
           cep: '97000-000',
           logradouro: 'Rua Teste',

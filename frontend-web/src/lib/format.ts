@@ -59,14 +59,6 @@ export function formatarCpf(valor: string): string {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
-// Campo "contato" aceita telefone OU e-mail (ver associados/novo e associados/[id]) — se o valor
-// tiver letra/@ tratamos como e-mail e não mexemos nele; caso contrário aplicamos a máscara
-// (00) 00000-0000 (ou (00) 0000-0000 pra fixo), puramente visual — quem chama guarda só os
-// dígitos quando for telefone.
-export function pareceEmail(valor: string): boolean {
-  return /[a-zA-Z@]/.test(valor);
-}
-
 // Máscara visual de CEP (00000-000) — mesmo raciocínio de formatarCpf.
 export function formatarCep(valor: string): string {
   const digitos = valor.replace(/\D/g, "").slice(0, 8);

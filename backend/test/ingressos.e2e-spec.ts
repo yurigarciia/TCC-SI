@@ -325,7 +325,7 @@ describe('Ingressos (e2e)', () => {
       .send({
         nome: 'Associado Compra Ingresso',
         cpf,
-        contato: '55999990011',
+        telefone: '55999990011',
         endereco: {
           cep: '97000-000',
           logradouro: 'Rua Teste',

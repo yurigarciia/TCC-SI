@@ -5,7 +5,8 @@ export interface Associado {
   id: string;
   nome: string;
   cpf: string;
-  contato: string;
+  email: string | null;
+  telefone: string | null;
   vinculoInstitucional: string | null;
   categoriaSocioId: string | null;
   origem: OrigemCadastro;
@@ -82,7 +83,8 @@ export interface AtualizarDependenteInput {
 export interface CadastrarAssociadoMediadoInput {
   nome: string;
   cpf: string;
-  contato: string;
+  email?: string;
+  telefone?: string;
   vinculoInstitucional?: string;
   categoriaSocioId?: string;
   endereco: EnderecoInput;
@@ -91,7 +93,8 @@ export interface CadastrarAssociadoMediadoInput {
 
 export interface AtualizarAssociadoInput {
   nome?: string;
-  contato?: string;
+  email?: string;
+  telefone?: string;
   vinculoInstitucional?: string | null;
   categoriaSocioId?: string | null;
   endereco?: EnderecoInput;

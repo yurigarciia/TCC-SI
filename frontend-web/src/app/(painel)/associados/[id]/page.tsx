@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Loader2, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
+import { Building2, Loader2, Mail, MapPin, Pencil, Phone, Tag, Trash2, User, Users } from "lucide-react";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -64,7 +64,6 @@ import {
   formatarCep,
   formatarData,
   formatarTelefone,
-  pareceEmail,
 } from "@/lib/format";
 
 // Tela só de leitura, sem nenhum campo editável — o que vem da listagem cai aqui por padrão.
@@ -136,9 +135,6 @@ function AssociadoDetalheConteudo({
   const categoriasAtivas = categorias?.filter((categoria) => categoria.ativa);
 
   const categoriaAtual = categorias?.find((c) => c.id === associado.categoriaSocioId)?.nome;
-  const contato = pareceEmail(associado.contato)
-    ? associado.contato
-    : formatarTelefone(associado.contato);
 
   return (
     <div className="space-y-6">
@@ -246,7 +242,12 @@ function AssociadoDetalheConteudo({
               <div className="sm:col-span-2">
                 <Campo icone={User} rotulo="Nome completo" valor={associado.nome} />
               </div>
-              <Campo icone={Phone} rotulo="Contato" valor={contato} />
+              <Campo
+                icone={Phone}
+                rotulo="Telefone"
+                valor={associado.telefone ? formatarTelefone(associado.telefone) : "—"}
+              />
+              <Campo icone={Mail} rotulo="E-mail" valor={associado.email ?? "—"} />
               <Campo
                 icone={Building2}
                 rotulo="Vínculo institucional"

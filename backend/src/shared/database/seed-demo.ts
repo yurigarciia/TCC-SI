@@ -222,7 +222,7 @@ async function criarAssociados(
   for (let i = 0; i < quantidade; i++) {
     const nome = nomeFicticio(i);
     const cpf = cpfFicticio(i);
-    const contato = `5599${String(8000000 + i).padStart(7, '0')}`;
+    const telefone = `5599${String(8000000 + i).padStart(7, '0')}`;
     const endereco = enderecoFicticio(i);
 
     const jaExiste = porCpf.get(cpf);
@@ -245,7 +245,7 @@ async function criarAssociados(
         {
           nome,
           cpf,
-          contato,
+          telefone,
           endereco,
           email: `demo.${i}@querenciaerp.org`,
           senha: 'demo12345',
@@ -260,7 +260,7 @@ async function criarAssociados(
     const criado = await api<{ id: string }>(token, 'POST', '/associados', {
       nome,
       cpf,
-      contato,
+      telefone,
       categoriaSocioId,
       endereco,
     });

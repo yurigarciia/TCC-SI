@@ -71,7 +71,7 @@ describe('Mensalidades (e2e)', () => {
       .send({
         nome: 'Associado Mensalidade',
         cpf: cpfAssociado,
-        contato: '55999990005',
+        telefone: '55999990005',
         categoriaSocioId: categoriaId,
         endereco: ENDERECO_TESTE,
       });
@@ -161,7 +161,7 @@ describe('Mensalidades (e2e)', () => {
       .send({
         nome: 'Associado Isento',
         cpf: cpfIsento,
-        contato: '55999990006',
+        telefone: '55999990006',
         categoriaSocioId: categoriaIsentaBody.id,
         endereco: ENDERECO_TESTE,
       })
@@ -273,7 +273,7 @@ describe('Mensalidades (e2e)', () => {
       .send({
         nome: 'Associado Mensalidade Logado',
         cpf: cpfAssociadoLogado,
-        contato: '55999990006',
+        telefone: '55999990006',
         endereco: ENDERECO_TESTE,
         email: emailAssociadoLogado,
         senha: 'senha123',

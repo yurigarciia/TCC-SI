@@ -20,7 +20,7 @@ export interface EnderecoInput {
 export interface AutoCadastroInput {
   nome: string;
   cpf: string;
-  contato: string;
+  telefone: string;
   endereco: EnderecoInput;
   email: string;
   senha: string;
@@ -39,7 +39,8 @@ export interface Associado {
   id: string;
   nome: string;
   cpf: string;
-  contato: string;
+  email: string | null;
+  telefone: string | null;
   vinculoInstitucional: string | null;
   categoriaSocioId: string | null;
   origem: OrigemCadastro;

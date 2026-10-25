@@ -12,7 +12,7 @@ import { StatusAssociadoBadge } from "@/features/associados/status-badge";
 import { useSituacaoPagamento } from "@/features/mensalidades/use-mensalidades";
 import { Pagination } from "@/components/pagination";
 import { SearchInput } from "@/components/search-input";
-import { formatarCpf, formatarData, formatarTelefone, pareceEmail } from "@/lib/format";
+import { formatarCpf, formatarData, formatarTelefone } from "@/lib/format";
 import {
   Select,
   SelectContent,
@@ -192,9 +192,12 @@ export default function AssociadosPage() {
           <ul className="space-y-3">
             {associados.map((associado) => {
               const emDia = situacoes?.[associado.id] !== "inadimplente";
-              const email = pareceEmail(associado.contato);
-              const contato = email ? associado.contato : formatarTelefone(associado.contato);
-              const IconeContato = email ? Mail : Phone;
+              // Telefone tem preferência na linha compacta da listagem — e-mail só aparece aqui
+              // quando não há telefone cadastrado (os dois ficam visíveis na tela de detalhe).
+              const contato = associado.telefone
+                ? formatarTelefone(associado.telefone)
+                : (associado.email ?? "—");
+              const IconeContato = associado.telefone ? Phone : Mail;
               return (
                 <li
                   key={associado.id}

@@ -95,7 +95,7 @@ export class AssociadosController {
     return this.autoCadastrar.execute({
       nome: dto.nome,
       cpf: dto.cpf,
-      contato: dto.contato,
+      telefone: dto.telefone,
       vinculoInstitucional: dto.vinculoInstitucional ?? null,
       endereco: mapearEndereco(dto.endereco),
       email: dto.email,
@@ -147,7 +147,8 @@ export class AssociadosController {
     return this.cadastrarMediado.execute({
       nome: dto.nome,
       cpf: dto.cpf,
-      contato: dto.contato,
+      email: dto.email ?? null,
+      telefone: dto.telefone ?? null,
       vinculoInstitucional: dto.vinculoInstitucional ?? null,
       categoriaSocioId: dto.categoriaSocioId ?? null,
       endereco: mapearEndereco(dto.endereco),
@@ -237,7 +238,8 @@ export class AssociadosController {
   ) {
     return this.atualizar.execute(id, {
       nome: dto.nome,
-      contato: dto.contato,
+      email: dto.email,
+      telefone: dto.telefone,
       vinculoInstitucional: dto.vinculoInstitucional,
       categoriaSocioId: dto.categoriaSocioId,
       endereco: dto.endereco ? mapearEndereco(dto.endereco) : undefined,

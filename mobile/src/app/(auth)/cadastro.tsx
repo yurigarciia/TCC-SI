@@ -25,7 +25,7 @@ const enderecoSchema = z.object({
 const cadastroSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo.").max(150, "Máximo de 150 caracteres."),
   cpf: z.string().min(11, "Informe um CPF válido (11 dígitos).").max(11),
-  contato: z.string().min(8, "Informe um telefone ou e-mail de contato.").max(150, "Máximo de 150 caracteres."),
+  telefone: z.string().min(8, "Informe um telefone de contato.").max(20, "Máximo de 20 caracteres."),
   endereco: enderecoSchema,
   email: z.string().min(1, "Informe o e-mail.").email("E-mail inválido.").max(255, "Máximo de 255 caracteres."),
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres.").max(72, "Máximo de 72 caracteres."),
@@ -50,7 +50,7 @@ export default function CadastroScreen() {
     defaultValues: {
       nome: "",
       cpf: "",
-      contato: "",
+      telefone: "",
       endereco: {
         cep: "",
         logradouro: "",
@@ -236,11 +236,11 @@ const CAMPOS_PESSOAIS: CampoConfig<CampoSimples>[] = [
     props: { keyboardType: "number-pad", maxLength: 11 },
   },
   {
-    nome: "contato",
-    label: "Telefone ou e-mail de contato",
+    nome: "telefone",
+    label: "Telefone",
     placeholder: "(55) 99999-0000",
     icone: "phone-outline",
-    props: { maxLength: 150 },
+    props: { keyboardType: "phone-pad", maxLength: 20 },
   },
 ];
 

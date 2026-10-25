@@ -3,7 +3,8 @@ import { Associado } from '../../domain/associado.entity';
 export interface NovoAssociado {
   nome: string;
   cpf: string;
-  contato: string;
+  email: string | null;
+  telefone: string | null;
   vinculoInstitucional: string | null;
   categoriaSocioId: string | null;
   origem: Associado['origem'];
@@ -13,7 +14,8 @@ export interface NovoAssociado {
 
 export interface AtualizacaoAssociado {
   nome?: string;
-  contato?: string;
+  email?: string | null;
+  telefone?: string | null;
   vinculoInstitucional?: string | null;
   categoriaSocioId?: string | null;
   status?: Associado['status'];

@@ -83,7 +83,12 @@ export default function PerfilScreen() {
             </Text>
           </View>
           <View style={styles.cardContent}>
-            <InfoLinha icone="phone-outline" label="Contato" valor={associado.contato} />
+            {associado.telefone && (
+              <InfoLinha icone="phone-outline" label="Telefone" valor={associado.telefone} />
+            )}
+            {associado.email && (
+              <InfoLinha icone="email-outline" label="E-mail" valor={associado.email} />
+            )}
             {associado.vinculoInstitucional && (
               <InfoLinha
                 icone="domain"

@@ -85,7 +85,7 @@ describe('Associados (e2e)', () => {
       .send({
         nome: 'Maria Auto',
         cpf: cpfAutoCadastro,
-        contato: '55999990000',
+        telefone: '55999990000',
         endereco: ENDERECO_TESTE,
         email: 'maria.auto@e2e.local',
         senha: 'senha123',
@@ -103,7 +103,7 @@ describe('Associados (e2e)', () => {
       .send({
         nome: 'Maria Auto 2',
         cpf: cpfAutoCadastro,
-        contato: '55999990001',
+        telefone: '55999990001',
         endereco: ENDERECO_TESTE,
         email: 'maria.auto2@e2e.local',
         senha: 'senha123',
@@ -128,7 +128,7 @@ describe('Associados (e2e)', () => {
   it('nega criação sem autenticação (401)', () => {
     return request(app.getHttpServer())
       .post('/associados')
-      .send({ nome: 'X', cpf: '99999999999', contato: '55999990002' })
+      .send({ nome: 'X', cpf: '99999999999', telefone: '55999990002' })
       .expect(401);
   });
 
@@ -146,7 +146,7 @@ describe('Associados (e2e)', () => {
       .send({
         nome: 'João Mediado',
         cpf: cpfMediado,
-        contato: '55999990003',
+        telefone: '55999990003',
         vinculoInstitucional: 'Departamento de Danças',
         categoriaSocioId: categoriaId,
         endereco: ENDERECO_TESTE,
@@ -259,7 +259,7 @@ describe('Associados (e2e)', () => {
     const payloadBase = {
       nome: 'Associado Data Ruim — e2e',
       cpf: '44444444444',
-      contato: '55999990099',
+      telefone: '55999990099',
       endereco: ENDERECO_TESTE,
     };
 
@@ -481,7 +481,7 @@ describe('Associados (e2e)', () => {
       .send({
         nome: 'Pedro Rejeitado',
         cpf: cpfParaRejeitar,
-        contato: '55999990004',
+        telefone: '55999990004',
         endereco: ENDERECO_TESTE,
         email: 'pedro.rejeitado@e2e.local',
         senha: 'senha123',

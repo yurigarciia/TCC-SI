@@ -23,11 +23,14 @@ export class AutoCadastroAssociadoDto {
   @MaxLength(14)
   cpf: string;
 
+  // Sem um campo de "e-mail de contato" separado de propósito — o e-mail de login (abaixo) já é
+  // o e-mail da própria pessoa se auto-cadastrando, perguntar de novo seria redundante. Telefone
+  // continua como campo de contato à parte.
   @ApiProperty({ example: '55999990000' })
   @IsString()
   @MinLength(8)
-  @MaxLength(150)
-  contato: string;
+  @MaxLength(20)
+  telefone: string;
 
   @ApiPropertyOptional({ example: 'Departamento de Danças' })
   @IsOptional()

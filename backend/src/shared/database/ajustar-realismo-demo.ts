@@ -218,12 +218,12 @@ async function completarAssociados(
     if (porCpf.has(cpf)) continue;
 
     const nome = nomeFicticio(i);
-    const contato = `5599${String(8000000 + i).padStart(7, '0')}`;
+    const telefone = `5599${String(8000000 + i).padStart(7, '0')}`;
     const categoriaSocioId = ordemCategoria[i % ordemCategoria.length];
     const criado = await api<Associado>(token, 'POST', '/associados', {
       nome,
       cpf,
-      contato,
+      telefone,
       categoriaSocioId,
       endereco: enderecoFicticio(i),
     });

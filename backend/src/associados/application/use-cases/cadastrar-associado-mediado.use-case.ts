@@ -15,7 +15,8 @@ import { Dependente } from '../../domain/dependente.entity';
 export interface DadosCadastroMediado {
   nome: string;
   cpf: string;
-  contato: string;
+  email: string | null;
+  telefone: string | null;
   vinculoInstitucional: string | null;
   categoriaSocioId: string | null;
   endereco: Omit<NovoEndereco, 'associadoId'>;
@@ -53,7 +54,8 @@ export class CadastrarAssociadoMediadoUseCase {
     const associado = await this.associados.salvar({
       nome: dados.nome,
       cpf: dados.cpf,
-      contato: dados.contato,
+      email: dados.email,
+      telefone: dados.telefone,
       vinculoInstitucional: dados.vinculoInstitucional,
       categoriaSocioId: dados.categoriaSocioId,
       origem: OrigemCadastro.MEDIADO,

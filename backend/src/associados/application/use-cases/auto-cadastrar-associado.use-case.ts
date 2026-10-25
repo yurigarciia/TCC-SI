@@ -16,7 +16,7 @@ import {
 export interface DadosAutoCadastro {
   nome: string;
   cpf: string;
-  contato: string;
+  telefone: string;
   vinculoInstitucional: string | null;
   endereco: Omit<NovoEndereco, 'associadoId'>;
   email: string;
@@ -60,7 +60,10 @@ export class AutoCadastrarAssociadoUseCase {
     const associado = await this.associados.salvar({
       nome: dados.nome,
       cpf: dados.cpf,
-      contato: dados.contato,
+      // Mesmo e-mail do login — quem se auto-cadastra não precisa informar o próprio e-mail duas
+      // vezes (ver comentário no AutoCadastroAssociadoDto).
+      email: dados.email,
+      telefone: dados.telefone,
       vinculoInstitucional: dados.vinculoInstitucional,
       categoriaSocioId: null,
       origem: OrigemCadastro.AUTO_CADASTRO,
