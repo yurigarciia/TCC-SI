@@ -1,16 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Surface, Text, TextInput } from "react-native-paper";
+import { Avatar, Button, Surface, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import { AuthHeader } from "@/components/auth-header";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { useAutoCadastro } from "@/features/auth/use-auto-cadastro";
-import { cores } from "@/theme/paper-theme";
+import { corIconeCampo, cores } from "@/theme/paper-theme";
 import { ApiError } from "@/lib/api-client";
 import { buscarEnderecoPorCep } from "@/lib/cep";
+
+const RAIO_CAMPO = 14;
 
 const enderecoSchema = z.object({
   cep: z.string().min(8, "CEP inválido."),
@@ -40,6 +43,7 @@ type EnderecoFormValues = CadastroFormValues["endereco"];
 // institucional aqui — isso é preenchido pela diretoria depois, na aprovação.
 export default function CadastroScreen() {
   const autoCadastro = useAutoCadastro();
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
   const {
     control,
     handleSubmit,
@@ -97,6 +101,19 @@ export default function CadastroScreen() {
             />
 
             <Surface style={styles.card} elevation={2}>
+              <View style={styles.faixaTopo} />
+              <View style={styles.secaoTitulo}>
+                <Avatar.Icon
+                  icon="account-outline"
+                  size={28}
+                  style={styles.secaoIcone}
+                  color={cores.primaria}
+                />
+                <Text variant="labelLarge" style={styles.secaoTexto}>
+                  Dados pessoais
+                </Text>
+              </View>
+
               {CAMPOS_PESSOAIS.map(({ nome, label, placeholder, icone, props }) => (
                 <Controller
                   key={nome}
@@ -108,12 +125,13 @@ export default function CadastroScreen() {
                         mode="outlined"
                         label={label}
                         placeholder={placeholder}
-                        left={<TextInput.Icon icon={icone} />}
+                        left={<TextInput.Icon icon={icone} color={corIconeCampo} />}
                         value={field.value}
                         onChangeText={field.onChange}
                         onBlur={field.onBlur}
                         error={!!errors[nome]}
                         style={styles.field}
+                        outlineStyle={styles.outlineCampo}
                         {...props}
                       />
                       {errors[nome] && <Text style={styles.erroCampo}>{errors[nome]?.message}</Text>}
@@ -122,9 +140,17 @@ export default function CadastroScreen() {
                 />
               ))}
 
-              <Text variant="labelLarge" style={styles.secao}>
-                Endereço
-              </Text>
+              <View style={styles.secaoTitulo}>
+                <Avatar.Icon
+                  icon="map-marker-outline"
+                  size={28}
+                  style={styles.secaoIcone}
+                  color={cores.primaria}
+                />
+                <Text variant="labelLarge" style={styles.secaoTexto}>
+                  Endereço
+                </Text>
+              </View>
 
               {CAMPOS_ENDERECO.map(({ nome, label, placeholder, icone, props }) => (
                 <Controller
@@ -137,7 +163,7 @@ export default function CadastroScreen() {
                         mode="outlined"
                         label={label}
                         placeholder={placeholder}
-                        left={<TextInput.Icon icon={icone} />}
+                        left={<TextInput.Icon icon={icone} color={corIconeCampo} />}
                         value={field.value}
                         onChangeText={field.onChange}
                         onBlur={() => {
@@ -146,6 +172,7 @@ export default function CadastroScreen() {
                         }}
                         error={!!errors.endereco?.[nome]}
                         style={styles.field}
+                        outlineStyle={styles.outlineCampo}
                         {...props}
                       />
                       {errors.endereco?.[nome] && (
@@ -155,6 +182,18 @@ export default function CadastroScreen() {
                   )}
                 />
               ))}
+
+              <View style={styles.secaoTitulo}>
+                <Avatar.Icon
+                  icon="shield-key-outline"
+                  size={28}
+                  style={styles.secaoIcone}
+                  color={cores.primaria}
+                />
+                <Text variant="labelLarge" style={styles.secaoTexto}>
+                  Acesso
+                </Text>
+              </View>
 
               {CAMPOS_CONTA.map(({ nome, label, placeholder, icone, props }) => (
                 <Controller
@@ -167,13 +206,25 @@ export default function CadastroScreen() {
                         mode="outlined"
                         label={label}
                         placeholder={placeholder}
-                        left={<TextInput.Icon icon={icone} />}
+                        left={<TextInput.Icon icon={icone} color={corIconeCampo} />}
+                        right={
+                          nome === "senha" ? (
+                            <TextInput.Icon
+                              icon={senhaVisivel ? "eye-off-outline" : "eye-outline"}
+                              color={corIconeCampo}
+                              accessibilityLabel={senhaVisivel ? "Ocultar senha" : "Mostrar senha"}
+                              onPress={() => setSenhaVisivel((atual) => !atual)}
+                            />
+                          ) : undefined
+                        }
                         value={field.value}
                         onChangeText={field.onChange}
                         onBlur={field.onBlur}
                         error={!!errors[nome]}
                         style={styles.field}
+                        outlineStyle={styles.outlineCampo}
                         {...props}
+                        {...(nome === "senha" ? { secureTextEntry: !senhaVisivel } : {})}
                       />
                       {errors[nome] && <Text style={styles.erroCampo}>{errors[nome]?.message}</Text>}
                     </View>
@@ -325,9 +376,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#FFFFFF",
     gap: 4,
+    overflow: "hidden",
   },
+  // Faixa colorida no topo do card — mesmo recurso da tela de login, pra dar cor sem virar outro
+  // banner cheio.
+  faixaTopo: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    backgroundColor: cores.primaria,
+  },
+  secaoTitulo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  secaoIcone: { backgroundColor: cores.primariaClara },
+  secaoTexto: { color: cores.primaria, fontWeight: "700" },
   field: { backgroundColor: "#FFFFFF" },
-  secao: { marginTop: 8, marginBottom: 4, marginLeft: 4, color: cores.primaria },
+  outlineCampo: { borderRadius: RAIO_CAMPO },
   erroCampo: { color: "#B3261E", fontSize: 12, marginTop: -4, marginBottom: 4, marginLeft: 4 },
   button: { marginTop: 12, borderRadius: 12 },
   buttonContent: { paddingVertical: 6 },

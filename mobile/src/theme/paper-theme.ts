@@ -100,3 +100,10 @@ export const coresSemanticas = {
 // Gradiente do cabeçalho das telas de autenticação — antes vinho-lenço, agora o mesmo verde da
 // sidebar do painel web, reforçando a identidade única do sistema na entrada do app.
 export const gradienteCabecalho = [cores.sidebar, cores.sidebarEscuro] as const;
+
+// Cor do ícone de campo por estado de foco, compartilhada pelas 3 telas de autenticação — o
+// próprio TextInput.Icon do Paper aceita uma função `(focado) => cor`. Dá "jogo de cor" ao
+// digitar sem pintar ícone solto permanentemente (achado numa conversa com o usuário: as telas
+// de login/cadastro/vincular-conta estavam monótonas demais).
+export const corIconeCampo = (focado: boolean) =>
+  focado ? cores.primaria : cores.textoSecundario;
