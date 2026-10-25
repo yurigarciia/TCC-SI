@@ -47,7 +47,7 @@ const dadosSchema = z
     email: z.string().max(255, "Máximo de 255 caracteres.").optional(),
     telefone: z.string().max(20, "Máximo de 20 caracteres.").optional(),
     vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
-    categoriaSocioId: z.string().optional(),
+    categoriaSocioId: z.string().min(1, "Selecione a categoria de sócio."),
     endereco: enderecoSchema,
   })
   .superRefine((dados, ctx) => {
@@ -275,7 +275,7 @@ function EditarAssociadoConteudo({
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="email">E-mail</Label>
                 <InputComIcone
                   icon={Mail}
@@ -303,13 +303,19 @@ function EditarAssociadoConteudo({
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                <Label htmlFor="categoriaSocioId">
+                  Categoria de sócio <span className="text-destructive">*</span>
+                </Label>
                 <Controller
                   control={control}
                   name="categoriaSocioId"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="categoriaSocioId" className="w-full">
+                      <SelectTrigger
+                        id="categoriaSocioId"
+                        className="w-full"
+                        aria-invalid={!!errors.categoriaSocioId}
+                      >
                         <Tag aria-hidden="true" className="size-4 text-muted-foreground" />
                         <SelectValue placeholder="Selecionar categoria">
                           {(valor: string | null) =>
@@ -328,6 +334,9 @@ function EditarAssociadoConteudo({
                     </Select>
                   )}
                 />
+                {errors.categoriaSocioId && (
+                  <p className="text-sm text-destructive">{errors.categoriaSocioId.message}</p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -395,6 +404,11 @@ function EditarAssociadoConteudo({
                 )}
               </div>
               <Button type="submit" disabled={adicionarDependente.isPending}>
+                {adicionarDependente.isPending ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Save aria-hidden="true" />
+                )}
                 Salvar
               </Button>
               <Button

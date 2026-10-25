@@ -142,50 +142,69 @@ describe('Mensalidades (e2e)', () => {
     const nomeCategoriaIsenta = 'Benemérito — mensalidades e2e';
     const cpfIsento = '55555555550';
 
-    const categoriaIsenta = await request(app.getHttpServer())
-      .post('/categorias-socio')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ nome: nomeCategoriaIsenta, isenta: true })
-      .expect(201);
-    const categoriaIsentaBody = categoriaIsenta.body as {
-      id: string;
-      isenta: boolean;
-      valorMensalidade: number;
-    };
-    expect(categoriaIsentaBody.isenta).toBe(true);
-    expect(categoriaIsentaBody.valorMensalidade).toBe(0);
-
-    const associadoIsento = await request(app.getHttpServer())
-      .post('/associados')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        nome: 'Associado Isento',
-        cpf: cpfIsento,
-        telefone: '55999990006',
-        categoriaSocioId: categoriaIsentaBody.id,
-        endereco: ENDERECO_TESTE,
-      })
-      .expect(201);
-    const associadoIsentoId = (
-      associadoIsento.body as { associado: { id: string } }
-    ).associado.id;
-
-    const response = await request(app.getHttpServer())
-      .post('/mensalidades/gerar')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .expect(201);
-
-    const geradas = response.body as MensalidadeResponseBody[];
-    expect(geradas.some((m) => m.associadoId === associadoIsentoId)).toBe(
-      false,
-    );
-
-    await dataSource.query('DELETE FROM associados WHERE id = $1', [
-      associadoIsentoId,
+    // Limpeza defensiva: uma execução anterior que falhou entre criar e o cleanup no fim deste
+    // teste (ex.: assertion no meio) deixaria essa categoria/associado presos, e a próxima
+    // execução falharia na criação por violar a constraint única de nome antes de chegar perto
+    // do cleanup — um loop que se auto-sustenta. Limpar antes de criar rompe esse loop mesmo que
+    // o `finally` abaixo nunca tenha rodado numa execução anterior.
+    await dataSource.query('DELETE FROM associados WHERE cpf = $1', [
+      cpfIsento,
     ]);
     await dataSource.query('DELETE FROM categorias_socio WHERE nome = $1', [
       nomeCategoriaIsenta,
     ]);
+
+    let associadoIsentoId: string | undefined;
+    try {
+      const categoriaIsenta = await request(app.getHttpServer())
+        .post('/categorias-socio')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ nome: nomeCategoriaIsenta, isenta: true })
+        .expect(201);
+      const categoriaIsentaBody = categoriaIsenta.body as {
+        id: string;
+        isenta: boolean;
+        valorMensalidade: number;
+      };
+      expect(categoriaIsentaBody.isenta).toBe(true);
+      expect(categoriaIsentaBody.valorMensalidade).toBe(0);
+
+      const associadoIsento = await request(app.getHttpServer())
+        .post('/associados')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          nome: 'Associado Isento',
+          cpf: cpfIsento,
+          telefone: '55999990006',
+          categoriaSocioId: categoriaIsentaBody.id,
+          endereco: ENDERECO_TESTE,
+        })
+        .expect(201);
+      associadoIsentoId = (
+        associadoIsento.body as { associado: { id: string } }
+      ).associado.id;
+
+      const response = await request(app.getHttpServer())
+        .post('/mensalidades/gerar')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(201);
+
+      const geradas = response.body as MensalidadeResponseBody[];
+      expect(geradas.some((m) => m.associadoId === associadoIsentoId)).toBe(
+        false,
+      );
+    } finally {
+      // `finally` (em vez de só ao final do caminho feliz) garante que uma falha de assertion no
+      // meio do teste não deixe a categoria/associado presos pra próxima execução da suite.
+      if (associadoIsentoId) {
+        await dataSource.query('DELETE FROM associados WHERE id = $1', [
+          associadoIsentoId,
+        ]);
+      }
+      await dataSource.query('DELETE FROM categorias_socio WHERE nome = $1', [
+        nomeCategoriaIsenta,
+      ]);
+    }
   });
 
   it('categoria não isenta exige valorMensalidade positivo (400 sem ele)', () => {

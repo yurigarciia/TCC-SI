@@ -86,7 +86,7 @@ export interface CadastrarAssociadoMediadoInput {
   email?: string;
   telefone?: string;
   vinculoInstitucional?: string;
-  categoriaSocioId?: string;
+  categoriaSocioId: string;
   endereco: EnderecoInput;
   dependentes?: Array<{ nome: string; dataNascimento: string }>;
 }

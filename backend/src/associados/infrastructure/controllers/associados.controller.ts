@@ -150,7 +150,7 @@ export class AssociadosController {
       email: dto.email ?? null,
       telefone: dto.telefone ?? null,
       vinculoInstitucional: dto.vinculoInstitucional ?? null,
-      categoriaSocioId: dto.categoriaSocioId ?? null,
+      categoriaSocioId: dto.categoriaSocioId,
       endereco: mapearEndereco(dto.endereco),
       dependentes: dto.dependentes ?? [],
     });

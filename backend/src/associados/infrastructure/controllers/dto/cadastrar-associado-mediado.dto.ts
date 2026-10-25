@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEmail,
+  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
@@ -48,10 +49,13 @@ export class CadastrarAssociadoMediadoDto {
   @MaxLength(150)
   vinculoInstitucional?: string;
 
-  @ApiPropertyOptional({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })
-  @IsOptional()
+  // Obrigatório: cadastro mediado entra como Ativo imediatamente (ver
+  // cadastrar-associado-mediado.use-case.ts), diferente da aprovação de auto-cadastro
+  // (aprovar-cadastro.dto.ts), que pode deixar a categoria pra depois.
+  @ApiProperty({ example: 'b6f1e4d0-2c3a-4e9d-9f7e-1a2b3c4d5e6f' })
+  @IsNotEmpty()
   @IsUUID()
-  categoriaSocioId?: string;
+  categoriaSocioId: string;
 
   @ApiProperty({ type: EnderecoDto })
   @ValidateNested()

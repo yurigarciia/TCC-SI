@@ -53,7 +53,7 @@ const formSchema = z
     email: z.string().max(255, "Máximo de 255 caracteres.").optional(),
     telefone: z.string().max(20, "Máximo de 20 caracteres.").optional(),
     vinculoInstitucional: z.string().max(150, "Máximo de 150 caracteres.").optional(),
-    categoriaSocioId: z.string().optional(),
+    categoriaSocioId: z.string().min(1, "Selecione a categoria de sócio."),
     endereco: enderecoSchema,
     dependentes: z.array(dependenteSchema),
   })
@@ -99,6 +99,7 @@ export default function NovoAssociadoPage() {
       cpf: "",
       email: "",
       telefone: "",
+      categoriaSocioId: "",
       dependentes: [],
       endereco: {
         cep: "",
@@ -123,7 +124,7 @@ export default function NovoAssociadoPage() {
         email: dados.email?.trim() || undefined,
         telefone: dados.telefone?.trim() || undefined,
         vinculoInstitucional: dados.vinculoInstitucional || undefined,
-        categoriaSocioId: dados.categoriaSocioId || undefined,
+        categoriaSocioId: dados.categoriaSocioId,
         endereco: { ...dados.endereco, complemento: dados.endereco.complemento || undefined },
         dependentes: dados.dependentes.length > 0 ? dados.dependentes : undefined,
       },
@@ -247,7 +248,7 @@ export default function NovoAssociadoPage() {
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="email">E-mail</Label>
                 <InputComIcone
                   icon={Mail}
@@ -278,7 +279,9 @@ export default function NovoAssociadoPage() {
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="categoriaSocioId">Categoria de sócio</Label>
+                  <Label htmlFor="categoriaSocioId">
+                    Categoria de sócio <span className="text-destructive">*</span>
+                  </Label>
                   <Link
                     href="/associados/categorias/novo"
                     target="_blank"
@@ -292,7 +295,11 @@ export default function NovoAssociadoPage() {
                   name="categoriaSocioId"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="categoriaSocioId" className="w-full">
+                      <SelectTrigger
+                        id="categoriaSocioId"
+                        className="w-full"
+                        aria-invalid={!!errors.categoriaSocioId}
+                      >
                         <Tag aria-hidden="true" className="size-4 text-muted-foreground" />
                         <SelectValue placeholder="Selecionar categoria">
                           {(valor: string | null) =>
@@ -311,6 +318,9 @@ export default function NovoAssociadoPage() {
                     </Select>
                   )}
                 />
+                {errors.categoriaSocioId && (
+                  <p className="text-sm text-destructive">{errors.categoriaSocioId.message}</p>
+                )}
               </div>
             </div>
           </CardContent>

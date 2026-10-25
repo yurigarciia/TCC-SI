@@ -18,7 +18,7 @@ export interface DadosCadastroMediado {
   email: string | null;
   telefone: string | null;
   vinculoInstitucional: string | null;
-  categoriaSocioId: string | null;
+  categoriaSocioId: string;
   endereco: Omit<NovoEndereco, 'associadoId'>;
   dependentes: Array<{ nome: string; dataNascimento: string }>;
 }
