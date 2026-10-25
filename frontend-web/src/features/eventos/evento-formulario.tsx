@@ -15,12 +15,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { FormErrorBanner } from "@/components/form-error-banner";
 import {
   Card,
   CardContent,
@@ -40,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { apiFetch } from "@/lib/api-client";
+import { ApiError, apiFetch } from "@/lib/api-client";
 import { ehDataPassada, paraInputDatetimeLocal } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useCategoriasSocio } from "@/features/associados/use-associados";
@@ -69,16 +70,28 @@ const precoCategoriaFormSchema = z.object({
 // Data no passado só é recusada ao CRIAR — editar um evento que já aconteceu (corrigir local/
 // descrição depois do fato) é um caso de uso legítimo, mesmo padrão do backend (ver
 // AtualizarEventoDto, sem @IsNotPastDate de propósito).
+//
+// Achado numa conversa com o usuário: `new Date(valor).toISOString()` dentro do `.refine()`
+// quebrava com RangeError ("Invalid time value") quando `valor` vinha vazio ou inválido — o zod
+// roda TODOS os checks do encadeamento, não só o primeiro que falha, então o `.refine()` ainda
+// era chamado mesmo depois do `.min(1)` já ter rejeitado a string vazia. Uma exceção lançada
+// dentro do predicate do `.refine()` não vira "campo inválido", ela derruba a validação inteira
+// (promise rejeitada sem handler) — por isso nenhum campo ficava vermelho e "o sistema não
+// reagia" ao tentar salvar sem data. Corrigido validando a data com `Number.isNaN` antes de
+// chamar `toISOString()`, retornando `false` (erro de validação normal) em vez de deixar
+// estourar.
 function construirFormSchema(modo: "criar" | "editar") {
   return z.object({
     nome: z.string().min(2, "Informe o nome do evento.").max(150, "Máximo de 150 caracteres."),
     data: z
       .string()
       .min(1, "Informe a data e horário.")
-      .refine(
-        (valor) => modo === "editar" || !ehDataPassada(new Date(valor).toISOString()),
-        "A data do evento não pode estar no passado.",
-      ),
+      .refine((valor) => {
+        if (modo === "editar") return true;
+        const data = new Date(valor);
+        if (Number.isNaN(data.getTime())) return false;
+        return !ehDataPassada(data.toISOString());
+      }, "A data do evento não pode estar no passado."),
     local: z.string().min(2, "Informe o local.").max(150, "Máximo de 150 caracteres."),
     descricao: z.string().max(1000, "Máximo de 1000 caracteres.").optional(),
     salaoId: z.string().optional(),
@@ -197,6 +210,8 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
     },
   });
 
+  const [erroSubmit, setErroSubmit] = useState<string | null>(null);
+
   const salaoIdSelecionado = useWatch({ control, name: "salaoId" });
   const { data: salaoData, isLoading: carregandoSalao } = useSalao(salaoIdSelecionado ?? "");
   const { fields, replace } = useFieldArray({ control, name: "mesas" });
@@ -253,6 +268,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
   }, [salaoData]);
 
   const onSubmit = handleSubmit(async (dados) => {
+    setErroSubmit(null);
     const dadosBase = {
       nome: dados.nome,
       data: new Date(dados.data).toISOString(),
@@ -276,10 +292,15 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           body: JSON.stringify(dadosBase),
         });
       }
-    } catch {
-      toast.error(
-        modo === "criar" ? "Não foi possível criar o evento." : "Não foi possível salvar as alterações.",
-      );
+    } catch (erro) {
+      const mensagem =
+        erro instanceof ApiError
+          ? erro.message
+          : modo === "criar"
+            ? "Não foi possível criar o evento."
+            : "Não foi possível salvar as alterações.";
+      setErroSubmit(mensagem);
+      toast.error(mensagem);
       return;
     }
 
@@ -329,9 +350,10 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
           body: JSON.stringify({ perfil, preco }),
         });
       }
-    } catch {
+    } catch (erro) {
+      const detalhe = erro instanceof ApiError ? ` (${erro.message})` : "";
       toast.error(
-        "Evento salvo, mas houve um problema ao salvar parte da configuração. Revise abaixo.",
+        `Evento salvo, mas houve um problema ao salvar parte da configuração${detalhe}. Revise na tela do evento.`,
       );
       queryClient.invalidateQueries({ queryKey: ["eventos"] });
       router.push(`/eventos/${idAlvo}`);
@@ -345,6 +367,7 @@ export function EventoFormulario({ modo, eventoId, dadosIniciais }: EventoFormul
 
   return (
     <form onSubmit={onSubmit} className="space-y-6" noValidate>
+      <FormErrorBanner mensagem={erroSubmit} />
       {/* Dados do evento à esquerda, ingresso avulso + preço por perfil à direita — aproveita a
           largura em monitores maiores em vez de empilhar tudo numa coluna só (achado numa
           conversa com o usuário, em telas grandes as seções ficavam meio "vazias" na largura).

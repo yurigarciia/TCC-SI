@@ -47,10 +47,17 @@ export default function LoginScreen() {
         >
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scroll}>
             {/* Achado numa conversa com o usuário: a tela de entrada não precisa do cabeçalho em
-                gradiente com título/subtítulo (esse é o papel do cadastro/vincular-conta, que
-                têm um contexto a explicar) — aqui, só a marca, centralizada. */}
+                gradiente com título/subtítulo "de etapa" (esse é o papel do cadastro/vincular-
+                conta) — mas só a logo sozinha, sem nenhum texto, ficou estranha/fria demais;
+                marca + uma linha de boas-vindas resolve isso sem reintroduzir o banner. */}
             <View style={styles.logoContainer}>
               <LogoMark size={72} />
+              <Text variant="headlineSmall" style={styles.marca}>
+                Querência ERP
+              </Text>
+              <Text variant="bodyMedium" style={styles.boasVindas}>
+                Bem-vindo(a) de volta! Acesse sua conta de associado.
+              </Text>
             </View>
 
             <Surface style={styles.card} elevation={2}>
@@ -139,7 +146,9 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   safeArea: { flex: 1, backgroundColor: cores.fundo },
   scroll: { flexGrow: 1, backgroundColor: cores.fundo },
-  logoContainer: { alignItems: "center", paddingTop: 48, paddingBottom: 24 },
+  logoContainer: { alignItems: "center", paddingTop: 48, paddingBottom: 24, gap: 4 },
+  marca: { color: cores.primaria, fontWeight: "700", marginTop: 8 },
+  boasVindas: { color: cores.textoSecundario, textAlign: "center", paddingHorizontal: 32 },
   card: {
     marginHorizontal: 20,
     padding: 20,

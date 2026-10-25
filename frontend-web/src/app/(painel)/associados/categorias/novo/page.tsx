@@ -5,6 +5,7 @@ import { Loader2, Tag } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,9 +19,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormErrorBanner } from "@/components/form-error-banner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCriarCategoriaSocio } from "@/features/associados/use-associados";
+import { ApiError } from "@/lib/api-client";
 
 const formSchema = z
   .object({
@@ -56,8 +59,10 @@ export default function NovaCategoriaSocioPage() {
   });
 
   const isenta = useWatch({ control, name: "isenta" });
+  const [erroSubmit, setErroSubmit] = useState<string | null>(null);
 
   const onSubmit = handleSubmit((dados) => {
+    setErroSubmit(null);
     criar.mutate(
       {
         nome: dados.nome,
@@ -69,7 +74,12 @@ export default function NovaCategoriaSocioPage() {
           toast.success("Categoria criada.");
           router.push("/associados/categorias");
         },
-        onError: () => toast.error("Não foi possível criar a categoria."),
+        onError: (erro) => {
+          const mensagem =
+            erro instanceof ApiError ? erro.message : "Não foi possível criar a categoria.";
+          setErroSubmit(mensagem);
+          toast.error(mensagem);
+        },
       },
     );
   });
@@ -99,6 +109,7 @@ export default function NovaCategoriaSocioPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
+            <FormErrorBanner mensagem={erroSubmit} />
             <div className="space-y-2">
               <Label htmlFor="nome">Nome</Label>
               <Input

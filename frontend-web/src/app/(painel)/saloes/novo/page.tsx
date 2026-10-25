@@ -5,11 +5,13 @@ import { Building2, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { FormErrorBanner } from "@/components/form-error-banner";
 import {
   Card,
   CardContent,
@@ -20,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCriarSalao } from "@/features/saloes/use-saloes";
+import { ApiError } from "@/lib/api-client";
 
 const formSchema = z.object({
   nome: z.string().min(2, "Informe o nome do salão.").max(100, "Máximo de 100 caracteres."),
@@ -37,14 +40,21 @@ export default function NovoSalaoPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormInput, unknown, FormValues>({ resolver: zodResolver(formSchema) });
+  const [erroSubmit, setErroSubmit] = useState<string | null>(null);
 
   const onSubmit = handleSubmit((dados) => {
+    setErroSubmit(null);
     criar.mutate(dados, {
       onSuccess: (salao) => {
         toast.success("Salão cadastrado. Agora adicione as mesas.");
         router.push(`/saloes/${salao.id}`);
       },
-      onError: () => toast.error("Não foi possível cadastrar o salão."),
+      onError: (erro) => {
+        const mensagem =
+          erro instanceof ApiError ? erro.message : "Não foi possível cadastrar o salão.";
+        setErroSubmit(mensagem);
+        toast.error(mensagem);
+      },
     });
   });
 
@@ -65,6 +75,7 @@ export default function NovoSalaoPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
+            <FormErrorBanner mensagem={erroSubmit} />
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do salão</Label>
               <Input

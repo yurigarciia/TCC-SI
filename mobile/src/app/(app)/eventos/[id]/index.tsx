@@ -98,7 +98,7 @@ export default function EventoDetalheScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="titleMedium" style={styles.ctaTitulo}>
-                  Comprar ingressos / Reservar mesa
+                  Comprar ingressos
                 </Text>
                 <Text variant="bodySmall" style={styles.ctaSubtitulo}>
                   Garanta sua presença e a dos seus acompanhantes
@@ -113,10 +113,6 @@ export default function EventoDetalheScreen() {
           <Surface style={styles.card} elevation={1}>
             <Text variant="titleMedium" style={styles.tituloSecao}>
               Mapa de mesas
-            </Text>
-            <Text variant="bodySmall" style={[styles.textoMuted, { marginBottom: 4 }]}>
-              Só pra consulta — use o botão &quot;Comprar ingressos / Reservar mesa&quot; acima
-              pra escolher a sua.
             </Text>
             <View style={styles.legenda}>
               {LEGENDA_MAPA.map(({ status, rotulo }) => (

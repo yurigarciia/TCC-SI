@@ -5,11 +5,13 @@ import { Building2, Calendar, IdCard, Loader2, Phone, Save, Tag, User, UserPlus,
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { FormErrorBanner } from "@/components/form-error-banner";
 import {
   Card,
   CardContent,
@@ -90,8 +92,10 @@ export default function NovoAssociadoPage() {
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "dependentes" });
+  const [erroSubmit, setErroSubmit] = useState<string | null>(null);
 
   const onSubmit = handleSubmit((dados) => {
+    setErroSubmit(null);
     cadastrar.mutate(
       {
         ...dados,
@@ -106,11 +110,14 @@ export default function NovoAssociadoPage() {
           router.push("/associados");
         },
         onError: (erro) => {
-          toast.error(
+          const mensagem =
             erro instanceof ApiError && erro.status === 409
               ? "Já existe um associado com esse CPF."
-              : "Não foi possível cadastrar o associado.",
-          );
+              : erro instanceof ApiError
+                ? erro.message
+                : "Não foi possível cadastrar o associado.";
+          setErroSubmit(mensagem);
+          toast.error(mensagem);
         },
       },
     );
@@ -145,6 +152,7 @@ export default function NovoAssociadoPage() {
       </div>
 
       <form id={ID_FORM_NOVO} onSubmit={onSubmit} className="space-y-6" noValidate>
+        <FormErrorBanner mensagem={erroSubmit} />
         <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <Card>
           <CardHeader>

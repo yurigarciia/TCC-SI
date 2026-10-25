@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { FormErrorBanner } from "@/components/form-error-banner";
 import {
   Card,
   CardContent,
@@ -33,6 +34,7 @@ import {
   useAtualizarAssociado,
   useCategoriasSocio,
 } from "@/features/associados/use-associados";
+import { ApiError } from "@/lib/api-client";
 import { ehDataNascimentoPlausivel, formatarTelefone, pareceEmail } from "@/lib/format";
 
 const ID_FORM_DADOS = "form-dados-associado";
@@ -92,6 +94,8 @@ function EditarAssociadoConteudo({
   const atualizar = useAtualizarAssociado(associadoId);
   const adicionarDependente = useAdicionarDependente(associadoId);
   const [adicionandoDependente, setAdicionandoDependente] = useState(false);
+  const [erroSubmitDados, setErroSubmitDados] = useState<string | null>(null);
+  const [erroSubmitDependente, setErroSubmitDependente] = useState<string | null>(null);
   // Dropdown de seleção — busca uma página grande o bastante para cobrir todas as categorias
   // cadastradas sem precisar de paginação aqui (mesmo raciocínio de associados/novo).
   const { data: resultadoCategorias } = useCategoriasSocio(1, undefined, 100);
@@ -128,6 +132,7 @@ function EditarAssociadoConteudo({
   });
 
   const onSubmitDados = handleSubmit((dados) => {
+    setErroSubmitDados(null);
     atualizar.mutate(
       {
         ...dados,
@@ -140,7 +145,12 @@ function EditarAssociadoConteudo({
           toast.success("Dados atualizados.");
           reset(dados);
         },
-        onError: () => toast.error("Não foi possível salvar as alterações."),
+        onError: (erro) => {
+          const mensagem =
+            erro instanceof ApiError ? erro.message : "Não foi possível salvar as alterações.";
+          setErroSubmitDados(mensagem);
+          toast.error(mensagem);
+        },
       },
     );
   });
@@ -153,13 +163,19 @@ function EditarAssociadoConteudo({
   } = useForm<DependenteFormValues>({ resolver: zodResolver(dependenteSchema) });
 
   const onSubmitDependente = handleSubmitDependente((dados) => {
+    setErroSubmitDependente(null);
     adicionarDependente.mutate(dados, {
       onSuccess: () => {
         toast.success("Dependente adicionado.");
         resetDependente({ nome: "", dataNascimento: "" });
         setAdicionandoDependente(false);
       },
-      onError: () => toast.error("Não foi possível adicionar o dependente."),
+      onError: (erro) => {
+        const mensagem =
+          erro instanceof ApiError ? erro.message : "Não foi possível adicionar o dependente.";
+        setErroSubmitDependente(mensagem);
+        toast.error(mensagem);
+      },
     });
   });
 
@@ -190,6 +206,7 @@ function EditarAssociadoConteudo({
       </div>
 
       <form id={ID_FORM_DADOS} onSubmit={onSubmitDados} className="space-y-6" noValidate>
+      <FormErrorBanner mensagem={erroSubmitDados} />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -312,6 +329,11 @@ function EditarAssociadoConteudo({
               className="flex flex-wrap items-end gap-3 rounded-lg border p-3"
               noValidate
             >
+              {erroSubmitDependente && (
+                <div className="w-full">
+                  <FormErrorBanner mensagem={erroSubmitDependente} />
+                </div>
+              )}
               <div className="flex-1 space-y-1.5">
                 <Label htmlFor="dependente-nome">Nome</Label>
                 <InputComIcone
