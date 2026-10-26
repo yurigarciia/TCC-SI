@@ -16,7 +16,8 @@
 - **Fluxo 1, papel Associado (auto-cadastro):** entregue a mesma ficha completa — o participante
   digita os próprios dados no app, como se estivesse se cadastrando de verdade.
 - **Fluxo 1, papel Associado (vincular conta):** não usa ficha de persona. Use o CPF de um
-  associado que a diretoria **acabou de cadastrar** na mesma sessão (anote o CPF na hora).
+  associado **pré-cadastrado pelo moderador** (ativo, sem conta de login) antes da sessão — ver
+  "Kits do participante" ao final. Nenhuma tarefa depende de dado produzido por outro participante.
 
 Reserve personas em sequência (P01, P02...) conforme forem sendo consumidas pelas sessões; não
 pule nem reutilize.
@@ -175,27 +176,48 @@ pule nem reutilize.
 
 ---
 
-## Nota separada — Fluxo 3, variação "pagamento presencial"
+## Kits do participante (preencher na véspera da sessão)
 
-Essa variação precisa de um associado **já existente, ativo e inadimplente** — não dá pra
-preparar isso numa ficha fixa com antecedência (a condição de inadimplência muda conforme o
-sistema roda). No dia da sessão, antes de começar:
+Princípio: **nenhuma tarefa depende de outra tarefa nem de outro participante**. Tudo que a tarefa
+precisa é preparado pelo moderador antes, conferido no painel, e anotado aqui à mão. Itens de kit
+são de uso único. Preparar 1 kit reserva por entidade.
 
-1. Abrir **Mensalidades → Relatório de inadimplência** no painel.
-2. Escolher qualquer associado listado e anotar seu nome e CPF na ficha abaixo, à mão.
-3. Usar esse CPF na tarefa e na verificação (`node scripts/verificar-tarefas.js 3 <cpf>`).
+### Kit — papel Diretoria
 
-| Nome do associado (anotar na hora) | CPF (anotar na hora) |
-|---|---|
-| | |
-| | |
+| Item | Preencher | Conferido? |
+|---|---|---|
+| Entidade / ID do participante | | |
+| F1 — Persona (P0_) | | |
+| F2 — Evento (trecho do nome) | | |
+| F2 — Ingresso A (validar por **QR**): associado fictício, CPF, código `#___` | | |
+| F2 — Ingresso B (validar por **código digitado**): associado fictício, CPF, código `#___` | | |
+| F3 — Associado inadimplente reservado (ativo): nome, CPF | | |
 
-## Nota separada — Fluxo 1, variação "vincular conta"
+Como preparar:
 
-Mesma lógica: não é uma persona fixa, é o CPF de alguém que a **própria diretoria acabou de
-cadastrar** nesta sessão (Fluxo 1, papel Diretoria). Anote aqui pra não perder o dado entre uma
-tarefa e outra:
+- **Ingressos A e B:** no painel (ou no app, logado como associado fictício do seed), emitir 1
+  ingresso por associado fictício no evento escolhido; anotar CPF e código. Deixar o app do
+  moderador logado na conta do ingresso A, com o QR aberto (ou imprimir o QR).
+- **Inadimplente:** em **Mensalidades → Relatório de inadimplência**, escolher um associado
+  listado que **não** seja usado em outro kit; anotar nome e CPF.
 
-| Persona usada pela diretoria (P0_) | CPF cadastrado |
-|---|---|
-| | |
+### Kit — papel Associado
+
+| Item | Preencher | Conferido? |
+|---|---|---|
+| Entidade / ID do participante | | |
+| F1 — Variante (A auto-cadastro / B vincular conta) | | |
+| F1-A — Persona (P0_) | | |
+| F1-B — CPF pré-cadastrado (ativo, sem login) | | |
+| F2/F3 — Conta de teste (e-mail e senha) | | |
+| F2 — Evento (trecho do nome) | | |
+
+Como preparar:
+
+- **F1-B:** cadastrar no painel, antes do dia, uma pessoa fictícia com CPF novo e categoria de
+  sócio definida. Anotar o CPF. Não criar conta de login para ela.
+- **Conta de teste (F2/F3):** associado ativo, **com categoria de sócio** definida e login já
+  existente; garantir uma **mensalidade em aberto** (pendente) no mês. É a conta que o moderador
+  usa no app depois do Fluxo 1. Uma conta por participante (pagar a mensalidade a consome).
+- Conferir que o evento do F2 está publicado e que a conta de teste ainda **não** tem ingresso
+  nele.

@@ -32,10 +32,15 @@ Duração total estimada por participante: ~40-45 min.
 
 ## 3. Participantes
 
-6 a 10 participantes por entidade (conforme já fixado no artigo), distribuídos em dois papéis:
+2 a 4 participantes por entidade (definido com o orientador em 2026-10-26; substitui a faixa de 6 a
+10 anterior), ou seja, 4 a 8 no total, distribuídos em dois papéis:
 
 - **Diretoria / responsável administrativo** — testa os passos mediados pela entidade, no painel web.
 - **Associado** — testa os passos de autoatendimento, no aplicativo mobile.
+
+Distribuição alvo por entidade: **1 a 2 da Diretoria + 1 a 2 Associados** (mínimo viável: 1 + 1, o
+que ainda cobre as duas pontas de cada fluxo). Com 4 pessoas, o ideal é 2 + 2 e pelo menos uma
+pessoa idosa ou de menor familiaridade digital entre os Associados.
 
 Recrutar participantes com diferentes graus de familiaridade digital, incluindo pessoas idosas —
 esse é o ponto que valida (ou não) RNF01 na prática. Confirmar com cada entidade, antes da sessão,
@@ -88,6 +93,12 @@ ecossistema (associados, ingressos/eventos, mensalidades) e por corresponderem a
 como prioritários no diagnóstico (Seção 4.1 — RF14, por exemplo, nasceu de um problema relatado por
 ambas as entidades).
 
+**Princípio de independência.** Nenhuma tarefa depende do resultado de outra tarefa nem da ação de
+outro participante: o estado inicial de cada tarefa é preparado pelo moderador antes da sessão (kit do
+participante, em `materiais-impressao.md`). Uma falha em uma tarefa invalida apenas aquela tarefa. As
+duas pontas de cada fluxo (diretoria e associado) são avaliadas em tarefas separadas, com dados
+pré-preparados, e não encadeadas entre si.
+
 ### Fluxo 1 — Cadastro de associado (RF01, RF18)
 
 **Papel: Diretoria (painel web).**
@@ -105,8 +116,10 @@ final da tarefa.
 **Papel: Associado (app mobile).**
 1. Abrir o app e, na tela de autenticação, escolher "Criar conta" (`(auth)/cadastro.tsx`).
 2. Preencher o auto-cadastro com um CPF fictício fornecido pelo moderador.
-3. Alternativa a testar com pelo menos um participante: "Já tenho cadastro" / vincular conta
-   (`(auth)/vincular-conta.tsx`), usando um CPF que a diretoria já cadastrou no Fluxo 1.
+3. Variante a testar com pelo menos um participante (em vez do auto-cadastro, não além dele):
+   "Já tenho cadastro" / vincular conta (`(auth)/vincular-conta.tsx`), usando um CPF
+   **pré-cadastrado pelo moderador** (ativo, sem login), e não um cadastro feito por outro
+   participante.
 
 *Critério de sucesso objetivo:* existe um usuário de autenticação vinculado (`associadoId`
 preenchido) ao registro de associado correspondente.
@@ -123,14 +136,14 @@ preenchido) ao registro de associado correspondente.
 
 **Papel: Diretoria (painel web).**
 1. Acessar `/eventos/[id]/ingressos` do mesmo evento.
-2. Ler o código QR exibido pelo participante-associado (pela câmera) **ou** digitar manualmente o
-   código, conforme instrução do moderador (os dois caminhos de validação precisam ser exercidos ao
-   menos uma vez cada, em participantes diferentes).
+2. Validar **dois ingressos pré-emitidos pelo moderador**: um lendo o QR pela câmera (mostrado no
+   celular do moderador) e outro digitando o código manualmente. Os dois caminhos são exercidos
+   pelo mesmo participante, sem depender de nenhum participante-associado.
 3. Confirmar que o painel exibe a entrada validada e os totais atualizados (emitidos / validados /
    aguardando).
 
-*Critério de sucesso objetivo:* o mesmo ingresso do passo anterior passa a `entradaValidada = true`,
-com timestamp de validação populado.
+*Critério de sucesso objetivo:* cada um dos dois ingressos pré-emitidos passa a
+`entradaValidada = true`, com timestamp de validação populado.
 
 ### Fluxo 3 — Pagamento de mensalidade (RF05, RF06, RF07, RF19)
 
@@ -143,14 +156,13 @@ com timestamp de validação populado.
 para `status = pago`, com `dataPagamento` preenchida.
 
 **Papel: Diretoria (painel web).**
-1. Acessar `/mensalidades`.
-2. Localizar o mesmo associado e confirmar visualmente o pagamento refletido no histórico.
-3. Abrir o relatório de inadimplência e confirmar que esse associado não consta mais na lista (ou,
-   numa variação da tarefa com outro associado fictício ainda inadimplente, localizá-lo na lista e
-   registrar manualmente um pagamento presencial por ele).
+1. Acessar `/mensalidades` e abrir o relatório de inadimplência.
+2. Localizar o **associado inadimplente reservado pelo moderador** (kit) e registrar manualmente um
+   pagamento presencial por ele.
+3. Confirmar que ele deixa de constar no relatório e que o histórico reflete o pagamento.
 
-*Critério de sucesso objetivo:* idem ao passo anterior (estado da mensalidade no banco), mais — na
-variação de pagamento presencial — uma nova entrada de pagamento com `canal = presencial`.
+*Critério de sucesso objetivo:* a mensalidade do associado reservado muda para `status = pago`, com
+`forma_pagamento = presencial` (não depende de nenhum pagamento feito por participante-associado).
 
 ## 6. Instrumentos de coleta
 
@@ -199,10 +211,13 @@ Perguntas abertas, conduzidas após o SUS:
 
 ### 6.5 Amostra e análise
 
-Cada combinação de entidade × papel (diretoria/associado) reúne de 3 a 5 participantes (dentro da
-faixa de 6-10 por entidade já fixada). Isso inviabiliza comparação estatística entre subgrupos: a
-análise é descritiva, com triangulação entre os quatro instrumentos acima, usando análise de
-conteúdo (Gil, 2017) como técnica. Recrutamento por conveniência, com indicação da própria diretoria
+Cada combinação de entidade × papel (diretoria/associado) reúne de 1 a 2 participantes (2 a 4 por
+entidade, 4 a 8 no total). Isso inviabiliza comparação estatística, e até a comparação entre
+entidades: a análise é descritiva e de caráter exploratório (estudo de casos múltiplos). A pontuação
+SUS é reportada **por participante** (tabela individual) e, de forma apenas indicativa, agrupada por
+papel somando as duas entidades (diretoria n≈2–4; associado n≈2–4), sem média por entidade × papel.
+O peso da conclusão recai sobre a triangulação entre os quatro instrumentos acima (taxa de
+conclusão, observação, SUS e entrevista), usando análise de conteúdo (Gil, 2017) como técnica. Recrutamento por conveniência, com indicação da própria diretoria
 de cada entidade. Uma rodada de teste-piloto interno precede as sessões reais, para calibrar o
 roteiro de tarefas e o tempo estimado por sessão.
 
@@ -221,6 +236,10 @@ roteiro de tarefas e o tempo estimado por sessão.
   2026-10-25) — `materiais-impressao.md`.
 - [x] Formulário SUS em português pronto para aplicação — `sus-painel-web.md` (papel Diretoria) e
   `sus-app-mobile.md` (papel Associado), um por interface (ver nota de divergência abaixo).
+- [ ] Preparar os kits de participante (`materiais-impressao.md`, "Kits do participante"): CPFs
+  pré-cadastrados, contas de teste com mensalidade em aberto, ingressos pré-emitidos e inadimplentes
+  reservados — 1 kit por participante confirmado + 1 reserva por entidade. Hoje manual; avaliar um
+  script `preparar-kits` no padrão de `seed-demo.ts` (a decidir).
 - [ ] Confirmar com cada entidade a lista de participantes e seus papéis (Seção 3).
 - [ ] Agendar as datas das sessões com CPF Pia do Sul e CTG Sentinela da Querência.
 - [x] Divergência da Seção 6.4 corrigida — agora 8 perguntas, pareadas com o Apêndice A.2 de
