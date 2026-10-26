@@ -25,7 +25,7 @@ export default function EventosPublicadosScreen() {
   const { data: eventos, isLoading, isError, refetch, isRefetching } = useEventosPublicados();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo="Eventos" />
 
       {isLoading && (

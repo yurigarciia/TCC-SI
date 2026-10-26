@@ -35,7 +35,7 @@ export default function IngressosEReservasScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo="Ingressos e Mesas" />
       <View style={styles.segmentedWrapper}>
         <SegmentedButtons

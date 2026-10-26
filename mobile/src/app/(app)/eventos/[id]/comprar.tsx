@@ -56,12 +56,18 @@ export default function ComprarScreen() {
   const { data, isLoading, isError } = useEventoPublicado(id);
   const temSalao = !!data?.evento.salaoId;
   const temIngressoAvulso = !!data?.ingresso;
+  // Mesma query de ReservarMesa (mesma queryKey, reaproveita o cache) — achado numa conversa com
+  // o usuário: `temSalao` só diz que o evento está vinculado a um salão, não que esse salão tem
+  // mesas configuradas de fato. Sem isso, a opção "Mesa" aparecia mesmo sem nenhuma mesa pra
+  // reservar.
+  const { data: mesas } = useMapaMesas(temSalao ? id : "");
+  const temMesas = temSalao && (mesas?.length ?? 0) > 0;
 
-  const [modo, setModo] = useState<"mesa" | "avulso">(temSalao ? "mesa" : "avulso");
+  const [modo, setModo] = useState<"mesa" | "avulso">(temMesas ? "mesa" : "avulso");
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Comprar" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <ActivityIndicator size="large" color={paperTheme.colors.primary} />
@@ -72,7 +78,7 @@ export default function ComprarScreen() {
 
   if (isError || !data) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Comprar" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <Text variant="titleMedium" style={styles.textoCentralizado}>
@@ -84,10 +90,10 @@ export default function ComprarScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo={data.evento.nome} onVoltar={() => router.back()} />
 
-      {temSalao && temIngressoAvulso && (
+      {temMesas && temIngressoAvulso && (
         <View style={styles.segmentedWrapper}>
           <SegmentedButtons
             value={modo}
@@ -100,7 +106,7 @@ export default function ComprarScreen() {
         </View>
       )}
 
-      {modo === "mesa" && temSalao ? (
+      {modo === "mesa" && temMesas ? (
         <ReservarMesa eventoId={id} />
       ) : (
         <ComprarIngresso eventoId={id} />

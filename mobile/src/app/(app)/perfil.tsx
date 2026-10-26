@@ -48,7 +48,7 @@ export default function PerfilScreen() {
     .join("");
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo="Perfil" />
 
       <ScrollView

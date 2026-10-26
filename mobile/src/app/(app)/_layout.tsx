@@ -1,5 +1,6 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { cores } from "@/theme/paper-theme";
 import { useRegistrarPushToken } from "@/features/notificacoes/use-notificacoes";
 
@@ -26,75 +27,99 @@ export default function AppLayout() {
   useRegistrarPushToken();
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: cores.sidebarAtivo,
-        tabBarInactiveTintColor: cores.sidebarTexto,
-        tabBarShowLabel: true,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
-        tabBarStyle: {
-          position: "absolute",
-          marginHorizontal: MARGEM_HORIZONTAL,
-          bottom: 16,
-          height: 64,
-          borderRadius: 24,
-          backgroundColor: cores.sidebar,
-          borderTopWidth: 0,
-          elevation: 8,
-          shadowColor: cores.sidebarEscuro,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-        },
-        tabBarItemStyle: { paddingTop: 8 },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Início",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home-variant-outline" color={color} size={size} />
-          ),
+    <>
+      {/* Ícones claros pra combinar com o fundo escuro do AppTopBar (achado numa conversa com o
+          usuário: "ficou ridículo" o topo claro destoando do resto). Expo SDK 57 não aceita mais
+          `backgroundColor` aqui (Android força edge-to-edge, a barra de notificações é sempre
+          transparente) — por isso o próprio AppTopBar pinta atrás dela com `insets.top`, e é essa
+          pintura, não esta prop, que faz a cor bater. */}
+      <StatusBar style="light" />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: cores.sidebarAtivo,
+          tabBarInactiveTintColor: cores.sidebarTexto,
+          tabBarShowLabel: true,
+          tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
+          tabBarStyle: {
+            position: "absolute",
+            marginHorizontal: MARGEM_HORIZONTAL,
+            bottom: 16,
+            height: 64,
+            borderRadius: 24,
+            backgroundColor: cores.sidebar,
+            borderTopWidth: 0,
+            elevation: 8,
+            shadowColor: cores.sidebarEscuro,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 12,
+          },
+          tabBarItemStyle: { paddingTop: 8 },
         }}
-      />
-      <Tabs.Screen
-        name="mensalidade"
-        options={{
-          title: "Mensalidade",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="credit-card-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="ingressos"
-        options={{
-          title: "Ingressos",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="qrcode" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="eventos"
-        options={{
-          title: "Eventos",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-star" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="perfil"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-circle-outline" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Início",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="home-variant-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="mensalidade"
+          options={{
+            title: "Mensalidade",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="credit-card-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="ingressos"
+          options={{
+            title: "Ingressos",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="qrcode" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="eventos"
+          options={{
+            title: "Eventos",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="calendar-star"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="perfil"
+          options={{
+            title: "Perfil",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="account-circle-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </>
   );
 }

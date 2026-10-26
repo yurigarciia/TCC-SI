@@ -23,7 +23,7 @@ export default function MensalidadeScreen() {
   const emAberto = ordenadas.find((m) => m.status !== "paga");
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo="Mensalidade" />
 
       {isLoading && (

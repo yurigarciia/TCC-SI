@@ -28,10 +28,15 @@ export default function EventoDetalheScreen() {
   const { data, isLoading, isError } = useEventoPublicado(id);
   const temSalao = !!data?.evento.salaoId;
   const { data: mesas } = useMapaMesas(temSalao ? id : "");
+  // Achado numa conversa com o usuário: `temSalao` só diz que o evento está vinculado a um salão,
+  // não que esse salão tem mesas de fato configuradas (pode ter só paredes/áreas desenhadas, ou
+  // nenhuma mesa ainda) — nesse caso não há nada pra mostrar/reservar, então nem o croqui nem a
+  // opção de mesa na tela de compra (comprar.tsx) devem aparecer.
+  const temMesas = temSalao && (mesas?.length ?? 0) > 0;
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Evento" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <ActivityIndicator size="large" color={paperTheme.colors.primary} />
@@ -42,7 +47,7 @@ export default function EventoDetalheScreen() {
 
   if (isError || !data) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Evento" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <Text variant="titleMedium" style={styles.textoCentralizado}>
@@ -56,14 +61,14 @@ export default function EventoDetalheScreen() {
   const { evento, ingresso } = data;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo={evento.nome} onVoltar={() => router.back()} />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
           <Text variant="headlineSmall" style={styles.tituloHero}>
             {evento.nome}
           </Text>
-          <View style={styles.badges}>
+          <View style={[styles.badges, styles.badgesCentralizado]}>
             <Chip
               icon="calendar-blank-outline"
               style={styles.badge}
@@ -88,7 +93,7 @@ export default function EventoDetalheScreen() {
           </Surface>
         )}
 
-        {(temSalao || ingresso) && (
+        {(temMesas || ingresso) && (
           <Pressable
             onPress={() => router.push({ pathname: "/eventos/[id]/comprar", params: { id } })}
           >
@@ -109,7 +114,7 @@ export default function EventoDetalheScreen() {
           </Pressable>
         )}
 
-        {temSalao && (
+        {temMesas && (
           <Surface style={styles.card} elevation={1}>
             <Text variant="titleMedium" style={styles.tituloSecao}>
               Mapa de mesas
@@ -121,11 +126,7 @@ export default function EventoDetalheScreen() {
                 </Text>
               ))}
             </View>
-            {mesas ? (
-              <MapaMesasCanvas mesas={mesas} interativo={false} onMesaPress={() => {}} />
-            ) : (
-              <ActivityIndicator style={{ marginVertical: 24 }} />
-            )}
+            <MapaMesasCanvas mesas={mesas ?? []} interativo={false} onMesaPress={() => {}} />
           </Surface>
         )}
       </ScrollView>
@@ -144,9 +145,12 @@ const styles = StyleSheet.create({
   textoCentralizado: { textAlign: "center" },
   textoMuted: { color: "#5B5147" },
   container: { padding: 20, gap: 14, paddingBottom: 110 },
-  hero: { gap: 10 },
-  tituloHero: { color: "#2B241D", fontWeight: "700" },
+  // Achado numa conversa com o usuário: título e badges centralizados na tela, não alinhados à
+  // esquerda como o resto do conteúdo — dá mais destaque ao cabeçalho do evento.
+  hero: { gap: 10, alignItems: "center" },
+  tituloHero: { color: "#2B241D", fontWeight: "700", textAlign: "center" },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  badgesCentralizado: { justifyContent: "center" },
   badge: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#DDD0BC" },
   badgeTexto: { color: "#2B241D", fontWeight: "600" },
   card: { borderRadius: 16, backgroundColor: "#FFFFFF", padding: 16, gap: 6 },

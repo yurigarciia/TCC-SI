@@ -65,7 +65,7 @@ export default function LoginScreen() {
                 </View>
               </LinearGradient>
               <Text variant="headlineSmall" style={styles.marca}>
-                Querência ERP
+                Querência Associados
               </Text>
               <Text variant="bodyMedium" style={styles.boasVindas}>
                 Bem-vindo(a) de volta! Acesse sua conta de associado.

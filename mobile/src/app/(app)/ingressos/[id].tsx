@@ -21,7 +21,7 @@ export default function IngressoDetalheScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Ingresso" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <ActivityIndicator size="large" color={paperTheme.colors.primary} />
@@ -32,7 +32,7 @@ export default function IngressoDetalheScreen() {
 
   if (isError || !ingresso) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <AppTopBar titulo="Ingresso" onVoltar={() => router.back()} />
         <View style={styles.center}>
           <Text variant="titleMedium" style={styles.textoCentralizado}>
@@ -56,7 +56,7 @@ export default function IngressoDetalheScreen() {
     : null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <AppTopBar titulo={ingresso.nomeComprador} onVoltar={() => router.back()} />
       <ScrollView contentContainerStyle={styles.container}>
         <Surface style={styles.card} elevation={1}>
