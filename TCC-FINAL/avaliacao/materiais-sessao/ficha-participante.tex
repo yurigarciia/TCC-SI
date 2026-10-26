@@ -1,0 +1,140 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{lmodern}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{brandgreen}{HTML}{2E5E3E}
+\definecolor{lightbg}{HTML}{F5F2EC}
+
+\titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
+\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Querência ERP --- Avaliação de usabilidade}
+\fancyhead[R]{\small Ficha do participante}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\campo}[2]{\textbf{#1:} & #2 \\}
+
+\begin{document}
+
+% ---------------------------------------------------------------- CAPA / INSTRUÇÕES
+\thispagestyle{fancy}
+\begin{center}
+  {\Large\bfseries\color{brandgreen} Fichas do Participante}\\[2mm]
+  {\large Sessões de avaliação de usabilidade --- Querência ERP}
+\end{center}
+
+\vspace{4mm}
+\noindent\colorbox{lightbg}{%
+  \begin{minipage}{0.95\linewidth}
+  \vspace{1mm}
+  Todos os nomes, CPFs e demais dados deste documento são \textbf{fictícios}, sem relação com
+  associados reais de nenhuma das entidades parceiras. Os CPFs foram conferidos contra o banco de
+  avaliação em 2026-10-25 e não existem ainda no sistema.
+  \vspace{1mm}
+  \end{minipage}%
+}
+
+\section*{Como usar este material}
+
+\begin{itemize}[leftmargin=5mm]
+  \item Cada ficha abaixo (Persona P01 a P08) ocupa uma página e pode ser impressa/entregue
+    separadamente.
+  \item Cada persona só pode ser usada \textbf{uma vez}: depois de cadastrada numa sessão, o CPF
+    passa a existir de verdade no sistema. Marque a ficha como ``usada'' assim que uma sessão a
+    consumir e não a reutilize nem pule a ordem (P01, P02, \ldots).
+  \item \textbf{Fluxo 1, papel Diretoria:} entregue a ficha completa da persona ao participante
+    --- ele digita os dados no painel, como se fosse uma proposta física real de associação.
+  \item \textbf{Fluxo 1, papel Associado (auto-cadastro):} entregue a mesma ficha completa --- o
+    participante digita os próprios dados no aplicativo, como se estivesse se cadastrando de
+    verdade.
+  \item \textbf{Fluxo 1, papel Associado (vincular conta):} não usa ficha de persona. O moderador
+    entrega, em vez disso, um cartão com um CPF pré-cadastrado por ele antes da sessão (ver kit do
+    participante, no roteiro do condutor) --- nenhuma tarefa depende de dado produzido por outro
+    participante.
+  \item Personas P07 e P08 são reservas, para o caso de uma sessão extra ou de um CPF já
+    consumido.
+\end{itemize}
+
+\clearpage
+
+% ---------------------------------------------------------------- GERADOR DE FICHAS
+\newcommand{\persona}[9]{%
+  \thispagestyle{fancy}
+  \begin{center}
+    {\Large\bfseries\color{brandgreen} Ficha do Participante --- Persona #1}
+  \end{center}
+  \vspace{2mm}
+  \noindent$\square$~Ficha ainda não usada \qquad $\square$~Já usada nesta sessão
+  \vspace{4mm}
+
+  \noindent
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{@{}p{4.2cm}p{10cm}@{}}
+    \toprule
+    \campo{Nome completo}{#2}
+    \campo{CPF}{#3}
+    \campo{Telefone}{#4}
+    \campo{E-mail}{#5}
+    \midrule
+    \campo{CEP}{#6}
+    \campo{Endereço}{#7}
+    \campo{Bairro}{#8}
+    \campo{Cidade / UF}{Santa Maria / RS}
+    \bottomrule
+  \end{tabular}
+
+  \vspace{6mm}
+  \noindent\colorbox{lightbg}{%
+    \begin{minipage}{0.95\linewidth}
+    \vspace{1mm}
+    \textbf{Categoria de sócio sugerida} (só papel Diretoria): #9 \\[1mm]
+    \textbf{Senha a usar} (só papel Associado, auto-cadastro): \texttt{avaliacao123}
+    \vspace{1mm}
+    \end{minipage}%
+  }
+
+  \vspace{8mm}
+  \noindent\textit{Oriente o participante a preencher estes dados exatamente como aparecem aqui,
+  como se fosse uma pessoa real se associando ou se cadastrando pela primeira vez.}
+  \clearpage
+}
+
+\persona{P01}{Vera Lúcia Pereira dos Santos}{911.990.000-01}{(55) 99911-9001}%
+  {vera.p01@exemplo-avaliacao.org}{97015-430}{Rua Venâncio Aires, 245 --- Centro}{Centro}{Efetivo}
+
+\persona{P02}{Osvaldo Ramires Fagundes}{911.990.000-02}{(55) 99911-9002}%
+  {osvaldo.p02@exemplo-avaliacao.org}{97050-110}{Avenida Rio Branco, 1180, Apto 302}{Nossa Senhora de Lourdes}{Dançarino}
+
+\persona{P03}{Iraci Beatriz Schmidt}{911.990.000-03}{(55) 99911-9003}%
+  {iraci.p03@exemplo-avaliacao.org}{97060-002}{Rua Alberto Pasqualini, 87}{Camobi}{Remido}
+
+\persona{P04}{Juvêncio Antônio Leitão}{911.990.000-04}{(55) 99911-9004}%
+  {juvencio.p04@exemplo-avaliacao.org}{97030-470}{Rua Floriano Peixoto, 562, Casa 2}{Patronato}{Efetivo}
+
+\persona{P05}{Zuleica Terezinha Borba}{911.990.000-05}{(55) 99911-9005}%
+  {zuleica.p05@exemplo-avaliacao.org}{97015-180}{Rua Dr. Bozano, 1033}{Centro}{Dançarino}
+
+\persona{P06}{Belisário Augusto Konzen}{911.990.000-06}{(55) 99911-9006}%
+  {belisario.p06@exemplo-avaliacao.org}{97105-120}{Avenida Medianeira, 740}{Medianeira}{Remido}
+
+\persona{P07 (reserva)}{Adelar Francisco Pillar}{911.990.000-07}{(55) 99911-9007}%
+  {adelar.p07@exemplo-avaliacao.org}{97020-290}{Rua Appel, 410}{Nossa Senhora das Dores}{Efetivo}
+
+\persona{P08 (reserva)}{Noeli Aparecida Gressler}{911.990.000-08}{(55) 99911-9008}%
+  {noeli.p08@exemplo-avaliacao.org}{97045-400}{Rua Marechal Floriano, 1522}{Nonoai}{Dançarino}
+
+\end{document}
