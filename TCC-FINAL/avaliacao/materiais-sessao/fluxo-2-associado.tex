@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{lmodern}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{brandgreen}{HTML}{2E5E3E}
+\definecolor{lightbg}{HTML}{F5F2EC}
+
+\titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
+\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Querência ERP --- Avaliação de usabilidade}
+\fancyhead[R]{\small Fluxo 2 --- Associado}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\dizer}[1]{%
+  \noindent\colorbox{lightbg}{%
+    \begin{minipage}{0.95\linewidth}
+    \vspace{1mm}
+    \textbf{O que dizer ao participante:} ``#1''
+    \vspace{1mm}
+    \end{minipage}%
+  }\vspace{3mm}
+}
+\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
+\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{brandgreen} Fluxo 2 --- Compra de ingresso}\\[1mm]
+  {\large RF12, RF20, RF21 --- Papel: Associado (app mobile)}
+\end{center}
+
+\vspace{2mm}
+\estado{conta de teste do kit, já logada pelo moderador; evento publicado com ingresso avulso
+configurado.}
+
+\begin{enumerate}[leftmargin=6mm]
+  \item Abrir a aba \textbf{Eventos}, tocar no evento indicado no kit.
+  \item Na tela do evento, tocar \textbf{Comprar ingressos}.
+  \item Se aparecer o seletor ``Mesa / Ingresso avulso'', escolher \textbf{Ingresso avulso} (a
+    menos que o moderador peça explicitamente a variante de reserva de mesa).
+  \item Confirmar a compra do próprio ingresso (e, opcionalmente, adicionar 1 acompanhante).
+  \item Abrir a aba \textbf{Ingressos}, localizar o ingresso recém-comprado --- confirmar que
+    aparece um código (\texttt{\#001}, \texttt{\#002}\ldots) junto ao nome, e o QR ao tocar no
+    card.
+\end{enumerate}
+
+\textbf{Verificação objetiva:}
+\begin{small}
+\begin{verbatim}
+cd backend
+node scripts/verificar-tarefas.js 2 <CPF-DA-CONTA-DE-TESTE> \
+  "<trecho do nome do evento>"
+\end{verbatim}
+\end{small}
+\criterio{ingresso emitido; check-in ainda não validado (normal nesse ponto).}
+
+\vspace{2mm}
+\noindent\textit{Nesta tarefa o QR do participante não é lido por ninguém --- a validação é tarefa
+separada do participante da Diretoria, com ingressos à parte já pré-emitidos pelo moderador.}
+
+\vfill
+\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
+pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
+protocolo completo no \texttt{roteiro-moderador.pdf}.
+
+\end{document}
