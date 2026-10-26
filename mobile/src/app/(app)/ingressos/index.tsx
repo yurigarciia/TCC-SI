@@ -127,7 +127,8 @@ function IngressoCard({ ingresso }: { ingresso: IngressoDoAssociado }) {
         </View>
 
         <Text variant="titleMedium" style={styles.nomeComprador} numberOfLines={1}>
-          {ingresso.nomeComprador}
+          {ingresso.nomeComprador}{" "}
+          <Text style={styles.codigo}>#{String(ingresso.codigo).padStart(3, "0")}</Text>
         </Text>
 
         <Text variant="bodyMedium" style={styles.eventoNome} numberOfLines={1}>
@@ -354,6 +355,9 @@ const styles = StyleSheet.create({
   // que o esperado.
   cardTopo: { alignItems: "flex-end" },
   nomeComprador: { fontWeight: "700", color: "#2B241D" },
+  // Diferencia ingressos do mesmo comprador pro mesmo evento (achado numa conversa com o
+  // usuário: comprar pra acompanhantes deixava vários cards com nomes repetidos na lista).
+  codigo: { fontWeight: "400", color: "#5B5147" },
   eventoNome: { fontWeight: "700", color: "#2B241D" },
   textoExplicacao: { color: "#8A5A1F", backgroundColor: "#F3E3C8", padding: 8, borderRadius: 8 },
   detalhes: { marginTop: 4, gap: 8 },

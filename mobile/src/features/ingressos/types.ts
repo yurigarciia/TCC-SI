@@ -8,6 +8,10 @@ export interface PrecosAcompanhante {
 
 export interface IngressoDoAssociado {
   id: string;
+  // Contador sequencial por evento (1, 2, 3...) — identificador curto e legível, diferente do
+  // `id` (UUID) usado no QR. Importante quando o mesmo associado compra vários ingressos
+  // (acompanhantes) pro mesmo evento.
+  codigo: number;
   nomeComprador: string;
   status: StatusIngresso;
   preco: number;

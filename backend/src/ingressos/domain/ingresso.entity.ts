@@ -23,6 +23,11 @@ export class Ingresso {
   constructor(
     public readonly id: string,
     public readonly eventoId: string,
+    // Contador sequencial por evento (1, 2, 3...), gerado na emissão — identificador curto e
+    // legível pra diferenciar ingressos na listagem/QR, já que o UUID não serve pra isso (achado
+    // numa conversa com o usuário: vários ingressos do mesmo comprador no mesmo evento ficavam
+    // indistinguíveis entre si).
+    public readonly codigo: number,
     public readonly nomeComprador: string,
     public readonly associadoId: string | null,
     public readonly perfilComprador: PerfilComprador,

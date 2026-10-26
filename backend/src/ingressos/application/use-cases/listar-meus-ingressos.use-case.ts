@@ -6,6 +6,7 @@ import { StatusIngresso } from '../../domain/ingresso.entity';
 
 export interface IngressoDoAssociado {
   id: string;
+  codigo: number;
   nomeComprador: string;
   status: StatusIngresso;
   preco: number;
@@ -42,9 +43,10 @@ export class ListarMeusIngressosUseCase {
         const evento = await this.eventos.buscarPorId(ingresso.eventoId);
         return {
           id: ingresso.id,
+          codigo: ingresso.codigo,
           // Pode ser o nome do próprio associado (ingresso dele) ou de um acompanhante (ver
-          // ComprarIngressoAcompanhanteUseCase) — sem isso, dois ingressos pro mesmo evento na
-          // lista ficam indistinguíveis entre si.
+          // ComprarIngressoAcompanhanteUseCase) — combinado com `codigo`, diferencia dois
+          // ingressos pro mesmo evento na lista, que antes ficavam indistinguíveis entre si.
           nomeComprador: ingresso.nomeComprador,
           status: ingresso.status,
           preco: ingresso.preco,

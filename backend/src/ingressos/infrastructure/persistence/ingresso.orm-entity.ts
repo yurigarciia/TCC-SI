@@ -19,6 +19,9 @@ export class IngressoOrmEntity {
   @Column({ name: 'evento_id', type: 'uuid' })
   eventoId: string;
 
+  @Column({ type: 'integer' })
+  codigo: number;
+
   @Column({ name: 'nome_comprador' })
   nomeComprador: string;
 

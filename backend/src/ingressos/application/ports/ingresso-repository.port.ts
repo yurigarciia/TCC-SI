@@ -8,6 +8,7 @@ import {
 
 export interface NovoIngresso {
   eventoId: string;
+  codigo: number;
   nomeComprador: string;
   associadoId: string | null;
   perfilComprador: PerfilComprador;

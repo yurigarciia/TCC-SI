@@ -50,7 +50,7 @@ import {
   useRegistrarCheckin,
   useResumoIngressosEvento,
 } from "@/features/ingressos/use-ingressos";
-import { formatarDataHora, formatarMoeda } from "@/lib/format";
+import { formatarCodigoIngresso, formatarDataHora, formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
 
@@ -328,6 +328,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Código</TableHead>
                     <TableHead>Comprador</TableHead>
                     <TableHead>Perfil</TableHead>
                     <TableHead>Preço</TableHead>
@@ -338,10 +339,13 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                 </TableHeader>
                 <TableBody>
                 {ingressos.length === 0 ? (
-                  <TableEmptyRow colSpan={6}>Nenhum ingresso encontrado.</TableEmptyRow>
+                  <TableEmptyRow colSpan={7}>Nenhum ingresso encontrado.</TableEmptyRow>
                 ) : (
                   ingressos.map((ingresso) => (
                     <TableRow key={ingresso.id}>
+                      <TableCell className="text-muted-foreground">
+                        {formatarCodigoIngresso(ingresso.codigo)}
+                      </TableCell>
                       <TableCell className="font-medium">{ingresso.nomeComprador}</TableCell>
                       <TableCell>{rotuloPerfilComprador(ingresso.perfilComprador)}</TableCell>
                       <TableCell>{formatarMoeda(ingresso.preco)}</TableCell>
@@ -572,7 +576,10 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
                     />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-foreground">
-                        {ingressoConferencia.nomeComprador}
+                        {ingressoConferencia.nomeComprador}{" "}
+                        <span className="font-normal text-muted-foreground">
+                          {formatarCodigoIngresso(ingressoConferencia.codigo)}
+                        </span>
                       </p>
                       <p className="truncate text-sm text-muted-foreground">
                         {ingressoConferencia.evento?.nome ?? "Evento não encontrado"}

@@ -57,7 +57,10 @@ export default function IngressoDetalheScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={[]}>
-      <AppTopBar titulo={ingresso.nomeComprador} onVoltar={() => router.back()} />
+      <AppTopBar
+        titulo={`${ingresso.nomeComprador} #${String(ingresso.codigo).padStart(3, "0")}`}
+        onVoltar={() => router.back()}
+      />
       <ScrollView contentContainerStyle={styles.container}>
         <Surface style={styles.card} elevation={1}>
           <View style={styles.cardTopo}>
@@ -91,6 +94,9 @@ export default function IngressoDetalheScreen() {
 
           <View style={styles.qrContainer}>
             <QRCode value={ingresso.id} size={220} />
+            <Text variant="titleMedium" style={styles.codigo}>
+              #{String(ingresso.codigo).padStart(3, "0")}
+            </Text>
             <Text variant="bodySmall" style={[styles.textoCentralizado, styles.textoMuted]}>
               Mostre esse QR na entrada
             </Text>
@@ -126,6 +132,7 @@ const styles = StyleSheet.create({
   },
   cardTopo: { alignItems: "flex-end" },
   eventoNome: { fontWeight: "700", color: "#2B241D" },
+  codigo: { fontWeight: "700", color: "#2E5E3E", letterSpacing: 1 },
   qrContainer: {
     alignItems: "center",
     gap: 8,

@@ -7,6 +7,7 @@ import { PerfilComprador, StatusIngresso } from '../../domain/ingresso.entity';
 
 export interface IngressoDetalhado {
   id: string;
+  codigo: number;
   nomeComprador: string;
   perfilComprador: PerfilComprador;
   preco: number;
@@ -51,6 +52,7 @@ export class ConsultarIngressoUseCase {
 
     return {
       id: ingresso.id,
+      codigo: ingresso.codigo,
       nomeComprador: ingresso.nomeComprador,
       perfilComprador: ingresso.perfilComprador,
       preco: ingresso.preco,

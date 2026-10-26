@@ -65,6 +65,11 @@ export function formatarCep(valor: string): string {
   return digitos.replace(/(\d{5})(\d)/, "$1-$2");
 }
 
+// Código curto e legível do ingresso (ex.: "#003") — contador sequencial por evento, não o UUID.
+export function formatarCodigoIngresso(codigo: number): string {
+  return `#${String(codigo).padStart(3, "0")}`;
+}
+
 export function formatarTelefone(valor: string): string {
   const digitos = valor.replace(/\D/g, "").slice(0, 11);
   if (digitos.length === 0) return "";

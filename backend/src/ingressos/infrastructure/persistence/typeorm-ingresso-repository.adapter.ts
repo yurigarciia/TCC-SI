@@ -99,6 +99,7 @@ export class TypeOrmIngressoRepositoryAdapter extends IngressoRepositoryPort {
     return new Ingresso(
       orm.id,
       orm.eventoId,
+      orm.codigo,
       orm.nomeComprador,
       orm.associadoId,
       orm.perfilComprador,

@@ -106,6 +106,11 @@ export class EmitirIngressoUseCase {
 
     return this.ingressos.salvar({
       eventoId,
+      // Reaproveita a contagem já feita acima pra checar esgotamento — é exatamente quantos
+      // ingressos esse evento já tem, então o próximo código sequencial é emitidos + 1 (começa em
+      // 1 pra cada evento). Pequena corrida possível sob concorrência real é pega pelo índice
+      // único (evento_id, codigo) — ver migration AddCodigoToIngressos.
+      codigo: emitidos + 1,
       nomeComprador: dados.nomeComprador,
       associadoId: dados.associadoId ?? null,
       perfilComprador: dados.perfilComprador,

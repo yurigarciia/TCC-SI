@@ -6,6 +6,9 @@ export type StatusIngresso = "emitido" | "usado";
 export interface Ingresso {
   id: string;
   eventoId: string;
+  // Contador sequencial por evento (1, 2, 3...) — identificador curto e legível, diferente do
+  // `id` (UUID), que não serve pra diferenciar ingressos na listagem a olho/na fala.
+  codigo: number;
   nomeComprador: string;
   perfilComprador: PerfilComprador;
   preco: number;
@@ -20,6 +23,7 @@ export interface Ingresso {
 // categoria de sócio (quando aplicável), que a listagem paginada não traz.
 export interface IngressoDetalhado {
   id: string;
+  codigo: number;
   nomeComprador: string;
   perfilComprador: PerfilComprador;
   preco: number;
