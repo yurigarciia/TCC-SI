@@ -192,7 +192,10 @@ Perguntas abertas, conduzidas após o SUS:
    você, caso preferisse não usar o sistema diretamente?
 6. (Só para diretoria) As categorias de sócio e o croqui do salão, do jeito que ficaram configurados,
    correspondem a como a entidade de fato organiza isso hoje?
-7. Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
+7. (Só para diretoria) Nos fluxos em que a diretoria age em nome do associado (como o cadastro
+   feito pelo painel), a forma como o sistema trata essa aprovação corresponde a como a entidade
+   decide isso hoje, ou falta algum nível de autorização interna?
+8. Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
 
 ### 6.5 Amostra e análise
 
@@ -209,8 +212,21 @@ roteiro de tarefas e o tempo estimado por sessão.
   rodado em 2026-10-18 contra a API em produção.
 - [x] Atualizar as capturas de tela do sistema usadas no artigo (estavam desatualizadas em relação à
   interface atual).
-- [ ] Rotina de verificação automatizada de conclusão (Seção 6.1) — a escrever, provavelmente como um
-  script Node separado que roda consultas diretas (TypeORM ou SQL) após cada sessão.
-- [ ] Formulário SUS em português pronto para aplicação (papel ou formulário digital simples).
+- [x] Rotina de verificação automatizada de conclusão (Seção 6.1) —
+  `backend/scripts/verificar-tarefas.js`, testada contra dados reais em 2026-10-25 (associado,
+  ingresso e mensalidade). Uso documentado em `roteiro-sessao.md`.
+- [x] Roteiro literal de sessão, passo a passo por fluxo e papel, refletindo a interface atual —
+  `roteiro-sessao.md`.
+- [x] Fichas das personas fictícias para os fluxos de cadastro (CPFs conferidos sem colisão em
+  2026-10-25) — `materiais-impressao.md`.
+- [x] Formulário SUS em português pronto para aplicação — `sus-painel-web.md` (papel Diretoria) e
+  `sus-app-mobile.md` (papel Associado), um por interface (ver nota de divergência abaixo).
 - [ ] Confirmar com cada entidade a lista de participantes e seus papéis (Seção 3).
 - [ ] Agendar as datas das sessões com CPF Pia do Sul e CTG Sentinela da Querência.
+- [x] Divergência da Seção 6.4 corrigida — agora 8 perguntas, pareadas com o Apêndice A.2 de
+  `main.tex` (decisão do autor, não do orientador: as duas versões são nossas de qualquer forma).
+- [ ] Consentimento informado dos participantes (TCLE) e gravação (áudio/vídeo, se houver) —
+  ainda não endereçado em nenhum documento desta pasta; confirmar exigência da AMF.
+- [x] Dispositivo do papel Associado: o próprio moderador leva o celular com o APK já instalado
+  e o entrega ao participante durante os cenários — não depende do celular do participante nem
+  de instalação no dia. Falta só confirmar conectividade (Wi-Fi/dados) no local de cada sessão.
