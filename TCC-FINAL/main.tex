@@ -1103,8 +1103,11 @@ navegação principal do painel ou do aplicativo e a terminologia da interface, 
 tarefas que seriam avaliadas em seguida, para não antecipar sua resolução), sem intervenção do
 participante, destinada a nivelar a familiaridade com a navegação e a terminologia da interface; a
 execução de tarefas sobre três fluxos principais, selecionados em conjunto com a orientação deste
-trabalho; a aplicação da escala SUS; e uma entrevista semiestruturada breve. O roteiro de tarefas, os
-critérios de conclusão por tarefa e o roteiro de entrevista constam do Apêndice~\ref{apx:avaliacao}.
+trabalho; a aplicação da escala SUS; e uma entrevista semiestruturada breve. O roteiro de tarefas por
+fluxo e papel consta do Apêndice~\ref{apx:tarefas}; as fichas das personas fictícias e os kits de
+preparo de cada sessão, do Apêndice~\ref{apx:fichas}; o roteiro de entrevista, do
+Apêndice~\ref{apx:entrevista}; e o instrumento SUS efetivamente aplicado, dos
+Anexos~\ref{anexo:sus-painel} e~\ref{anexo:sus-app}.
 
 A avaliação contou com 2 a 4 participantes por entidade, recrutados por conveniência e indicação da
 própria diretoria, incluindo membros da diretoria, responsáveis pela organização de eventos e
@@ -1170,7 +1173,10 @@ participante imediatamente após o bloco de tarefas e referida apenas à interfa
 efetivamente utilizou na sessão (o painel administrativo, para participantes da diretoria, ou o
 aplicativo \textit{mobile}, para participantes associados): como as duas interfaces têm propósitos e
 públicos distintos, suas pontuações SUS são reportadas e discutidas separadamente, e não combinadas
-numa única pontuação geral do ecossistema. O quarto foi uma entrevista semiestruturada
+numa única pontuação geral do ecossistema. Dado o tamanho reduzido de cada subgrupo, a pontuação SUS
+é apresentada por participante (tabela individual) e, de forma apenas indicativa, resumida por papel
+pela \textbf{mediana}, não pela média — menos sensível a um único participante com escore
+discrepante. O quarto foi uma entrevista semiestruturada
 breve, cobrindo a facilidade de localizar as funcionalidades, os pontos de maior dificuldade
 percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes com menor
 familiaridade digital, sugestões de melhoria e, inspirada nos construtos de utilidade percebida e
@@ -1548,42 +1554,232 @@ do alcance deste trabalho.
 % Inclua na bibliografia apenas as obras efetivamente citadas no texto.
 \printbibliography[title={REFERÊNCIAS}]
 
+% ====== Comandos auxiliares para os Apêndices/Anexos de avaliação ======
+\newcommand{\oquedizer}[1]{\par\noindent\textbf{O que dizer ao participante:} ``#1''\par\smallskip}
+\newcommand{\estadonecessario}[1]{\par\noindent\textit{Estado necessário (preparado previamente pelo moderador):} #1\par\smallskip}
+\newcommand{\criteriosucesso}[1]{\par\noindent\textit{Critério de sucesso objetivo:} #1\par}
+
 \clearpage
-\section*{APÊNDICE A -- Roteiro de avaliação}
-\addcontentsline{toc}{section}{APÊNDICE A -- Roteiro de avaliação}
+\section*{APÊNDICE A -- Roteiro de tarefas por fluxo e papel}
+\addcontentsline{toc}{section}{APÊNDICE A -- Roteiro de tarefas por fluxo e papel}
 \makeatletter
 \renewcommand{\@currentlabel}{A}
 \makeatother
-\label{apx:avaliacao}
+\label{apx:tarefas}
 
-Detalhamento operacional da avaliação descrita na Seção~\ref{sec:avaliacao}: o roteiro de tarefas
-por fluxo, o critério objetivo de conclusão de cada uma e o roteiro de entrevista semiestruturada.
+Script literal do moderador para cada um dos três fluxos avaliados (Seção~\ref{sec:avaliacao}),
+desdobrado pelos dois papéis de participante (Diretoria, no painel administrativo; Associado, no
+aplicativo \textit{mobile}). Cada combinação fluxo $\times$ papel é uma tarefa independente: o
+estado inicial de que ela precisa é preparado pelo moderador antes da sessão (ver
+Apêndice~\ref{apx:fichas}), nunca produzido por outra tarefa ou por outro participante.
 
-\subsection*{A.1 Roteiro de tarefas e critérios de conclusão}
+\subsection*{A.1 Fluxo 1 -- Cadastro de associado (RF01, RF18)}
 
-\textbf{Fluxo 1, cadastro de associado (RF01, RF18).} Diretoria: cadastra, pelo painel, um associado
-fictício a partir de uma ficha em papel fornecida pelo moderador. Associado: realiza o auto-cadastro
-no aplicativo com um CPF fictício; ao menos um participante testa também vincular-se a um cadastro já
-feito pela diretoria. \textit{Critério de conclusão:} existe, no banco, um associado com o CPF
-informado e \texttt{status = ativo} (ou \texttt{pendente\_validacao}, se a etapa de aprovação não foi
-exercida).
+\paragraph{Papel: Diretoria (painel web).}
+\estadonecessario{ficha de persona ainda não usada (Apêndice~\ref{apx:fichas}).}
+\oquedizer{Alguém novo quer se associar à entidade. Você recebeu esta ficha preenchida à mão ---
+cadastre essa pessoa no sistema como se fosse um caso real.}
+\begin{enumerate}[nosep]
+  \item Entregar a ficha de persona ainda não usada.
+  \item Acessar \textbf{Associados → Novo associado} (\texttt{/associados/novo}).
+  \item Preencher Nome completo, CPF, Telefone, E-mail e endereço.
+  \item Selecionar a Categoria de sócio indicada na ficha.
+  \item Clicar \textbf{Salvar} e confirmar que o associado aparece na listagem (\texttt{/associados}).
+\end{enumerate}
+\criteriosucesso{existe, no banco, um associado com o CPF informado e \texttt{status = ativo}. A
+conta de login ainda não aparece vinculada --- normal, aqui só a diretoria cadastrou.}
 
-\textbf{Fluxo 2, compra de ingresso e check-in (RF12, RF20, RF21).} Associado: compra, no aplicativo,
-um ingresso para um evento fictício publicado e localiza o código QR na aba ``Ingressos''. Diretoria:
-lê esse código pela câmera do painel ou o digita manualmente, e confirma a atualização dos totais de
-entrada. \textit{Critério de conclusão:} o ingresso emitido pelo associado passa a
-\texttt{status = usado}, com data e hora de validação preenchidas.
+\paragraph{Papel: Associado (app mobile) --- variante A, auto-cadastro.}
+\estadonecessario{ficha de persona ainda não usada.}
+\oquedizer{Você quer se tornar associado da entidade e está criando sua conta pelo aplicativo pela
+primeira vez.}
+\begin{enumerate}[nosep]
+  \item Na tela de login (app deslogado), tocar ``Ainda não é associado? Cadastre-se''.
+  \item Preencher com os dados da ficha: dados pessoais, endereço, e-mail e senha.
+  \item Tocar \textbf{Criar conta}.
+\end{enumerate}
+\criteriosucesso{o associado existe com \texttt{status = pendente\_validacao} \textbf{e} já existe
+uma conta de login vinculada a ele.}
 
-\textbf{Fluxo 3, pagamento de mensalidade (RF05, RF06, RF07, RF19).} Associado: consulta a
-mensalidade em aberto e realiza o pagamento online pelo aplicativo. Diretoria: localiza o mesmo
-associado no relatório de inadimplência do painel e confirma que ele deixou de constar na lista.
-\textit{Critério de conclusão:} a mensalidade indicada muda de \texttt{status = pendente} para
-\texttt{status = paga}, com data de pagamento preenchida.
+\paragraph{Papel: Associado (app mobile) --- variante B, vincular conta.}
+\estadonecessario{CPF pré-cadastrado pelo moderador antes da sessão (ativo, sem conta de login) ---
+não depende de nenhum outro participante.}
+\oquedizer{A diretoria já cadastrou você como associado, mas você nunca entrou no aplicativo. Use o
+CPF que consta neste cartão para criar seu acesso.}
+\begin{enumerate}[nosep]
+  \item Na tela de login, tocar ``Já é associado mas nunca acessou?''.
+  \item Preencher o CPF do cartão, e-mail e senha novos, e tocar \textbf{Vincular conta}.
+\end{enumerate}
+\criteriosucesso{o associado tem \texttt{status = ativo} \textbf{e} passa a ter uma conta de login
+vinculada.}
+
+\subsection*{A.2 Fluxo 2 -- Compra de ingresso e check-in (RF12, RF20, RF21)}
+
+\paragraph{Papel: Associado (app mobile).}
+\estadonecessario{conta de teste ativa, já logada pelo moderador; evento publicado com ingresso
+avulso configurado.}
+\begin{enumerate}[nosep]
+  \item Na aba Eventos, abrir o evento indicado e tocar \textbf{Comprar ingressos}.
+  \item Escolher Ingresso avulso e confirmar a compra.
+  \item Na aba Ingressos, localizar o ingresso recém-comprado, com código sequencial e QR visíveis.
+\end{enumerate}
+\criteriosucesso{existe um ingresso emitido para a conta de teste no evento indicado, com
+\texttt{status = ativo} (check-in ainda não validado, o que é esperado nesse ponto).}
+
+\paragraph{Papel: Diretoria (painel web).}
+\estadonecessario{2 ingressos já pré-emitidos pelo moderador em nome de associados fictícios ---
+ingresso A, para ler por câmera, e ingresso B, para digitar o código --- independentes do ingresso
+comprado pelo participante Associado.}
+\oquedizer{Estes dois convidados chegaram ao baile. Confira a entrada de cada um.}
+\begin{enumerate}[nosep]
+  \item Acessar \textbf{Eventos → [o evento] → Ingressos} (\texttt{/eventos/[id]/ingressos}).
+  \item Ingresso A: ler o QR pela câmera do painel; ingresso B: digitar o código manualmente.
+  \item Em cada um, revisar a tela de conferência e tocar \textbf{Confirmar entrada}.
+  \item Confirmar que os contadores do evento (emitidos / validados / aguardando) atualizam.
+\end{enumerate}
+\criteriosucesso{cada um dos dois ingressos pré-emitidos passa a \texttt{status = usado}, com data
+e hora de validação preenchidas.}
+
+\subsection*{A.3 Fluxo 3 -- Pagamento de mensalidade (RF05, RF06, RF07, RF19)}
+
+\paragraph{Papel: Associado (app mobile).}
+\estadonecessario{conta de teste com mensalidade em aberto no mês.}
+
+Antes de começar, o participante é avisado de que o pagamento online usa uma porta de pagamento
+simulada (RF19) --- a tarefa valida a interação com a interface e o registro no sistema, não um
+pagamento financeiro real.
+\begin{enumerate}[nosep]
+  \item Na aba Mensalidade, localizar a cobrança em aberto e tocar \textbf{Pagar}.
+  \item Seguir o fluxo de pagamento online (simulado) e confirmar o histórico atualizado.
+\end{enumerate}
+\criteriosucesso{a mensalidade muda de \texttt{status = pendente} para \texttt{status = pago}, com
+data e forma de pagamento preenchidas.}
+
+\paragraph{Papel: Diretoria (painel web).}
+\estadonecessario{1 associado ativo e inadimplente, reservado pelo moderador antes da sessão ---
+independente do pagamento feito pelo participante Associado.}
+\oquedizer{Este associado veio até a sede pagar a mensalidade em atraso. Registre o pagamento.}
+\begin{enumerate}[nosep]
+  \item Acessar \textbf{Mensalidades} e abrir o Relatório de inadimplência.
+  \item Localizar o associado reservado e registrar manualmente um pagamento presencial por ele.
+  \item Confirmar que ele deixa de constar no relatório.
+\end{enumerate}
+\criteriosucesso{a mensalidade do associado reservado muda para \texttt{status = pago}, com
+\texttt{forma\_pagamento = presencial}.}
 
 Em todas as tarefas, o moderador registra o tempo gasto, o número de erros (ações desfeitas ou
-refeitas) e o número de intervenções (vezes em que precisa indicar o próximo passo ao participante).
+refeitas) e o número de intervenções (vezes em que precisa indicar o próximo passo ao
+participante). Se uma tarefa trava por mais de \textasciitilde2 minutos, o moderador aplica uma
+única intervenção pontual; se ainda assim não avança, a tarefa é registrada como não concluída e a
+sessão segue para a próxima, sem refazer a anterior.
 
-\subsection*{A.2 Roteiro de entrevista semiestruturada}
+\clearpage
+\section*{APÊNDICE B -- Fichas de persona e kits de preparo}
+\addcontentsline{toc}{section}{APÊNDICE B -- Fichas de persona e kits de preparo}
+\makeatletter
+\renewcommand{\@currentlabel}{B}
+\makeatother
+\label{apx:fichas}
+
+Material impresso, entregue fisicamente ao participante durante a sessão. Todos os nomes, CPFs e
+demais dados abaixo são fictícios, sem relação com associados reais de nenhuma das entidades
+parceiras; os CPFs foram conferidos contra o banco de avaliação antes do uso. Cada persona só é
+usada uma vez por sessão.
+
+\subsection*{B.1 Personas fictícias}
+
+Para todas as personas, o e-mail segue o padrão primeiro nome em minúsculas seguido de
+\texttt{.p0X@exemplo-avaliacao.org}, o telefone segue \texttt{(55) 99911-900X} (X = número da
+persona) e, quando a persona é usada no papel Associado (auto-cadastro), a senha padrão é
+\texttt{avaliacao123}.
+
+\begin{table}[H]
+  \centering
+  \caption{Personas fictícias para os fluxos de cadastro}
+  \label{tab:personas}
+  \small
+  \begin{tabular}{@{}L{1.5cm}L{2.9cm}L{2.1cm}L{5.0cm}L{1.5cm}@{}}
+    \toprule
+    \textbf{ID} & \textbf{Nome completo} & \textbf{CPF} & \textbf{Endereço (CEP, logradouro, bairro)} & \textbf{Categoria} \\
+    \midrule
+    P01 & Vera Lúcia Pereira dos Santos & 911.990.000-01 & 97015-430, Rua Venâncio Aires 245, Centro & Efetivo \\
+    P02 & Osvaldo Ramires Fagundes & 911.990.000-02 & 97050-110, Av. Rio Branco 1180 apto 302, N. S. de Lourdes & Dançarino \\
+    P03 & Iraci Beatriz Schmidt & 911.990.000-03 & 97060-002, Rua Alberto Pasqualini 87, Camobi & Remido \\
+    P04 & Juvêncio Antônio Leitão & 911.990.000-04 & 97030-470, Rua Floriano Peixoto 562 casa 2, Patronato & Efetivo \\
+    P05 & Zuleica Terezinha Borba & 911.990.000-05 & 97015-180, Rua Dr. Bozano 1033, Centro & Dançarino \\
+    P06 & Belisário Augusto Konzen & 911.990.000-06 & 97105-120, Av. Medianeira 740, Medianeira & Remido \\
+    P07 (reserva) & Adelar Francisco Pillar & 911.990.000-07 & 97020-290, Rua Appel 410, N. S. das Dores & Efetivo \\
+    P08 (reserva) & Noeli Aparecida Gressler & 911.990.000-08 & 97045-400, Rua Marechal Floriano 1522, Nonoai & Dançarino \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026). Cidade/UF de todas: Santa Maria/RS.}
+\end{table}
+
+Uso: Fluxo 1, papel Diretoria e papel Associado (variante auto-cadastro) recebem a ficha completa
+da persona. A variante Associado (vincular conta) não usa persona --- usa, em vez disso, um CPF
+pré-cadastrado pelo moderador (kit da Diretoria, Quadro~\ref{tab:kit-diretoria}).
+
+\subsection*{B.2 Kits do participante}
+
+Princípio de independência entre tarefas (Seção~\ref{sec:avaliacao}): todo estado de que uma tarefa
+precisa é preparado pelo moderador antes da sessão, conferido no painel, e anotado num kit --- nunca
+produzido por outra tarefa. Cada kit é de uso único; preparar 1 kit reserva por entidade além dos
+participantes confirmados.
+
+\begin{table}[H]
+  \centering
+  \caption{Kit de preparo -- papel Diretoria}
+  \label{tab:kit-diretoria}
+  \small
+  \begin{tabular}{@{}L{5.3cm}L{9.6cm}@{}}
+    \toprule
+    \textbf{Item} & \textbf{Como preparar} \\
+    \midrule
+    Persona (F1) & Reservar a próxima persona ainda não usada (Quadro~\ref{tab:personas}). \\
+    Evento (F2) & Escolher um evento publicado com ingresso avulso configurado. \\
+    Ingresso A -- validação por QR (F2) & Emitir 1 ingresso para um associado fictício no evento
+      escolhido; deixar o app do moderador logado nessa conta, com o QR aberto. \\
+    Ingresso B -- validação por código (F2) & Emitir 1 ingresso para outro associado fictício no
+      mesmo evento; anotar o código gerado. \\
+    Associado inadimplente (F3) & No Relatório de inadimplência do painel, escolher um associado
+      ativo que não seja usado em outro kit; anotar nome e CPF. \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Kit de preparo -- papel Associado}
+  \label{tab:kit-associado}
+  \small
+  \begin{tabular}{@{}L{5.3cm}L{9.6cm}@{}}
+    \toprule
+    \textbf{Item} & \textbf{Como preparar} \\
+    \midrule
+    Variante do Fluxo 1 & Definir, por participante, se faz auto-cadastro (persona) ou vincular
+      conta (CPF pré-cadastrado) --- ver abaixo. \\
+    CPF pré-cadastrado (F1, variante B) & Cadastrar no painel, antes do dia, uma pessoa fictícia com
+      CPF novo e categoria de sócio definida, sem criar conta de login para ela. \\
+    Conta de teste (F2/F3) & Associado ativo, com categoria de sócio definida, login já existente e
+      mensalidade em aberto no mês; uma conta por participante, já que pagá-la a consome. \\
+    Evento (F2) & O mesmo evento do kit da Diretoria, publicado, sem ingresso ainda emitido para a
+      conta de teste. \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
+\end{table}
+
+\clearpage
+\section*{APÊNDICE C -- Roteiro de entrevista semiestruturada}
+\addcontentsline{toc}{section}{APÊNDICE C -- Roteiro de entrevista semiestruturada}
+\makeatletter
+\renewcommand{\@currentlabel}{C}
+\makeatother
+\label{apx:entrevista}
+
+Perguntas abertas, conduzidas imediatamente após a aplicação do questionário SUS
+(Anexos~\ref{anexo:sus-painel} e~\ref{anexo:sus-app}).
 
 \begin{enumerate}
   \item De forma geral, como foi a experiência de usar o sistema hoje?
@@ -1602,5 +1798,94 @@ refeitas) e o número de intervenções (vezes em que precisa indicar o próximo
     entidade decide isso hoje, ou falta algum nível de autorização interna?
   \item Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
 \end{enumerate}
+
+\clearpage
+\section*{ANEXO A -- Questionário SUS: painel administrativo}
+\addcontentsline{toc}{section}{ANEXO A -- Questionário SUS: painel administrativo}
+\makeatletter
+\renewcommand{\@currentlabel}{A}
+\makeatother
+\label{anexo:sus-painel}
+
+Instrumento padronizado de \textcite{brooke1996}, na adaptação para o português de
+\textcite{lourenco2022}, aplicado apenas a participantes do papel Diretoria, referido
+especificamente ao painel administrativo.
+
+\textit{Instruções para o participante: pensando na sua experiência usando o painel administrativo
+agora há pouco, para cada frase abaixo marque o quanto você concorda ou discorda, numa escala de 1
+(discordo totalmente) a 5 (concordo totalmente). Não existe resposta certa ou errada.}
+
+\begin{table}[H]
+  \centering
+  \caption{Questionário SUS -- painel administrativo}
+  \label{tab:sus-painel}
+  \small
+  \begin{tabular}{@{}cL{8.3cm}ccccc@{}}
+    \toprule
+    \textbf{\#} & \textbf{Afirmação} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
+    \midrule
+    1 & Eu acho que gostaria de usar o painel administrativo com frequência. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    2 & Eu achei o painel administrativo complexo sem necessidade. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    3 & Eu achei o painel administrativo fácil de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    4 & Eu acho que precisaria da ajuda de uma pessoa com conhecimentos técnicos para usar o painel administrativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    5 & Eu achei que as várias funções do painel administrativo estavam bem integradas. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    6 & Eu achei que houve muita inconsistência no painel administrativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    7 & Eu imagino que a maioria das pessoas aprenderia a usar o painel administrativo rapidamente. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    8 & Eu achei o painel administrativo muito complicado de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    9 & Eu me senti confiante usando o painel administrativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    10 & Eu precisei aprender várias coisas novas antes de conseguir usar o painel administrativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Adaptado de \textcite{brooke1996} e \textcite{lourenco2022}.}
+\end{table}
+
+\textit{Apuração (não faz parte do formulário entregue ao participante):} itens ímpares contribuem
+com (valor $-$ 1), itens pares com (5 $-$ valor); a soma das dez contribuições (0--40) é
+multiplicada por 2,5, resultando numa pontuação de 0 a 100, interpretada segundo as faixas de
+\textcite{bangor2009}: $\geq$ 80,3 excelente; 68--80,2 bom; 51--67,9 ok/aceitável; $<$ 51 ruim. A
+pontuação do painel é reportada separadamente da pontuação do aplicativo (Anexo~\ref{anexo:sus-app}),
+nunca combinada numa média única do ``sistema''.
+
+\clearpage
+\section*{ANEXO B -- Questionário SUS: aplicativo do associado}
+\addcontentsline{toc}{section}{ANEXO B -- Questionário SUS: aplicativo do associado}
+\makeatletter
+\renewcommand{\@currentlabel}{B}
+\makeatother
+\label{anexo:sus-app}
+
+Mesmo instrumento do Anexo~\ref{anexo:sus-painel}, aplicado apenas a participantes do papel
+Associado, referido especificamente ao aplicativo \textit{mobile}.
+
+\textit{Instruções para o participante: pensando na sua experiência usando o aplicativo agora há
+pouco, para cada frase abaixo marque o quanto você concorda ou discorda, numa escala de 1 (discordo
+totalmente) a 5 (concordo totalmente). Não existe resposta certa ou errada.}
+
+\begin{table}[H]
+  \centering
+  \caption{Questionário SUS -- aplicativo do associado}
+  \label{tab:sus-app}
+  \small
+  \begin{tabular}{@{}cL{8.3cm}ccccc@{}}
+    \toprule
+    \textbf{\#} & \textbf{Afirmação} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
+    \midrule
+    1 & Eu acho que gostaria de usar o aplicativo com frequência. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    2 & Eu achei o aplicativo complexo sem necessidade. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    3 & Eu achei o aplicativo fácil de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    4 & Eu acho que precisaria da ajuda de uma pessoa com conhecimentos técnicos para usar o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    5 & Eu achei que as várias funções do aplicativo estavam bem integradas. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    6 & Eu achei que houve muita inconsistência no aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    7 & Eu imagino que a maioria das pessoas aprenderia a usar o aplicativo rapidamente. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    8 & Eu achei o aplicativo muito complicado de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    9 & Eu me senti confiante usando o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    10 & Eu precisei aprender várias coisas novas antes de conseguir usar o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Adaptado de \textcite{brooke1996} e \textcite{lourenco2022}.}
+\end{table}
+
+\textit{Apuração:} idêntica ao Anexo~\ref{anexo:sus-painel}. A pontuação do aplicativo é reportada
+separadamente da pontuação do painel, nunca combinada numa média única do ``sistema''.
 
 \end{document}

@@ -185,9 +185,12 @@ alternativa viável para quem tem menor familiaridade digital.
 
 Aplicação do formulário padrão de 10 itens da *System Usability Scale* \parencite{brooke1996},
 em português (adaptação de Lourenço, Carmona e Lopes, 2022), imediatamente após o bloco de tarefas de
-cada participante. Resultado por participante e, na análise, agregado por entidade e por papel
-(diretoria vs. associado) para a comparação prevista no método (Seção 3.6 do artigo), interpretado
-segundo as faixas de Bangor, Kortum e Miller (2008).
+cada participante. Resultado reportado por participante e, de forma apenas indicativa, agregado por
+papel (diretoria vs. associado), somando as duas entidades — não por entidade × papel isoladamente
+(ver nota de amostra na Seção 6.5). Interpretado segundo as faixas de Bangor, Kortum e Miller (2009).
+Estatística de tendência central usada na agregação por papel: **mediana, não média** (orientação do
+orientador em 2026-10-27 — com n tão pequeno por grupo, a média é sensível demais a um único
+participante discrepante).
 
 ### 6.4 Roteiro de entrevista semiestruturada
 
@@ -215,7 +218,8 @@ Cada combinação de entidade × papel (diretoria/associado) reúne de 1 a 2 par
 entidade, 4 a 8 no total). Isso inviabiliza comparação estatística, e até a comparação entre
 entidades: a análise é descritiva e de caráter exploratório (estudo de casos múltiplos). A pontuação
 SUS é reportada **por participante** (tabela individual) e, de forma apenas indicativa, agrupada por
-papel somando as duas entidades (diretoria n≈2–4; associado n≈2–4), sem média por entidade × papel.
+papel somando as duas entidades (diretoria n≈2–4; associado n≈2–4) usando a **mediana** (não a
+média — ver 6.3), sem agregação por entidade × papel isoladamente.
 O peso da conclusão recai sobre a triangulação entre os quatro instrumentos acima (taxa de
 conclusão, observação, SUS e entrevista), usando análise de conteúdo (Gil, 2017) como técnica. Recrutamento por conveniência, com indicação da própria diretoria
 de cada entidade. Uma rodada de teste-piloto interno precede as sessões reais, para calibrar o
@@ -249,3 +253,11 @@ roteiro de tarefas e o tempo estimado por sessão.
 - [x] Dispositivo do papel Associado: o próprio moderador leva o celular com o APK já instalado
   e o entrega ao participante durante os cenários — não depende do celular do participante nem
   de instalação no dia. Falta só confirmar conectividade (Wi-Fi/dados) no local de cada sessão.
+- [x] Materiais de sessão em PDF, prontos para impressão — `materiais-sessao/`: fichas de persona,
+  1 roteiro por fluxo × papel (6 PDFs) e o guia geral do condutor.
+- [x] Revisão do orientador sobre SUS, roteiro e materiais (áudio transcrito em
+  `TCC-FINAL/revisoes/revisao_avaliacao.md`, 2026-10-27): material validado ("pode tocar ficha").
+  Three apontamentos endereçados: (1) usar **mediana**, não média, na agregação por papel do SUS
+  (corrigido acima, Seções 6.3 e 6.5); (2) imprimir os materiais para a sessão (já contemplado em
+  `materiais-sessao/`); (3) distinguir Apêndice (fluxos/roteiro/fichas, autorais) de Anexo (SUS,
+  instrumento de terceiros) no `main.tex` — reproduzido por completo, não apenas resumido.
