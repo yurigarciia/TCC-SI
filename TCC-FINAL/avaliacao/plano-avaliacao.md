@@ -121,8 +121,8 @@ final da tarefa.
    **pré-cadastrado pelo moderador** (ativo, sem login), e não um cadastro feito por outro
    participante.
 
-*Critério de sucesso objetivo:* existe um usuário de autenticação vinculado (`associadoId`
-preenchido) ao registro de associado correspondente.
+*Critério de sucesso objetivo:* existe um usuário de autenticação vinculado (`usuarioId` preenchido
+no registro de associado correspondente).
 
 ### Fluxo 2 — Compra de ingresso e check-in (RF12, RF20, RF21)
 
@@ -135,15 +135,16 @@ preenchido) ao registro de associado correspondente.
 `entradaValidada = false`.
 
 **Papel: Diretoria (painel web).**
-1. Acessar `/eventos/[id]/ingressos` do mesmo evento.
+1. Acessar `/eventos/[id]/ingressos` do mesmo evento e tocar **Check-in**, que abre o modal
+   "Check-in por código (QR)".
 2. Validar **dois ingressos pré-emitidos pelo moderador**: um lendo o QR pela câmera (mostrado no
    celular do moderador) e outro digitando o código manualmente. Os dois caminhos são exercidos
    pelo mesmo participante, sem depender de nenhum participante-associado.
-3. Confirmar que o painel exibe a entrada validada e os totais atualizados (emitidos / validados /
-   aguardando).
+3. Confirmar que o painel exibe a entrada validada e os cards do evento ("Ingressos emitidos",
+   "Já entraram", "Aguardando entrada") atualizam.
 
-*Critério de sucesso objetivo:* cada um dos dois ingressos pré-emitidos passa a
-`entradaValidada = true`, com timestamp de validação populado.
+*Critério de sucesso objetivo:* cada um dos dois ingressos pré-emitidos passa a `status = usado`,
+com `usadoEm` preenchido.
 
 ### Fluxo 3 — Pagamento de mensalidade (RF05, RF06, RF07, RF19)
 
@@ -153,15 +154,17 @@ preenchido) ao registro de associado correspondente.
 3. Verificar que o histórico passa a refletir o pagamento.
 
 *Critério de sucesso objetivo:* a mensalidade indicada pelo moderador muda de `status = pendente`
-para `status = pago`, com `dataPagamento` preenchida.
+para `status = paga`, com `pagoEm` preenchida.
 
 **Papel: Diretoria (painel web).**
-1. Acessar `/mensalidades` e abrir o relatório de inadimplência.
-2. Localizar o **associado inadimplente reservado pelo moderador** (kit) e registrar manualmente um
-   pagamento presencial por ele.
+1. Acessar `/mensalidades` e abrir o relatório de inadimplência para localizar o **associado
+   inadimplente reservado pelo moderador** (kit) — a tabela do relatório não tem ação nem link, só
+   confirma que ele está lá.
+2. Buscar o mesmo associado em **Associados** e abrir sua ficha; no card de mensalidades, lançar o
+   pagamento da cobrança em aberto.
 3. Confirmar que ele deixa de constar no relatório e que o histórico reflete o pagamento.
 
-*Critério de sucesso objetivo:* a mensalidade do associado reservado muda para `status = pago`, com
+*Critério de sucesso objetivo:* a mensalidade do associado reservado muda para `status = paga`, com
 `forma_pagamento = presencial` (não depende de nenhum pagamento feito por participante-associado).
 
 ## 6. Instrumentos de coleta

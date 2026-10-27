@@ -168,12 +168,15 @@ impressão do kit; o código do ingresso B está anotado no cartão do kit.
 **O que dizer:** "Estes dois convidados chegaram ao baile. Confira a entrada de cada um."
 
 1. Acessar **Eventos → [o evento] → Ingressos** (`/eventos/[id]/ingressos`).
-2. **Ingresso A:** tocar **Ler código** (câmera) e apontar para o QR mostrado pelo moderador.
-3. **Ingresso B:** informar o código digitado manualmente no campo de texto, conforme o cartão.
-4. Em cada um, na tela de conferência (nome + código do ingresso, evento, categoria, valor,
-   status), revisar os dados e tocar **Confirmar entrada** — o check-in não é automático ao ler
-   o QR.
-5. Confirmar que a listagem/contadores do evento (emitidos / validados / aguardando) atualizam.
+2. Tocar o botão **Check-in** no topo da tela — abre o modal "Check-in por código (QR)".
+3. **Ingresso A:** no modal, tocar **Ativar câmera para ler QR** e apontar para o QR mostrado pelo
+   moderador.
+4. **Ingresso B:** no mesmo modal, digitar o código no campo de texto e tocar **Buscar**.
+5. Em cada um, na tela de conferência que abre em seguida (nome + código do ingresso, evento,
+   categoria quando sócio, valor, status), revisar os dados e tocar **Confirmar entrada** — o
+   check-in não é automático ao ler o QR nem ao buscar o código.
+6. Confirmar que os cards do evento ("Ingressos emitidos", "Já entraram", "Aguardando entrada")
+   atualizam.
 
 ```
 node scripts/verificar-tarefas.js 2 <CPF-DO-ASSOCIADO-FICTICIO-A> "<trecho do nome do evento>"
@@ -199,7 +202,7 @@ pagamento financeiro real.
 Conta usada: **conta de teste do kit**, com mensalidade em aberto.
 
 1. Abrir a aba **Mensalidade**, localizar a cobrança em aberto do mês.
-2. Tocar **Pagar** e seguir o fluxo de pagamento online (simulado).
+2. Tocar **Pagar online** e seguir o fluxo de pagamento (simulado).
 3. Confirmar que o histórico passa a mostrar a competência como paga.
 
 ```
@@ -216,10 +219,13 @@ Associado usado: o **associado inadimplente reservado no kit** (nome e CPF anota
 pagamento."
 
 1. Acessar **Mensalidades** (`/mensalidades`) e abrir o **Relatório de inadimplência**.
-2. Localizar o associado do kit na lista.
-3. Registrar manualmente um **pagamento presencial** por ele.
-4. Confirmar que o associado deixa de constar no relatório e que o histórico reflete o
-   pagamento.
+2. Localizar o associado do kit na lista (a tabela só mostra Associado, Competência, Valor devido
+   e Dias em atraso — não dá pra registrar o pagamento direto dali, nem tem link pra ficha dele).
+3. Ir até **Associados**, buscar o mesmo associado pelo nome ou CPF e abrir sua ficha
+   (`/associados/[id]`).
+4. No card de mensalidades da ficha, tocar **Lançar pagamento** na cobrança em aberto.
+5. Confirmar que o associado deixa de constar no relatório de inadimplência e que o histórico
+   reflete o pagamento.
 
 ```
 node scripts/verificar-tarefas.js 3 <CPF-DO-ASSOCIADO-INADIMPLENTE>
