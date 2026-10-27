@@ -1,0 +1,93 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{lmodern}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{brandgreen}{HTML}{2E5E3E}
+\definecolor{lightbg}{HTML}{F5F2EC}
+
+\titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
+\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Querência ERP --- Avaliação de usabilidade}
+\fancyhead[R]{\small Questionário SUS --- Aplicativo do associado}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{brandgreen} Questionário SUS}\\[1mm]
+  {\large Aplicativo do Associado (Querência ERP) --- papel Associado}
+\end{center}
+
+\vspace{3mm}
+\noindent\textbf{ID do participante} (código, não o nome): \makebox[4cm]{\hrulefill}
+
+\vspace{2mm}
+\noindent\textbf{Data:} \makebox[3.5cm]{\hrulefill}
+
+\vspace{2mm}
+\noindent\textbf{Entidade:} $\square$ CPF Pia do Sul \hspace{8mm} $\square$ CTG Sentinela da Querência
+
+\vspace{4mm}
+\noindent\colorbox{lightbg}{%
+  \begin{minipage}{0.95\linewidth}
+  \vspace{1mm}
+  Pensando na sua experiência usando o \textbf{aplicativo} agora há pouco, para cada frase abaixo
+  marque o quanto você concorda ou discorda, numa escala de 1 (discordo totalmente) a 5 (concordo
+  totalmente). Não existe resposta certa ou errada.
+  \vspace{1mm}
+  \end{minipage}%
+}
+
+\vspace{4mm}
+\renewcommand{\arraystretch}{1.6}
+\noindent\begin{tabular}{@{}p{0.6cm}p{8.2cm}p{1.0cm}p{1.0cm}p{1.0cm}p{1.0cm}p{1.0cm}@{}}
+  \toprule
+   & \textbf{Afirmação} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
+  \midrule
+  1 & Eu acho que gostaria de usar o aplicativo com frequência. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  2 & Eu achei o aplicativo complexo sem necessidade. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  3 & Eu achei o aplicativo fácil de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  4 & Eu acho que precisaria da ajuda de uma pessoa com conhecimentos técnicos para usar o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  5 & Eu achei que as várias funções do aplicativo estavam bem integradas. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  6 & Eu achei que houve muita inconsistência no aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  7 & Eu imagino que a maioria das pessoas aprenderia a usar o aplicativo rapidamente. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  8 & Eu achei o aplicativo muito complicado de usar. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  9 & Eu me senti confiante usando o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  10 & Eu precisei aprender várias coisas novas antes de conseguir usar o aplicativo. & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ \\
+  \bottomrule
+\end{tabular}
+
+\vspace{5mm}
+\noindent\textbf{Algum comentário livre sobre a experiência?} (opcional)
+
+\vspace{2mm}
+\noindent\hrulefill
+
+\vspace{2mm}
+\noindent\hrulefill
+
+\vfill
+\noindent\footnotesize\textit{Nota de apuração (não faz parte do formulário entregue ao
+participante):} itens ímpares (1,3,5,7,9) contribuem com (valor $-$ 1); itens pares (2,4,6,8,10)
+com (5 $-$ valor); a soma das dez contribuições (0--40) é multiplicada por 2,5, resultando numa
+pontuação de 0 a 100. Faixas de interpretação (Bangor, Kortum e Miller, 2009): $\geq$ 80,3
+excelente; 68--80,2 bom; 51--67,9 ok/aceitável; $<$ 51 ruim. Reportar separadamente da pontuação do
+painel, usando a \textbf{mediana} (não a média) ao agregar por papel. Instrumento de Brooke (1996),
+na adaptação PT-BR de Lourenço, Carmona e Lopes (2022).
+
+\end{document}
