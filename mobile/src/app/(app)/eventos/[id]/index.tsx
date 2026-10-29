@@ -27,12 +27,12 @@ export default function EventoDetalheScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, isError } = useEventoPublicado(id);
   const temSalao = !!data?.evento.salaoId;
-  const { data: mesas } = useMapaMesas(temSalao ? id : "");
+  const { data: mapa } = useMapaMesas(temSalao ? id : "");
   // Achado numa conversa com o usuário: `temSalao` só diz que o evento está vinculado a um salão,
   // não que esse salão tem mesas de fato configuradas (pode ter só paredes/áreas desenhadas, ou
   // nenhuma mesa ainda) — nesse caso não há nada pra mostrar/reservar, então nem o croqui nem a
   // opção de mesa na tela de compra (comprar.tsx) devem aparecer.
-  const temMesas = temSalao && (mesas?.length ?? 0) > 0;
+  const temMesas = temSalao && (mapa?.mesas.length ?? 0) > 0;
 
   if (isLoading) {
     return (
@@ -126,7 +126,13 @@ export default function EventoDetalheScreen() {
                 </Text>
               ))}
             </View>
-            <MapaMesasCanvas mesas={mesas ?? []} interativo={false} onMesaPress={() => {}} />
+            <MapaMesasCanvas
+              mesas={mapa?.mesas ?? []}
+              elementos={mapa?.elementos}
+              areas={mapa?.areas}
+              interativo={false}
+              onMesaPress={() => {}}
+            />
           </Surface>
         )}
       </ScrollView>

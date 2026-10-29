@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/select";
 import { useEvento } from "@/features/eventos/use-eventos";
 import { ESTILO_POR_STATUS, MAPA_MESAS_LEGENDA, MapaMesasCanvas } from "@/features/reservas/mapa-mesas-canvas";
-import type { MesaNoMapa } from "@/features/reservas/types";
+import type { MapaMesasEvento, MesaNoMapa } from "@/features/reservas/types";
 import {
   useCancelarReserva,
   useConfirmarReserva,
@@ -49,7 +49,7 @@ import { formatarMoeda } from "@/lib/format";
 export default function MapaMesasPage() {
   const params = useParams<{ id: string }>();
   const { data: evento, isLoading: carregandoEvento } = useEvento(params.id);
-  const { data: mesas, isLoading: carregandoMapa, isError } = useMapaMesas(params.id);
+  const { data: mapa, isLoading: carregandoMapa, isError } = useMapaMesas(params.id);
 
   if (carregandoEvento || carregandoMapa) {
     return (
@@ -60,7 +60,7 @@ export default function MapaMesasPage() {
     );
   }
 
-  if (isError || !mesas || !evento) {
+  if (isError || !mapa || !evento) {
     return (
       <p className="text-sm text-destructive">
         Não foi possível carregar o mapa de mesas deste evento.
@@ -68,21 +68,21 @@ export default function MapaMesasPage() {
     );
   }
 
-  return <MapaMesasConteudo eventoId={params.id} nomeEvento={evento.evento.nome} mesas={mesas} />;
+  return <MapaMesasConteudo eventoId={params.id} nomeEvento={evento.evento.nome} mapa={mapa} />;
 }
 
 function MapaMesasConteudo({
   eventoId,
   nomeEvento,
-  mesas,
+  mapa,
 }: {
   eventoId: string;
   nomeEvento: string;
-  mesas: MesaNoMapa[];
+  mapa: MapaMesasEvento;
 }) {
   const [mesaSelecionada, setMesaSelecionada] = useState<MesaNoMapa | null>(null);
 
-  const mesasLivres = mesas.filter((m) => m.status === "livre");
+  const mesasLivres = mapa.mesas.filter((m) => m.status === "livre");
 
   return (
     <div className="space-y-6">
@@ -111,7 +111,12 @@ function MapaMesasConteudo({
         ))}
       </div>
 
-      <MapaMesasCanvas mesas={mesas} onMesaClick={setMesaSelecionada} />
+      <MapaMesasCanvas
+        mesas={mapa.mesas}
+        elementos={mapa.elementos}
+        areas={mapa.areas}
+        onMesaClick={setMesaSelecionada}
+      />
 
       <Dialog open={!!mesaSelecionada} onOpenChange={(aberto) => !aberto && setMesaSelecionada(null)}>
         <DialogContent className="sm:max-w-md">

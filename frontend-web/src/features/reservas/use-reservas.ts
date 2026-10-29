@@ -2,14 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import type { CanalReserva, MesaNoMapa, Reserva, SolicitarReservaInput } from "./types";
+import type { CanalReserva, MapaMesasEvento, Reserva, SolicitarReservaInput } from "./types";
 
 const chaveMapa = (eventoId: string) => ["eventos", eventoId, "mapa-mesas"] as const;
 
 export function useMapaMesas(eventoId: string) {
   return useQuery({
     queryKey: chaveMapa(eventoId),
-    queryFn: () => apiFetch<MesaNoMapa[]>(`/eventos/${eventoId}/mapa-mesas`),
+    queryFn: () => apiFetch<MapaMesasEvento>(`/eventos/${eventoId}/mapa-mesas`),
     enabled: !!eventoId,
   });
 }

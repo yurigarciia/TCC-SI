@@ -60,8 +60,8 @@ export default function ComprarScreen() {
   // o usuário: `temSalao` só diz que o evento está vinculado a um salão, não que esse salão tem
   // mesas configuradas de fato. Sem isso, a opção "Mesa" aparecia mesmo sem nenhuma mesa pra
   // reservar.
-  const { data: mesas } = useMapaMesas(temSalao ? id : "");
-  const temMesas = temSalao && (mesas?.length ?? 0) > 0;
+  const { data: mapa } = useMapaMesas(temSalao ? id : "");
+  const temMesas = temSalao && (mapa?.mesas.length ?? 0) > 0;
 
   const [modo, setModo] = useState<"mesa" | "avulso">(temMesas ? "mesa" : "avulso");
 
@@ -116,7 +116,7 @@ export default function ComprarScreen() {
 }
 
 function ReservarMesa({ eventoId }: { eventoId: string }) {
-  const { data: mesas, isLoading, isError, refetch } = useMapaMesas(eventoId);
+  const { data: mapa, isLoading, isError, refetch } = useMapaMesas(eventoId);
   const reservar = useSolicitarMinhaReserva(eventoId);
 
   const [mesaSelecionada, setMesaSelecionada] = useState<MesaNoMapa | null>(null);
@@ -190,9 +190,11 @@ function ReservarMesa({ eventoId }: { eventoId: string }) {
               </Button>
             </View>
           )}
-          {mesas && (
+          {mapa && (
             <MapaMesasCanvas
-              mesas={mesas}
+              mesas={mapa.mesas}
+              elementos={mapa.elementos}
+              areas={mapa.areas}
               onMesaPress={selecionarMesa}
               mesaSelecionadaId={mesaSelecionada?.mesaId}
             />

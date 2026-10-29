@@ -4,7 +4,7 @@ import type {
   Evento,
   EventoDetalhado,
   FormaPagamentoReserva,
-  MesaNoMapa,
+  MapaMesasEvento,
 } from "./types";
 
 // RF13 — vitrine pública, mesmo endpoint sem auth do painel web.
@@ -29,7 +29,7 @@ export function useEventoPublicado(id: string) {
 export function useMapaMesas(eventoId: string) {
   return useQuery({
     queryKey: ["eventos", eventoId, "mapa-mesas"],
-    queryFn: () => apiFetch<MesaNoMapa[]>(`/eventos/${eventoId}/mapa-mesas`),
+    queryFn: () => apiFetch<MapaMesasEvento>(`/eventos/${eventoId}/mapa-mesas`),
     enabled: !!eventoId,
   });
 }

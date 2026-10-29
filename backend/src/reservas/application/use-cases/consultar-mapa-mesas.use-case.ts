@@ -3,7 +3,12 @@ import { ReservaRepositoryPort } from '../ports/reserva-repository.port';
 import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-repository.port';
 import { MesaRepositoryPort } from '../../../eventos/application/ports/mesa-repository.port';
 import { ConfiguracaoMesaEventoRepositoryPort } from '../../../eventos/application/ports/configuracao-mesa-evento-repository.port';
+import { ElementoEstruturalRepositoryPort } from '../../../eventos/application/ports/elemento-estrutural-repository.port';
+import { AreaEstruturalRepositoryPort } from '../../../eventos/application/ports/area-estrutural-repository.port';
 import { CanalReserva, StatusReserva } from '../../domain/reserva.entity';
+import { FormatoMesa } from '../../../eventos/domain/mesa.entity';
+import { ElementoEstrutural } from '../../../eventos/domain/elemento-estrutural.entity';
+import { AreaEstrutural } from '../../../eventos/domain/area-estrutural.entity';
 
 export type StatusMesaNoMapa = 'bloqueada' | 'pendente' | 'reservada' | 'livre';
 
@@ -13,6 +18,7 @@ export interface MesaNoMapa {
   capacidade: number;
   posicaoX: number;
   posicaoY: number;
+  formato: FormatoMesa;
   preco: number;
   status: StatusMesaNoMapa;
   // Presentes só quando status é "pendente"/"reservada" — a diretoria precisa do id da reserva
@@ -20,6 +26,16 @@ export interface MesaNoMapa {
   reservaId: string | null;
   nomeTitular: string | null;
   canal: CanalReserva | null;
+}
+
+// Mesmas paredes/portas/áreas desenhadas no editor de croqui do salão (ver MesaCanvas,
+// frontend-web/src/features/saloes) — devolvidas junto do mapa de mesas pra que o mapa de
+// reservas (admin e app do associado, já que o endpoint é compartilhado) deixe de mostrar as
+// mesas soltas num plano em branco e passe a reconhecer o salão de verdade, igual ao editor.
+export interface MapaMesasEvento {
+  mesas: MesaNoMapa[];
+  elementos: ElementoEstrutural[];
+  areas: AreaEstrutural[];
 }
 
 // RF14 — disponibilidade em tempo real: reflete direto o estado atual do banco (sem cache), já
@@ -33,30 +49,41 @@ export class ConsultarMapaMesasUseCase {
     @Inject(MesaRepositoryPort) private readonly mesas: MesaRepositoryPort,
     @Inject(ConfiguracaoMesaEventoRepositoryPort)
     private readonly configuracoesMesa: ConfiguracaoMesaEventoRepositoryPort,
+    @Inject(ElementoEstruturalRepositoryPort)
+    private readonly elementos: ElementoEstruturalRepositoryPort,
+    @Inject(AreaEstruturalRepositoryPort)
+    private readonly areas: AreaEstruturalRepositoryPort,
     @Inject(ReservaRepositoryPort)
     private readonly reservas: ReservaRepositoryPort,
   ) {}
 
-  async execute(eventoId: string): Promise<MesaNoMapa[]> {
+  async execute(eventoId: string): Promise<MapaMesasEvento> {
     const evento = await this.eventos.buscarPorId(eventoId);
     if (!evento) {
       throw new NotFoundException('Evento não encontrado');
     }
     if (!evento.salaoId) {
-      return [];
+      return { mesas: [], elementos: [], areas: [] };
     }
 
-    const [todasMesasDoSalao, configuracoes, reservasAtivas] =
-      await Promise.all([
-        this.mesas.listarPorSalao(evento.salaoId),
-        this.configuracoesMesa.listarPorEvento(eventoId),
-        this.reservas.listarAtivasPorEvento(eventoId),
-      ]);
+    const [
+      todasMesasDoSalao,
+      configuracoes,
+      reservasAtivas,
+      elementosDoSalao,
+      areasDoSalao,
+    ] = await Promise.all([
+      this.mesas.listarPorSalao(evento.salaoId),
+      this.configuracoesMesa.listarPorEvento(eventoId),
+      this.reservas.listarAtivasPorEvento(eventoId),
+      this.elementos.listarPorSalao(evento.salaoId),
+      this.areas.listarPorSalao(evento.salaoId),
+    ]);
 
     const configPorMesa = new Map(configuracoes.map((c) => [c.mesaId, c]));
     const reservaPorMesa = new Map(reservasAtivas.map((r) => [r.mesaId, r]));
 
-    return todasMesasDoSalao
+    const mesas = todasMesasDoSalao
       .filter((mesa) => configPorMesa.has(mesa.id))
       .map((mesa) => {
         const configuracao = configPorMesa.get(mesa.id)!;
@@ -77,6 +104,7 @@ export class ConsultarMapaMesasUseCase {
           capacidade: mesa.capacidade,
           posicaoX: mesa.posicaoX,
           posicaoY: mesa.posicaoY,
+          formato: mesa.formato,
           preco: configuracao.preco,
           status,
           reservaId: reserva?.id ?? null,
@@ -84,5 +112,7 @@ export class ConsultarMapaMesasUseCase {
           canal: reserva?.canal ?? null,
         };
       });
+
+    return { mesas, elementos: elementosDoSalao, areas: areasDoSalao };
   }
 }

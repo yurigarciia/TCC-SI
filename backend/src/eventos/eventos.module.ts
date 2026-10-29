@@ -105,6 +105,8 @@ import { IdentidadeModule } from '../identidade/identidade.module';
   exports: [
     SalaoRepositoryPort,
     MesaRepositoryPort,
+    ElementoEstruturalRepositoryPort,
+    AreaEstruturalRepositoryPort,
     EventoRepositoryPort,
     ConfiguracaoMesaEventoRepositoryPort,
     ConfiguracaoIngressoEventoRepositoryPort,
