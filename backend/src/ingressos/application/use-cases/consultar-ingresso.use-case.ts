@@ -38,14 +38,37 @@ export class ConsultarIngressoUseCase {
     if (!ingresso) {
       throw new NotFoundException('Ingresso não encontrado');
     }
+    return this.detalhar(ingresso);
+  }
 
+  async executePorCodigo(
+    eventoId: string,
+    codigo: number,
+  ): Promise<IngressoDetalhado> {
+    const ingresso = await this.ingressos.buscarPorEventoECodigo(
+      eventoId,
+      codigo,
+    );
+    if (!ingresso) {
+      throw new NotFoundException('Ingresso não encontrado');
+    }
+    return this.detalhar(ingresso);
+  }
+
+  private async detalhar(
+    ingresso: NonNullable<
+      Awaited<ReturnType<IngressoRepositoryPort['buscarPorId']>>
+    >,
+  ): Promise<IngressoDetalhado> {
     const evento = await this.eventos.buscarPorId(ingresso.eventoId);
 
     let categoriaSocioNome: string | null = null;
     if (ingresso.associadoId) {
       const associado = await this.associados.buscarPorId(ingresso.associadoId);
       if (associado?.categoriaSocioId) {
-        const categoria = await this.categorias.buscarPorId(associado.categoriaSocioId);
+        const categoria = await this.categorias.buscarPorId(
+          associado.categoriaSocioId,
+        );
         categoriaSocioNome = categoria?.nome ?? null;
       }
     }

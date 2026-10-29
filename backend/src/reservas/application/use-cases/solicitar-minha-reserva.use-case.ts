@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AssociadoRepositoryPort } from '../../../associados/application/ports/associado-repository.port';
 import { EventoRepositoryPort } from '../../../eventos/application/ports/evento-repository.port';
 import { SolicitarReservaUseCase } from './solicitar-reserva.use-case';

@@ -5,9 +5,7 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class CreateElementosEstruturaisTable1756400000000
-  implements MigrationInterface
-{
+export class CreateElementosEstruturaisTable1756400000000 implements MigrationInterface {
   name = 'CreateElementosEstruturaisTable1756400000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

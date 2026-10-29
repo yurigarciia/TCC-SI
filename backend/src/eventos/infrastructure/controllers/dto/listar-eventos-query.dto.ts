@@ -4,17 +4,24 @@ import { PaginacaoQueryDto } from '../../../../shared/pagination/paginacao-query
 import { StatusEvento } from '../../../domain/evento.entity';
 
 export class ListarEventosQueryDto extends PaginacaoQueryDto {
-  @ApiPropertyOptional({ enum: StatusEvento, description: 'Filtra por status do evento' })
+  @ApiPropertyOptional({
+    enum: StatusEvento,
+    description: 'Filtra por status do evento',
+  })
   @IsOptional()
   @IsEnum(StatusEvento)
   status?: StatusEvento;
 
-  @ApiPropertyOptional({ description: 'Filtra eventos com data >= este valor (ISO 8601)' })
+  @ApiPropertyOptional({
+    description: 'Filtra eventos com data >= este valor (ISO 8601)',
+  })
   @IsOptional()
   @IsDateString()
   dataInicio?: string;
 
-  @ApiPropertyOptional({ description: 'Filtra eventos com data <= este valor (ISO 8601)' })
+  @ApiPropertyOptional({
+    description: 'Filtra eventos com data <= este valor (ISO 8601)',
+  })
   @IsOptional()
   @IsDateString()
   dataFim?: string;

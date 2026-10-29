@@ -5,9 +5,7 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 // do preço único ter sido implementado primeiro (ver adendo em T-BE-009 no
 // PLANEJAMENTO-GERAL.md). Coluna nullable: só é preenchida quando perfil = 'socio'; para
 // NAO_SOCIO/CRIANCA (que não têm categoria) continua null, mantendo um preço só por perfil.
-export class AddCategoriaSocioIdToPrecosIngresso1756100000000
-  implements MigrationInterface
-{
+export class AddCategoriaSocioIdToPrecosIngresso1756100000000 implements MigrationInterface {
   name = 'AddCategoriaSocioIdToPrecosIngresso1756100000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

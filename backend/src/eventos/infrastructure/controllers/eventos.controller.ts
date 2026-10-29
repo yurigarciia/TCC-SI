@@ -131,9 +131,22 @@ export class EventosController {
     description: 'Usuário autenticado não é administrador',
   })
   listarTodos(
-    @Query() { pagina, limite, busca, status, dataInicio, dataFim }: ListarEventosQueryDto,
+    @Query()
+    {
+      pagina,
+      limite,
+      busca,
+      status,
+      dataInicio,
+      dataFim,
+    }: ListarEventosQueryDto,
   ) {
-    return this.listar.execute(pagina!, limite!, { busca, status, dataInicio, dataFim });
+    return this.listar.execute(pagina!, limite!, {
+      busca,
+      status,
+      dataInicio,
+      dataFim,
+    });
   }
 
   @Get(':id')
@@ -159,7 +172,8 @@ export class EventosController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Perfil.ADMINISTRADOR)
   @ApiOperation({
-    summary: 'Atualiza dados básicos de um evento (nome, data, local, descrição, salão)',
+    summary:
+      'Atualiza dados básicos de um evento (nome, data, local, descrição, salão)',
   })
   @ApiResponse({ status: 200, description: 'Evento atualizado' })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })

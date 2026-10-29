@@ -73,6 +73,20 @@ export function useIngresso(id: string | null) {
   });
 }
 
+// Busca manual digitada na tela de check-in: o que aparece na listagem (formatarCodigoIngresso,
+// ex. "#002") é o código curto sequencial do evento, não o id (UUID) do ingresso — o QR carrega o
+// id direto, então usa useIngresso acima; já o código precisa deste outro endpoint, sempre
+// escopado ao evento atual (único por evento, não globalmente).
+export function useIngressoPorCodigo(eventoId: string, codigo: number | null) {
+  return useQuery({
+    queryKey: ["eventos", eventoId, "ingressos", "codigo", codigo] as const,
+    queryFn: () =>
+      apiFetch<IngressoDetalhado>(`/eventos/${eventoId}/ingressos/codigo/${codigo}`),
+    enabled: codigo !== null,
+    retry: false,
+  });
+}
+
 // Check-in por id (leitura de QR — o painel web trata o código lido como o próprio id do
 // ingresso, digitado ou colado por um leitor USB/câmera que funciona como teclado) ou pelo botão
 // na linha da busca manual por nome (emissao-ingresso.json: "os dois formatos coexistem").

@@ -19,6 +19,8 @@ import {
   useInadimplentes,
   useProcessarInadimplencia,
 } from "@/features/mensalidades/use-mensalidades";
+import { LancarPagamentoDialog } from "@/features/mensalidades/lancar-pagamento-dialog";
+import type { Mensalidade } from "@/features/mensalidades/types";
 import { formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
 import { Pagination } from "@/components/pagination";
@@ -31,6 +33,7 @@ export default function MensalidadesPage() {
   const inadimplentes = resultado?.itens;
   const gerarCobrancas = useGerarCobrancasDoMes();
   const processarInadimplencia = useProcessarInadimplencia();
+  const [mensalidadeSelecionada, setMensalidadeSelecionada] = useState<Mensalidade | null>(null);
 
   const mudarBusca = (valor: string) => {
     setBusca(valor);
@@ -111,11 +114,12 @@ export default function MensalidadesPage() {
                   <TableHead>Competência</TableHead>
                   <TableHead>Valor devido</TableHead>
                   <TableHead>Dias em atraso</TableHead>
+                  <TableHead className="text-right">Ação</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {inadimplentes.length === 0 ? (
-                  <TableEmptyRow colSpan={4}>
+                  <TableEmptyRow colSpan={5}>
                     {busca
                       ? "Nenhum associado inadimplente encontrado para esse termo."
                       : "Nenhum associado inadimplente no momento."}
@@ -130,6 +134,15 @@ export default function MensalidadesPage() {
                       <TableCell>{item.mensalidade.competencia}</TableCell>
                       <TableCell>{formatarMoeda(item.mensalidade.valor)}</TableCell>
                       <TableCell>{item.diasEmAtraso} dia(s)</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setMensalidadeSelecionada(item.mensalidade)}
+                        >
+                          Lançar pagamento
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -139,6 +152,11 @@ export default function MensalidadesPage() {
           </div>
         )}
       </div>
+
+      <LancarPagamentoDialog
+        mensalidade={mensalidadeSelecionada}
+        onFechar={() => setMensalidadeSelecionada(null)}
+      />
     </div>
   );
 }

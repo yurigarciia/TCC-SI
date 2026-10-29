@@ -4,10 +4,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[margin=2cm]{geometry}
 \usepackage{lmodern}
-\usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{array}
-\usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -17,7 +14,6 @@
 \definecolor{lightbg}{HTML}{F5F2EC}
 
 \titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
-\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -26,79 +22,47 @@
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\newcommand{\dizer}[1]{%
+\newcommand{\aviso}[1]{%
   \noindent\colorbox{lightbg}{%
     \begin{minipage}{0.95\linewidth}
     \vspace{1mm}
-    \textbf{O que dizer ao participante:} ``#1''
+    #1
     \vspace{1mm}
     \end{minipage}%
   }\vspace{3mm}
 }
-\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
-\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
 
 \begin{document}
 
 \begin{center}
   {\LARGE\bfseries\color{brandgreen} Fluxo 1 --- Cadastro de associado}\\[1mm]
-  {\large RF01, RF18 --- Papel: Associado (app mobile)}
+  {\large RF01, RF18 --- Papel: Associado (aplicativo)}
 \end{center}
 
 \vspace{2mm}
-\noindent Fazer \textbf{uma} das duas variantes abaixo (combinada previamente com o moderador).
+Você executará \textbf{uma} das duas situações abaixo; o moderador indicará qual.
 
-\section*{Variante A --- Auto-cadastro}
+\section*{Situação A --- Criar uma conta nova}
 
-\estado{ficha de persona ainda não usada.}
-
-\dizer{Você quer se tornar associado da entidade e está criando sua conta pelo aplicativo pela
-primeira vez.}
+Você quer se tornar associado da entidade e está criando sua conta pelo aplicativo pela primeira
+vez. Use os dados da ficha que você recebeu.
 
 \begin{enumerate}[leftmargin=6mm]
-  \item Partir da tela de login (app deslogado).
-  \item Tocar \textbf{``Ainda não é associado? Cadastre-se''}.
-  \item Preencher com os dados da ficha de persona do kit: Nome, CPF, Telefone (seção ``Dados
-    pessoais''), Endereço (seção com ícone de mapa), E-mail e Senha.
-  \item Tocar \textbf{Criar conta}.
-  \item Esperado: mensagem de sucesso / tela indicando ``pendente de validação''.
+  \item Na tela de login, toque em \textbf{``Ainda não é associado? Cadastre-se''}.
+  \item Preencha seus dados pessoais (nome, CPF e telefone), o endereço, o e-mail e a senha
+    indicados na ficha.
+  \item Toque em \textbf{Criar conta}.
 \end{enumerate}
 
-\textbf{Verificação objetiva:}
-\begin{verbatim}
-cd backend
-node scripts/verificar-tarefas.js 1 <CPF-DA-FICHA>
-\end{verbatim}
-\criterio{associado existe com status \texttt{pendente\_validacao} \textbf{e} conta de login
-vinculada.}
+\section*{Situação B --- Acessar pela primeira vez}
 
-\section*{Variante B --- Vincular conta}
-
-\estado{CPF pré-cadastrado pelo moderador (ativo, sem login), anotado no cartão do kit.}
-
-\dizer{A diretoria já cadastrou você como associado, mas você nunca entrou no aplicativo. Use o
-CPF que consta neste cartão para criar seu acesso.}
+A diretoria já cadastrou você como associado, mas você nunca entrou no aplicativo. Use o CPF que
+consta no cartão que você recebeu para criar seu acesso.
 
 \begin{enumerate}[leftmargin=6mm]
-  \item Partir da tela de login (app deslogado).
-  \item Tocar \textbf{``Já é associado mas nunca acessou?''}.
-  \item Preencher o CPF do cartão, e-mail e senha novos.
-  \item Tocar \textbf{Vincular conta}.
+  \item Na tela de login, toque em \textbf{``Já é associado mas nunca acessou?''}.
+  \item Informe o CPF do cartão e crie um e-mail e uma senha.
+  \item Toque em \textbf{Vincular conta}.
 \end{enumerate}
-
-\textbf{Verificação objetiva:}
-\begin{verbatim}
-node scripts/verificar-tarefas.js 1 <CPF-DO-CARTAO>
-\end{verbatim}
-\criterio{ambos os critérios (status \texttt{ativo} + conta de login vinculada).}
-
-\vspace{2mm}
-\noindent\textit{Sem encadeamento: a conta criada neste fluxo não é usada nos Fluxos 2 e 3. O
-moderador sai dela e entra na conta de teste do kit antes de seguir.}
-
-\vfill
-\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
-pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
-protocolo completo no \texttt{roteiro-moderador.pdf}.
 
 \end{document}

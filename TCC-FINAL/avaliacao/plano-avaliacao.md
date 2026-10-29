@@ -18,7 +18,7 @@ pelos 73 testes e2e do backend) — busca validar a experiência de uso.
 
 Sessão individual, moderada, com um participante por vez, em quatro blocos sequenciais:
 
-1. **Demonstração geral** (≈10 min) — o moderador apresenta o sistema (painel e/ou app, conforme o
+1. **Demonstração geral** (5 a 10 min) — o moderador apresenta o sistema (painel e/ou app, conforme o
    papel do participante) de forma guiada, sem o participante tocar ainda, cobrindo navegação geral e
    terminologia da interface. Objetivo: nivelar familiaridade antes de medir desempenho em tarefa.
 2. **Execução das tarefas** (≈15-20 min) — o participante executa, sem ajuda do moderador a menos que
@@ -28,7 +28,7 @@ Sessão individual, moderada, com um participante por vez, em quatro blocos sequ
    ainda está fresca.
 4. **Entrevista semiestruturada** (≈10 min) — roteiro de perguntas abertas (Seção 6.3).
 
-Duração total estimada por participante: ~40-45 min.
+Duração total estimada por participante: ~35-45 min.
 
 ## 3. Participantes
 

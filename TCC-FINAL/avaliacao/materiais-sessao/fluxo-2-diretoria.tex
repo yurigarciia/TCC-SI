@@ -4,10 +4,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[margin=2cm]{geometry}
 \usepackage{lmodern}
-\usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{array}
-\usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -17,7 +14,6 @@
 \definecolor{lightbg}{HTML}{F5F2EC}
 
 \titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
-\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -26,17 +22,15 @@
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\newcommand{\dizer}[1]{%
+\newcommand{\aviso}[1]{%
   \noindent\colorbox{lightbg}{%
     \begin{minipage}{0.95\linewidth}
     \vspace{1mm}
-    \textbf{O que dizer ao participante:} ``#1''
+    #1
     \vspace{1mm}
     \end{minipage}%
   }\vspace{3mm}
 }
-\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
-\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
 
 \begin{document}
 
@@ -46,48 +40,17 @@
 \end{center}
 
 \vspace{2mm}
-\estado{2 ingressos já pré-emitidos pelo moderador, em nome de associados fictícios: ingresso
-\textbf{A} (para ler por câmera) e ingresso \textbf{B} (para digitar o código).}
-
-O QR do ingresso A aparece no celular do moderador (app logado na conta do associado fictício) ou
-na impressão do kit; o código do ingresso B está anotado no cartão do kit.
-
-\dizer{Estes dois convidados chegaram ao baile. Confira a entrada de cada um.}
+Dois convidados chegaram ao baile. Confira a entrada de cada um.
 
 \begin{enumerate}[leftmargin=6mm]
-  \item Acessar \textbf{Eventos → [o evento] → Ingressos} (\texttt{/eventos/[id]/ingressos}).
-  \item Tocar o botão \textbf{Check-in} no topo da tela --- abre o modal ``Check-in por código
-    (QR)''.
-  \item \textbf{Ingresso A:} no modal, tocar \textbf{Ativar câmera para ler QR} e apontar para o
+  \item Acesse \textbf{Eventos →} (o evento indicado) \textbf{→ Ingressos}.
+  \item \textbf{Primeiro convidado:} use a opção \textbf{Ler código} e aponte a câmera para o código
     QR mostrado pelo moderador.
-  \item \textbf{Ingresso B:} no mesmo modal, digitar o código no campo de texto e tocar
-    \textbf{Buscar}.
-  \item Em cada um, na tela de conferência que abre em seguida (nome + código do ingresso,
-    evento, categoria quando sócio, valor, status), revisar os dados e tocar \textbf{Confirmar
-    entrada} --- o check-in não é automático ao ler o QR nem ao buscar o código.
-  \item Confirmar que os cards do evento (``Ingressos emitidos'', ``Já entraram'', ``Aguardando
-    entrada'') atualizam.
+  \item \textbf{Segundo convidado:} digite no campo de texto o código do ingresso que consta no
+    cartão que você recebeu.
+  \item Para cada convidado, confira os dados na tela de conferência e toque em \textbf{Confirmar
+    entrada}.
+  \item Verifique se os totais do evento (emitidos, validados e aguardando) foram atualizados.
 \end{enumerate}
-
-\textbf{Verificação objetiva:}
-\begin{small}
-\begin{verbatim}
-node scripts/verificar-tarefas.js 2 <CPF-DO-ASSOCIADO-FICTICIO-A> \
-  "<trecho do nome do evento>"
-node scripts/verificar-tarefas.js 2 <CPF-DO-ASSOCIADO-FICTICIO-B> \
-  "<trecho do nome do evento>"
-\end{verbatim}
-\end{small}
-\criterio{ingresso emitido \textbf{e} entrada validada, com horário preenchido, nos dois.}
-
-\vspace{2mm}
-\noindent\textit{Se a câmera falhar (permissão, luz, rede), registrar o motivo e pedir o ingresso
-A pelo caminho manual, contando como intervenção --- sem usar o ingresso B (que continua reservado
-para o caminho manual).}
-
-\vfill
-\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
-pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
-protocolo completo no \texttt{roteiro-moderador.pdf}.
 
 \end{document}

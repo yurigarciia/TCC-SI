@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsOptional, IsPositive, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsUUID,
+} from 'class-validator';
 import { PerfilComprador } from '../../../domain/ingresso.entity';
 
 export class DefinirPrecoDto {

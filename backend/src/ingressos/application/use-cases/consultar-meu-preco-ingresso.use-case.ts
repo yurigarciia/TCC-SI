@@ -22,7 +22,10 @@ export class ConsultarMeuPrecoIngressoUseCase {
     private readonly precos: PrecoIngressoRepositoryPort,
   ) {}
 
-  async execute(usuarioId: string, eventoId: string): Promise<MeuPrecoIngresso> {
+  async execute(
+    usuarioId: string,
+    eventoId: string,
+  ): Promise<MeuPrecoIngresso> {
     const associado = await this.associados.buscarPorUsuarioId(usuarioId);
     if (!associado) {
       throw new NotFoundException('Nenhum associado vinculado a este usuário');

@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  Between,
+  ILike,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import {
   AtualizacaoEvento,
   EventoRepositoryPort,
@@ -33,7 +39,10 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
 
   async atualizar(id: string, dados: AtualizacaoEvento): Promise<Evento> {
     const { data, ...resto } = dados;
-    await this.repo.update({ id }, { ...resto, ...(data ? { data: new Date(data) } : {}) });
+    await this.repo.update(
+      { id },
+      { ...resto, ...(data ? { data: new Date(data) } : {}) },
+    );
     const atualizado = await this.repo.findOneByOrFail({ id });
     return this.paraDominio(atualizado);
   }
@@ -47,7 +56,10 @@ export class TypeOrmEventoRepositoryAdapter extends EventoRepositoryPort {
     if (filtros?.busca) where.nome = ILike(`%${filtros.busca}%`);
     if (filtros?.status) where.status = filtros.status;
     if (filtros?.dataInicio && filtros?.dataFim) {
-      where.data = Between(new Date(filtros.dataInicio), new Date(filtros.dataFim));
+      where.data = Between(
+        new Date(filtros.dataInicio),
+        new Date(filtros.dataFim),
+      );
     } else if (filtros?.dataInicio) {
       where.data = MoreThanOrEqual(new Date(filtros.dataInicio));
     } else if (filtros?.dataFim) {

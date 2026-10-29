@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -339,13 +340,45 @@ export class IngressosController {
     return this.listar.execute(eventoId, pagina!, limite!, nome);
   }
 
+  // Achado numa conversa com o usuário — a busca manual por código (digitado, sem QR) sempre
+  // dava "não encontrado": o campo tratava o número curto exibido na listagem (#002,
+  // formatarCodigoIngresso) como se fosse o id (UUID) do ingresso, igual ao que o QR carrega. São
+  // valores diferentes — este endpoint busca pelo código curto, sempre dentro do evento atual
+  // (o código só é único por evento, não globalmente).
+  @Get('eventos/:eventoId/ingressos/codigo/:codigo')
+  @ApiOperation({
+    summary:
+      'Consulta o detalhe de um ingresso pelo código curto exibido na listagem (busca manual do check-in, sem QR)',
+  })
+  @ApiResponse({ status: 200, description: 'Detalhe do ingresso' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Código informado não é um número válido',
+  })
+  @ApiResponse({ status: 404, description: 'Ingresso não encontrado' })
+  consultarIngressoPorCodigo(
+    @Param('eventoId', ParseUUIDPipe) eventoId: string,
+    @Param('codigo') codigoBruto: string,
+  ) {
+    return this.consultarIngresso.executePorCodigo(
+      eventoId,
+      normalizarCodigoIngresso(codigoBruto),
+    );
+  }
+
   // Achado numa conversa com o usuário — o check-in por QR confirmava a entrada na hora, sem
   // nenhuma tela de conferência antes. Esse endpoint alimenta a tela de conferência que abre ao
   // ler o QR (nome, evento, status, valor, categoria), antes de a diretoria confirmar ou não via
   // POST .../checkin.
   @Get('ingressos/:id')
   @ApiOperation({
-    summary: 'Consulta o detalhe de um ingresso (tela de conferência do check-in por QR)',
+    summary:
+      'Consulta o detalhe de um ingresso (tela de conferência do check-in por QR)',
   })
   @ApiResponse({ status: 200, description: 'Detalhe do ingresso' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -395,4 +428,16 @@ export class IngressosController {
   registrarCheckin(@Param('id', ParseUUIDPipe) id: string) {
     return this.checkin.execute(id);
   }
+}
+
+// Aceita o código do ingresso em qualquer formato que a diretoria digite ou cole — com ou sem
+// "#", com ou sem zeros à esquerda ("#004", "004", "4", "#4"...). Normaliza tirando tudo que não
+// é dígito antes de converter, em vez de depender do ParseIntPipe (que rejeita o "#").
+function normalizarCodigoIngresso(valorBruto: string): number {
+  const somenteDigitos = valorBruto.replace(/\D/g, '');
+  const codigo = somenteDigitos ? Number(somenteDigitos) : NaN;
+  if (!Number.isInteger(codigo) || codigo <= 0) {
+    throw new BadRequestException('Código do ingresso inválido');
+  }
+  return codigo;
 }

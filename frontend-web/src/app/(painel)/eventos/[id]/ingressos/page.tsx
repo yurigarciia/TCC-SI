@@ -46,6 +46,7 @@ import { rotuloPerfilComprador, StatusIngressoBadge } from "@/features/ingressos
 import {
   useEmitirIngresso,
   useIngresso,
+  useIngressoPorCodigo,
   useIngressosEvento,
   useRegistrarCheckin,
   useResumoIngressosEvento,
@@ -134,7 +135,12 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   // Achado numa conversa com o usuário: ler o QR confirmava a entrada na hora, sem nenhuma tela
   // de conferência antes. Agora a leitura só carrega o detalhe (useIngresso, abaixo) — o
   // check-in de verdade só acontece quando a diretoria confirma na tela de conferência.
-  const [codigoConferencia, setCodigoConferencia] = useState<string | null>(null);
+  // Dois estados porque QR e busca manual carregam coisas diferentes: o QR já traz o id (UUID)
+  // do ingresso, mas o código digitado/colado é o número curto da listagem (#002), que precisa
+  // de uma busca própria por evento+código (ver useIngressoPorCodigo) — os dois nunca ficam
+  // preenchidos ao mesmo tempo.
+  const [idConferenciaQr, setIdConferenciaQr] = useState<string | null>(null);
+  const [codigoConferenciaBusca, setCodigoConferenciaBusca] = useState<number | null>(null);
   const [cameraAtiva, setCameraAtiva] = useState(false);
   // Achado numa conversa com o usuário: os cards de "Vender ingresso" e "Check-in" ficavam sempre
   // abertos, competindo com a listagem (o foco de verdade da tela — é o que a diretoria mais
@@ -152,10 +158,19 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
   const emitir = useEmitirIngresso(eventoId);
   const checkin = useRegistrarCheckin(eventoId);
   const {
-    data: ingressoConferencia,
-    isLoading: carregandoConferencia,
-    isError: erroConferencia,
-  } = useIngresso(codigoConferencia);
+    data: ingressoPorId,
+    isLoading: carregandoPorId,
+    isError: erroPorId,
+  } = useIngresso(idConferenciaQr);
+  const {
+    data: ingressoPorCodigo,
+    isLoading: carregandoPorCodigo,
+    isError: erroPorCodigo,
+  } = useIngressoPorCodigo(eventoId, codigoConferenciaBusca);
+  const ingressoConferencia = ingressoPorId ?? ingressoPorCodigo;
+  const carregandoConferencia = carregandoPorId || carregandoPorCodigo;
+  const erroConferencia = erroPorId || erroPorCodigo;
+  const emConferencia = idConferenciaQr !== null || codigoConferenciaBusca !== null;
   const { data: resumo, isLoading: carregandoResumo } = useResumoIngressosEvento(eventoId);
 
   // Dropdown de seleção — busca uma página grande o bastante pra cobrir todas as categorias
@@ -218,20 +233,24 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
     });
   };
 
-  // Ler o QR (ou digitar o código) só abre a conferência — não confirma nada ainda.
-  const abrirConferencia = (codigo: string) => {
-    setCodigoConferencia(codigo);
+  // Ler o QR só abre a conferência — não confirma nada ainda. O QR carrega o id (UUID) direto.
+  const abrirConferenciaPorQr = (id: string) => {
+    setIdConferenciaQr(id);
+    setCodigoConferenciaBusca(null);
     setCameraAtiva(false);
   };
 
   const fecharConferencia = () => {
-    setCodigoConferencia(null);
+    setIdConferenciaQr(null);
+    setCodigoConferenciaBusca(null);
     setCodigoCheckin("");
   };
 
   const confirmarCheckinConferencia = () => {
-    if (!codigoConferencia) return;
-    checkin.mutate(codigoConferencia, {
+    if (!ingressoConferencia) return;
+    // Sempre o id (UUID) real do ingresso resolvido — nunca o código curto digitado, que o
+    // endpoint de check-in não reconhece.
+    checkin.mutate(ingressoConferencia.id, {
       onSuccess: () => {
         toast.success("Entrada validada.");
         fecharConferencia();
@@ -242,8 +261,16 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
 
   const onSubmitCheckinPorCodigo = (evento: FormEvent) => {
     evento.preventDefault();
-    if (!codigoCheckin.trim()) return;
-    abrirConferencia(codigoCheckin.trim());
+    // Aceita o código em qualquer formato — com/sem "#", com/sem zeros à esquerda ("#004", "004",
+    // "4", "#4"...) — tirando tudo que não é dígito antes de converter.
+    const codigo = Number(codigoCheckin.replace(/\D/g, ""));
+    if (!codigo) {
+      toast.error("Informe um código de ingresso válido.");
+      return;
+    }
+    setCodigoConferenciaBusca(codigo);
+    setIdConferenciaQr(null);
+    setCameraAtiva(false);
   };
 
   return (
@@ -532,18 +559,22 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
           <DialogHeader>
             <DialogTitle>Check-in por código (QR)</DialogTitle>
             <DialogDescription>
-              {codigoConferencia
+              {emConferencia
                 ? "Confira os dados antes de validar a entrada."
                 : "Aponte a câmera pro QR do ingresso, ou digite o código na mão."}
             </DialogDescription>
           </DialogHeader>
 
-          {!codigoConferencia && (
+          {!emConferencia && (
             <div className="space-y-4">
-              <QrCodeScanner ativo={cameraAtiva} onAtivoChange={setCameraAtiva} onScan={abrirConferencia} />
+              <QrCodeScanner
+                ativo={cameraAtiva}
+                onAtivoChange={setCameraAtiva}
+                onScan={abrirConferenciaPorQr}
+              />
               <form onSubmit={onSubmitCheckinPorCodigo} className="flex gap-2" noValidate>
                 <Input
-                  placeholder="Ou cole/digite o código do ingresso"
+                  placeholder="Ou digite o código do ingresso (ex.: #002)"
                   value={codigoCheckin}
                   onChange={(e) => setCodigoCheckin(e.target.value)}
                 />
@@ -554,7 +585,7 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
             </div>
           )}
 
-          {codigoConferencia && (
+          {emConferencia && (
             <div className="space-y-4">
               {carregandoConferencia && <Skeleton className="h-32 w-full" />}
 

@@ -4,10 +4,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[margin=2cm]{geometry}
 \usepackage{lmodern}
-\usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{array}
-\usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -17,7 +14,6 @@
 \definecolor{lightbg}{HTML}{F5F2EC}
 
 \titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
-\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -26,56 +22,33 @@
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\newcommand{\dizer}[1]{%
+\newcommand{\aviso}[1]{%
   \noindent\colorbox{lightbg}{%
     \begin{minipage}{0.95\linewidth}
     \vspace{1mm}
-    \textbf{O que dizer ao participante:} ``#1''
+    #1
     \vspace{1mm}
     \end{minipage}%
   }\vspace{3mm}
 }
-\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
-\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
 
 \begin{document}
 
 \begin{center}
   {\LARGE\bfseries\color{brandgreen} Fluxo 3 --- Pagamento de mensalidade}\\[1mm]
-  {\large RF05, RF06, RF07, RF19 --- Papel: Associado (app mobile)}
+  {\large RF05, RF06, RF07, RF19 --- Papel: Associado (aplicativo)}
 \end{center}
 
 \vspace{2mm}
-\estado{conta de teste do kit, com mensalidade em aberto.}
+\aviso{\textbf{Atenção:} nesta avaliação o pagamento online é \textbf{simulado}. Nenhum valor real é
+cobrado.}
 
-\noindent\colorbox{lightbg}{%
-  \begin{minipage}{0.95\linewidth}
-  \vspace{1mm}
-  \textbf{Antes de começar:} avisar o participante de que o pagamento online usa uma porta de
-  pagamento \textbf{simulada} (RF19) --- a tarefa valida a interação com a interface e o registro
-  no sistema, não um pagamento financeiro real.
-  \vspace{1mm}
-  \end{minipage}%
-}
+Você quer pagar a mensalidade em aberto pelo aplicativo.
 
-\vspace{3mm}
 \begin{enumerate}[leftmargin=6mm]
-  \item Abrir a aba \textbf{Mensalidade}, localizar a cobrança em aberto do mês.
-  \item Tocar \textbf{Pagar online} e seguir o fluxo de pagamento (simulado).
-  \item Confirmar que o histórico passa a mostrar a competência como paga.
+  \item Abra a aba \textbf{Mensalidade} e localize a cobrança em aberto do mês.
+  \item Toque em \textbf{Pagar} e siga o pagamento online.
+  \item Confirme que o histórico passa a mostrar a mensalidade como paga.
 \end{enumerate}
-
-\textbf{Verificação objetiva:}
-\begin{verbatim}
-cd backend
-node scripts/verificar-tarefas.js 3 <CPF-DA-CONTA-DE-TESTE>
-\end{verbatim}
-\criterio{mensalidade paga, com data/forma de pagamento preenchidas.}
-
-\vfill
-\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
-pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
-protocolo completo no \texttt{roteiro-moderador.pdf}. Depois deste fluxo, aplicar o questionário
-SUS (app) e a entrevista semiestruturada.
 
 \end{document}

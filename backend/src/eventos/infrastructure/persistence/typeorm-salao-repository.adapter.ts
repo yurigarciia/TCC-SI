@@ -38,7 +38,10 @@ export class TypeOrmSalaoRepositoryAdapter extends SalaoRepositoryPort {
       skip: (pagina - 1) * limite,
       take: limite,
     });
-    return { itens: encontrados.map((salao) => this.paraDominio(salao)), total };
+    return {
+      itens: encontrados.map((salao) => this.paraDominio(salao)),
+      total,
+    };
   }
 
   private paraDominio(orm: SalaoOrmEntity): Salao {

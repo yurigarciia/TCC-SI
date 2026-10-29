@@ -243,8 +243,7 @@ describe('Associados (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ nome: nomeCategoria, valorMensalidade: 0, isenta: true })
         .expect(201);
-      const categoriaId = (categoria.body as { id: string; ativa: boolean })
-        .id;
+      const categoriaId = (categoria.body as { id: string; ativa: boolean }).id;
       expect((categoria.body as { ativa: boolean }).ativa).toBe(true);
 
       const desativada = await request(app.getHttpServer())

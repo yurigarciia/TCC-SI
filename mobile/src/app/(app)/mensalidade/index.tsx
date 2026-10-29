@@ -1,21 +1,22 @@
+import { router } from "expo-router";
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Button, Surface, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppTopBar } from "@/components/app-top-bar";
-import { ErrorSnackbar } from "@/components/error-snackbar";
 import { StatusMensalidadeBadge } from "@/components/status-mensalidade-badge";
-import { useMinhasMensalidades, usePagarMinhaMensalidadeOnline } from "@/features/mensalidades/use-mensalidades";
+import { useMinhasMensalidades } from "@/features/mensalidades/use-mensalidades";
 import type { Mensalidade } from "@/features/mensalidades/types";
 import { formatarCompetencia, formatarData, formatarMoeda } from "@/lib/format";
-import { ApiError } from "@/lib/api-client";
 import { cores, paperTheme } from "@/theme/paper-theme";
 
 // RF05/RF06/RF08 (T-MOB-002) — situação atual em destaque (a mensalidade mais recente que ainda
-// não está paga, se houver) + histórico completo abaixo. "Pagar online" encadeia iniciar+confirmar
-// num só toque (ver comentário em usePagarMinhaMensalidadeOnline sobre o gateway fake atual).
+// não está paga, se houver) + histórico completo abaixo. "Pagar online" agora abre uma tela cheia
+// simulando um checkout de gateway de pagamento (ver mensalidade/pagar.tsx) em vez de confirmar o
+// pagamento num só toque — achado numa conversa com o usuário: como ainda não há um provedor real
+// integrado (FakePaymentGatewayAdapter, ver use-mensalidades.ts), o fluxo precisa pelo menos
+// simular a experiência de um checkout de verdade (referência: Mercado Pago).
 export default function MensalidadeScreen() {
   const { data: mensalidades, isLoading, isError, refetch, isRefetching } = useMinhasMensalidades();
-  const pagar = usePagarMinhaMensalidadeOnline();
 
   const ordenadas = [...(mensalidades ?? [])].sort((a, b) =>
     b.competencia.localeCompare(a.competencia),
@@ -67,9 +68,17 @@ export default function MensalidadeScreen() {
                 <Button
                   mode="contained"
                   icon="credit-card-outline"
-                  onPress={() => pagar.mutate(emAberto.id)}
-                  loading={pagar.isPending}
-                  disabled={pagar.isPending}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/mensalidade/pagar",
+                      params: {
+                        id: emAberto.id,
+                        competencia: emAberto.competencia,
+                        valor: String(emAberto.valor),
+                        vencimento: emAberto.vencimento,
+                      },
+                    })
+                  }
                   style={styles.botaoPagar}
                   contentStyle={styles.botaoPagarConteudo}
                 >
@@ -106,16 +115,6 @@ export default function MensalidadeScreen() {
           )}
         </ScrollView>
       )}
-
-      <ErrorSnackbar
-        visible={pagar.isError}
-        mensagem={
-          pagar.error instanceof ApiError
-            ? pagar.error.message
-            : "Não foi possível confirmar o pagamento. Tente novamente."
-        }
-        onDismiss={() => pagar.reset()}
-      />
     </SafeAreaView>
   );
 }

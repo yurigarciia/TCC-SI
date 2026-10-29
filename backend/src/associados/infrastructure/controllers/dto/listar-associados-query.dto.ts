@@ -9,7 +9,10 @@ export class ListarAssociadosQueryDto extends PaginacaoQueryDto {
   @IsUUID()
   categoriaSocioId?: string;
 
-  @ApiPropertyOptional({ enum: StatusAssociado, description: 'Filtra por status do associado' })
+  @ApiPropertyOptional({
+    enum: StatusAssociado,
+    description: 'Filtra por status do associado',
+  })
   @IsOptional()
   @IsEnum(StatusAssociado)
   status?: StatusAssociado;

@@ -46,7 +46,9 @@ export class GerarCobrancasMensaisUseCase {
 
     const competencia = `${referencia.getFullYear()}-${String(referencia.getMonth() + 1).padStart(2, '0')}`;
     const categoriaIds = [
-      ...new Set(candidatos.map((associado) => associado.categoriaSocioId as string)),
+      ...new Set(
+        candidatos.map((associado) => associado.categoriaSocioId as string),
+      ),
     ];
 
     const [jaCobrados, categorias] = await Promise.all([

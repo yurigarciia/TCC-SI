@@ -1,12 +1,23 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 // Query params compartilhados por todo endpoint de listagem do painel — nenhum endpoint tinha
 // paginação até esta ticket, listava tudo de uma vez (achado numa conversa com o usuário: uma
 // entidade com mais sócios/eventos/ingressos ao longo dos anos cresceria mal sem isso).
 export class PaginacaoQueryDto {
-  @ApiPropertyOptional({ default: 1, minimum: 1, description: 'Página (1-indexed)' })
+  @ApiPropertyOptional({
+    default: 1,
+    minimum: 1,
+    description: 'Página (1-indexed)',
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -22,7 +33,8 @@ export class PaginacaoQueryDto {
   limite?: number = 20;
 
   @ApiPropertyOptional({
-    description: 'Termo de busca textual (varia por endpoint qual campo é comparado)',
+    description:
+      'Termo de busca textual (varia por endpoint qual campo é comparado)',
   })
   @IsOptional()
   @IsString()

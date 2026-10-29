@@ -31,6 +31,14 @@ export class TypeOrmIngressoRepositoryAdapter extends IngressoRepositoryPort {
     return encontrado ? this.paraDominio(encontrado) : null;
   }
 
+  async buscarPorEventoECodigo(
+    eventoId: string,
+    codigo: number,
+  ): Promise<Ingresso | null> {
+    const encontrado = await this.repo.findOneBy({ eventoId, codigo });
+    return encontrado ? this.paraDominio(encontrado) : null;
+  }
+
   async contarPorEvento(eventoId: string): Promise<number> {
     return this.repo.count({ where: { eventoId } });
   }
