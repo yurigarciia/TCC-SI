@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
@@ -356,12 +356,19 @@ export class IngressosController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Código informado não é um número válido',
+  })
   @ApiResponse({ status: 404, description: 'Ingresso não encontrado' })
   consultarIngressoPorCodigo(
     @Param('eventoId', ParseUUIDPipe) eventoId: string,
-    @Param('codigo', ParseIntPipe) codigo: number,
+    @Param('codigo') codigoBruto: string,
   ) {
-    return this.consultarIngresso.executePorCodigo(eventoId, codigo);
+    return this.consultarIngresso.executePorCodigo(
+      eventoId,
+      normalizarCodigoIngresso(codigoBruto),
+    );
   }
 
   // Achado numa conversa com o usuário — o check-in por QR confirmava a entrada na hora, sem
@@ -370,7 +377,8 @@ export class IngressosController {
   // POST .../checkin.
   @Get('ingressos/:id')
   @ApiOperation({
-    summary: 'Consulta o detalhe de um ingresso (tela de conferência do check-in por QR)',
+    summary:
+      'Consulta o detalhe de um ingresso (tela de conferência do check-in por QR)',
   })
   @ApiResponse({ status: 200, description: 'Detalhe do ingresso' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -420,4 +428,16 @@ export class IngressosController {
   registrarCheckin(@Param('id', ParseUUIDPipe) id: string) {
     return this.checkin.execute(id);
   }
+}
+
+// Aceita o código do ingresso em qualquer formato que a diretoria digite ou cole — com ou sem
+// "#", com ou sem zeros à esquerda ("#004", "004", "4", "#4"...). Normaliza tirando tudo que não
+// é dígito antes de converter, em vez de depender do ParseIntPipe (que rejeita o "#").
+function normalizarCodigoIngresso(valorBruto: string): number {
+  const somenteDigitos = valorBruto.replace(/\D/g, '');
+  const codigo = somenteDigitos ? Number(somenteDigitos) : NaN;
+  if (!Number.isInteger(codigo) || codigo <= 0) {
+    throw new BadRequestException('Código do ingresso inválido');
+  }
+  return codigo;
 }

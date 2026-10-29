@@ -261,9 +261,13 @@ function IngressosConteudo({ eventoId, nomeEvento }: { eventoId: string; nomeEve
 
   const onSubmitCheckinPorCodigo = (evento: FormEvent) => {
     evento.preventDefault();
-    // Aceita tanto o número puro quanto o formato exibido na listagem ("#002").
+    // Aceita o código em qualquer formato — com/sem "#", com/sem zeros à esquerda ("#004", "004",
+    // "4", "#4"...) — tirando tudo que não é dígito antes de converter.
     const codigo = Number(codigoCheckin.replace(/\D/g, ""));
-    if (!codigo) return;
+    if (!codigo) {
+      toast.error("Informe um código de ingresso válido.");
+      return;
+    }
     setCodigoConferenciaBusca(codigo);
     setIdConferenciaQr(null);
     setCameraAtiva(false);
