@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Avatar, Button, Chip, Divider, Surface, Text, TouchableRipple } from "react-native-paper";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -52,6 +52,18 @@ export default function PagarMensalidadeScreen() {
   const [forma, setForma] = useState<FormaPagamentoSimulada>("pix");
   const [aprovado, setAprovado] = useState(false);
   const insets = useSafeAreaInsets();
+
+  // A navbar flutuante inferior (ver (app)/_layout.tsx) pertence ao Tabs raiz, não a este Stack —
+  // ela continua renderizada por cima mesmo aqui dentro, cobrindo o botão "Continuar" do rodapé
+  // fixo. Achado testando no device de verdade: esconder só enquanto esta tela está em foco e
+  // devolver ao sair é o jeito recomendado pelo próprio react-navigation pra telas full-screen
+  // dentro de uma tab (setOptions no navigator pai, não um estilo fixo no Tabs).
+  const navigation = useNavigation();
+  useEffect(() => {
+    const tabNavigator = navigation.getParent();
+    tabNavigator?.setOptions({ tabBarStyle: { display: "none" } });
+    return () => tabNavigator?.setOptions({ tabBarStyle: undefined });
+  }, [navigation]);
 
   const valorNumero = Number(valor);
 
