@@ -37,6 +37,10 @@ export interface ResumoIngressosEvento {
 export abstract class IngressoRepositoryPort {
   abstract salvar(dados: NovoIngresso): Promise<Ingresso>;
   abstract buscarPorId(id: string): Promise<Ingresso | null>;
+  abstract buscarPorEventoECodigo(
+    eventoId: string,
+    codigo: number,
+  ): Promise<Ingresso | null>;
   abstract contarPorEvento(eventoId: string): Promise<number>;
   abstract listarPaginadoPorEvento(
     eventoId: string,

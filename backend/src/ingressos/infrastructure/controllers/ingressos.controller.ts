@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
@@ -337,6 +338,30 @@ export class IngressosController {
     @Query('nome') nome?: string,
   ) {
     return this.listar.execute(eventoId, pagina!, limite!, nome);
+  }
+
+  // Achado numa conversa com o usuário — a busca manual por código (digitado, sem QR) sempre
+  // dava "não encontrado": o campo tratava o número curto exibido na listagem (#002,
+  // formatarCodigoIngresso) como se fosse o id (UUID) do ingresso, igual ao que o QR carrega. São
+  // valores diferentes — este endpoint busca pelo código curto, sempre dentro do evento atual
+  // (o código só é único por evento, não globalmente).
+  @Get('eventos/:eventoId/ingressos/codigo/:codigo')
+  @ApiOperation({
+    summary:
+      'Consulta o detalhe de um ingresso pelo código curto exibido na listagem (busca manual do check-in, sem QR)',
+  })
+  @ApiResponse({ status: 200, description: 'Detalhe do ingresso' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário autenticado não é administrador',
+  })
+  @ApiResponse({ status: 404, description: 'Ingresso não encontrado' })
+  consultarIngressoPorCodigo(
+    @Param('eventoId', ParseUUIDPipe) eventoId: string,
+    @Param('codigo', ParseIntPipe) codigo: number,
+  ) {
+    return this.consultarIngresso.executePorCodigo(eventoId, codigo);
   }
 
   // Achado numa conversa com o usuário — o check-in por QR confirmava a entrada na hora, sem
