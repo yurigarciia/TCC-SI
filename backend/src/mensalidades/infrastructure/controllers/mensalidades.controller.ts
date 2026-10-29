@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -33,6 +34,7 @@ import { IniciarMeuPagamentoOnlineUseCase } from '../../application/use-cases/in
 import { ConfirmarMeuPagamentoOnlineUseCase } from '../../application/use-cases/confirmar-meu-pagamento-online.use-case';
 import { ObterMeuComprovanteUseCase } from '../../application/use-cases/obter-meu-comprovante.use-case';
 import { PaginacaoQueryDto } from '../../../shared/pagination/paginacao-query.dto';
+import { LancarPagamentoPresencialDto } from './dto/lancar-pagamento-presencial.dto';
 
 @ApiTags('mensalidades')
 @ApiBearerAuth()
@@ -213,8 +215,11 @@ export class MensalidadesController {
     description: 'Usuário autenticado não é administrador',
   })
   @ApiResponse({ status: 404, description: 'Mensalidade não encontrada' })
-  lancarPagamentoPresencial(@Param('id', ParseUUIDPipe) id: string) {
-    return this.registrarPresencial.execute(id);
+  lancarPagamentoPresencial(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: LancarPagamentoPresencialDto,
+  ) {
+    return this.registrarPresencial.execute(id, dto.valorPago, dto.dataPagamento);
   }
 
   @Post(':id/pagamento-online/iniciar')

@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "sonner";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,15 +14,17 @@ import {
 } from "@/components/ui/table";
 import { formatarData, formatarMoeda } from "@/lib/format";
 import { TableEmptyRow } from "@/components/table-empty-row";
+import { LancarPagamentoDialog } from "./lancar-pagamento-dialog";
 import { StatusMensalidadeBadge } from "./status-badge";
-import { useHistoricoMensalidades, useLancarPagamentoPresencial } from "./use-mensalidades";
+import type { Mensalidade } from "./types";
+import { useHistoricoMensalidades } from "./use-mensalidades";
 
 // RF06/RF05 — histórico de mensalidades do associado, com lançamento de pagamento presencial
 // (canal mediado, mesmo padrão dos outros módulos). Só faz sentido para associados Ativos: a
 // geração de cobrança (T-BE-005) só cria mensalidade para quem está com status ativo.
 export function MensalidadesCard({ associadoId }: { associadoId: string }) {
   const { data: mensalidades, isLoading, isError } = useHistoricoMensalidades(associadoId);
-  const lancarPagamento = useLancarPagamentoPresencial(associadoId);
+  const [mensalidadeSelecionada, setMensalidadeSelecionada] = useState<Mensalidade | null>(null);
 
   return (
     <Card>
@@ -67,14 +69,7 @@ export function MensalidadesCard({ associadoId }: { associadoId: string }) {
                           <Button
                             variant="outline"
                             size="sm"
-                            disabled={lancarPagamento.isPending}
-                            onClick={() =>
-                              lancarPagamento.mutate(mensalidade.id, {
-                                onSuccess: () => toast.success("Pagamento lançado."),
-                                onError: () =>
-                                  toast.error("Não foi possível lançar o pagamento."),
-                              })
-                            }
+                            onClick={() => setMensalidadeSelecionada(mensalidade)}
                           >
                             Lançar pagamento
                           </Button>
@@ -88,6 +83,11 @@ export function MensalidadesCard({ associadoId }: { associadoId: string }) {
           </div>
         )}
       </CardContent>
+
+      <LancarPagamentoDialog
+        mensalidade={mensalidadeSelecionada}
+        onFechar={() => setMensalidadeSelecionada(null)}
+      />
     </Card>
   );
 }

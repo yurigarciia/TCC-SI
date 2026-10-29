@@ -61,15 +61,24 @@ export function useProcessarInadimplencia() {
   });
 }
 
-export function useLancarPagamentoPresencial(associadoId: string) {
+export interface DadosPagamentoPresencial {
+  mensalidadeId: string;
+  valorPago: number;
+  dataPagamento: string;
+}
+
+export function useLancarPagamentoPresencial(associadoId?: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (mensalidadeId: string) =>
+    mutationFn: ({ mensalidadeId, valorPago, dataPagamento }: DadosPagamentoPresencial) =>
       apiFetch<Mensalidade>(`/mensalidades/${mensalidadeId}/pagamento-presencial`, {
         method: "POST",
+        body: JSON.stringify({ valorPago, dataPagamento }),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chaveHistorico(associadoId) });
+      if (associadoId) {
+        queryClient.invalidateQueries({ queryKey: chaveHistorico(associadoId) });
+      }
       queryClient.invalidateQueries({ queryKey: CHAVE_INADIMPLENTES });
     },
   });

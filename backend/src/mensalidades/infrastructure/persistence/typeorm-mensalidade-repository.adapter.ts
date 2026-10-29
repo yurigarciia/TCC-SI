@@ -94,7 +94,10 @@ export class TypeOrmMensalidadeRepositoryAdapter extends MensalidadeRepositoryPo
     id: string,
     dados: AtualizacaoMensalidade,
   ): Promise<Mensalidade> {
-    await this.repo.update({ id }, dados);
+    await this.repo.update(
+      { id },
+      { ...dados, valor: dados.valor === undefined ? undefined : String(dados.valor) },
+    );
     const atualizada = await this.repo.findOneByOrFail({ id });
     return this.paraDominio(atualizada);
   }

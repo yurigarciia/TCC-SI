@@ -14,6 +14,7 @@ export interface NovaMensalidade {
 
 export interface AtualizacaoMensalidade {
   status?: StatusMensalidade;
+  valor?: number;
   formaPagamento?: FormaPagamento | null;
   pagoEm?: Date | null;
   pagamentoExternoId?: string | null;

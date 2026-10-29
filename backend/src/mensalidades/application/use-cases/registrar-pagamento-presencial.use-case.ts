@@ -18,7 +18,11 @@ export class RegistrarPagamentoPresencialUseCase {
     private readonly mensalidades: MensalidadeRepositoryPort,
   ) {}
 
-  async execute(id: string): Promise<Mensalidade> {
+  async execute(
+    id: string,
+    valorPago?: number,
+    dataPagamento?: string,
+  ): Promise<Mensalidade> {
     const mensalidade = await this.mensalidades.buscarPorId(id);
     if (!mensalidade) {
       throw new NotFoundException('Mensalidade não encontrada');
@@ -30,7 +34,8 @@ export class RegistrarPagamentoPresencialUseCase {
     return this.mensalidades.atualizar(id, {
       status: StatusMensalidade.PAGA,
       formaPagamento: FormaPagamento.PRESENCIAL,
-      pagoEm: new Date(),
+      valor: valorPago ?? mensalidade.valor,
+      pagoEm: dataPagamento ? new Date(dataPagamento) : new Date(),
     });
   }
 }
