@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Avatar, Button, Chip, Divider, Surface, Text, TouchableRipple } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppTopBar } from "@/components/app-top-bar";
 import { ErrorSnackbar } from "@/components/error-snackbar";
 import { usePagarMinhaMensalidadeOnline } from "@/features/mensalidades/use-mensalidades";
@@ -51,6 +51,7 @@ export default function PagarMensalidadeScreen() {
   const pagar = usePagarMinhaMensalidadeOnline();
   const [forma, setForma] = useState<FormaPagamentoSimulada>("pix");
   const [aprovado, setAprovado] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const valorNumero = Number(valor);
 
@@ -192,7 +193,7 @@ export default function PagarMensalidadeScreen() {
         )}
       </ScrollView>
 
-      <View style={styles.rodape}>
+      <View style={[styles.rodape, { paddingBottom: Math.max(insets.bottom, 12) + 16 }]}>
         <Button
           mode="contained"
           icon="lock-outline"
@@ -264,8 +265,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    padding: 20,
-    paddingBottom: 28,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     backgroundColor: "#FAF7F1",
     borderTopWidth: 1,
     borderTopColor: "#E9E0D2",
