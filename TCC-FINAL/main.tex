@@ -1176,7 +1176,7 @@ aplicativo \textit{mobile}, para participantes associados): como as duas interfa
 públicos distintos, suas pontuações SUS são reportadas e discutidas separadamente, e não combinadas
 numa única pontuação geral do ecossistema. Dado o tamanho reduzido de cada subgrupo, a pontuação SUS
 é apresentada por participante (tabela individual) e, de forma apenas indicativa, resumida por papel
-pela \textbf{mediana}, não pela média — menos sensível a um único participante com escore
+pela \textbf{mediana}, não pela média, por ser menos sensível a um único participante com escore
 discrepante. O quarto foi uma entrevista semiestruturada
 breve, cobrindo a facilidade de localizar as funcionalidades, os pontos de maior dificuldade
 percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes com menor
@@ -1522,11 +1522,67 @@ em torno de um único registro na API.
 
 \subsection{Avaliação com usuários e análise dos resultados}
 
-[Seção a ser desenvolvida após a avaliação junto às entidades parceiras. Apresentará os resultados do
-SUS, as percepções coletadas nas entrevistas, os registros de observação e a análise qualitativa com
-triangulação dos dados, discutindo pontos de convergência e de divergência entre o CPF Pia do Sul e o
-CTG Sentinela da Querência. Discutirá as contribuições e limitações do sistema em relação ao contexto
-identificado.]
+As sessões de avaliação foram conduzidas separadamente em cada entidade parceira, conforme o
+cronograma de disponibilidade de cada uma. Esta seção apresenta os resultados já obtidos, começando
+pela sessão concluída junto ao CTG Sentinela da Querência; os resultados do CPF Pia do Sul e a
+síntese comparativa entre as duas entidades serão incorporados após a realização da sessão
+correspondente.
+
+\subsubsection{CTG Sentinela da Querência}
+
+A sessão contou com dois participantes, um por papel (diretoria, representada pela secretaria da
+entidade, e associado), o mínimo viável previsto no método (Seção~\ref{sec:avaliacao}). As seis
+tarefas combinadas (três fluxos, dois papéis) foram concluídas sem necessidade de intervenção do
+moderador, com tempos de execução entre 15 segundos (pagamento de mensalidade pelo aplicativo,
+papel associado) e 3 minutos e 6 segundos (cadastro completo pelo aplicativo, papel associado),
+todas confirmadas pela verificação automatizada de conclusão.
+
+A aplicação da escala SUS resultou na pontuação máxima (100 pontos) para os dois participantes,
+tanto para o papel diretoria, referido ao painel administrativo, quanto para o papel associado,
+referido ao aplicativo. Esse resultado indica percepção de usabilidade muito favorável, mas precisa
+ser interpretado com cautela: com um único respondente por papel nesta entidade, a pontuação não
+comporta variância nem permite qualquer inferência estatística (Seção~\ref{sec:avaliacao}), e uma
+pontuação de teto desse tipo é um padrão conhecido em avaliações com amostra pequena e não
+probabilística, sobretudo quando os participantes são indicados pela própria direção da entidade e
+entrevistados pelo autor do sistema avaliado, condição que favorece a desejabilidade social na
+resposta. Por isso, a conclusão sobre a usabilidade do sistema não se apoia isoladamente na
+pontuação SUS, mas na triangulação com os demais instrumentos: taxa de conclusão sem intervenção,
+tempos de execução e conteúdo da entrevista.
+
+A entrevista semiestruturada corroborou, em linhas gerais, a percepção favorável. Os dois
+participantes descreveram o sistema como mais simples do que o processo anterior da entidade,
+\enquote{mais fácil} na avaliação do associado e \enquote{muito mais simples} na da secretaria, que
+qualificou o sistema então em uso pela entidade como \enquote{complexo, feito para outro nicho e
+adaptado para uso do CTG}; nenhum dos dois relatou dificuldade ou momento de dúvida durante a
+execução das tarefas.
+
+Dois achados qualitativos da entrevista dialogam diretamente com decisões de projeto do
+ecossistema. Primeiro, a participante do papel diretoria apontou que o fluxo de aprovação de
+cadastro mediado não reflete integralmente a governança interna da entidade: no CTG Sentinela da
+Querência, a decisão final sobre aceitar um associado cabe ao Patrão, cargo de liderança da
+entidade, e não à secretaria que opera o sistema no dia a dia, uma instância de aprovação que o
+fluxo atual ainda não contempla. O achado reforça, com um exemplo concreto, a premissa de projeto
+de tratar fluxos de aprovação como configuráveis por entidade (Seção~\ref{sec:requisitos}), em vez
+de uma regra única herdada de uma das organizações parceiras. Segundo, a mesma participante sugeriu
+a inclusão de um controle de despesas por evento para fechamento de caixa, funcionalidade fora do
+escopo definido para este trabalho (Seção~\ref{sec:delimitacao}), registrada aqui como direção para
+trabalho futuro.
+
+Por fim, a diferença entre o croqui do salão de demonstração e a disposição real do salão do CTG
+foi reconhecida espontaneamente pela própria participante como esperada, já que os dados de
+ambientação usados na sessão são fictícios; não constitui, portanto, achado de usabilidade.
+
+\subsubsection{CPF Pia do Sul}
+
+[Seção a ser desenvolvida após a realização da sessão de avaliação com o CPF Pia do Sul.]
+
+\subsubsection{Síntese comparativa entre as entidades}
+
+[Seção a ser desenvolvida após a conclusão das sessões nas duas entidades parceiras. Discutirá
+pontos de convergência e de divergência entre o CPF Pia do Sul e o CTG Sentinela da Querência, as
+contribuições e limitações do sistema em relação ao contexto identificado no diagnóstico
+(Seção~\ref{sec:diagnostico}), e se o fluxo mediado pela entidade (RNF01) funcionou, na prática,
+como alternativa viável para os usuários com menor familiaridade digital.]
 
 % ------------------------------------------------------------------
 \section{Considerações finais}
