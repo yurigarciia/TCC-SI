@@ -45,6 +45,8 @@ export class ListarEventosPublicadosUseCase {
       StatusEvento.PUBLICADO,
     );
     const agora = Date.now();
-    return publicados.filter((evento) => new Date(evento.data).getTime() >= agora);
+    return publicados.filter(
+      (evento) => new Date(evento.data).getTime() >= agora,
+    );
   }
 }

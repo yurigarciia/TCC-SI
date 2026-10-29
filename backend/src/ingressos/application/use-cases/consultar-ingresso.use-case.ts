@@ -56,7 +56,9 @@ export class ConsultarIngressoUseCase {
   }
 
   private async detalhar(
-    ingresso: NonNullable<Awaited<ReturnType<IngressoRepositoryPort['buscarPorId']>>>,
+    ingresso: NonNullable<
+      Awaited<ReturnType<IngressoRepositoryPort['buscarPorId']>>
+    >,
   ): Promise<IngressoDetalhado> {
     const evento = await this.eventos.buscarPorId(ingresso.eventoId);
 
@@ -64,7 +66,9 @@ export class ConsultarIngressoUseCase {
     if (ingresso.associadoId) {
       const associado = await this.associados.buscarPorId(ingresso.associadoId);
       if (associado?.categoriaSocioId) {
-        const categoria = await this.categorias.buscarPorId(associado.categoriaSocioId);
+        const categoria = await this.categorias.buscarPorId(
+          associado.categoriaSocioId,
+        );
         categoriaSocioNome = categoria?.nome ?? null;
       }
     }

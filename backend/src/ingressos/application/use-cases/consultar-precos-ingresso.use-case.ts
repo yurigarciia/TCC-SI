@@ -33,7 +33,10 @@ export class ConsultarPrecosIngressoUseCase {
   async execute(eventoId: string): Promise<PrecosIngressoConfigurados> {
     // Limite alto o bastante pra cobrir todas as categorias cadastradas sem paginar aqui (número
     // de categorias tende a ser pequeno — mesmo raciocínio já usado nos dropdowns do frontend).
-    const { itens: todasCategorias } = await this.categorias.listarPaginado(1, 100);
+    const { itens: todasCategorias } = await this.categorias.listarPaginado(
+      1,
+      100,
+    );
 
     const [porCategoria, naoSocio, crianca] = await Promise.all([
       Promise.all(

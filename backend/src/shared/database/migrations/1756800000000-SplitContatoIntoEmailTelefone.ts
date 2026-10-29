@@ -5,9 +5,7 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 // pra não depender de heurística de exibição e abrir espaço pra integrações futuras que precisem
 // de um canal específico (SMS, e-mail transacional). Backfill usa a mesma heurística (contém "@")
 // pra decidir em qual coluna cada valor existente cai — sem perda de dado, só reorganização.
-export class SplitContatoIntoEmailTelefone1756800000000
-  implements MigrationInterface
-{
+export class SplitContatoIntoEmailTelefone1756800000000 implements MigrationInterface {
   name = 'SplitContatoIntoEmailTelefone1756800000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

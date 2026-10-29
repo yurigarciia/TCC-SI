@@ -5,9 +5,7 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 // divergir (mostrar R$X na vitrine do app, cobrar R$Y na hora de comprar). Achado numa conversa
 // com o usuário: a seção passa a controlar só o estoque (quantidadeDisponivel); o app mostra o
 // preço efetivo (ver GET /eventos/:eventoId/meu-preco-ingresso).
-export class RemovePrecoFromConfiguracaoIngressoEvento1756200000000
-  implements MigrationInterface
-{
+export class RemovePrecoFromConfiguracaoIngressoEvento1756200000000 implements MigrationInterface {
   name = 'RemovePrecoFromConfiguracaoIngressoEvento1756200000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

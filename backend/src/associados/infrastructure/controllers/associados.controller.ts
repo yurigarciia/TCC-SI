@@ -196,9 +196,20 @@ export class AssociadosController {
     description: 'Usuário autenticado não é administrador',
   })
   listarTodos(
-    @Query() { pagina, limite, busca, categoriaSocioId, status }: ListarAssociadosQueryDto,
+    @Query()
+    {
+      pagina,
+      limite,
+      busca,
+      categoriaSocioId,
+      status,
+    }: ListarAssociadosQueryDto,
   ) {
-    return this.listar.execute(pagina!, limite!, { busca, categoriaSocioId, status });
+    return this.listar.execute(pagina!, limite!, {
+      busca,
+      categoriaSocioId,
+      status,
+    });
   }
 
   @Get(':id')

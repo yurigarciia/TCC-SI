@@ -3,7 +3,10 @@ import { IsEnum, IsInt, Min } from 'class-validator';
 import { TipoElementoEstrutural } from '../../../domain/elemento-estrutural.entity';
 
 export class CriarElementoEstruturalDto {
-  @ApiProperty({ enum: TipoElementoEstrutural, example: TipoElementoEstrutural.PAREDE })
+  @ApiProperty({
+    enum: TipoElementoEstrutural,
+    example: TipoElementoEstrutural.PAREDE,
+  })
   @IsEnum(TipoElementoEstrutural)
   tipo: TipoElementoEstrutural;
 

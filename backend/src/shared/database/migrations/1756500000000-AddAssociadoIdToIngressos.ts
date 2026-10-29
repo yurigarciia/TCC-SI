@@ -9,9 +9,7 @@ import {
 // nome do comprador, capturado na hora da compra) — sem isso, não tem como o app mobile listar
 // "meus ingressos" do associado logado. Nullable porque ingresso emitido pela diretoria pra
 // visitante/criança sem cadastro continua válido sem esse vínculo.
-export class AddAssociadoIdToIngressos1756500000000
-  implements MigrationInterface
-{
+export class AddAssociadoIdToIngressos1756500000000 implements MigrationInterface {
   name = 'AddAssociadoIdToIngressos1756500000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

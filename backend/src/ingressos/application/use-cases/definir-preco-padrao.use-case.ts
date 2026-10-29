@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrecoIngressoRepositoryPort } from '../ports/preco-ingresso-repository.port';
 import { CategoriaSocioRepositoryPort } from '../../../associados/application/ports/categoria-socio-repository.port';
 import { PerfilComprador } from '../../domain/ingresso.entity';

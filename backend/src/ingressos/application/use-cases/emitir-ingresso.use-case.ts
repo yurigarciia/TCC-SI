@@ -74,7 +74,10 @@ export class EmitirIngressoUseCase {
       throw new ConflictException('Ingressos esgotados para este evento');
     }
 
-    if (dados.perfilComprador === PerfilComprador.SOCIO && !dados.categoriaSocioId) {
+    if (
+      dados.perfilComprador === PerfilComprador.SOCIO &&
+      !dados.categoriaSocioId
+    ) {
       throw new BadRequestException(
         'Informe a categoria de sócio do comprador',
       );

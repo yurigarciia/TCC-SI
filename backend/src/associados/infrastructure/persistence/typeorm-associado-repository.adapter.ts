@@ -50,7 +50,8 @@ export class TypeOrmAssociadoRepositoryAdapter extends AssociadoRepositoryPort {
     filtros?: FiltrosListaAssociados,
   ): Promise<{ itens: Associado[]; total: number }> {
     const extras: Record<string, unknown> = {};
-    if (filtros?.categoriaSocioId) extras.categoriaSocioId = filtros.categoriaSocioId;
+    if (filtros?.categoriaSocioId)
+      extras.categoriaSocioId = filtros.categoriaSocioId;
     if (filtros?.status) extras.status = filtros.status;
 
     const where = filtros?.busca

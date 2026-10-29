@@ -219,7 +219,11 @@ export class MensalidadesController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: LancarPagamentoPresencialDto,
   ) {
-    return this.registrarPresencial.execute(id, dto.valorPago, dto.dataPagamento);
+    return this.registrarPresencial.execute(
+      id,
+      dto.valorPago,
+      dto.dataPagamento,
+    );
   }
 
   @Post(':id/pagamento-online/iniciar')
@@ -308,7 +312,9 @@ export class MensalidadesController {
     status: 403,
     description: 'Usuário autenticado não é administrador',
   })
-  relatorioInadimplencia(@Query() { pagina, limite, busca }: PaginacaoQueryDto) {
+  relatorioInadimplencia(
+    @Query() { pagina, limite, busca }: PaginacaoQueryDto,
+  ) {
     return this.listarInadimplentes.execute(pagina!, limite!, busca);
   }
 

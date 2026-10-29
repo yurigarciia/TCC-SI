@@ -6,9 +6,7 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class AddFormatoMesaAndCreateAreasEstruturais1756700000000
-  implements MigrationInterface
-{
+export class AddFormatoMesaAndCreateAreasEstruturais1756700000000 implements MigrationInterface {
   name = 'AddFormatoMesaAndCreateAreasEstruturais1756700000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
