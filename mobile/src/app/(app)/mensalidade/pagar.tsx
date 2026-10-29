@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Avatar, Button, Chip, Divider, Surface, Text, TouchableRipple } from "react-native-paper";
@@ -58,6 +58,16 @@ export default function PagarMensalidadeScreen() {
     pagar.mutate(id, { onSuccess: () => setAprovado(true) });
   }
 
+  // Achado numa conversa com o usuário: depois de aprovado, o esperado é já voltar pra tela de
+  // Mensalidade mostrando o novo status "Paga" (a invalidação de CHAVE_MINHAS em
+  // usePagarMinhaMensalidadeOnline garante que ela chega atualizada) — não ficar parado esperando
+  // um toque manual. O botão abaixo continua como fallback, pro associado que quiser sair antes.
+  useEffect(() => {
+    if (!aprovado) return;
+    const tempo = setTimeout(() => router.replace("/mensalidade"), 1800);
+    return () => clearTimeout(tempo);
+  }, [aprovado]);
+
   if (aprovado) {
     return (
       <SafeAreaView style={styles.safeArea} edges={[]}>
@@ -92,14 +102,19 @@ export default function PagarMensalidadeScreen() {
       <AppTopBar titulo="Pagar mensalidade" onVoltar={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Chip
-          icon="flask-outline"
-          compact
-          style={styles.chipSimulacao}
-          textStyle={styles.chipSimulacaoTexto}
-        >
-          Simulação para o TCC — nenhum pagamento real é processado
-        </Chip>
+        <View style={styles.cabecalho}>
+          <Text variant="headlineSmall" style={styles.tituloPrincipal}>
+            Pagamento da mensalidade
+          </Text>
+          <Chip
+            icon="flask-outline"
+            compact
+            style={styles.chipSimulacao}
+            textStyle={styles.chipSimulacaoTexto}
+          >
+            Simulação para o TCC — nenhum pagamento real é processado
+          </Chip>
+        </View>
 
         <Surface style={styles.cardResumo} elevation={1}>
           <Text variant="labelLarge" style={styles.rotuloResumo}>
@@ -211,8 +226,10 @@ const styles = StyleSheet.create({
   textoCentralizado: { textAlign: "center" },
   textoMuted: { color: "#5B5147" },
   container: { padding: 20, gap: 14, paddingBottom: 140 },
+  cabecalho: { alignItems: "center", gap: 8, marginBottom: 4 },
+  tituloPrincipal: { color: "#2B241D", fontWeight: "700", textAlign: "center" },
   chipSimulacao: {
-    alignSelf: "flex-start",
+    alignSelf: "center",
     backgroundColor: coresSemanticas.avisoFundo,
     borderRadius: 8,
   },
