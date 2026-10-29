@@ -4,10 +4,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[margin=2cm]{geometry}
 \usepackage{lmodern}
-\usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{array}
-\usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -17,7 +14,6 @@
 \definecolor{lightbg}{HTML}{F5F2EC}
 
 \titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
-\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -26,17 +22,15 @@
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\newcommand{\dizer}[1]{%
+\newcommand{\aviso}[1]{%
   \noindent\colorbox{lightbg}{%
     \begin{minipage}{0.95\linewidth}
     \vspace{1mm}
-    \textbf{O que dizer ao participante:} ``#1''
+    #1
     \vspace{1mm}
     \end{minipage}%
   }\vspace{3mm}
 }
-\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
-\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
 
 \begin{document}
 
@@ -46,30 +40,15 @@
 \end{center}
 
 \vspace{2mm}
-\estado{1 associado ativo e inadimplente, reservado pelo moderador (nome e CPF anotados no kit).}
-
-\dizer{Este associado veio até a sede pagar a mensalidade em atraso. Registre o pagamento.}
+Um associado veio até a sede pagar a mensalidade em atraso. O moderador informará o nome dele.
+Registre o pagamento.
 
 \begin{enumerate}[leftmargin=6mm]
-  \item Acessar \textbf{Mensalidades} (\texttt{/mensalidades}) e abrir o \textbf{Relatório de
-    inadimplência}.
-  \item Localizar o associado do kit na lista.
-  \item Registrar manualmente um \textbf{pagamento presencial} por ele.
-  \item Confirmar que o associado deixa de constar no relatório e que o histórico reflete o
+  \item Acesse \textbf{Mensalidades} e abra o \textbf{Relatório de inadimplência}.
+  \item Localize o associado informado na lista.
+  \item Registre o \textbf{pagamento presencial} dele.
+  \item Confirme que o associado deixou de constar no relatório e que o histórico mostra o
     pagamento.
 \end{enumerate}
-
-\textbf{Verificação objetiva:}
-\begin{verbatim}
-cd backend
-node scripts/verificar-tarefas.js 3 <CPF-DO-ASSOCIADO-INADIMPLENTE>
-\end{verbatim}
-\criterio{mensalidade paga, com \texttt{forma\_pagamento = presencial}.}
-
-\vfill
-\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
-pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
-protocolo completo no \texttt{roteiro-moderador.pdf}. Depois deste fluxo, aplicar o questionário
-SUS (painel) e a entrevista semiestruturada.
 
 \end{document}

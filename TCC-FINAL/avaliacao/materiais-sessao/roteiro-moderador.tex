@@ -13,6 +13,7 @@
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
 
 \definecolor{brandgreen}{HTML}{2E5E3E}
 \definecolor{lightbg}{HTML}{F5F2EC}
@@ -46,13 +47,13 @@
 
 \vspace{2mm}
 
-\caixa{Este documento é o guia de ponta a ponta que o moderador segue durante a sessão. Os passos
-detalhados de execução de cada tarefa (telas, botões, comandos de verificação) estão em 6
-documentos separados, um por fluxo $\times$ papel: \textbf{fluxo-1-diretoria.pdf},
-\textbf{fluxo-1-associado.pdf}, \textbf{fluxo-2-diretoria.pdf}, \textbf{fluxo-2-associado.pdf},
-\textbf{fluxo-3-diretoria.pdf} e \textbf{fluxo-3-associado.pdf} --- entregue ao participante só os
-3 do seu papel, em sequência (F1, F2, F3); use-os lado a lado com este roteiro, não em substituição
-a ele.}
+\caixa{Este documento é o guia de ponta a ponta do moderador e \textbf{não é entregue ao
+participante}. Os passos que o participante segue estão em 6 folhas separadas, um por fluxo
+$\times$ papel: \textbf{fluxo-1-diretoria.pdf}, \textbf{fluxo-1-associado.pdf},
+\textbf{fluxo-2-diretoria.pdf}, \textbf{fluxo-2-associado.pdf}, \textbf{fluxo-3-diretoria.pdf} e
+\textbf{fluxo-3-associado.pdf} --- entregue ao participante só as 3 do seu papel, em sequência (F1,
+F2, F3). Essas folhas não trazem falas do moderador, estado de kit nem comandos de verificação:
+tudo isso está na Seção 7 deste roteiro.}
 
 \section*{1. Objetivo da sessão}
 
@@ -62,10 +63,10 @@ entidade (RNF01) funciona como alternativa viável para participantes com menor 
 digital. A sessão \textbf{não} busca validar a arquitetura técnica (já coberta pelos testes
 automatizados do backend) --- busca validar a experiência de uso.
 
-\section*{2. Formato: quatro blocos sequenciais (\textasciitilde40--45 min por participante)}
+\section*{2. Formato: quatro blocos sequenciais (\textasciitilde35--45 min por participante)}
 
 \begin{enumerate}[leftmargin=6mm]
-  \item \textbf{Demonstração geral} (\textasciitilde10 min) --- apresentar o sistema (painel e/ou
+  \item \textbf{Demonstração geral} (5 a 10 min) --- apresentar o sistema (painel e/ou
     app, conforme o papel do participante) de forma guiada, sem o participante tocar ainda,
     cobrindo navegação geral e terminologia da interface. Objetivo: nivelar familiaridade antes de
     medir desempenho em tarefa.
@@ -76,7 +77,7 @@ automatizados do backend) --- busca validar a experiência de uso.
   \item \textbf{Questionário SUS} (\textasciitilde5 min) --- aplicado imediatamente após as
     tarefas, enquanto a experiência ainda está fresca.
   \item \textbf{Entrevista semiestruturada} (\textasciitilde10 min) --- roteiro de perguntas
-    abertas (Seção 7 abaixo).
+    abertas (Seção 8.2 abaixo).
 \end{enumerate}
 
 \section*{3. Participantes}
@@ -200,16 +201,108 @@ uma mensalidade em aberto no mês --- é a conta que o moderador usa no app depo
 conta por participante, já que pagar a mensalidade a consome). Conferir que o evento do F2 está
 publicado e que a conta de teste ainda não tem ingresso nele.
 
-\section*{7. Depois das tarefas: SUS e entrevista}
+\section*{7. Condução por fluxo (uso exclusivo do moderador)}
 
-\subsection*{7.1 Questionário SUS}
+Para cada tarefa: dizer a fala indicada, deixar o participante executar a folha do fluxo e rodar a
+verificação em seguida (\texttt{cd backend} antes). Estado necessário = item do kit (Seção 6).
 
-Aplicar o formulário correspondente ao papel do participante (\texttt{sus-painel-web.md} para
-Diretoria, \texttt{sus-app-mobile.md} para Associado), imediatamente após o bloco de tarefas.
-Escala de 1 (discordo totalmente) a 5 (concordo totalmente), 10 itens, pontuação pela fórmula de
-Brooke (1996).
+\subsection*{Fluxo 1 --- Cadastro de associado}
 
-\subsection*{7.2 Roteiro de entrevista semiestruturada}
+\textbf{Diretoria.} Estado: ficha de persona ainda não usada. Fala: ``Alguém novo quer se associar à
+entidade. Você recebeu esta ficha preenchida à mão --- cadastre essa pessoa no sistema como se
+fosse um caso real.''
+\begin{verbatim}
+node scripts/verificar-tarefas.js 1 <CPF-DA-FICHA>
+\end{verbatim}
+Esperado: associado existe e está \texttt{ativo}. A conta de login não aparece vinculada (normal:
+só a diretoria cadastrou).
+
+\textbf{Associado, situação A (auto-cadastro).} Estado: ficha de persona ainda não usada; app
+deslogado. Fala: ``Você quer se tornar associado da entidade e está criando sua conta pelo
+aplicativo pela primeira vez.''
+\begin{verbatim}
+node scripts/verificar-tarefas.js 1 <CPF-DA-FICHA>
+\end{verbatim}
+Esperado: associado com status \texttt{pendente\_validacao} e conta de login vinculada.
+
+\textbf{Associado, situação B (vincular conta).} Estado: CPF pré-cadastrado (ativo, sem login) no
+cartão do kit; app deslogado. Fala: ``A diretoria já cadastrou você como associado, mas você nunca
+entrou no aplicativo. Use o CPF que consta neste cartão para criar seu acesso.''
+\begin{verbatim}
+node scripts/verificar-tarefas.js 1 <CPF-DO-CARTAO>
+\end{verbatim}
+Esperado: status \texttt{ativo} e conta de login vinculada.
+
+Cada Associado faz \textbf{uma} situação. Depois do Fluxo 1, sair dessa conta e entrar na
+\textbf{conta de teste do kit} antes de devolver o celular (o login não é tarefa avaliada). A conta
+criada no Fluxo 1 não é usada nos Fluxos 2 e 3.
+
+\subsection*{Fluxo 2 --- Ingressos e validação de entrada}
+
+\textbf{Associado.} Estado: conta de teste já logada; evento publicado com ingresso avulso. O QR
+dele não é lido por ninguém (a validação é a tarefa da Diretoria, com ingressos à parte).
+\begin{small}
+\begin{verbatim}
+node scripts/verificar-tarefas.js 2 <CPF-DA-CONTA-DE-TESTE> \
+  "<trecho do nome do evento>"
+\end{verbatim}
+\end{small}
+Esperado: ingresso emitido; entrada ainda não validada.
+
+\textbf{Diretoria.} Estado: 2 ingressos pré-emitidos, em nome de associados fictícios --- A (ler por
+câmera; QR no celular do moderador ou impresso) e B (digitar o código, anotado no cartão). Fala:
+``Estes dois convidados chegaram ao baile. Confira a entrada de cada um.''
+\begin{small}
+\begin{verbatim}
+node scripts/verificar-tarefas.js 2 <CPF-ASSOCIADO-FICTICIO-A> \
+  "<trecho do nome do evento>"
+node scripts/verificar-tarefas.js 2 <CPF-ASSOCIADO-FICTICIO-B> \
+  "<trecho do nome do evento>"
+\end{verbatim}
+\end{small}
+Esperado: ingresso emitido e entrada validada, com horário preenchido, nos dois. Se a câmera falhar
+(permissão, luz, rede), registrar o motivo e pedir o ingresso A pelo caminho manual, contando como
+intervenção; o ingresso B continua reservado para o caminho manual.
+
+\subsection*{Fluxo 3 --- Mensalidade}
+
+\textbf{Associado.} Estado: conta de teste com mensalidade em aberto. A folha já avisa que o
+pagamento online é simulado (RF19): a tarefa avalia a interface e o registro no sistema, não um
+pagamento real.
+\begin{verbatim}
+node scripts/verificar-tarefas.js 3 <CPF-DA-CONTA-DE-TESTE>
+\end{verbatim}
+Esperado: mensalidade paga, com data e forma de pagamento preenchidas.
+
+\textbf{Diretoria.} Estado: associado ativo e inadimplente reservado (nome e CPF no kit); informar o
+nome ao participante. Fala: ``Este associado veio até a sede pagar a mensalidade em atraso.
+Registre o pagamento.''
+\begin{verbatim}
+node scripts/verificar-tarefas.js 3 <CPF-DO-ASSOCIADO-INADIMPLENTE>
+\end{verbatim}
+Esperado: mensalidade paga, com \texttt{forma\_pagamento = presencial}.
+
+\section*{8. Depois das tarefas: SUS e entrevista}
+
+\subsection*{8.1 Questionário SUS}
+
+Aplicar o formulário correspondente ao papel do participante, imediatamente após o bloco de
+tarefas: Google Forms, preenchido pelo próprio participante (ou pelo moderador, lendo os itens).
+Escala de 1 (discordo totalmente) a 5 (concordo totalmente), 10 itens. A pontuação (0--100, fórmula
+de Brooke, 1996) é calculada na coluna O da planilha de respostas de cada formulário.
+
+\begin{itemize}[leftmargin=6mm]
+  \item \textbf{Painel (Diretoria):} formulário
+    \url{https://docs.google.com/forms/d/e/1FAIpQLSdnIhOWGjHlwoPrQDRv5Wzp0uLf5O1_GWcuPxeGDMc1s3m-xw/viewform};
+    planilha
+    \url{https://docs.google.com/spreadsheets/d/1QZ78az8-krw79-We2ifDlJJ7GC2hwSr3nSY7NVuG5tA/edit}
+  \item \textbf{Aplicativo (Associado):} formulário
+    \url{https://docs.google.com/forms/d/e/1FAIpQLSeqf1V7mwzuHNQGOUnb9qju-9fiCPsCne48TkF6PFQgSi6t8Q/viewform};
+    planilha
+    \url{https://docs.google.com/spreadsheets/d/1cmmUhJ9u3hmNuvuSCGTmISsNt7vZI4erwR3HJkKJ1cA/edit}
+\end{itemize}
+
+\subsection*{8.2 Roteiro de entrevista semiestruturada}
 
 Perguntas abertas, conduzidas após o SUS:
 
@@ -230,7 +323,7 @@ Perguntas abertas, conduzidas após o SUS:
   \item Tem alguma coisa que você esperava encontrar e não encontrou, ou que faria diferente?
 \end{enumerate}
 
-\section*{8. Se uma tarefa falhar}
+\section*{9. Se uma tarefa falhar}
 
 \begin{enumerate}[leftmargin=6mm]
   \item Aplicar a regra de intervenção (depois de \textasciitilde2 min travado, indicar o
@@ -242,7 +335,7 @@ Perguntas abertas, conduzidas após o SUS:
     preparado no kit. Nunca ``consertar'' o estado da tarefa seguinte com dados da que falhou.
 \end{enumerate}
 
-\section*{9. Depois da sessão}
+\section*{10. Depois da sessão}
 
 \begin{enumerate}[leftmargin=6mm]
   \item Rodar os comandos de verificação de cada fluxo executado (se ainda não rodados durante a
@@ -250,7 +343,7 @@ Perguntas abertas, conduzidas após o SUS:
     do moderador --- essa combinação classifica a tarefa como \textit{concluída sem ajuda} /
     \textit{concluída com intervenção} / \textit{não concluída}.
   \item Aplicar o formulário SUS correspondente ao papel do participante (se ainda não aplicado).
-  \item Conduzir a entrevista semiestruturada (Seção 7.2).
+  \item Conduzir a entrevista semiestruturada (Seção 8.2).
   \item Marcar o kit como \textbf{usado} (personas, CPF pré-cadastrado, ingressos, inadimplente) e,
     se houver participante seguinte, abrir o próximo kit --- nunca reaproveitar itens.
 \end{enumerate}

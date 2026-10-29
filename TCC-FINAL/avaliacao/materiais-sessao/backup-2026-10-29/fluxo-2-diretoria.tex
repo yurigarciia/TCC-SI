@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{lmodern}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\definecolor{brandgreen}{HTML}{2E5E3E}
+\definecolor{lightbg}{HTML}{F5F2EC}
+
+\titleformat{\section}{\large\bfseries\color{brandgreen}}{}{0pt}{}[{\color{brandgreen}\titlerule}]
+\titleformat{\subsection}{\bfseries\color{brandgreen}}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Querência ERP --- Avaliação de usabilidade}
+\fancyhead[R]{\small Fluxo 2 --- Diretoria}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\dizer}[1]{%
+  \noindent\colorbox{lightbg}{%
+    \begin{minipage}{0.95\linewidth}
+    \vspace{1mm}
+    \textbf{O que dizer ao participante:} ``#1''
+    \vspace{1mm}
+    \end{minipage}%
+  }\vspace{3mm}
+}
+\newcommand{\criterio}[1]{\noindent\textit{Critério de sucesso objetivo:} #1}
+\newcommand{\estado}[1]{\noindent\textit{Estado necessário (já preparado no kit):} #1\vspace{2mm}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{brandgreen} Fluxo 2 --- Validação de entrada no evento}\\[1mm]
+  {\large RF12, RF20, RF21 --- Papel: Diretoria (painel web)}
+\end{center}
+
+\vspace{2mm}
+\estado{2 ingressos já pré-emitidos pelo moderador, em nome de associados fictícios: ingresso
+\textbf{A} (para ler por câmera) e ingresso \textbf{B} (para digitar o código).}
+
+O QR do ingresso A aparece no celular do moderador (app logado na conta do associado fictício) ou
+na impressão do kit; o código do ingresso B está anotado no cartão do kit.
+
+\dizer{Estes dois convidados chegaram ao baile. Confira a entrada de cada um.}
+
+\begin{enumerate}[leftmargin=6mm]
+  \item Acessar \textbf{Eventos → [o evento] → Ingressos} (\texttt{/eventos/[id]/ingressos}).
+  \item \textbf{Ingresso A:} tocar \textbf{Ler código} (câmera) e apontar para o QR mostrado pelo
+    moderador.
+  \item \textbf{Ingresso B:} informar o código digitado manualmente no campo de texto, conforme o
+    cartão.
+  \item Em cada um, na tela de conferência (nome + código do ingresso, evento, categoria, valor,
+    status), revisar os dados e tocar \textbf{Confirmar entrada} --- o check-in não é automático
+    ao ler o QR.
+  \item Confirmar que a listagem/contadores do evento (emitidos / validados / aguardando)
+    atualizam.
+\end{enumerate}
+
+\textbf{Verificação objetiva:}
+\begin{small}
+\begin{verbatim}
+node scripts/verificar-tarefas.js 2 <CPF-DO-ASSOCIADO-FICTICIO-A> \
+  "<trecho do nome do evento>"
+node scripts/verificar-tarefas.js 2 <CPF-DO-ASSOCIADO-FICTICIO-B> \
+  "<trecho do nome do evento>"
+\end{verbatim}
+\end{small}
+\criterio{ingresso emitido \textbf{e} entrada validada, com horário preenchido, nos dois.}
+
+\vspace{2mm}
+\noindent\textit{Se a câmera falhar (permissão, luz, rede), registrar o motivo e pedir o ingresso
+A pelo caminho manual, contando como intervenção --- sem usar o ingresso B (que continua reservado
+para o caminho manual).}
+
+\vfill
+\noindent\footnotesize Se a tarefa travar por mais de \textasciitilde2 min, aplicar 1 intervenção
+pontual e registrar; se mesmo assim não avançar, parar e marcar como \textit{não concluída} ---
+protocolo completo no \texttt{roteiro-moderador.pdf}.
+
+\end{document}
