@@ -1131,14 +1131,10 @@ centrais do ecossistema (associados, eventos/ingressos e mensalidades) e por cor
 relatados como prioritários no diagnóstico de ambas as entidades. Cada fluxo foi testado nas duas
 pontas do ecossistema, quando aplicável: participantes da diretoria executaram o passo mediado pelo
 painel administrativo, e participantes associados executaram o passo de autoatendimento pelo
-aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF18),
-compreendendo o cadastro mediado pela diretoria no painel e o auto-cadastro/vínculo de conta pelo
-associado no aplicativo; (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21), compreendendo
-a compra do ingresso e a exibição do código QR pelo associado no aplicativo, seguida da leitura e
-validação da entrada pela diretoria no painel; e (iii) \textbf{pagamento de mensalidade} (RF05, RF06,
-RF07, RF19), compreendendo a consulta e o pagamento online pelo associado no aplicativo e, de forma
-independente, o registro de pagamento presencial de um associado inadimplente pela diretoria no
-painel. As tarefas foram desenhadas para serem independentes entre si: o estado inicial de cada uma
+aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF18);
+(ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21); e (iii) \textbf{pagamento de
+mensalidade} (RF05, RF06, RF07, RF19), descritos em detalhe, com seus diagramas, na
+Seção~\ref{sec:fluxos-avaliados}. As tarefas foram desenhadas para serem independentes entre si: o estado inicial de cada uma
 (fichas de cadastro, ingressos já emitidos, contas de teste com mensalidade em aberto e associados
 inadimplentes) foi preparado previamente pelo moderador, de modo que a falha em uma tarefa, ou a
 ausência de outro participante, não comprometesse as demais. Antes da execução do
@@ -1487,38 +1483,206 @@ mesa é registrada para a mesa inteira, sem controle de entrada por pessoa, ao p
 na portaria por código QR está implementada apenas para o ingresso avulso, de modo que o controle de
 acesso associado à reserva permanece como trabalho futuro; (iii) o aplicativo foi validado em
 dispositivo Android, sem verificação em iOS; (iv) não foi realizada aferição sistemática do tempo de
-resposta (RNF05); e (v) um evento publicado permanece visível e disponível para reserva ou compra de
-ingresso indefinidamente, mesmo após sua data, porque o sistema não implementa encerramento
-automático nem manual de evento; a mitigação adotada é operacional (a diretoria evita publicar com
-antecedência excessiva), não uma restrição garantida pelo sistema.
+resposta (RNF05); e (v) o sistema não possui um estado de encerramento de evento: o painel exibe ``Encerrado''
+apenas de forma visual, calculada a partir da data, e não há encerramento manual. A compra de
+ingresso e a reserva de mesa pelo aplicativo são recusadas pela API depois da data do evento, mas a
+venda presencial de ingresso pela diretoria, no painel, não verifica a data.
 
-\subsubsection{Demonstração de um fluxo completo: compra de ingresso e check-in}
+\subsubsection{Fluxos avaliados}
+\label{sec:fluxos-avaliados}
 
-Para ilustrar, de ponta a ponta, como as camadas do ecossistema digital se articulam na prática,
-descreve-se a seguir o fluxo de compra de ingresso e check-in (RF12, RF20, RF21), que atravessa o
-aplicativo \textit{mobile}, a API e o painel administrativo. Esse fluxo foi escolhido por ser o único
-que, isoladamente, exercita as duas pontas do ecossistema (autoatendimento do associado e operação
-mediada pela diretoria) e por corresponder a um dos pontos de maior convergência relatados no
-diagnóstico de ambas as entidades parceiras (Seção~\ref{sec:diagnostico}): o controle de entrada na
-portaria.
+Esta seção detalha os três fluxos que estruturaram a avaliação com usuários
+(Seção~\ref{sec:avaliacao}), mostrando, para cada um, o que cabe ao associado no aplicativo, o que
+cabe à diretoria no painel e o que a API confere e registra entre uma etapa e outra. Os diagramas
+(Figuras~\ref{fig:fluxo-cadastro} a~\ref{fig:fluxo-mensalidade}) apresentam o caminho principal de
+cada fluxo e as regras de negócio que o sistema aplica; as telas correspondentes aparecem nas
+Figuras~\ref{fig:web-ingressos} e~\ref{fig:mobile-telas}. Nas rotas do associado, a identidade, o
+canal e a titularidade do registro são sempre resolvidos pela API a partir do login, e nunca
+informados livremente pelo cliente, o que impede que um associado compre, pague ou visualize
+registros de outra pessoa.
 
-O fluxo começa no aplicativo do associado. Na aba ``Eventos'' (Figura~\ref{fig:mobile-telas}d), o
-associado abre um evento publicado e escolhe comprar um ingresso; a API resolve, a partir do perfil
-configurado para esse evento, o valor correspondente (sócio, não sócio ou criança) e registra a
-emissão, vinculando o ingresso ao associado autenticado, nunca a um identificador informado
-livremente pelo cliente, o que impede que um associado compre ou visualize ingresso de outra pessoa.
-Emitido o ingresso, a aba ``Ingressos'' (Figura~\ref{fig:mobile-telas}c) passa a exibi-lo com um
-código QR, cujo conteúdo é o identificador do próprio ingresso.
+\textbf{Cadastro de associado (RF01, RF18).} O cadastro admite duas entradas, ilustradas na
+Figura~\ref{fig:fluxo-cadastro}. No auto-cadastro, o associado informa, no aplicativo, dados pessoais,
+endereço, \textit{e-mail} e senha; a API recusa CPF ou \textit{e-mail} já existentes, cria o \textit{login}
+e o cadastro no mesmo passo, e o cadastro nasce com status \textit{pendente de validação} e sem
+categoria de sócio. Cabe à diretoria revisar o cadastro pendente, definir a categoria e aprová-lo; ao
+aprovar, o associado passa a \textit{ativo} e já recebe a mensalidade do mês, sem esperar a próxima
+geração automática de cobranças. Na entrada mediada, a diretoria registra no painel a proposta física
+de associação, e o cadastro entra imediatamente como \textit{ativo}, sem \textit{login} e sem etapa de
+aprovação, por ter sido criado pela própria diretoria. Essa regra é uma assunção de projeto ainda não
+confirmada pelas entidades e, como mostra a Seção~\ref{sec:avaliacao-ctg}, uma delas apontou que a
+decisão final de aceitar um associado cabe a uma instância própria da entidade. Para que o associado
+cadastrado dessa forma acesse o aplicativo, a opção ``Já é associado mas nunca acessou?'' recebe CPF,
+\textit{e-mail} e senha, confere que o CPF existe e ainda não tem conta e vincula o novo \textit{login}
+ao cadastro existente, sem duplicar o registro nem recolocá-lo na fila de aprovação.
+
+\tikzset{
+  fl/.style={rectangle, rounded corners=3pt, draw, thick, text width=4.6cm, align=center,
+    inner sep=3pt, font=\footnotesize, minimum height=0.9cm,
+    execute at begin node={\hyphenpenalty=10000 \exhyphenpenalty=10000 }},
+  fla/.style={fl, fill=blue!15, draw=blue!50!black},
+  fld/.style={fl, fill=green!15, draw=green!50!black},
+  flp/.style={fl, fill=orange!20, draw=orange!70!black},
+  flx/.style={fl, fill=red!10, draw=red!60!black},
+  fdec/.style={diamond, aspect=2.6, draw, thick, fill=orange!20, draw=orange!70!black,
+    align=center, inner sep=1pt, font=\footnotesize, text width=2.4cm},
+  flane/.style={rectangle, draw, thick, minimum width=4.8cm, minimum height=0.7cm,
+    align=center, font=\small\bfseries},
+  flarrow/.style={-{Stealth[length=5pt]}, thick},
+  flpart/.style={font=\small\itshape, anchor=west, text=gray!40!black},
+  fllbl/.style={font=\scriptsize\itshape, text=gray!40!black}
+}
+
+\begin{figure}[H]
+\centering
+\caption{Fluxo de cadastro de associado: auto-cadastro e cadastro mediado com vínculo de conta}
+\label{fig:fluxo-cadastro}
+\begin{tikzpicture}
+\node[flane, fill=blue!15, draw=blue!50!black] at (0,0) {Associado (aplicativo)};
+\node[flane, fill=green!15, draw=green!50!black] at (5.2,0) {Diretoria (painel)};
+\node[flane, fill=orange!20, draw=orange!70!black] at (10.4,0) {API};
+\draw[gray!55, dashed] (2.6,-0.5) -- (2.6,-16.1);
+\draw[gray!55, dashed] (7.8,-0.5) -- (7.8,-16.1);
+
+\node[flpart] at (-2.2,-1.0) {(a) Auto-cadastro pelo aplicativo};
+\node[fla] (a1) at (0,-2.1) {Informa dados pessoais, endereço, \textit{e-mail} e senha em ``Cadastre-se''};
+\node[flp] (a2) at (10.4,-3.9) {Confere CPF e \textit{e-mail} únicos; cria \textit{login} e cadastro \textit{pendente de validação}};
+\node[fld] (a3) at (5.2,-5.7) {Revisa o cadastro pendente, define a categoria de sócio e aprova};
+\node[flp] (a4) at (10.4,-7.5) {Muda o status para \textit{ativo} e gera a mensalidade do mês};
+
+\node[flpart] at (-2.2,-8.7) {(b) Cadastro mediado e vínculo de conta};
+\node[fld] (b1) at (5.2,-9.8) {Preenche a ficha (dados, endereço e categoria de sócio) e salva};
+\node[flp] (b2) at (10.4,-11.6) {Confere CPF único; cria o cadastro já \textit{ativo}, sem \textit{login}};
+\node[fla] (b3) at (0,-13.4) {Em ``Já é associado mas nunca acessou?'', informa CPF, \textit{e-mail} e senha};
+\node[flp] (b4) at (10.4,-15.2) {Confere que o CPF existe e não tem conta; cria o \textit{login} e o vincula ao cadastro};
+
+\draw[flarrow] (a1.east) -| (a2.north);
+\draw[flarrow] (a2.west) -| (a3.north);
+\draw[flarrow] (a3.east) -| (a4.north);
+\draw[flarrow] (b1.east) -| (b2.north);
+\draw[flarrow] (b2.west) -| (b3.north);
+\draw[flarrow] (b3.east) -| (b4.north);
+\end{tikzpicture}
+\caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir das regras implementadas na API.}
+\end{figure}
+
+\textbf{Compra de ingresso e check-in (RF12, RF20, RF21).} Esse é o fluxo que exercita, em torno de um
+único registro na API, as duas pontas do ecossistema, e corresponde a um dos pontos de maior
+convergência relatados no diagnóstico de ambas as entidades parceiras
+(Seção~\ref{sec:diagnostico}): o controle de entrada na portaria. Na aba ``Eventos''
+(Figura~\ref{fig:mobile-telas}d), o associado abre um evento publicado e escolhe comprar um ingresso.
+A API identifica o associado pelo \textit{login}, confere se ele tem categoria de sócio e se o evento ainda
+não ocorreu, resolve o valor a partir da categoria (a compra pelo aplicativo é sempre como sócio; os
+perfis de não sócio e criança são vendidos presencialmente pela diretoria), inicia a cobrança online
+simulada e emite o ingresso, com um código sequencial dentro do evento, vinculado ao associado
+autenticado, enviando-lhe uma notificação. A aba ``Ingressos'' (Figura~\ref{fig:mobile-telas}c) passa
+a exibi-lo com um código QR, cujo conteúdo é o identificador do próprio ingresso
+(Figura~\ref{fig:fluxo-ingresso}).
 
 No dia do evento, a continuidade do fluxo passa para o painel administrativo. Na tela de ingressos do
 evento (Figura~\ref{fig:web-ingressos}), a diretoria lê, pela câmera, o código QR apresentado na tela
-do associado, ou então digita manualmente o mesmo código, caminho alternativo pensado para celulares
-sem câmera disponível na portaria ou para ingressos impressos. A API confere se aquele ingresso já havia
-sido validado antes de registrar a entrada, evitando que o mesmo código seja aceito duas vezes, e
-atualiza, em tempo real, os totais exibidos no painel: quantos ingressos foram emitidos, quantos já
-deram entrada e quantos ainda são esperados. Do lado do associado, o aplicativo passa a indicar que
-aquele ingresso já teve a entrada registrada, fechando o ciclo entre os dois clientes do ecossistema
-em torno de um único registro na API.
+do associado, ou digita manualmente o código, caminho alternativo pensado para celulares sem câmera
+disponível na portaria ou para ingressos impressos. Os dois caminhos levam a uma tela de conferência
+(nome, código, evento, categoria, valor e situação), na qual a diretoria confirma a entrada; a leitura
+do QR, por si só, não registra a entrada. A API confere se o ingresso já havia sido utilizado, o que
+evita que o mesmo código seja aceito duas vezes, e, se não havia, registra a entrada com o horário e
+atualiza os totais do painel (emitidos, validados e aguardando). Do lado do associado, o aplicativo
+passa a indicar que aquele ingresso já teve a entrada registrada.
+
+\begin{figure}[H]
+\centering
+\caption{Fluxo de compra de ingresso e validação de entrada}
+\label{fig:fluxo-ingresso}
+\begin{tikzpicture}
+\node[flane, fill=blue!15, draw=blue!50!black] at (0,0) {Associado (aplicativo)};
+\node[flane, fill=green!15, draw=green!50!black] at (5.2,0) {Diretoria (painel)};
+\node[flane, fill=orange!20, draw=orange!70!black] at (10.4,0) {API};
+\draw[gray!55, dashed] (2.6,-0.5) -- (2.6,-17.0);
+\draw[gray!55, dashed] (7.8,-0.5) -- (7.8,-17.0);
+
+\node[flpart] at (-2.2,-1.0) {(a) Compra pelo aplicativo};
+\node[fla] (n1) at (0,-2.1) {Escolhe o evento publicado e toca em ``Comprar ingressos''};
+\node[flp] (n2) at (10.4,-3.9) {Identifica o associado pelo \textit{login}; confere categoria de sócio e se o evento ainda não ocorreu};
+\node[flp] (n3) at (10.4,-6.1) {Resolve o valor pela categoria, inicia a cobrança online (simulada) e emite o ingresso};
+\node[fla] (n4) at (0,-8.1) {Abre ``Ingressos'' e vê o ingresso, com código sequencial e QR};
+
+\node[flpart] at (-2.2,-9.4) {(b) No dia do evento: validação da entrada};
+\node[fld] (n5) at (5.2,-10.6) {Lê o QR pela câmera ou digita o código, confere os dados e confirma a entrada};
+\node[fdec, minimum height=1.2cm] (n6) at (10.4,-12.5) {Ingresso já utilizado?};
+\node[flx] (n7) at (5.2,-12.5) {Entrada recusada};
+\node[flp] (n8) at (10.4,-14.4) {Registra a entrada (status \textit{usado}, com horário)};
+\node[fld] (n9) at (5.2,-16.4) {Atualiza os totais: emitidos, validados e aguardando};
+\node[fla] (n10) at (0,-16.4) {Indica que o ingresso já teve a entrada registrada};
+
+\draw[flarrow] (n1.east) -| (n2.north);
+\draw[flarrow] (n2.south) -- (n3.north);
+\draw[flarrow] (n3.west) -| (n4.north);
+\draw[flarrow] (n5.east) -| (n6.north);
+\draw[flarrow] (n6.west) -- node[above, pos=0.3, fllbl] {sim} (n7.east);
+\draw[flarrow] (n6.south) -- node[right, fllbl] {não} (n8.north);
+\draw[flarrow] (n8.south) -- ++(0,-0.45) -| (n9.north);
+\draw[flarrow] (n8.south) -- ++(0,-0.45) -| (n10.north);
+\end{tikzpicture}
+\caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir das regras implementadas na API.}
+\end{figure}
+
+\textbf{Pagamento de mensalidade (RF05, RF06, RF07, RF19).} A cobrança de cada competência é gerada
+automaticamente a cada mês para os associados que têm categoria de sócio definida, e fica com status
+\textit{pendente} (Figura~\ref{fig:fluxo-mensalidade}). No aplicativo, o associado abre a aba
+``Mensalidade'' (Figura~\ref{fig:mobile-telas}b), localiza a cobrança em aberto e toca em ``Pagar''; a
+API confere que a mensalidade pertence ao associado autenticado, inicia a cobrança na porta de
+pagamento e devolve um \textit{link} de pagamento. Concluído o pagamento, a API consulta o status no
+\textit{gateway} e, somente se estiver aprovado, marca a mensalidade como \textit{paga}; com um
+provedor real, essa confirmação chegaria por \textit{webhook}, mas, como a porta de pagamento é
+simulada nesta versão (Seção~\ref{sec:implementacao-mvp}, Limitações), a confirmação é uma consulta
+explícita. O histórico do associado passa a exibir a competência como paga.
+
+O outro caminho é mediado pela diretoria. Uma rotina da API marca como \textit{inadimplentes} as
+mensalidades pendentes vencidas há mais de um número configurável de dias (cinco, por padrão) e envia
+um lembrete automático ao associado, o que substitui, para a entidade, a cobrança manual por
+mensagem pessoal relatada no diagnóstico. A diretoria localiza o associado no relatório de
+inadimplência e registra o pagamento presencial, com valor e data (por padrão, o valor da própria
+mensalidade e a data atual); a API recusa o registro se a mensalidade já estiver paga, e o associado
+deixa de constar no relatório.
+
+\begin{figure}[H]
+\centering
+\caption{Fluxo de pagamento de mensalidade: pagamento online e pagamento presencial}
+\label{fig:fluxo-mensalidade}
+\begin{tikzpicture}
+\node[flane, fill=blue!15, draw=blue!50!black] at (0,0) {Associado (aplicativo)};
+\node[flane, fill=green!15, draw=green!50!black] at (5.2,0) {Diretoria (painel)};
+\node[flane, fill=orange!20, draw=orange!70!black] at (10.4,0) {API};
+\draw[gray!55, dashed] (2.6,-0.5) -- (2.6,-17.7);
+\draw[gray!55, dashed] (7.8,-0.5) -- (7.8,-17.7);
+
+\node[flpart] at (-2.2,-1.0) {(a) Pagamento online pelo associado};
+\node[flp] (m1) at (10.4,-2.2) {Gera, a cada mês, a cobrança de cada associado com categoria (status \textit{pendente})};
+\node[fla] (m2) at (0,-4.0) {Abre ``Mensalidade'' e toca em ``Pagar'' na cobrança em aberto};
+\node[flp] (m3) at (10.4,-5.8) {Confere que a cobrança é do associado e a inicia na porta de pagamento (simulada)};
+\node[fla] (m4) at (0,-7.6) {Conclui o pagamento online};
+\node[flp] (m5) at (10.4,-9.4) {Consulta o status no \textit{gateway}; se aprovado, marca como \textit{paga} (online)};
+
+\node[flpart] at (-2.2,-10.6) {(b) Pagamento presencial registrado pela diretoria};
+\node[flp] (m6) at (10.4,-11.8) {Marca como \textit{inadimplentes} as pendentes vencidas e envia lembrete ao associado};
+\node[fld] (m7) at (5.2,-13.6) {Localiza o associado no relatório de inadimplência e registra o pagamento presencial};
+\node[flp] (m8) at (10.4,-15.4) {Marca a mensalidade como \textit{paga} (presencial), com valor e data};
+\node[fld] (m9) at (5.2,-17.2) {Associado sai do relatório; o histórico mostra o pagamento};
+
+\draw[flarrow] (m1.west) -| (m2.north);
+\draw[flarrow] (m2.east) -| (m3.north);
+\draw[flarrow] (m3.west) -| (m4.north);
+\draw[flarrow] (m4.east) -| (m5.north);
+\draw[flarrow] (m6.west) -| (m7.north);
+\draw[flarrow] (m7.east) -| (m8.north);
+\draw[flarrow] (m8.west) -| (m9.north);
+\end{tikzpicture}
+\caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir das regras implementadas na API.}
+\end{figure}
+
+Os três fluxos compartilham, portanto, o mesmo desenho: o associado age por meio do aplicativo sobre
+o próprio registro, a diretoria age por meio do painel sobre os registros da entidade, e é a API que
+aplica as regras de negócio e mantém um único estado consistente para as duas pontas.
 
 \subsection{Avaliação com usuários e análise dos resultados}
 
@@ -1529,48 +1693,172 @@ síntese comparativa entre as duas entidades serão incorporados após a realiza
 correspondente.
 
 \subsubsection{CTG Sentinela da Querência}
+\label{sec:avaliacao-ctg}
 
-A sessão contou com dois participantes, um por papel (diretoria, representada pela secretaria da
-entidade, e associado), o mínimo viável previsto no método (Seção~\ref{sec:avaliacao}). As seis
-tarefas combinadas (três fluxos, dois papéis) foram concluídas sem necessidade de intervenção do
-moderador, com tempos de execução entre 15 segundos (pagamento de mensalidade pelo aplicativo,
-papel associado) e 3 minutos e 6 segundos (cadastro completo pelo aplicativo, papel associado),
-todas confirmadas pela verificação automatizada de conclusão.
+\paragraph{Participantes e condições da sessão.} A sessão, realizada em 29 de outubro de 2026,
+contou com dois participantes, um por papel: a diretoria, representada pela secretaria da entidade,
+que executou as tarefas no painel administrativo, e um associado, que as executou no aplicativo. É o
+mínimo viável previsto no método (Seção~\ref{sec:avaliacao}). Os dois foram indicados pela própria
+diretoria, e a sessão foi conduzida pelo autor do sistema, que atuou como moderador. As tarefas
+foram executadas sobre dados fictícios de ambientação, e o estado inicial de cada uma (fichas de
+cadastro, ingressos já emitidos, conta de teste com mensalidade em aberto e associado inadimplente
+reservado) foi preparado previamente, conforme descrito na Seção~\ref{sec:avaliacao}.
 
-A aplicação da escala SUS resultou na pontuação máxima (100 pontos) para os dois participantes,
-tanto para o papel diretoria, referido ao painel administrativo, quanto para o papel associado,
-referido ao aplicativo. Esse resultado indica percepção de usabilidade muito favorável, mas precisa
-ser interpretado com cautela: com um único respondente por papel nesta entidade, a pontuação não
-comporta variância nem permite qualquer inferência estatística (Seção~\ref{sec:avaliacao}), e uma
-pontuação de teto desse tipo é um padrão conhecido em avaliações com amostra pequena e não
-probabilística, sobretudo quando os participantes são indicados pela própria direção da entidade e
-entrevistados pelo autor do sistema avaliado, condição que favorece a desejabilidade social na
-resposta. Por isso, a conclusão sobre a usabilidade do sistema não se apoia isoladamente na
-pontuação SUS, mas na triangulação com os demais instrumentos: taxa de conclusão sem intervenção,
-tempos de execução e conteúdo da entrevista.
+\paragraph{Desempenho nas tarefas.} As seis tarefas combinadas (três fluxos, dois papéis) foram
+classificadas como \textit{concluídas sem ajuda}: nenhuma exigiu intervenção do moderador e todas
+foram confirmadas pela verificação automatizada de conclusão (Quadro~\ref{tab:ctg-tarefas}). Os
+tempos variaram entre 15 segundos (pagamento da mensalidade pelo aplicativo, papel associado) e
+3 minutos e 6 segundos (auto-cadastro pelo aplicativo, papel associado).
 
-A entrevista semiestruturada corroborou, em linhas gerais, a percepção favorável. Os dois
-participantes descreveram o sistema como mais simples do que o processo anterior da entidade,
-\enquote{mais fácil} na avaliação do associado e \enquote{muito mais simples} na da secretaria, que
-qualificou o sistema então em uso pela entidade como \enquote{complexo, feito para outro nicho e
-adaptado para uso do CTG}; nenhum dos dois relatou dificuldade ou momento de dúvida durante a
-execução das tarefas.
+\begin{table}[H]
+  \centering
+  \caption{Desempenho nas tarefas: CTG Sentinela da Querência}
+  \label{tab:ctg-tarefas}
+  \begin{tabular}{@{}L{2.2cm}L{5.4cm}ccL{2.2cm}@{}}
+    \toprule
+    \textbf{Papel} & \textbf{Tarefa} & \textbf{Tempo} & \textbf{Interv.} & \textbf{Classificação} \\
+    \midrule
+    Diretoria & Cadastro de associado (painel)            & 2 min 14 s & 0 & Sem ajuda \\
+    Diretoria & Validação de entrada (painel)             & 1 min 20 s & 0 & Sem ajuda \\
+    Diretoria & Pagamento presencial (painel)             & 31 s       & 0 & Sem ajuda \\
+    Associado & Auto-cadastro (aplicativo)                & 3 min 6 s  & 0 & Sem ajuda \\
+    Associado & Compra de ingresso (aplicativo)           & 30 s       & 0 & Sem ajuda \\
+    Associado & Pagamento de mensalidade (aplicativo)     & 15 s       & 0 & Sem ajuda \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir do registro de observação e da
+  verificação automatizada de conclusão.}
+\end{table}
 
-Dois achados qualitativos da entrevista dialogam diretamente com decisões de projeto do
-ecossistema. Primeiro, a participante do papel diretoria apontou que o fluxo de aprovação de
-cadastro mediado não reflete integralmente a governança interna da entidade: no CTG Sentinela da
-Querência, a decisão final sobre aceitar um associado cabe ao Patrão, cargo de liderança da
-entidade, e não à secretaria que opera o sistema no dia a dia, uma instância de aprovação que o
-fluxo atual ainda não contempla. O achado reforça, com um exemplo concreto, a premissa de projeto
-de tratar fluxos de aprovação como configuráveis por entidade (Seção~\ref{sec:requisitos}), em vez
-de uma regra única herdada de uma das organizações parceiras. Segundo, a mesma participante sugeriu
-a inclusão de um controle de despesas por evento para fechamento de caixa, funcionalidade fora do
-escopo definido para este trabalho (Seção~\ref{sec:delimitacao}), registrada aqui como direção para
-trabalho futuro.
+A distribuição dos tempos acompanha a extensão de cada tarefa, descrita na
+Seção~\ref{sec:fluxos-avaliados}. O auto-cadastro é a tarefa mais longa porque reúne o maior número de
+campos (dados pessoais, endereço, \textit{e-mail} e senha), e o pagamento da mensalidade, a mais
+curta, exige apenas localizar a cobrança em aberto e confirmar o pagamento simulado. Na diretoria, o
+cadastro mediado levou mais tempo do que a validação de entrada e o pagamento presencial pelo mesmo
+motivo, já que a ficha de cadastro tem mais campos do que as demais telas. Esses tempos não possuem
+parâmetro de comparação com o processo anterior das entidades, que não foi cronometrado, e devem ser
+lidos como indicação de que nenhuma tarefa exigiu esforço desproporcional, e não como medida de ganho
+de eficiência.
 
-Por fim, a diferença entre o croqui do salão de demonstração e a disposição real do salão do CTG
-foi reconhecida espontaneamente pela própria participante como esperada, já que os dados de
-ambientação usados na sessão são fictícios; não constitui, portanto, achado de usabilidade.
+\paragraph{Escala SUS.} A aplicação da escala SUS resultou na pontuação máxima (100 pontos) para os
+dois participantes, tanto para o papel diretoria, referido ao painel administrativo, quanto para o
+papel associado, referido ao aplicativo. Na interpretação de \textcite{bangor2009}, uma pontuação
+nesse patamar situa o sistema na região mais favorável da escala, mas dois fatores impedem que o
+resultado seja tomado como evidência isolada. O primeiro é estatístico: com um único respondente por
+papel, a pontuação não comporta variância nem permite qualquer inferência (Seção~\ref{sec:avaliacao}),
+e uma pontuação de teto não discrimina entre itens ou entre participantes, o que torna pouco
+informativo examinar as respostas item a item. O segundo é o viés de resposta. \textcite{dell2012}
+mostraram, em 450 entrevistas, que os participantes tendem a favorecer o artefato que atribuem ao
+entrevistador, mesmo quando a alternativa é equivalente, efeito que atribuem às características de
+demanda da situação de entrevista. A pesquisa desses autores foi conduzida em outro contexto
+(Bangalore, na Índia), de modo que seus números não se transferem a este caso, mas o
+mecanismo é pertinente a ele: os participantes foram indicados pela própria direção da entidade e
+responderam diante do autor do sistema avaliado, condição que favorece a desejabilidade social.
+Por isso, a conclusão sobre a usabilidade não se apoia na pontuação SUS, mas na triangulação com a
+taxa de conclusão sem intervenção, os tempos de execução e o conteúdo da entrevista, que é a parte
+da coleta menos sujeita ao teto da escala.
+
+\paragraph{Entrevista: facilidade de uso percebida.} À luz dos dois construtos do TAM
+\parencite{davis1989} que estruturam a entrevista (Seção~\ref{sec:usabilidade}), as respostas sobre
+facilidade de uso foram coerentes entre os dois participantes. O associado descreveu a experiência
+como prática e bem desenvolvida e avaliou o processo pelo sistema como \enquote{mais fácil} do que o
+anterior; a secretaria o considerou intuitivo, com menos camadas e passos do que o sistema que a
+entidade utiliza hoje, e o classificou como \enquote{muito mais simples}. Nenhum dos dois relatou
+dificuldade ou momento de dúvida durante a execução das tarefas, e ambos consideraram que o
+vocabulário da interface (categorias de sócio, cargos e termos de evento) correspondia ao da
+entidade, sem soar genérico. Esse último ponto responde diretamente à preocupação de adequação
+cultural que motivou a pergunta (Seção~\ref{sec:avaliacao}). A comparação feita pela secretaria
+ganha peso por vir de quem opera o sistema vigente: ela o qualificou como \enquote{complexo, feito
+para outro nicho e adaptado para uso do CTG}, o que dialoga com o diagnóstico, segundo o qual
+a entidade já possui um sistema de gestão consolidado (Seção~\ref{sec:diagnostico}) e, ainda assim,
+mantém processos paralelos em planilha e papel. A fala sugere que a diferença percebida não está em
+digitalizar, mas em ter uma ferramenta desenhada para o contexto tradicionalista.
+% TODO(falas): inserir aqui trechos literais da entrevista, se houver registro fiel.
+
+\paragraph{Entrevista: utilidade percebida.} Quanto à utilidade, o associado destacou, ao comentar a
+forma como o sistema trata os fluxos, que hoje o sócio não tem controle sobre a própria mensalidade
+nem sobre a compra de ingresso; o autoatendimento do aplicativo responde a essa lacuna. A observação
+converge com o diagnóstico, que registrou a ausência de canal para o associado consultar a própria
+situação e o fato de a consulta passar necessariamente pela secretaria
+(Seção~\ref{sec:diagnostico}). Os dois participantes também afirmaram que confiariam em pedir à
+diretoria que executasse um passo em seu nome, caso preferissem não usar o sistema diretamente, o que
+é um indício favorável à aceitação do fluxo mediado pela entidade (RNF01). Esse indício é limitado,
+porque a pergunta mede a disposição declarada, e não o comportamento, e porque o perfil de
+familiaridade digital dos dois participantes não foi aferido de forma sistemática: a sessão não
+permite concluir, portanto, que o fluxo mediado funcione para quem tem menor familiaridade digital,
+que é a pergunta central do método para esse requisito.
+
+\paragraph{Entrevista: configuração à realidade da entidade.} As perguntas dirigidas à
+configuração do sistema trouxeram os achados de maior consequência para o projeto, resumidos no
+Quadro~\ref{tab:ctg-achados}. Ambos os participantes apontaram que a lista de categorias de sócio
+cobria o essencial, mas não todas as categorias da entidade; a secretaria acrescentou que isso não
+seria um problema, já que o sistema permite cadastrar novas categorias. A observação valida, na
+prática, a decisão de projeto de tornar as categorias configuráveis por entidade, em vez de fixá-las
+a partir de uma das organizações parceiras (Seção~\ref{sec:requisitos}).
+
+A pergunta sobre a aprovação de cadastros produziu a única divergência entre os participantes. O
+associado respondeu que o tratamento correspondia ao que a entidade faz, enquanto a secretaria, que
+é quem opera o fluxo, apontou que falta uma etapa: no CTG Sentinela da Querência, a decisão final
+sobre aceitar um associado cabe ao Patrão, cargo de liderança da entidade, e não à secretaria. A
+diferença é coerente com o lugar de cada um no processo, uma vez que a lacuna só é visível a quem
+executa o cadastro. O achado é específico do CTG, mas reforça, com um exemplo concreto, a premissa de
+tratar fluxos de aprovação como configuráveis por entidade, em vez de uma regra única. Como mostra a
+Seção~\ref{sec:fluxos-avaliados}, o cadastro mediado entra hoje como \textit{ativo} imediatamente, sem
+etapa de aprovação, por assunção de projeto ainda não confirmada pelas entidades; a sessão fornece a
+primeira evidência de que essa assunção não vale para todas elas.
+
+Por fim, ao responder se esperava encontrar algo que não encontrou, a secretaria sugeriu um controle
+de despesas por evento, para conferência do caixa. A funcionalidade está fora do escopo definido para
+este trabalho (Seção~\ref{sec:delimitacao}), mas a sugestão não é isolada: ela corresponde ao
+fechamento financeiro do evento, que, segundo o diagnóstico, depende de contagem manual do saldo de
+portaria contra o total lançado (Seção~\ref{sec:diagnostico}), e é registrada como direção para
+trabalho futuro. Já a diferença entre o croqui do salão de demonstração e a disposição real do salão
+do CTG foi reconhecida espontaneamente pela secretaria como esperada, já que os dados de ambientação
+usados na sessão são fictícios; não constitui achado de usabilidade, mas lembra que o croqui precisa
+ser configurado com a planta real na implantação em cada entidade.
+
+\begin{table}[H]
+  \centering
+  \caption{Achados da entrevista e implicações para o sistema: CTG Sentinela da Querência}
+  \label{tab:ctg-achados}
+  \begin{tabular}{@{}L{4.6cm}L{2.2cm}L{6.1cm}@{}}
+    \toprule
+    \textbf{Achado} & \textbf{Origem} & \textbf{Implicação} \\
+    \midrule
+    Categorias de sócio não cobrem todas as da entidade & Associado e diretoria
+      & Sem alteração: categorias já são configuráveis \\
+    Aprovação final do cadastro cabe ao Patrão & Diretoria
+      & Instância de aprovação configurável por entidade (trabalho futuro) \\
+    Controle de despesas por evento & Diretoria
+      & Fora do escopo; trabalho futuro, ligado ao fechamento financeiro \\
+    Sócio sem controle sobre mensalidade e ingresso & Associado
+      & Atendido pelo autoatendimento do aplicativo \\
+    Croqui de demonstração difere do salão real & Diretoria
+      & Esperado (dados fictícios); configurar a planta real na implantação \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\textbf{Fonte:} Elaborado pelo autor (2026), a partir das entrevistas semiestruturadas.}
+\end{table}
+
+\paragraph{Aplicação da entrevista.} Cabe registrar que a entrevista foi aplicada de forma mais
+flexível do que o desenho original: o participante do papel associado respondeu também às duas
+perguntas dirigidas à diretoria (sobre categorias de sócio e aprovação de cadastro). As respostas
+foram mantidas, porque trazem a percepção de quem usa o sistema do outro lado do fluxo, mas foram
+interpretadas como tal, e não como relato de quem opera as funções.
+
+\paragraph{O que a sessão permite concluir.} Tomados em conjunto, os instrumentos indicam que, para
+os dois participantes e nas seis tarefas avaliadas, o sistema foi utilizável sem ajuda e percebido
+como mais simples do que o processo anterior; a entrevista, ao contrário da escala, também produziu
+achados que apontam ajustes. Esses resultados têm alcance restrito. Há uma única entidade, dois
+participantes indicados pela diretoria, um moderador que é o autor do sistema, dados fictícios e
+tarefas curtas precedidas de demonstração. Ademais, a ausência de dificuldade relatada não equivale à
+ausência de problemas: no modelo de \textcite{nielsenlandauer1993}, a probabilidade de que um
+mesmo usuário encontre um dado problema de usabilidade é, em média, de cerca de 31\%, de modo que
+dois participantes tenderiam a revelar pouco mais da metade dos problemas existentes. O modelo
+refere-se à descoberta de problemas e não à conclusão de tarefas, e esse valor é uma estimativa de
+planejamento, não um resultado deste estudo, mas serve de advertência contra tomar a sessão como
+verificação exaustiva. Os resultados são, portanto, indícios de viabilidade, a serem confrontados com
+os da segunda entidade parceira.
 
 \subsubsection{CPF Pia do Sul}
 
