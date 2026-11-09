@@ -23,7 +23,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small Querência ERP --- Avaliação de usabilidade}
+\fancyhead[L]{\small Querência ERP: Avaliação de usabilidade}
 \fancyhead[R]{\small Roteiro do Condutor}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -42,7 +42,7 @@
 
 \begin{center}
   {\LARGE\bfseries\color{brandgreen} Roteiro do Condutor}\\[2mm]
-  {\large Sessões de avaliação de usabilidade --- Querência ERP}
+  {\large Sessões de avaliação de usabilidade: Querência ERP}
 \end{center}
 
 \vspace{2mm}
@@ -51,32 +51,32 @@
 participante}. Os passos que o participante segue estão em 6 folhas separadas, um por fluxo
 $\times$ papel: \textbf{fluxo-1-diretoria.pdf}, \textbf{fluxo-1-associado.pdf},
 \textbf{fluxo-2-diretoria.pdf}, \textbf{fluxo-2-associado.pdf}, \textbf{fluxo-3-diretoria.pdf} e
-\textbf{fluxo-3-associado.pdf} --- entregue ao participante só as 3 do seu papel, em sequência (F1,
+\textbf{fluxo-3-associado.pdf}. Entregue ao participante só as 3 do seu papel, em sequência (F1,
 F2, F3). Essas folhas não trazem falas do moderador, estado de kit nem comandos de verificação:
 tudo isso está na Seção 7 deste roteiro.}
 
 \section*{1. Objetivo da sessão}
 
 Validar, com usuários reais das duas entidades parceiras, se o ecossistema digital qualifica os
-processos administrativos identificados no diagnóstico --- em especial, se o fluxo mediado pela
+processos administrativos identificados no diagnóstico, em especial se o fluxo mediado pela
 entidade (RNF01) funciona como alternativa viável para participantes com menor familiaridade
 digital. A sessão \textbf{não} busca validar a arquitetura técnica (já coberta pelos testes
-automatizados do backend) --- busca validar a experiência de uso.
+automatizados do backend), e sim a experiência de uso.
 
 \section*{2. Formato: quatro blocos sequenciais (\textasciitilde35--45 min por participante)}
 
 \begin{enumerate}[leftmargin=6mm]
-  \item \textbf{Demonstração geral} (5 a 10 min) --- apresentar o sistema (painel e/ou
+  \item \textbf{Demonstração geral} (5 a 10 min): apresentar o sistema (painel e/ou
     app, conforme o papel do participante) de forma guiada, sem o participante tocar ainda,
     cobrindo navegação geral e terminologia da interface. Objetivo: nivelar familiaridade antes de
     medir desempenho em tarefa.
-  \item \textbf{Execução das tarefas} (\textasciitilde15--20 min) --- o participante executa, sem
+  \item \textbf{Execução das tarefas} (\textasciitilde15--20 min): o participante executa, sem
     ajuda do moderador a menos que trave por mais de \textasciitilde2 min, as tarefas do(s)
     fluxo(s) atribuídos ao seu papel. Cronometrar e anotar pontos de hesitação/erro, sem intervir
     preventivamente.
-  \item \textbf{Questionário SUS} (\textasciitilde5 min) --- aplicado imediatamente após as
+  \item \textbf{Questionário SUS} (\textasciitilde5 min): aplicado imediatamente após as
     tarefas, enquanto a experiência ainda está fresca.
-  \item \textbf{Entrevista semiestruturada} (\textasciitilde10 min) --- roteiro de perguntas
+  \item \textbf{Entrevista semiestruturada} (\textasciitilde10 min): roteiro de perguntas
     abertas (Seção 8.2 abaixo).
 \end{enumerate}
 
@@ -85,14 +85,14 @@ automatizados do backend) --- busca validar a experiência de uso.
 2 a 4 participantes por entidade (4 a 8 no total), distribuídos em dois papéis:
 
 \begin{itemize}[leftmargin=6mm]
-  \item \textbf{Diretoria / responsável administrativo} --- testa os passos mediados pela
+  \item \textbf{Diretoria / responsável administrativo}: testa os passos mediados pela
     entidade, no painel web.
-  \item \textbf{Associado} --- testa os passos de autoatendimento, no aplicativo mobile.
+  \item \textbf{Associado}: testa os passos de autoatendimento, no aplicativo mobile.
 \end{itemize}
 
 Distribuição alvo por entidade: \textbf{1 a 2 da Diretoria + 1 a 2 Associados} (mínimo viável:
 1 + 1). Com 4 pessoas, o ideal é 2 + 2 e pelo menos uma pessoa idosa ou de menor familiaridade
-digital entre os Associados --- esse é o ponto que valida (ou não) RNF01 na prática.
+digital entre os Associados, que é o ponto que valida (ou não) RNF01 na prática.
 
 \section*{4. Checklist antes de começar}
 
@@ -100,13 +100,13 @@ digital entre os Associados --- esse é o ponto que valida (ou não) RNF01 na pr
   \item[$\square$] Celular do moderador com o APK já instalado, pronto para ser entregue ao
     participante durante os cenários do papel Associado. Para o papel Diretoria, acesso ao painel
     web logado como administrador.
-  \item[$\square$] Conectividade confirmada no local (Wi-Fi da sede ou dados móveis) --- o sistema
+  \item[$\square$] Conectividade confirmada no local (Wi-Fi da sede ou dados móveis), pois o sistema
     depende de um backend real na nuvem, não funciona offline.
   \item[$\square$] \texttt{backend/scripts/verificar-tarefas.js} acessível (terminal com
     \texttt{cd backend} já configurado, \texttt{.env} com acesso ao banco).
   \item[$\square$] \textbf{Kit do participante conferido} (Seção 6 abaixo): personas, CPF
     pré-cadastrado, conta de teste com mensalidade em aberto, 2 ingressos pré-emitidos e associado
-    inadimplente reservado --- tudo conferido \textbf{na véspera}, no painel, não no dia.
+    inadimplente reservado, tudo conferido \textbf{na véspera}, no painel, não no dia.
   \item[$\square$] Cronômetro e planilha/papel para registrar tempo, erros e intervenções.
   \item[$\square$] Formulário SUS pronto (digital ou impresso), conforme o papel do participante.
   \item[$\square$] Fichas de persona impressas (\texttt{ficha-participante.pdf}), reservadas em
@@ -117,7 +117,7 @@ digital entre os Associados --- esse é o ponto que valida (ou não) RNF01 na pr
 
 Com 2--4 participantes por entidade, \textbf{nenhuma tarefa pode depender do resultado de outra
 tarefa nem da ação de outro participante}. Se um passo falhar (erro do participante, bug ou
-rede), só aquela tarefa é perdida --- registra-se como \textit{não concluída} e a sessão segue.
+rede), só aquela tarefa é perdida e registra-se como \textit{não concluída} e a sessão segue.
 Todo o estado de que uma tarefa precisa é preparado pelo moderador \textbf{antes} da sessão (o kit,
 Seção 6), e não produzido por outra tarefa:
 
@@ -148,7 +148,7 @@ voltam ao estado inicial). Preparar 1 kit reserva por entidade além dos partici
 
 \section*{6. Kits do participante (preencher na véspera)}
 
-\subsection*{Kit --- papel Diretoria}
+\subsection*{Kit: papel Diretoria}
 
 \begin{center}
 \small
@@ -158,13 +158,13 @@ voltam ao estado inicial). Preparar 1 kit reserva por entidade além dos partici
 \midrule
 \endhead
 Entidade / ID do participante & & $\square$ \\
-F1 --- Persona (P0\_) & & $\square$ \\
-F2 --- Evento (trecho do nome) & & $\square$ \\
-F2 --- Ingresso A (validar por QR): associado fictício, CPF, código \texttt{\#\_\_\_} & &
+F1: Persona (P0\_) & & $\square$ \\
+F2: Evento (trecho do nome) & & $\square$ \\
+F2: Ingresso A (validar por QR): associado fictício, CPF, código \texttt{\#\_\_\_} & &
   $\square$ \\
-F2 --- Ingresso B (validar por código digitado): associado fictício, CPF, código \texttt{\#\_\_\_}
+F2: Ingresso B (validar por código digitado): associado fictício, CPF, código \texttt{\#\_\_\_}
   & & $\square$ \\
-F3 --- Associado inadimplente reservado (ativo): nome, CPF & & $\square$ \\
+F3: Associado inadimplente reservado (ativo): nome, CPF & & $\square$ \\
 \bottomrule
 \end{longtable}
 \end{center}
@@ -175,7 +175,7 @@ Deixar o app do moderador logado na conta do ingresso A, com o QR aberto (ou imp
 o inadimplente, em \textbf{Mensalidades → Relatório de inadimplência}, escolher um associado
 listado que não seja usado em outro kit; anotar nome e CPF.
 
-\subsection*{Kit --- papel Associado}
+\subsection*{Kit: papel Associado}
 
 \begin{center}
 \small
@@ -185,11 +185,11 @@ listado que não seja usado em outro kit; anotar nome e CPF.
 \midrule
 \endhead
 Entidade / ID do participante & & $\square$ \\
-F1 --- Variante (A auto-cadastro / B vincular conta) & & $\square$ \\
-F1-A --- Persona (P0\_) & & $\square$ \\
-F1-B --- CPF pré-cadastrado (ativo, sem login) & & $\square$ \\
-F2/F3 --- Conta de teste (e-mail e senha) & & $\square$ \\
-F2 --- Evento (trecho do nome) & & $\square$ \\
+F1: Variante (A auto-cadastro / B vincular conta) & & $\square$ \\
+F1-A: Persona (P0\_) & & $\square$ \\
+F1-B: CPF pré-cadastrado (ativo, sem login) & & $\square$ \\
+F2/F3: Conta de teste (e-mail e senha) & & $\square$ \\
+F2: Evento (trecho do nome) & & $\square$ \\
 \bottomrule
 \end{longtable}
 \end{center}
@@ -197,7 +197,7 @@ F2 --- Evento (trecho do nome) & & $\square$ \\
 \textit{Como preparar:} para F1-B, cadastrar no painel, antes do dia, uma pessoa fictícia com CPF
 novo e categoria de sócio definida (anotar o CPF, sem criar conta de login). Para a conta de teste
 (F2/F3), usar um associado ativo, com categoria de sócio definida e login já existente, garantindo
-uma mensalidade em aberto no mês --- é a conta que o moderador usa no app depois do Fluxo 1 (uma
+uma mensalidade em aberto no mês; é a conta que o moderador usa no app depois do Fluxo 1 (uma
 conta por participante, já que pagar a mensalidade a consome). Conferir que o evento do F2 está
 publicado e que a conta de teste ainda não tem ingresso nele.
 
@@ -206,10 +206,10 @@ publicado e que a conta de teste ainda não tem ingresso nele.
 Para cada tarefa: dizer a fala indicada, deixar o participante executar a folha do fluxo e rodar a
 verificação em seguida (\texttt{cd backend} antes). Estado necessário = item do kit (Seção 6).
 
-\subsection*{Fluxo 1 --- Cadastro de associado}
+\subsection*{Fluxo 1: Cadastro de associado}
 
 \textbf{Diretoria.} Estado: ficha de persona ainda não usada. Fala: ``Alguém novo quer se associar à
-entidade. Você recebeu esta ficha preenchida à mão --- cadastre essa pessoa no sistema como se
+entidade. Você recebeu esta ficha preenchida à mão: cadastre essa pessoa no sistema como se
 fosse um caso real.''
 \begin{verbatim}
 node scripts/verificar-tarefas.js 1 <CPF-DA-FICHA>
@@ -237,7 +237,7 @@ Cada Associado faz \textbf{uma} situação. Depois do Fluxo 1, sair dessa conta 
 \textbf{conta de teste do kit} antes de devolver o celular (o login não é tarefa avaliada). A conta
 criada no Fluxo 1 não é usada nos Fluxos 2 e 3.
 
-\subsection*{Fluxo 2 --- Ingressos e validação de entrada}
+\subsection*{Fluxo 2: Ingressos e validação de entrada}
 
 \textbf{Associado.} Estado: conta de teste já logada; evento publicado com ingresso avulso. O QR
 dele não é lido por ninguém (a validação é a tarefa da Diretoria, com ingressos à parte).
@@ -249,7 +249,7 @@ node scripts/verificar-tarefas.js 2 <CPF-DA-CONTA-DE-TESTE> \
 \end{small}
 Esperado: ingresso emitido; entrada ainda não validada.
 
-\textbf{Diretoria.} Estado: 2 ingressos pré-emitidos, em nome de associados fictícios --- A (ler por
+\textbf{Diretoria.} Estado: 2 ingressos pré-emitidos, em nome de associados fictícios: A (ler por
 câmera; QR no celular do moderador ou impresso) e B (digitar o código, anotado no cartão). Fala:
 ``Estes dois convidados chegaram ao baile. Confira a entrada de cada um.''
 \begin{small}
@@ -264,7 +264,7 @@ Esperado: ingresso emitido e entrada validada, com horário preenchido, nos dois
 (permissão, luz, rede), registrar o motivo e pedir o ingresso A pelo caminho manual, contando como
 intervenção; o ingresso B continua reservado para o caminho manual.
 
-\subsection*{Fluxo 3 --- Mensalidade}
+\subsection*{Fluxo 3: Mensalidade}
 
 \textbf{Associado.} Estado: conta de teste com mensalidade em aberto. A folha já avisa que o
 pagamento online é simulado (RF19): a tarefa avalia a interface e o registro no sistema, não um
@@ -340,12 +340,12 @@ Perguntas abertas, conduzidas após o SUS:
 \begin{enumerate}[leftmargin=6mm]
   \item Rodar os comandos de verificação de cada fluxo executado (se ainda não rodados durante a
     sessão) e anotar o resultado na planilha de observação, cruzando com o número de intervenções
-    do moderador --- essa combinação classifica a tarefa como \textit{concluída sem ajuda} /
+    do moderador; essa combinação classifica a tarefa como \textit{concluída sem ajuda} /
     \textit{concluída com intervenção} / \textit{não concluída}.
   \item Aplicar o formulário SUS correspondente ao papel do participante (se ainda não aplicado).
   \item Conduzir a entrevista semiestruturada (Seção 8.2).
   \item Marcar o kit como \textbf{usado} (personas, CPF pré-cadastrado, ingressos, inadimplente) e,
-    se houver participante seguinte, abrir o próximo kit --- nunca reaproveitar itens.
+    se houver participante seguinte, abrir o próximo kit, sem nunca reaproveitar itens.
 \end{enumerate}
 
 \end{document}
