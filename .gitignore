@@ -13,3 +13,4 @@ TCC-FINAL/main.run.xml
 
 TCC-FINAL/**/*.aux
 TCC-FINAL/**/*.log
+TCC-FINAL/**/*.out
