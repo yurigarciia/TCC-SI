@@ -6,3 +6,11 @@
 */*.toc
 */*.toc
 exports/
+# Artefatos de compilação do artigo (main.pdf é mantido versionado)
+TCC-FINAL/main.pdf
+TCC-FINAL/main.bcf
+TCC-FINAL/main.run.xml
+
+TCC-FINAL/**/*.aux
+TCC-FINAL/**/*.log
+TCC-FINAL/**/*.out
