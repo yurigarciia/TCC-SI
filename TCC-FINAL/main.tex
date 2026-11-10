@@ -52,10 +52,10 @@
 \newcommand{\curriculoorientador}{Professor orientador da Faculdade Antonio Meneghetti. E-mail: felipe.nunes@amf.edu.br.}
 
 \newcommand{\datadefesa}{dia de mês de 2026}
-\newcommand{\membrodois}{Prof. Dr. Nome completo do membro}
-\newcommand{\instituicaomembrodois}{Instituição do membro}
-\newcommand{\membrotres}{Prof. Dr. Nome completo do membro}
-\newcommand{\instituicaomembrotres}{Instituição do membro}
+\newcommand{\membrodois}{Prof. Dr. Marcelo Bortoluzzi Diaz}
+\newcommand{\instituicaomembrodois}{Faculdade Antonio Meneghetti}
+\newcommand{\membrotres}{Prof. Me. Augusto Roberto Gehrke}
+\newcommand{\instituicaomembrotres}{Faculdade Antonio Meneghetti}
 
 % Fonte abaixo de figuras/tabelas
 \newcommand{\fonte}[1]{\par\vspace{2pt}\footnotesize{Fonte: #1}}
@@ -158,7 +158,7 @@
     Meneghetti (AMF).
 
     \vspace{\baselineskip}
-    \noindent Orientador(a): \orientador.
+    \noindent Orientador: \orientador.
   \end{adjustwidth}
 
   \vfill
@@ -183,7 +183,7 @@
     Meneghetti (AMF).
 
     \vspace{\baselineskip}
-    \noindent Orientador(a): \orientador.
+    \noindent Orientador: \orientador.
   \end{adjustwidth}
 
   \vspace{2\baselineskip}
@@ -197,7 +197,7 @@
   \vspace{2\baselineskip}
   \rule{9cm}{0.4pt}\par
   \orientador\par
-  Orientador(a) do Trabalho de Conclusão de Curso\par
+  Orientador do Trabalho de Conclusão de Curso\par
   Faculdade Antonio Meneghetti
 
   \vspace{2\baselineskip}
@@ -236,30 +236,23 @@
 \noindent\textbf{RESUMO:} Este artigo apresenta o desenvolvimento e a avaliação do Querência ERP, um
 ecossistema digital entidade-associado voltado à gestão de associados e de eventos sociais
 tradicionais, com ênfase em bailes e fandangos, no contexto das entidades tradicionalistas gaúchas.
-Partindo da identificação de lacunas na literatura e de um diagnóstico dos processos administrativos
-de duas entidades parceiras (o Centro de Pesquisas Folclóricas (CPF) Pia do Sul e o Centro de
-Tradições Gaúchas (CTG) Sentinela da Querência, ambos em Santa Maria/RS, vinculados à 13ª Região
-Tradicionalista), o estudo propõe
-uma solução composta por uma
-plataforma \textit{web} para administração da entidade e um aplicativo \textit{mobile} para os
-associados, integrados por uma API (\textit{Application Programming Interface}) REST. A
-convergência de processos e necessidades identificada
-entre as duas entidades parceiras orientou o desenho do sistema como um produto reutilizável entre
-entidades tradicionalistas, não acoplado às particularidades de uma única entidade, ainda que cada
-implantação permaneça isolada, com instância e base de dados próprias por entidade. A arquitetura
-adota a abordagem Hexagonal combinada com princípios da \textit{Clean Architecture}, e o
-desenvolvimento segue o método DSDM (\textit{Dynamic Systems Development Method}) com priorização
-MoSCoW. A avaliação com usuários, realizada
-com dois participantes do CTG Sentinela da Querência (um da diretoria, no painel, e um associado, no
-aplicativo), combinou verificação automatizada de conclusão, observação, escala SUS e entrevista
+Partindo de lacunas na literatura e de um diagnóstico dos processos administrativos de duas entidades
+parceiras (o Centro de Pesquisas Folclóricas (CPF) Pia do Sul e o Centro de Tradições Gaúchas (CTG)
+Sentinela da Querência, ambos em Santa Maria/RS), o estudo propõe uma plataforma \textit{web} para a
+administração da entidade e um aplicativo \textit{mobile} para os associados, integrados por uma API
+(\textit{Application Programming Interface}) REST. A convergência de processos entre as duas entidades
+orientou o desenho de um produto reutilizável, com uma instância isolada por entidade. A arquitetura é
+Hexagonal, com princípios da \textit{Clean Architecture}, e o desenvolvimento seguiu o DSDM
+(\textit{Dynamic Systems Development Method}) com priorização MoSCoW. A avaliação com usuários,
+realizada com dois participantes do CTG Sentinela da Querência (um da diretoria, no painel, e um
+associado, no aplicativo), combinou verificação automatizada, observação, escala SUS e entrevista
 semiestruturada em três fluxos: cadastro de associado, compra de ingresso com validação de entrada e
 pagamento de mensalidade. As seis tarefas foram concluídas sem intervenção do moderador, e a escala SUS
-resultou em 100 pontos para ambos os participantes, valor que, dado o tamanho da amostra e o possível
-viés de resposta, não é tomado como evidência isolada. A entrevista apontou a aprovação final do
-cadastro pelo Patrão como etapa ausente, indicando a necessidade de fluxos de aprovação configuráveis
-por entidade. Os resultados são indícios de viabilidade em um único caso, sem replicação em outra
-entidade, e a pergunta sobre o fluxo mediado para usuários com menor familiaridade digital permanece
-em aberto.
+resultou em 100 pontos para ambos, valor que não é tomado como evidência isolada, dados o tamanho da
+amostra e o possível viés de resposta. A entrevista apontou a aprovação final do cadastro pelo Patrão,
+dirigente máximo da entidade, como etapa ausente, o que indica a necessidade de fluxos de aprovação
+configuráveis. Os resultados são indícios de viabilidade em um único caso, sem replicação, e a adequação
+do fluxo mediado a usuários com menor familiaridade digital permanece em aberto.
 
 \vspace{\baselineskip}
 \noindent\textbf{Palavras-chave:} ecossistema digital; gestão associativa; entidades tradicionalistas gaúchas; transformação digital; usabilidade.
@@ -268,27 +261,23 @@ em aberto.
 \noindent\textbf{ABSTRACT:} This article presents the development and evaluation of Querência ERP, a
 digital ecosystem aimed at managing members and traditional social events, with emphasis on
 \textit{bailes} and \textit{fandangos}, in the context of Gaúcho traditionalist entities. Based on
-identified gaps in the literature and a diagnosis of administrative processes at two partner
-entities (Centro de Pesquisas Folclóricas (CPF) Pia do Sul and Centro de Tradições Gaúchas (CTG)
-Sentinela da Querência, both in Santa Maria/RS), the study proposes a solution composed of a web
-platform for entity administration
-and a mobile application
-for members, integrated through a REST API. The convergence of processes and needs identified
-between the two partner entities guided the design of the system as a reusable product across
-traditionalist entities, rather than one coupled to a single entity's particularities, although each
-deployment remains isolated, with its own instance and database per entity. The architecture adopts
-the Hexagonal approach combined with Clean Architecture principles, and development follows the DSDM
-(\textit{Dynamic Systems Development Method}) method with MoSCoW prioritization. The usability
-evaluation involved two participants from CTG Sentinela da Querência (one board member using the web
-panel and one member using the mobile app) and combined automated task-completion checks,
-observation, the SUS scale and a semi-structured interview across three flows: member registration,
-ticket purchase with entry validation, and membership fee payment. All six tasks were completed
-without moderator intervention, and both participants scored 100 on the SUS, a value that, given the
-sample size and possible response bias, is not taken as isolated evidence. The interview identified
-the final approval of registrations by the entity's leader (the \textit{Patrão}) as a missing step,
-pointing to the need for approval flows configurable per entity. The results are indications of
-feasibility in a single case, without replication in another entity, and the question of whether
-the entity-mediated flow works for users with lower digital familiarity remains open.
+gaps in the literature and a diagnosis of the administrative processes of two partner entities
+(Centro de Pesquisas Folclóricas (CPF) Pia do Sul and Centro de Tradições Gaúchas (CTG) Sentinela da
+Querência, both in Santa Maria/RS), the study proposes a web platform for entity administration and a
+mobile application for members, integrated through a REST API. The convergence of processes between the
+two entities guided the design of a reusable product, with one isolated instance per entity. The
+architecture is Hexagonal, with Clean Architecture principles, and development followed the DSDM
+(\textit{Dynamic Systems Development Method}) with MoSCoW prioritization. The usability evaluation,
+carried out with two participants from CTG Sentinela da Querência (one board member using the web
+panel and one member using the mobile app), combined automated task-completion checks, observation,
+the SUS scale and a semi-structured interview across three flows: member registration, ticket purchase
+with entry validation, and membership fee payment. All six tasks were completed without moderator
+intervention, and both participants scored 100 on the SUS, a value not taken as isolated evidence given
+the sample size and possible response bias. The interview identified the final approval of
+registrations by the \textit{Patrão}, the entity's top leader, as a missing step, indicating the need
+for configurable approval flows. The results are indications of feasibility in a single case, without
+replication, and the suitability of the entity-mediated flow for users with lower digital familiarity
+remains open.
 
 \vspace{\baselineskip}
 \noindent\textbf{Keywords:} digital ecosystem; associative management; Gaúcho traditionalist entities; digital transformation; usability.
@@ -314,9 +303,10 @@ bilhões por ano a movimentação econômica do tradicionalismo gaúcho \parenci
 
 No interior dessas organizações, os departamentos artísticos e grupos de dança assumem papel central,
 concentrando grande parte dos associados ativos, especialmente crianças, jovens e adultos envolvidos
-em invernadas artísticas, ensaios e apresentações culturais \parencite{vargas2019,fabricio2019}.
-Paralelamente, as entidades mantêm uma intensa agenda social, com destaque para bailes e fandangos,
-que funcionam como espaços de integração e representam uma das principais fontes de sustentação
+em invernadas artísticas (grupos de dança organizados por faixa etária), ensaios e apresentações
+culturais \parencite{vargas2019,fabricio2019}.
+Paralelamente, as entidades mantêm uma intensa agenda social, com destaque para bailes e fandangos
+(eventos dançantes de caráter social, com música e danças típicas), que funcionam como espaços de integração e representam uma das principais fontes de sustentação
 financeira dessas organizações \parencite{silvaalbarello2024}.
 
 A realização contínua dessas atividades exige uma estrutura administrativa capaz de gerenciar
@@ -343,6 +333,15 @@ associados e a organização de eventos como bailes e fandangos. Ressalta-se que
 contempla integração técnica com estruturas institucionais do MTG, como o Cartão de Identidade
 Tradicionalista (CIT), concentrando-se na autonomia administrativa das entidades e em soluções
 viáveis no âmbito organizacional.
+
+A pergunta que orienta esta pesquisa decorre dessa lacuna: em que medida um ecossistema digital
+integrado, composto por um painel \textit{web} para a diretoria e um aplicativo \textit{mobile} para o
+associado, apresenta indícios de viabilidade, quanto à usabilidade e à utilidade percebida, para apoiar
+a gestão de associados e de eventos sociais em entidades tradicionalistas gaúchas, respeitando suas
+especificidades culturais e organizacionais? Um desdobramento dessa pergunta é saber se os fluxos
+mediados pela entidade, em que a diretoria executa o passo no lugar do associado, permitem uma adoção
+gradual por quem tem menor familiaridade com recursos digitais, que é o público que mais preocupa o
+desenho do sistema.
 
 O objeto de análise deste trabalho consiste, portanto, no desenvolvimento e avaliação de um
 ecossistema digital entidade-associado, composto por uma plataforma \textit{web} destinada à gestão
@@ -377,8 +376,9 @@ volume de informação que precisam administrar.
 
 Além das motivações de ordem acadêmica e social, a pesquisa possui uma motivação pessoal. Participo
 do movimento tradicionalista desde o nascimento, inserido em um contexto familiar diretamente
-envolvido com o tradicionalismo. Meu avô já exerceu o cargo de patrão de um Centro de Tradições
-Gaúchas e atualmente atua como Conselheiro do MTG pela 13ª Região Tradicionalista (13ª RT). Ao
+envolvido com o tradicionalismo. Meu avô já exerceu o cargo de Patrão (dirigente máximo, equivalente
+ao presidente) de um Centro de Tradições Gaúchas e atualmente atua como Conselheiro do MTG pela 13ª
+Região Tradicionalista (13ª RT, divisão regional do MTG). Ao
 longo dessa trajetória, também participei do quadro de peões da 13ª RT e integrei invernadas
 artísticas em diferentes entidades. Essa vivência proporcionou contato direto com a realidade
 organizacional das entidades, seus desafios administrativos e suas dinâmicas internas, fortalecendo
@@ -527,6 +527,17 @@ pela teoria dos sistemas de informação em um contexto organizacional específi
 \subsection{Usabilidade e aceitação de tecnologia}
 \label{sec:usabilidade}
 
+A usabilidade é uma preocupação central deste trabalho, e não apenas um critério de avaliação ao
+final. O público das entidades tradicionalistas é heterogêneo e inclui pessoas idosas e usuários com
+menor familiaridade digital, e a comunicação cotidiana entre diretoria e associados já ocorre, em boa
+parte, por \textit{WhatsApp} e atendimento presencial (Seção~\ref{sec:diagnostico}). A literatura
+recomenda que a adoção de tecnologias considere a familiaridade dos usuários com ferramentas digitais
+\parencite{verhoef2021}, e um sistema que exija do associado mais esforço do que esses canais corre o
+risco de não ser adotado. Por isso o ecossistema combina o autoatendimento pelo aplicativo com fluxos
+mediados pela entidade (RNF01), e a avaliação examina tanto a facilidade de uso quanto a utilidade
+percebida. Esta subseção apresenta os dois referenciais que sustentam essa medição, a escala SUS e o
+modelo TAM.
+
 O único questionário efetivamente aplicado aos participantes na avaliação deste trabalho é a escala
 SUS, apresentada a seguir; o TAM, também apresentado nesta subseção, não é aplicado como um segundo
 questionário, mas funciona apenas como lente teórica para interpretar os dados qualitativos da
@@ -551,6 +562,11 @@ Este trabalho não aplica o TAM como instrumento psicométrico completo, mas se 
 construtos para estruturar a entrevista de avaliação (Seção~\ref{sec:avaliacao}), de modo a captar
 não apenas se os participantes conseguiram usar o sistema, mas se o percebem como mais útil do que a
 rotina anterior em papel, planilha ou WhatsApp.
+
+Os dois referenciais respondem a perguntas diferentes e se complementam: a usabilidade indica se o
+usuário consegue realizar a tarefa com o sistema, e a utilidade percebida indica se ele vê motivo para
+trocar a rotina que já domina. Para o público com menor familiaridade digital, que motivou os fluxos
+mediados, as duas dimensões importam, e é por isso que a avaliação não se limita à pontuação da escala.
 
 \subsection{Ecossistemas digitais e transformação digital em organizações culturais tradicionais}
 \label{sec:ecossistemas}
@@ -656,7 +672,9 @@ real \parencite{yin2015}. Já o DSDM (\textit{Dynamic Systems Development Method
 conduzir especificamente a construção do artefato, isto é, o desenvolvimento de software em si
 (Seção~\ref{sec:dsdm}). Por fim, os métodos mistos descrevem a abordagem de coleta e análise dos
 dados produzidos na etapa de avaliação com usuários (Seção~\ref{sec:avaliacao}), combinando
-instrumentos qualitativos com a pontuação quantitativa da escala SUS. A DSR enquadra o ciclo
+instrumentos qualitativos com a pontuação quantitativa da escala SUS.
+
+A DSR enquadra o ciclo
 construir-avaliar do artefato; o estudo de casos múltiplos fornece o ambiente organizacional em que
 esse ciclo ocorre; o DSDM organiza a etapa de construção; e os métodos mistos organizam a etapa de
 avaliação.
@@ -677,13 +695,16 @@ fundamentação teórica e identificação de trabalhos correlatos, e estudo de 
 considerando duas entidades parceiras reais como ambiente organizacional de coleta de informações
 \parencite{yin2015}. A opção por duas entidades, em vez de uma única, buscou verificar se os processos
 administrativos e as necessidades levantadas se repetiam entre organizações distintas, e não apenas em
-uma delas. Isso não configura uma generalização estatística ampla, que exigiria uma amostra
+uma delas.
+
+Isso não configura uma generalização estatística ampla, que exigiria uma amostra
 probabilística de entidades: o que o estudo de casos múltiplos permite, dentro dos limites
 reconhecidos pela própria literatura do método, é uma generalização analítica, restrita ao contexto e
 aos casos estudados, na qual a convergência observada entre as duas entidades fortalece a confiança de
 que os achados não são uma peculiaridade isolada de uma única organização, sem no entanto autorizar
-extrapolação para toda e qualquer entidade tradicionalista gaúcha \parencite{yin2015}. Ressalva-se que
-os dois casos compõem o diagnóstico e o levantamento de requisitos, mas apenas um deles, o CTG
+extrapolação para toda e qualquer entidade tradicionalista gaúcha \parencite{yin2015}.
+
+Ressalva-se que os dois casos compõem o diagnóstico e o levantamento de requisitos, mas apenas um deles, o CTG
 Sentinela da Querência, participou da avaliação do sistema com usuários. A avaliação é, portanto, um
 estudo de caso único, e a convergência entre as entidades sustenta a generalização dos requisitos, não
 a dos resultados de usabilidade.
@@ -1095,7 +1116,9 @@ em porte e estágio de digitalização: a primeira ainda depende majoritariament
 em papel para reservas e emissão de ingressos, enquanto a segunda já opera um sistema de gestão
 próprio, embora fragmentado entre esse sistema, planilhas eletrônicas e controles manuais na portaria
 dos eventos, o que permitiu observar o mesmo conjunto de processos administrativos em diferentes
-graus de maturidade tecnológica. A pesquisa delimita-se ao contexto administrativo das entidades
+graus de maturidade tecnológica.
+
+A pesquisa delimita-se ao contexto administrativo das entidades
 parceiras, com foco nos processos de cadastro de associados, controle de mensalidades e gestão de
 eventos sociais tradicionais, com ênfase em bailes e fandangos, incluindo reservas de mesas e
 ingressos. Não estão contempladas integrações técnicas com sistemas institucionais do MTG, como o
@@ -1131,7 +1154,9 @@ navegação principal do painel ou do aplicativo e a terminologia da interface, 
 tarefas que seriam avaliadas em seguida, para não antecipar sua resolução), sem intervenção do
 participante, destinada a nivelar a familiaridade com a navegação e a terminologia da interface; a
 execução de tarefas sobre três fluxos principais, selecionados em conjunto com a orientação deste
-trabalho; a aplicação da escala SUS; e uma entrevista semiestruturada breve. Os materiais usados nas
+trabalho; a aplicação da escala SUS; e uma entrevista semiestruturada breve.
+
+Os materiais usados nas
 sessões constam, reproduzidos integralmente tal como impressos e aplicados, nos Apêndices~\ref{apx:fichas}
 a~\ref{apx:condutor} (fichas de persona e kits de preparo; roteiro de tarefas por fluxo e papel; e
 roteiro do condutor, que inclui o roteiro de entrevista) e nos Anexos~\ref{anexo:sus-painel}
@@ -1161,8 +1186,10 @@ painel administrativo, e participantes associados executaram o passo de autoaten
 aplicativo \textit{mobile}. Os fluxos foram: (i) \textbf{cadastro de associado} (RF01, RF18);
 (ii) \textbf{compra de ingresso e check-in} (RF12, RF20, RF21); e (iii) \textbf{pagamento de
 mensalidade} (RF05, RF06, RF07, RF19), descritos em detalhe, com seus diagramas, na
-Seção~\ref{sec:fluxos-avaliados}. As tarefas foram desenhadas para serem independentes entre si: o
-estado inicial de cada uma (fichas de cadastro, ingressos já emitidos, contas de teste com mensalidade em aberto e associados
+Seção~\ref{sec:fluxos-avaliados}.
+
+As tarefas foram desenhadas para serem independentes entre si: o estado inicial de cada uma (fichas
+de cadastro, ingressos já emitidos, contas de teste com mensalidade em aberto e associados
 inadimplentes) foi preparado previamente pelo moderador, de modo que a falha em uma tarefa, ou a
 ausência de outro participante, não comprometesse as demais. Antes da execução do
 fluxo (iii), os participantes foram informados de que a cobrança online utiliza uma implementação
@@ -1175,7 +1202,9 @@ A coleta de dados combinou quatro instrumentos complementares. O primeiro foi um
 automatizada de conclusão: para cada tarefa, uma rotina consultou a API e o banco de dados
 imediatamente após a sessão, conferindo de forma objetiva e independente da percepção do
 participante se o estado esperado havia sido alcançado (por exemplo, associado cadastrado com o
-status correto, ingresso com entrada validada, mensalidade com pagamento registrado). Essa verificação
+status correto, ingresso com entrada validada, mensalidade com pagamento registrado).
+
+Essa verificação
 isolada, porém, não demonstra se o participante concluiu a tarefa de forma autônoma: um estado final
 correto no banco de dados é compatível tanto com uma execução sem ajuda quanto com uma execução em
 que o moderador precisou intervir. Por isso, cada tarefa foi classificada em uma de três categorias,
@@ -1183,7 +1212,9 @@ cruzando o resultado da verificação automatizada com o número de intervençõ
 pelo segundo instrumento: \textit{concluída sem ajuda} (estado final correto e nenhuma intervenção),
 \textit{concluída com intervenção} (estado final correto, mas com uma ou mais intervenções do
 moderador) e \textit{não concluída} (estado final incorreto ou tarefa abandonada,
-independentemente do número de intervenções). O segundo instrumento foi um registro de observação
+independentemente do número de intervenções).
+
+O segundo instrumento foi um registro de observação
 preenchido pelo moderador durante a execução de cada tarefa, contendo o tempo gasto, o número de erros
 (ações que precisaram ser desfeitas ou refeitas) e o número de intervenções do moderador (vezes em que
 precisou indicar o próximo passo); além de alimentar a classificação acima, esse registro é o que
@@ -1200,7 +1231,9 @@ públicos distintos, suas pontuações SUS são reportadas e discutidas separada
 numa única pontuação geral do ecossistema. Dado o tamanho reduzido de cada subgrupo, a pontuação SUS
 é apresentada por participante (tabela individual) e, de forma apenas indicativa, resumida por papel
 pela \textbf{mediana}, não pela média, por ser menos sensível a um único participante com escore
-discrepante. O quarto foi uma entrevista semiestruturada
+discrepante.
+
+O quarto foi uma entrevista semiestruturada
 breve, cobrindo a facilidade de localizar as funcionalidades, os pontos de maior dificuldade
 percebida, a adequação do fluxo mediado pela entidade (RNF01) para participantes com menor
 familiaridade digital, sugestões de melhoria e, inspirada nos construtos de utilidade percebida e
@@ -1233,7 +1266,7 @@ entidade (Seção~\ref{sec:diagnostico}).
 O diagnóstico foi construído a partir de uma entrevista semiestruturada individual em cada entidade
 (Seção~\ref{sec:levantamento}): com o responsável administrativo pela secretaria do CPF Pia do Sul, em 11 de
 agosto de 2026, e com um membro da diretoria do CTG Sentinela da Querência, em setembro de 2026, ambas
-entidades vinculadas à 13ª RT, em Santa Maria/RS. Apesar de portes distintos (a primeira reúne 1.343
+entidades vinculadas à 13ª Região Tradicionalista (13ª RT), em Santa Maria/RS. Apesar de portes distintos (a primeira reúne 1.343
 associados e a segunda 822, entre
 categorias como sócios pagantes, remidos, fundadores e patrimoniais), as respostas convergiram para
 um mesmo conjunto de processos e dificuldades, o que indica que tais problemas se repetiram nos dois
@@ -1249,7 +1282,9 @@ e controle de disponibilidade ainda feitos em papel, e o controle de entrada em 
 lista impressa e pulseiras. Já o CTG Sentinela da Querência opera um sistema de gestão consolidado
 para as áreas financeira, cadastral e social, com conciliação bancária por importação de arquivo e
 verificação diária de inadimplência, rotina mais frequente do que a verificação mensal relatada pelo
-CPF Pia do Sul. Ainda assim, mesmo a entidade mais digitalizada mantém processos paralelos em papel:
+CPF Pia do Sul.
+
+Ainda assim, mesmo a entidade mais digitalizada mantém processos paralelos em papel:
 a reserva de mesas para bailes é organizada por planilha eletrônica e croqui de mesas numeradas fora
 do sistema, e o fechamento financeiro do evento depende de contagem manual do saldo de portaria contra
 o total lançado. Essa coexistência de sistema informatizado com controles paralelos em planilha e
@@ -1270,10 +1305,12 @@ relevantes para o desenho do sistema. As duas entidades confirmaram já ter enfr
 reserva ou mesa vendida em duplicidade, validando diretamente a necessidade de um controle de
 disponibilidade em tempo real. A venda de ingresso com valor diferenciado por perfil do comprador
 (sócio, não sócio e criança) está presente nas duas entidades, assim como o atendimento mediado pela
-secretaria para quem compra presencialmente. O volume e a frequência de eventos, no entanto, diferem
+secretaria para quem compra presencialmente.
+
+O volume e a frequência de eventos, no entanto, diferem
 de forma expressiva: o CPF Pia do Sul concentra sua programação em poucos eventos de grande porte
-(dois festivais artísticos que reúnem de 5 a 6 mil participantes, além dos bailes da semana
-farroupilha), enquanto o CTG Sentinela da Querência promoveu cerca de 60 eventos em 2025, com
+(dois festivais artísticos que reúnem de 5 a 6 mil participantes, além dos bailes da Semana
+Farroupilha, período de 14 a 20 de setembro em que se celebra a Revolução Farroupilha), enquanto o CTG Sentinela da Querência promoveu cerca de 60 eventos em 2025, com
 público entre 200 e 800 pessoas por evento. Essa diferença de perfil (poucos eventos massivos versus
 muitos eventos recorrentes de menor porte) reforça a importância de um acompanhamento confiável do
 evento em andamento (quantos ingressos já foram emitidos, quantos já deram entrada e quantos ainda
@@ -1304,14 +1341,18 @@ vez de restringir o escopo a apenas uma dessas frentes.
 O MVP do Querência ERP foi implementado como um repositório único contendo três aplicações que
 compartilham a mesma linguagem, o TypeScript: a API (\textit{backend}), o painel administrativo
 (\textit{frontend} web) e o aplicativo do associado (\textit{mobile}), conforme a arquitetura de
-componentes apresentada na Figura~\ref{fig:arquitetura}. A Figura~\ref{fig:implantacao} complementa
+componentes apresentada na Figura~\ref{fig:arquitetura}.
+
+A Figura~\ref{fig:implantacao} complementa
 essa visão interna com a arquitetura-alvo de implantação do ecossistema, ou seja, o desenho de
 distribuição planejado para quando o produto for publicado: a distribuição do aplicativo
 \textit{mobile} pelas lojas Google Play e App Store, o acesso ao painel pelo navegador, a hospedagem
 da API em contêineres na nuvem e as integrações externas (banco de dados gerenciado, cofre de
 segredos, gateway de pagamento e serviço de notificações). Para este trabalho, a validação com
 usuários usou apenas a distribuição por arquivo APK interno (ver ``Implantação'' adiante); a
-publicação nas lojas e a validação em iOS permanecem como trabalho futuro. O retângulo pontilhado
+publicação nas lojas e a validação em iOS permanecem como trabalho futuro.
+
+O retângulo pontilhado
 demarca o conjunto de componentes replicado para cada entidade parceira: como o sistema não é
 multi-\textit{tenant} (Seção~\ref{sec:delimitacao}), cada entidade opera sua própria instância da
 API, seu próprio banco de dados e suas próprias credenciais de gateway de pagamento, vinculadas aos
@@ -1383,10 +1424,13 @@ notificações) são acessados por interfaces substituíveis. O esquema do banco
 tokens JWT, e o acesso é controlado por dois perfis, administrador e associado; rotas destinadas ao
 associado (por exemplo, consultar as próprias mensalidades, reservas e ingressos) resolvem a posse a
 partir do token, e nunca a partir de parâmetros informados pelo cliente, o que evita o acesso a dados
-de terceiros. A verificação do comportamento é feita por 73 testes de ponta a ponta, distribuídos em
+de terceiros.
+
+A verificação do comportamento é feita por 73 testes de ponta a ponta, distribuídos em
 oito suítes, executados contra um banco PostgreSQL real, e que cobrem inclusive cenários de
-concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita. Para
-ambientar a sessão de avaliação com usuários (Seção~\ref{sec:avaliacao}), foi desenvolvida uma
+concorrência, como duas reservas simultâneas da mesma mesa, em que apenas uma é aceita.
+
+Para ambientar a sessão de avaliação com usuários (Seção~\ref{sec:avaliacao}), foi desenvolvida uma
 rotina de povoamento de dados (\textit{seed}), executada contra a API já em produção, que gera
 associados, categorias de sócio, um salão com croqui completo, eventos publicados com preços
 configurados e um histórico de mensalidades, ingressos e reservas com a mesma variação de perfil
@@ -1397,13 +1441,7 @@ não permite retroceder, foram ajustados à parte, para distribuir o volume ao l
 em vez de concentrá-lo no dia em que o ambiente foi provisionado.
 
 \textbf{Painel administrativo (Next.js).} O acesso ao painel é feito por autenticação com e-mail e
-senha (Figura~\ref{fig:web-login}), restrita a usuários com perfil administrador. O painel concentra
-a operação da diretoria. Nele, é possível cadastrar e aprovar associados, configurar categorias de
-sócio com valor de mensalidade e isenção, lançar cobranças mensais, registrar pagamentos presenciais
-e consultar a inadimplência, cadastrar eventos, desenhar o croqui do salão, configurar preço e
-disponibilidade de mesas e ingressos, registrar reservas e vender ingressos presencialmente. A
-Figura~\ref{fig:web-dashboard} apresenta a tela inicial, com os totais de associados, pendências de
-validação, inadimplentes e eventos publicados.
+senha (Figura~\ref{fig:web-login}), restrita a usuários com perfil administrador.
 
 \begin{figure}[H]
   \centering
@@ -1412,6 +1450,14 @@ validação, inadimplentes e eventos publicados.
   \includegraphics[width=0.92\textwidth]{figuras/web-login.png}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
+
+Depois de autenticada, a diretoria encontra um painel que concentra
+a sua operação. Nele, é possível cadastrar e aprovar associados, configurar categorias de
+sócio com valor de mensalidade e isenção, lançar cobranças mensais, registrar pagamentos presenciais
+e consultar a inadimplência, cadastrar eventos, desenhar o croqui do salão, configurar preço e
+disponibilidade de mesas e ingressos, registrar reservas e vender ingressos presencialmente. A
+Figura~\ref{fig:web-dashboard} apresenta a tela inicial, com os totais de associados, pendências de
+validação, inadimplentes e eventos publicados.
 
 \begin{figure}[H]
   \centering
@@ -1424,10 +1470,7 @@ validação, inadimplentes e eventos publicados.
 O croqui do salão (Figura~\ref{fig:web-croqui}) é construído pela própria diretoria, sem exposição de
 coordenadas: mesas, paredes, portas e áreas (como tablado ou bar) são arrastadas de um menu lateral
 diretamente para dentro do desenho, o que responde à dificuldade relatada por usuários com menor
-familiaridade digital. No dia do evento,
-a tela de ingressos (Figura~\ref{fig:web-ingressos}) exibe os totais de ingressos emitidos, de
-entradas já validadas e de ingressos aguardando entrada, além da leitura de códigos QR pela câmera
-para o registro da entrada na portaria.
+familiaridade digital.
 
 \begin{figure}[H]
   \centering
@@ -1436,6 +1479,10 @@ para o registro da entrada na portaria.
   \includegraphics[width=0.92\textwidth]{figuras/web-salao-croqui.png}
   \caption*{\textbf{Fonte:} Elaborado pelo autor (2026).}
 \end{figure}
+
+No dia do evento, a tela de ingressos (Figura~\ref{fig:web-ingressos}) exibe os totais de ingressos
+emitidos, de entradas já validadas e de ingressos aguardando entrada, além da leitura de códigos QR
+pela câmera para o registro da entrada na portaria.
 
 \begin{figure}[H]
   \centering
@@ -1533,12 +1580,16 @@ endereço, \textit{e-mail} e senha; a API recusa CPF ou \textit{e-mail} já exis
 e o cadastro no mesmo passo, e o cadastro nasce com status \textit{pendente de validação} e sem
 categoria de sócio. Cabe à diretoria revisar o cadastro pendente, definir a categoria e aprová-lo; ao
 aprovar, o associado passa a \textit{ativo} e já recebe a mensalidade do mês, sem esperar a próxima
-geração automática de cobranças. Na entrada mediada, a diretoria registra no painel a proposta física
+geração automática de cobranças.
+
+Na entrada mediada, a diretoria registra no painel a proposta física
 de associação, e o cadastro entra imediatamente como \textit{ativo}, sem \textit{login} e sem etapa de
 aprovação, por ter sido criado pela própria diretoria. Essa regra decorre da escolha, no MVP, de tratar a
 diretoria como a instância que valida o cadastro. A avaliação indicou que ela não se aplica a todas
 as entidades: como mostra a Seção~\ref{sec:avaliacao-ctg}, no CTG Sentinela da Querência a decisão
-final de aceitar um associado cabe a uma instância própria da entidade, o Patrão. Para que o associado
+final de aceitar um associado cabe a uma instância própria da entidade, o Patrão.
+
+Para que o associado
 cadastrado dessa forma acesse o aplicativo, a opção ``Já é associado mas nunca acessou?'' recebe CPF,
 \textit{e-mail} e senha, confere que o CPF existe e ainda não tem conta e vincula o novo \textit{login}
 ao cadastro existente, sem duplicar o registro nem recolocá-lo na fila de aprovação.
@@ -1776,7 +1827,9 @@ nesse patamar situa o sistema na região mais favorável da escala, mas dois fat
 resultado seja tomado como evidência isolada. O primeiro é estatístico: com um único respondente por
 papel, a pontuação não comporta variância nem permite qualquer inferência (Seção~\ref{sec:avaliacao}),
 e uma pontuação de teto não discrimina entre itens ou entre participantes, o que torna pouco
-informativo examinar as respostas item a item. O segundo é o viés de resposta. \textcite{dell2012}
+informativo examinar as respostas item a item.
+
+O segundo fator é o viés de resposta. \textcite{dell2012}
 mostraram, em 450 entrevistas, que os participantes tendem a favorecer o artefato que atribuem ao
 entrevistador, mesmo quando a alternativa é equivalente, efeito que atribuem às características de
 demanda da situação de entrevista. A pesquisa desses autores foi conduzida em outro contexto
@@ -1796,7 +1849,9 @@ entidade utiliza hoje, e o classificou como \enquote{muito mais simples}. Nenhum
 dificuldade ou momento de dúvida durante a execução das tarefas, e ambos consideraram que o
 vocabulário da interface (categorias de sócio, cargos e termos de evento) correspondia ao da
 entidade, sem soar genérico. Esse último ponto responde diretamente à preocupação de adequação
-cultural que motivou a pergunta (Seção~\ref{sec:avaliacao}). A comparação feita pela secretaria
+cultural que motivou a pergunta (Seção~\ref{sec:avaliacao}).
+
+A comparação feita pela secretaria
 ganha peso por vir de quem opera o sistema vigente: ela o qualificou como \enquote{complexo, feito
 para outro nicho}, adaptado depois ao uso da entidade, o que dialoga com o diagnóstico, segundo o qual
 a entidade já possui um sistema de gestão consolidado (Seção~\ref{sec:diagnostico}) e, ainda assim,
@@ -1817,8 +1872,10 @@ consulte e pague a própria mensalidade, já que a entidade recebe com frequênc
 informação sobre situação e pagamentos que poderiam ser resolvidos pelo aplicativo. Ela ressalvou,
 porém, que o atendimento por \textit{WhatsApp} deve ser mantido quando necessário, em atenção ao
 público menos receptivo ao aplicativo, o que é compatível com a premissa de adoção gradual e de
-fluxos mediados pela entidade. Os dois participantes também afirmaram que confiariam em pedir à
-diretoria que executasse um passo em seu nome, caso preferissem não usar o sistema diretamente, e não justificaram a resposta. É um indício favorável
+fluxos mediados pela entidade.
+
+Os dois participantes também afirmaram que confiariam em pedir à diretoria que executasse um passo em
+seu nome, caso preferissem não usar o sistema diretamente, e não justificaram a resposta. É um indício favorável
 à aceitação do fluxo mediado pela entidade (RNF01), mas limitado, como discutido na
 Seção~\ref{sec:sintese-avaliacao}.
 
@@ -1837,8 +1894,10 @@ sobre aceitar um associado cabe ao Patrão, cargo de liderança da entidade, e n
 descreveu o processo atual: o interessado entrega presencialmente os documentos à secretaria, que
 confere se estão completos e os encaminha ao Patrão, a quem cabe analisar e decidir sobre a
 solicitação. A diferença é coerente com o lugar de cada um no processo, uma vez que a lacuna só é
-visível a quem executa o cadastro. O achado é específico do CTG Sentinela da Querência, mas reforça,
-com um exemplo concreto, a premissa de tratar fluxos de aprovação como configuráveis por entidade, em vez de uma regra única. Como mostra a
+visível a quem executa o cadastro.
+
+O achado é específico do CTG Sentinela da Querência, mas reforça, com um exemplo concreto, a premissa
+de tratar fluxos de aprovação como configuráveis por entidade, em vez de uma regra única. Como mostra a
 Seção~\ref{sec:fluxos-avaliados}, o cadastro mediado entra hoje como \textit{ativo} imediatamente, sem
 etapa de aprovação, porque o MVP trata a diretoria como a instância de validação; a sessão fornece a
 primeira evidência de que essa regra não vale para todas as entidades.
@@ -1901,7 +1960,9 @@ os dois participantes e nas seis tarefas avaliadas, o sistema foi utilizável se
 como mais simples do que o processo anterior; a entrevista, ao contrário da escala, também produziu
 achados que apontam ajustes. Esses resultados têm alcance restrito. Há uma única entidade, dois
 participantes indicados pela diretoria, um moderador que é o autor do sistema, dados fictícios e
-tarefas curtas precedidas de demonstração. A ausência de dificuldade relatada, por sua vez, não equivale
+tarefas curtas precedidas de demonstração.
+
+A ausência de dificuldade relatada, por sua vez, não equivale
 à ausência de problemas: no modelo de \textcite{nielsenlandauer1993}, a probabilidade de que um
 mesmo usuário encontre um dado problema de usabilidade é, em média, de cerca de 31\%, de modo que
 dois participantes tenderiam a revelar pouco mais da metade dos problemas existentes. O modelo
@@ -1973,11 +2034,15 @@ de gestão de associados, mensalidades e eventos (Seção~\ref{sec:diagnostico})
 ecossistema, composta por painel \textit{web}, aplicativo \textit{mobile} e uma API REST de estilo
 hexagonal, foi descrita e implementada em um MVP verificado por testes automatizados
 (Seção~\ref{sec:implementacao-mvp}); e a avaliação com usuários cobriu três fluxos nas duas pontas do
-sistema. Nessa avaliação, realizada no CTG Sentinela da Querência com dois participantes, as seis
+sistema.
+
+Nessa avaliação, realizada no CTG Sentinela da Querência com dois participantes, as seis
 tarefas foram concluídas sem intervenção do moderador, e os participantes perceberam o sistema como
 mais simples do que o processo e a ferramenta que a entidade utiliza hoje. A pontuação máxima na
 escala SUS não sustenta, isoladamente, nenhuma conclusão, pelos limites de amostra e de viés de
-resposta discutidos na Seção~\ref{sec:avaliacao-ctg}. O que a entrevista acrescentou foi mais
+resposta discutidos na Seção~\ref{sec:avaliacao-ctg}.
+
+O que a entrevista acrescentou foi mais
 informativo: apontou a aprovação final do cadastro pelo Patrão, o controle de despesas por evento e a
 integração com catracas como lacunas, e confirmou que categorias de sócio configuráveis eram uma
 decisão de projeto adequada. Assim, a resposta à pergunta de pesquisa é afirmativa, mas restrita: há
