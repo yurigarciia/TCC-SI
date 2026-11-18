@@ -10,6 +10,9 @@
         ],
         "ia": [
           "querencia-ia-tcc"
+        ],
+        "acesso": [
+          "querencia-acesso-tcc"
         ]
       }
     }

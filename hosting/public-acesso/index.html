@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Querência ERP · Acesso de demonstração</title>
+<meta name="description" content="Acesso de demonstração ao Querência ERP: painel administrativo e assistente de IA.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF2E8; --card:#FFFFFF; --line:#CFD8C2; --ink:#2B241D; --muted:#5B5147;
+    --verde:#2E5E3E; --verde-esc:#0F3322; --verde-cl:#E3EBDD; --ouro:#E8C98F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14241A; --card:#1D3326; --line:#2F4A38; --ink:#F1ECE2; --muted:#B9C3B4;
+           --verde:#8DB07A; --verde-esc:#F1ECE2; --verde-cl:#264232; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5;
+       min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 16px 0}
+  main{width:100%;max-width:560px;display:flex;flex-direction:column;gap:20px;flex:1;padding-bottom:110px}
+  header{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+  header img{width:84px;height:84px;object-fit:contain}
+  h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:34px;line-height:1.15;margin:0;color:var(--verde-esc)}
+  header p{margin:0;color:var(--muted);font-size:16px}
+  .btn{display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;
+       background:var(--verde);color:#fff;padding:18px 22px;border-radius:14px;font-weight:600;font-size:17px;
+       box-shadow:0 6px 16px rgba(15,51,34,.18);transition:transform .15s,box-shadow .15s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(15,51,34,.24)}
+  .btn small{display:block;font-weight:400;font-size:14px;opacity:.85}
+  .btn.sec{background:var(--card);color:var(--verde);border:1.5px solid var(--verde);box-shadow:none}
+  .btn svg{flex:none;width:22px;height:22px}
+  .acesso{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:14px}
+  .acesso h2{margin:0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--verde);font-weight:600}
+  .campo{display:flex;align-items:center;gap:10px;background:var(--verde-cl);border-radius:10px;padding:10px 12px 10px 16px}
+  .campo div{flex:1;min-width:0}
+  .campo span{display:block;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .campo code{font-family:ui-monospace,Consolas,monospace;font-size:17px;font-weight:600;word-break:break-all}
+  .copiar{border:0;background:var(--verde);color:#fff;border-radius:8px;padding:8px 14px;font:600 14px Inter,sans-serif;cursor:pointer;min-width:84px}
+  .copiar.ok{background:#4F7147}
+  .aviso{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted);font-style:italic;margin:2px 0 0}
+  .aviso svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--verde)}
+  footer{position:fixed;left:0;right:0;bottom:0;pointer-events:none}
+  footer svg{display:block;width:100%;height:72px}
+  .assin{position:fixed;bottom:80px;left:0;right:0;text-align:center;font-size:13px;color:var(--muted);pointer-events:none}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="logo.png" alt="Logotipo do Querência ERP">
+    <h1>Querência ERP</h1>
+    <p>Acesso de demonstração para a banca</p>
+  </header>
+
+  <a class="btn" href="https://querencia.southinovations.com.br" target="_blank" rel="noopener">
+    <span>Painel administrativo<small>Gestão de associados, mensalidades e eventos</small></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+  </a>
+  <a class="btn sec" href="https://querencia-ia.southinovations.com.br" target="_blank" rel="noopener">
+    <span>Assistente de IA<small>Consultas em linguagem natural ao sistema</small></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+  </a>
+
+  <section class="acesso" aria-labelledby="t-acesso">
+    <h2 id="t-acesso">Login do painel administrativo</h2>
+    <div class="campo"><div><span>E-mail</span><code id="email">banca@amf.edu.br</code></div><button class="copiar" data-alvo="email">Copiar</button></div>
+    <div class="campo"><div><span>Senha</span><code id="senha">mudar123</code></div><button class="copiar" data-alvo="senha">Copiar</button></div>
+    <p class="aviso">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <span>Todos os dados do painel são fictícios e foram gerados aleatoriamente por algoritmo.</span>
+    </p>
+  </section>
+</main>
+<footer aria-hidden="true">
+  <svg viewBox="0 0 1920 72" preserveAspectRatio="none"><path d="M0 40 C240 14 480 36 760 24 C1040 12 1300 4 1560 20 C1720 30 1840 34 1920 26 L1920 72 L0 72 Z" fill="#6F8F5C"/><path d="M0 52 C300 34 600 56 900 44 C1200 32 1500 36 1920 48 L1920 72 L0 72 Z" fill="#4F7147"/><path d="M0 62 C360 52 720 66 1080 58 C1440 50 1700 58 1920 60 L1920 72 L0 72 Z" fill="#2E5E3E"/></svg>
+</footer>
+<script>
+document.querySelectorAll('.copiar').forEach(function(b){
+  b.addEventListener('click', function(){
+    var t = document.getElementById(b.dataset.alvo).textContent;
+    var feito = function(){ b.textContent='Copiado'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copiar'; b.classList.remove('ok'); }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(feito, feito); }
+    else { var r=document.createRange(); r.selectNodeContents(document.getElementById(b.dataset.alvo)); var s=getSelection(); s.removeAllRanges(); s.addRange(r); try{document.execCommand('copy');}catch(e){} feito(); }
+  });
+});
+</script>
+</body>
+</html>
