@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Querência ERP · Acesso de demonstração</title>
 <meta name="description" content="Acesso de demonstração ao Querência ERP: painel administrativo e assistente de IA.">
@@ -16,6 +16,7 @@
     --verde:#2E5E3E; --verde-esc:#0F3322; --verde-cl:#E3EBDD; --ouro:#E8C98F;
   }
   *{box-sizing:border-box}
+  html{background:#2E5E3E}
   html,body{margin:0}
   body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5;
        min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 16px 0}
@@ -43,6 +44,17 @@
   .aviso svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--verde)}
   footer{position:fixed;left:0;right:0;bottom:0;z-index:0;pointer-events:none}
   footer svg{display:block;width:100%;height:72px}
+  footer i{display:block;height:env(safe-area-inset-bottom,0px);background:#2E5E3E}
+  @media (max-width:420px){
+    body{padding-top:12px}
+    main{gap:14px;padding-bottom:96px}
+    h1{font-size:30px}
+    header img{width:68px;height:68px}
+    .btn{padding:13px 16px;font-size:16px;border-radius:12px}
+    .btn small{font-size:13px}
+    .acesso{padding:16px 16px 14px}
+    .campo code{font-size:16px}
+  }
   .assin{position:fixed;bottom:80px;left:0;right:0;text-align:center;font-size:13px;color:var(--muted);pointer-events:none}
 </style>
 </head>
@@ -55,11 +67,11 @@
   </header>
 
   <a class="btn" href="https://querencia.southinovations.com.br" target="_blank" rel="noopener">
-    <span>Painel administrativo<small>Gestão de associados, mensalidades e eventos</small></span>
+    <span>Painel administrativo<small>Associados, mensalidades e eventos</small></span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
   </a>
   <a class="btn sec" href="https://querencia-ia.southinovations.com.br" target="_blank" rel="noopener">
-    <span>Assistente de IA<small>Consultas em linguagem natural ao sistema</small></span>
+    <span>Assistente de IA<small>Converse com o assistente</small></span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
   </a>
 
@@ -75,6 +87,7 @@
 </main>
 <footer aria-hidden="true">
   <svg viewBox="0 0 1920 72" preserveAspectRatio="none"><path d="M0 40 C240 14 480 36 760 24 C1040 12 1300 4 1560 20 C1720 30 1840 34 1920 26 L1920 72 L0 72 Z" fill="#6F8F5C"/><path d="M0 52 C300 34 600 56 900 44 C1200 32 1500 36 1920 48 L1920 72 L0 72 Z" fill="#4F7147"/><path d="M0 62 C360 52 720 66 1080 58 C1440 50 1700 58 1920 60 L1920 72 L0 72 Z" fill="#2E5E3E"/></svg>
+  <i></i>
 </footer>
 <script>
 document.querySelectorAll('.copiar').forEach(function(b){
