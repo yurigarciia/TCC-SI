@@ -1,4 +1,7 @@
-const COOKIE_NAME = "pia_do_sul_token";
+// "__session" é o único cookie que o Firebase Hosting repassa ao Cloud Run (os demais são removidos
+// na borda). O proxy.ts lê este cookie no servidor, então o nome precisa ser exatamente este para
+// o painel funcionar atrás de um domínio próprio servido pelo Hosting.
+const COOKIE_NAME = "__session";
 
 // Cookie legível por JS (não httpOnly) — escolha deliberada, não descuido: o painel chama a API
 // NestJS diretamente do navegador (sem camada de BFF no meio, ver CLAUDE.md), então o próprio
