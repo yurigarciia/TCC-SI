@@ -1,1 +1,18 @@
-{ "projects": { "default": "querencia-erp-tcc" } }
+{
+  "projects": {
+    "default": "querencia-erp-tcc"
+  },
+  "targets": {
+    "querencia-erp-tcc": {
+      "hosting": {
+        "erp": [
+          "querencia-erp-tcc"
+        ],
+        "ia": [
+          "querencia-ia-tcc"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

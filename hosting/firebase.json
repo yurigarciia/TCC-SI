@@ -1,13 +1,26 @@
 {
-  "hosting": {
-    "site": "querencia-erp-tcc",
-    "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      {
-        "source": "**",
-        "run": { "serviceId": "querencia-erp-web", "region": "southamerica-east1" }
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "erp",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": { "serviceId": "querencia-erp-web", "region": "southamerica-east1" }
+        }
+      ]
+    },
+    {
+      "target": "ia",
+      "public": "public-ia",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": { "serviceId": "querencia-assistente-ia", "region": "southamerica-east1" }
+        }
+      ]
+    }
+  ]
 }
