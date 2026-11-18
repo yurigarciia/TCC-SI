@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "site": "querencia-erp-tcc",
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": { "serviceId": "querencia-erp-web", "region": "southamerica-east1" }
+      }
+    ]
+  }
+}
